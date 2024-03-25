@@ -3,7 +3,7 @@ author: Gaazeon
 pubDatetime: 2024-03-25T09:33:00Z
 modDatetime: 2024-03-25T09:33:47.400Z
 title: Tailscale Site to Site 异地组网教程
-description:Tailscale Site to Site(点对点) 异地组网
+description: Tailscale Site to Site(点对点) 异地组网
 tags:
   - tailscale
 ---
