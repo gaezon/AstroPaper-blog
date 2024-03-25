@@ -1,7 +1,6 @@
 ---
-author: Gaazeon
-pubDatetime: 2024-03-25T09:33:00Z
-modDatetime: 2024-03-25T10:05:00Z
+pubDatetime: 2024-03-25T09:33:00+08:00
+modDatetime: 2024-03-25T15:23:00+08:00
 title: Tailscale Site to Site 异地组网教程
 description: Tailscale Site to Site(点对点) 异地组网
 tags:
@@ -11,7 +10,7 @@ tags:
 
 # 前言
 
-因为家里和学校同时放了 2 台 OpenWrt 路由，需要相互组网方便在子网中每一个路由下的客户端不需要下载 tailscale客户端便能相互访问，参考了网上做法都不对，于是自己写了这个教程。
+因为家里和学校同时放了 2 台 OpenWrt 路由，需要相互组网方便在子网中每一个路由下的客户端不需要下载 tailscale 客户端便能相互访问，参考了网上做法都不对，于是自己写了这个教程。
 
 # 具体做法
 

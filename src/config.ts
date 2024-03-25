@@ -7,7 +7,7 @@ export const SITE: Site = {
   title: "Gaazeon's blog.",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
-  postPerPage: 5,
+  postPerPage: 3,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
 };
 
