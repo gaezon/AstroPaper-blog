@@ -10,7 +10,7 @@ tags:
 
 # 前言
 
-因为家里和学校同时放了 2 台 OpenWrt 路由，需要相互组网，方便在子网中，每一个路由下的客户端不需要下载 tailscale 便能相互访问。
+因为家里和学校同时放了 2 台 OpenWrt 路由，需要相互组网方便在子网中每一个路由下的客户端不需要下载 tailscale客户端便能相互访问，参考了网上做法都不对，于是自己写了这个教程。
 
 # 具体做法
 
@@ -33,5 +33,5 @@ ip route add 10.0.0.0/20 via 10.118.48.2
 
 # 参考
 
-1. [[OpenWrt Wiki] Tailscale --- [OpenWrt 维基] Tailscale](https://openwrt.org/docs/guide-user/services/vpn/tailscale/start
-2. https://tailscale.com/kb/1214/site-to-site
+1. [[OpenWrt Wiki] Tailscale --- [OpenWrt 维基] Tailscale](https://openwrt.org/docs/guide-user/services/vpn/tailscale/start)
+2. [[Tailscale] tailscale 官方 site to site 组网说明](https://tailscale.com/kb/1214/site-to-site)
