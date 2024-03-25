@@ -6,6 +6,7 @@ title: Tailscale Site to Site 异地组网教程
 description: Tailscale Site to Site(点对点) 异地组网
 tags:
   - tailscale
+  - 网络
 ---
 
 # 前言
