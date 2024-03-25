@@ -3,6 +3,7 @@ pubDatetime: 2024-03-25T09:33:00+08:00
 modDatetime: 2024-03-25T15:23:00+08:00
 title: Tailscale Site to Site 异地组网教程
 description: Tailscale Site to Site(点对点) 异地组网
+slug: tailscale-site-to-site-connect
 tags:
   - tailscale
   - 网络
