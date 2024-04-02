@@ -35,6 +35,6 @@ const { currentPage, totalPages, paginatedPosts } = Astro.props;
     prevUrl={`/posts${currentPage - 1 !== 1 ? "/" + (currentPage - 1) : ""}/`}
     nextUrl={`/posts/${currentPage + 1}/`}
   />
-  {frontmatter.comments && <Remark42Embed client:visible />}
+
   <Footer noMarginTop={totalPages > 1} />
 </Layout>
