@@ -1,8 +1,8 @@
 ---
 pubDatetime: 2024-03-25T09:33:00+08:00
-modDatetime: 2024-03-25T15:23:00+08:00
+modDatetime: 2024-04-04T10:26:00+08:00
 title: Tailscale Site to Site 异地组网教程
-description: Tailscale Site to Site(点对点) 异地组网
+description: 本文详细介绍了如何使用 Tailscale 实现异地组网。我们将深入探讨 Tailscale 的工作原理，以及如何配置和使用它来创建稳定、安全的异地组网环境。这篇文章是为那些希望在不同地点的设备之间建立网络连接的人们编写的，无论是为了工作还是个人使用。
 slug: tailscale-site-to-site-connect
 tags:
   - tailscale
