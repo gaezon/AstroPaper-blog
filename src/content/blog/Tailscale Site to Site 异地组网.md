@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2024-03-25T09:33:00+08:00
-modDatetime: 2024-04-04T10:26:00+08:00
+modDatetime: 2024-05-04T21:25:00+08:00
 title: Tailscale Site to Site 异地组网教程
 description: 本文详细介绍了如何使用 Tailscale 实现异地组网。我们将深入探讨 Tailscale 的工作原理，以及如何配置和使用它来创建稳定、安全的异地组网环境。这篇文章是为那些希望在不同地点的设备之间建立网络连接的人们编写的，无论是为了工作还是个人使用。
 slug: tailscale-site-to-site-connect
@@ -37,6 +37,8 @@ B：同样，10.118.48.0/20 子网，添加一条到 tailnet 和到远程 10.0.0
 ip route add 100.64.0.0/10 via 10.118.48.2
 ip route add 10.0.0.0/20 via 10.118.48.2
 ```
+
+![openwrt 静态路由设置例子](https://img.gaazeon.com/2024/05/openwrt202405042119416.avif)
 
 然后 tailscale 启动命令中  
 加上 `--accept-routes` 属性
