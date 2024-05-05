@@ -13,7 +13,7 @@ const fetchFonts = async () => {
 
   // Bold Font
   const fontFileBold = await fetch(
-    "https://fonts.gaazeon.com/fonts%2FOPPOSans-Regular.ttf"
+    "https://fonts.gaazeon.com/fonts%2FOPPOSans-Bold.ttf"
   );
   const fontBold: ArrayBuffer = await fontFileBold.arrayBuffer();
 
@@ -34,7 +34,7 @@ const options: SatoriOptions = {
       style: "normal",
     },
     {
-      name: "OPPOSans-Regular",
+      name: "OPPOSans-Bold",
       data: fontBold,
       weight: 600,
       style: "normal",
