@@ -1,4 +1,6 @@
 import { defineConfig } from "astro/config";
+// Import /static for a static site
+import vercelStatic from "@astrojs/vercel/static";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import remarkToc from "remark-toc";
@@ -37,4 +39,10 @@ export default defineConfig({
     },
   },
   scopedStyleStrategy: "where",
+  output: "static",
+  adapter: vercelStatic({
+    webAnalytics: {
+      enabled: true,
+    },
+  }),
 });
