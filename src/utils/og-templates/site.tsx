@@ -73,10 +73,24 @@ export default () => {
               justifyContent: "flex-end",
               width: "100%",
               marginBottom: "8px",
-              fontSize: 28,
+              fontSize: 24,
             }}
           >
             <span style={{ overflow: "hidden", fontWeight: "bold" }}>
+              {/* 加上Gaazeon小熊 logo */}
+              <img
+                src="https://gaazeon.com/assets/logo.svg"
+                width="45"
+                height="45"
+              />
+              {/* 加上一个空格 */}
+              <span
+                style={{
+                  color: "transparent",
+                }}
+              >
+                "
+              </span>
               {new URL(SITE.website).hostname}
             </span>
           </div>

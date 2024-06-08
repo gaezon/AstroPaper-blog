@@ -86,6 +86,20 @@ export default (post: CollectionEntry<"blog">) => {
             </span>
 
             <span style={{ overflow: "hidden", fontWeight: "bold" }}>
+              {/* 加上Gaazeon小熊 logo */}
+              <img
+                src="https://gaazeon.com/assets/logo.svg"
+                width="45"
+                height="45"
+              />
+              {/* 加上一个空格 */}
+              <span
+                style={{
+                  color: "transparent",
+                }}
+              >
+                "
+              </span>
               {SITE.title}
             </span>
           </div>

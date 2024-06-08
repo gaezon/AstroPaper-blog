@@ -7,7 +7,7 @@ import siteOgImage from "./og-templates/site";
 const fetchFonts = async () => {
   // Regular Font
   const fontFileRegular = await fetch(
-    "https://fonts.gaazeon.com/fonts%2FOPPOSans-Regular.ttf"
+    "https://www.1001fonts.com/download/font/ibm-plex-mono.regular.ttf"
   );
   const fontRegular: ArrayBuffer = await fontFileRegular.arrayBuffer();
 
@@ -28,7 +28,7 @@ const options: SatoriOptions = {
   embedFont: true,
   fonts: [
     {
-      name: "OPPOSans-Regular",
+      name: "IBM Plex Mono",
       data: fontRegular,
       weight: 400,
       style: "normal",
