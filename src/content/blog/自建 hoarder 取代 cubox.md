@@ -21,7 +21,7 @@ slug: hoarder-app-replace-cubox
 
 # 前言
 
-> 在数字信息爆炸的时代，许多科技囤积症患者们都需要一个网页的剪藏服务。在此之前，我一直使用 Cubox 作为数字囤积的主要服务。然而，Cubox 的一些问题让我萌生了自建开源的 Hoarder 以取而代之的想法。具体原因有以下几点：
+> 在数字信息爆炸的时代，许多科技囤积症患者们都需要一个网页的剪藏服务。在此之前，我一直使用 Cubox 作为数字囤积的主要服务。然而，Cubox 的一些问题让我萌生了自建开源的 Hoarder 以取而代之的想法。
 
 # 取代 cubox 想法的由来
 
@@ -43,7 +43,7 @@ slug: hoarder-app-replace-cubox
 
 # 自建安装步骤
 
-> Hoarder 是一个开源项目，可以在 [GitHub](https://github.com/hoarder-app/hoarder) 上找到，具体Linux 机器或群晖系统安装可以参考，官方文档或者参照 [NasDaddy](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8) 的教程。
+> Hoarder 是一个开源项目，可以在 [GitHub](https://github.com/hoarder-app/hoarder) 上找到，具体 Linux 机器或群晖系统安装可以参考，官方文档或者参照 [NasDaddy](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8) 的教程。
 
 这边建议使用 Docker 进行安装
 Docker Compose YAML 参考配置如下：
@@ -141,11 +141,11 @@ Hoarder 在本地存储的都是 `db` 结尾格式的特定数据库文件，貌
 
 ![dbformat-of-Hoarder](https://img.gaazeon.com/2024/06/202406081735585.avif)
 
-如果能采用通用格式比如保存成 `html` 或者直接截图一张 `png`来存储快照个人觉得比较适合
+如果能采用通用格式比如保存成 `html` 或者直接截图一张 `png` 来存储快照个人觉得比较适合
 
 ## 某些网站无法抓取
 
-Hoarder 貌似使用 Chrome 浏览器模拟人类访问，来存储网页快照的，这就带来一个问题，某些博客使用 cloudflare 的人机验证服务会把 Hoarder 拒之门外，比如抓取 [Sukka 大佬的博客](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/) 如下图所示
+Hoarder 貌似使用 Chrome 浏览器模拟人类访问，来存储网页快照的，这就带来一个问题，某些博客使用 cloudflare 的人机验证服务会把 Hoarder 拒之门外，比如抓取 [Sukka 大佬的博客](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/) 如下图所示：
 
 ![cf-block-Hoarder-eg](https://img.gaazeon.com/2024/06/202406081735587.avif)
 
