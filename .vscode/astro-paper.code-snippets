@@ -4,7 +4,7 @@
     "prefix": "frontmatter",
     "body": [
       "---",
-      "author: $1",
+      "author: gaazeon",
       "pubDatetime: $CURRENT_YEAR-$CURRENT_MONTH-${CURRENT_DATE}T$CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND.000$CURRENT_TIMEZONE_OFFSET",
       "modDatetime: $3",
       "title: $4",
@@ -13,6 +13,7 @@
       "tags:",
       "  - $7",
       "description: $8",
+      "slug: $9",
       "---",
     ],
     "description": "Adds the frontmatter block for the AstroPaper Blog post"
