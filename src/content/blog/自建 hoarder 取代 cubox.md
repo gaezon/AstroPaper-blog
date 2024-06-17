@@ -19,11 +19,11 @@ slug: hoarder-app-replace-cubox
 
 ## Table of contents
 
-# 前言
+## 前言
 
 > 在数字信息爆炸的时代，许多科技囤积症患者们都需要一个网页的剪藏服务。在此之前，我一直使用 Cubox 作为数字囤积的主要服务。然而，Cubox 的一些问题让我萌生了自建开源的 Hoarder 以取而代之的想法。
 
-# 取代 cubox 想法的由来
+## 取代 cubox 想法的由来
 
 - 隐私担忧
 
@@ -41,7 +41,7 @@ slug: hoarder-app-replace-cubox
 
   一开始 cubox 作为剪藏产品还是比较简洁功能单一，随后不断加入一些花哨的功能，比如 Cubox 中的 AI 解读、标记功能对我来说并不适用。我已经有了 Readwise 作为阅读器，Cubox 对我而且其实只是作为一个“数字囤积爱好者的垃圾桶”，用来本地化存储一些网页，防止删库跑路。显然，稍后读、AI 解读对我而言稍显冗余，秉承「如无必要，勿增实体」的哲学，我早就想换掉 Cubox 了
 
-# 自建安装步骤
+## 自建安装步骤
 
 > Hoarder 是一个开源项目，可以在 [GitHub](https://github.com/hoarder-app/hoarder) 上找到，具体 Linux 机器或群晖系统安装可以参考，官方文档或者参照 [NasDaddy](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8) 的教程。
 
@@ -118,24 +118,25 @@ HOARDER_VERSION=release
 NEXTAUTH_SECRET=xxxx # xxx为随机字符串
 MEILI_MASTER_KEY=xxxx # xxx为随机字符串
 NEXTAUTH_URL=http://localhost:3000 # 本地访问 hoarder 的 url 或者反代之后的 url
-# 下面为可选
+
+## 下面为可选
 OPENAI_BASE_URL=https://xxx.com/v1 # OpenAI api 官方端口或者第三方服务端口
 OPENAI_API_KEY=sk-xxxxx # OpenAI API key
 INFERENCE_LANG=chinese
 INFERENCE_TEXT_MODEL=qwen2-72b-instruct #用于打标的模型，我自己用上最新的 qwen2-72b-instruct开源模型很香
 ```
 
-# Hoarder 的优点
+## Hoarder 的优点
 
-## AI 智能打标
+### AI 智能打标
 
 对于我这种只是用来囤积的人太有用了，不用每次想贴什么标签，但又能为自己囤积的网页做一定程度的分类管理
 
 ![AI-Mark-of-Hoard](https://img.gaazeon.com/2024/06/202406081735583.avif)
 
-# Hoarder 有待改进的地方
+## Hoarder 有待改进的地方
 
-## 私有格式存储
+### 私有格式存储
 
 Hoarder 在本地存储的都是 `db` 结尾格式的特定数据库文件，貌似无法使用其他软件打开，如下图所示
 
@@ -143,13 +144,13 @@ Hoarder 在本地存储的都是 `db` 结尾格式的特定数据库文件，貌
 
 如果能采用通用格式比如保存成 `html` 或者直接截图一张 `png` 来存储快照个人觉得比较适合
 
-## 某些网站无法抓取
+### 某些网站无法抓取
 
 Hoarder 貌似使用 Chrome 浏览器模拟人类访问，来存储网页快照的，这就带来一个问题，某些博客使用 cloudflare 的人机验证服务会把 Hoarder 拒之门外，比如抓取 [Sukka 大佬的博客](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/) 如下图所示：
 
 ![cf-block-Hoarder-eg](https://img.gaazeon.com/2024/06/202406081735587.avif)
 
-# 参考
+## 参考
 
 1. [Hoarder-app/ hoarder| GitHub](https://github.com/hoarder-app/hoarder)
 2. [Nas用户的完美本地运行的书签管理 一站式信息管理：如何搭建和使用Hoarder 管理你的数字信息？| NasDaddy](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8)
