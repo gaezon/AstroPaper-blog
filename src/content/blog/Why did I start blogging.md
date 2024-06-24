@@ -19,4 +19,5 @@ description: 在這篇博客中，我分享了我開始寫博客的原因。我�
 ### footnote：
 
 [^1]: [香港電臺網站：一分鐘閱讀-李怡](https://app7.rthk.hk/elearning/1minreading/index.php?pid=1&p=23#36)
+
 [^2]: [豆瓣讀書：《歷史三調》](https://book.douban.com/subject/1439260/)
