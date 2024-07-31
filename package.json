@@ -21,7 +21,7 @@
     "@astrojs/vercel": "^7.5.4",
     "@resvg/resvg-js": "^2.6.2",
     "@vercel/speed-insights": "^1.0.10",
-    "astro": "^4.7.1",
+    "astro": "^4.12.3",
     "fuse.js": "^7.0.0",
     "github-slugger": "^2.0.0",
     "marked": "^12.0.2",
