@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Gaazeon&apos;s blog.</title><description>Gaazeon&apos;s blog, sharing my thoughts and experiences.</description><link>https://gaazeon.com/</link><item><title>自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题</title><link>https://gaazeon.com/posts/hoarder-app-replace-cubox/</link><guid isPermaLink="true">https://gaazeon.com/posts/hoarder-app-replace-cubox/</guid><description>了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本</description><pubDate>Sat, 08 Jun 2024 09:21:00 GMT</pubDate><content:encoded>&lt;h2&gt;Table of contents&lt;/h2&gt;
+&lt;h2&gt;前言&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在数字信息爆炸的时代，许多科技囤积症患者们都需要一个网页的剪藏服务。在此之前，我一直使用 Cubox 作为数字囤积的主要服务。然而，Cubox 的一些问题让我萌生了自建开源的 Hoarder 以取而代之的想法。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;取代 cubox 想法的由来&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;隐私担忧&lt;/p&gt;
+&lt;p&gt;Cubox 国内版有审查，某一次发现自己剪藏的文章，因为「不可抗力」的原因无法分享，同时思前想后发现剪藏这类服务还是存在自己 NAS 中自己保存一份比较安心&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024/06/202406081735586.avif&quot; alt=&quot;censorship of Cubox&quot;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;价格原因&lt;/p&gt;
+&lt;p&gt;Cubox 的免费版仅限量 200 个收藏，而 VIP 版则需要每年 ¥198。对于那些没有 NAS 的人来说，这个价格可能不算贵，但对于像我这样已经有 NAS 的人来说，自建服务显然更加经济实惠。毕竟，在这经济下行的年代，能省一分是一分&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024/06/202406081735584.avif&quot; alt=&quot;price-of-cubox&quot;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;不需要过于花哨的内容&lt;/p&gt;
+&lt;p&gt;一开始 cubox 作为剪藏产品还是比较简洁功能单一，随后不断加入一些花哨的功能，比如 Cubox 中的 AI 解读、标记功能对我来说并不适用。我已经有了 Readwise 作为阅读器，Cubox 对我而且其实只是作为一个“数字囤积爱好者的垃圾桶”，用来本地化存储一些网页，防止删库跑路。显然，稍后读、AI 解读对我而言稍显冗余，秉承「如无必要，勿增实体」的哲学，我早就想换掉 Cubox 了&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;自建安装步骤&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Hoarder 是一个开源项目，可以在 &lt;a href=&quot;https://github.com/hoarder-app/hoarder&quot;&gt;GitHub&lt;/a&gt; 上找到，具体 Linux 机器或群晖系统安装可以参考，官方文档或者参照 &lt;a href=&quot;https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8&quot;&gt;NasDaddy&lt;/a&gt; 的教程。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这边建议使用 Docker 进行安装
+Docker Compose YAML 参考配置如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-yaml&quot;&gt;version: &amp;quot;3.8&amp;quot;
+services:
+  web:
+    image: ghcr.io/hoarder-app/hoarder-web:${HOARDER_VERSION:-release}
+    restart: unless-stopped
+    volumes:
+      - data:/data
+    ports:
+      - 3000:3000 #修改成自己想要的端口
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: redis
+      MEILI_ADDR: http://meilisearch:7700
+      DATA_DIR: /data
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+  chrome:
+    image: gcr.io/zenika-hub/alpine-chrome:123
+    restart: unless-stopped
+    command:
+      - --no-sandbox
+      - --disable-gpu
+      - --disable-dev-shm-usage
+      - --remote-debugging-address=0.0.0.0
+      - --remote-debugging-port=9222
+      - --hide-scrollbars
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MEILI_NO_ANALYTICS: &amp;quot;true&amp;quot;
+    volumes:
+      - meilisearch:/meili_data
+  workers:
+    image: ghcr.io/hoarder-app/hoarder-workers:${HOARDER_VERSION:-release}
+    restart: unless-stopped
+    volumes:
+      - data:/data
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: redis
+      MEILI_ADDR: http://meilisearch:7700
+      BROWSER_WEB_URL: http://chrome:9222
+      DATA_DIR: /data
+      # OPENAI_API_KEY: ...
+    depends_on:
+      web:
+        condition: service_started
+
+volumes:
+  redis:
+  meilisearch:
+  data:
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;其中要说明的是 &lt;code&gt;.env&lt;/code&gt; 环境变量，需要自己创建 &lt;code&gt;.env&lt;/code&gt; 文件并在其中指定所需的环境变量。Docker Compose 不会自动创建这个文件。启动时，Docker Compose 会读取你提供的 .env 文件，并将其中的变量注入到相应的服务中，每次修改 &lt;code&gt;.env&lt;/code&gt; 需要重构 Docker Compose&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-.env&quot;&gt;HOARDER_VERSION=release
+NEXTAUTH_SECRET=xxxx # xxx为随机字符串
+MEILI_MASTER_KEY=xxxx # xxx为随机字符串
+NEXTAUTH_URL=http://localhost:3000 # 本地访问 hoarder 的 url 或者反代之后的 url
+
+## 下面为可选
+OPENAI_BASE_URL=https://xxx.com/v1 # OpenAI api 官方端口或者第三方服务端口
+OPENAI_API_KEY=sk-xxxxx # OpenAI API key
+INFERENCE_LANG=chinese
+INFERENCE_TEXT_MODEL=qwen2-72b-instruct #用于打标的模型，我自己用上最新的 qwen2-72b-instruct开源模型很香
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Hoarder 的优点&lt;/h2&gt;
+&lt;h3&gt;AI 智能打标&lt;/h3&gt;
+&lt;p&gt;对于我这种只是用来囤积的人太有用了，不用每次想贴什么标签，但又能为自己囤积的网页做一定程度的分类管理&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024/06/202406081735583.avif&quot; alt=&quot;AI-Mark-of-Hoard&quot;&gt;&lt;/p&gt;
+&lt;h2&gt;Hoarder 有待改进的地方&lt;/h2&gt;
+&lt;h3&gt;私有格式存储&lt;/h3&gt;
+&lt;p&gt;Hoarder 在本地存储的都是 &lt;code&gt;db&lt;/code&gt; 结尾格式的特定数据库文件，貌似无法使用其他软件打开，如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024/06/202406081735585.avif&quot; alt=&quot;dbformat-of-Hoarder&quot;&gt;&lt;/p&gt;
+&lt;p&gt;如果能采用通用格式比如保存成 &lt;code&gt;html&lt;/code&gt; 或者直接截图一张 &lt;code&gt;png&lt;/code&gt; 来存储快照个人觉得比较适合&lt;/p&gt;
+&lt;h3&gt;某些网站无法抓取&lt;/h3&gt;
+&lt;p&gt;Hoarder 貌似使用 Chrome 浏览器模拟人类访问，来存储网页快照的，这就带来一个问题，某些博客使用 cloudflare 的人机验证服务会把 Hoarder 拒之门外，比如抓取 &lt;a href=&quot;https://blog.skk.moe/post/what-happend-to-dns-in-proxy/&quot;&gt;Sukka 大佬的博客&lt;/a&gt; 如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024/06/202406081735587.avif&quot; alt=&quot;cf-block-Hoarder-eg&quot;&gt;&lt;/p&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hoarder-app/hoarder&quot;&gt;Hoarder-app/ hoarder| GitHub&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8&quot;&gt;Nas用户的完美本地运行的书签管理 一站式信息管理：如何搭建和使用Hoarder 管理你的数字信息？| NasDaddy&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</content:encoded></item><item><title>为什么放弃已经使用两年多的 Hapigo：官方更新停滞与 Raycast 的强大替代</title><link>https://gaazeon.com/posts/why-switch-from-hapigo-to-raycast/</link><guid isPermaLink="true">https://gaazeon.com/posts/why-switch-from-hapigo-to-raycast/</guid><description>探讨为什么放弃使用两年多的 Hapigo，转向功能更强大的 Raycast，分析官方更新停滞和 Raycast 插件生态的优势。</description><pubDate>Thu, 23 May 2024 01:30:37 GMT</pubDate><content:encoded>&lt;h2&gt;前言：为什么放弃已经使用两年多的 Hapigo&lt;/h2&gt;
+&lt;h3&gt;官方更新停滞不前&lt;/h3&gt;
+&lt;p&gt;发布这篇博客的时间是 2024 年 05 月 22 日，距离 &lt;a href=&quot;https://www.hapigo.com/&quot;&gt;Hapigo 官网&lt;/a&gt; 显示的上一次更新的最新版本 v2.12.0（2023 年 12 月 28 日），已经差不多半年了。在这日新月异的 LLM 时代，半年时间 Hapigo 官方都没有任何更新。某些我一直想要的功能也没有添加，比如增加 Hapigo GPT AI 的自定义 AI 模型、增强截图功能等。&lt;/p&gt;
+&lt;h3&gt;Lobechat 替代了 Hapigo 的 GPT AI&lt;/h3&gt;
+&lt;p&gt;我个人开通 Hapigo 的订阅，很大程度上是因为 Hapigo 去年（2023 年中）推出的 GPT AI，我为此花了 69 大洋开了一年订阅（刚更新第一天就付费订阅了，后面还被少数派卖 ¥59 背刺了）。在开通后，使用的初期甚至还能免费用 GPT-4 模型，后来官方下架了，因为 GPT-4 API 太贵了，个人 Pro 订阅仅限免费使用 GPT-3.5-turbo，但当时觉得 69 元用一年 GPT-3.5-turbo 还是是非常值的。&lt;/p&gt;
+&lt;p&gt;然而，随着 OpenAI 的更新和更强大模型的推出，而 Hapigo 官方却一直处于不更新的状态，付费用户也只能用 GPT-3.5-turbo，没有适配国内的大模型，甚至都没有一个自定义模型的按钮。&lt;/p&gt;
+&lt;p&gt;我的所有 Chat 服务在这半年中也逐渐从 Hapigo 提供的 GPT AI 转向自建的 one-api + Lobechat。Hapigo 提供的服务越来越少用。在这期间我也明白了自己搭建 chatbot 才是最好的，不需要经过第三方提供商的服务器，数据也更安全。&lt;/p&gt;
+&lt;p&gt;没有了 ChatBot 这层枷锁的束缚，毅然决然地放弃 Hapigo，转向虽然上手难度更大，但插件社区更活跃的 Raycast，由此打开了新大门。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024%2F05%2F202405222325673.avif&quot; alt=&quot;个人的 Hapigo 用量&quot;&gt;
+本人之前一直是 Hapigo 的重度用户&lt;/p&gt;
+&lt;h2&gt;Hapigo 的大部分功能能被完美替代，甚至更强&lt;/h2&gt;
+&lt;p&gt;使用启动器，我最常用的功能之一就是类似 Everything 的搜索功能，抛开这个功能，以下这些是之前我在 Hapigo 中最常用的功能，目前在 Raycast 中都有相似的功能，同时发现 Raycast 中它们更加强大。&lt;/p&gt;
+&lt;h3&gt;1. 别名与快捷键 (网页直达) ⇋ Quicklink&lt;/h3&gt;
+&lt;p&gt;这个功能在两个软件上使用几乎无异，均为输入短的 alias 之后再输入空格 {query} 触发。相比之下，Hapigo 中添加网页 URL 后还要手动添加 icon，Raycast 中直接就能读取 URL 的 favicon，自动生成图标。比如，说中年男性常用的「什么值得买」搜索就能直接读取 icon，而相同的操作在 Hapigo 中则需要手动添加 icon。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024/05/202405230923546.avif&quot; alt=&quot;Raycast-QuickLinks-示例&quot;&gt;&lt;/p&gt;
+&lt;p&gt;同时 Raycast 甚至提供了预设的 Library ，能直接添加常用服务，更加方便，也可以直接做成插件形式。比如：添加 Perplexity 服务的时候更建议去安装 Raycast Store 中的 Perplexity 插件，能使用的功能更全，如图，多了一个 &amp;quot;Use Copilot&amp;quot; 的参数选项。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024%2F05%2F202405222325800.avif&quot; alt=&quot;Raycast-中的-perplexity-插件示例&quot;&gt;&lt;/p&gt;
+&lt;h3&gt;2. 剪贴板与 Snippet ⇋ Snippet &amp;amp; Clipboard History&lt;/h3&gt;
+&lt;p&gt;Raycast 自带的 Snippet 比 Hapigo 的强大多了，Hapigo 的 Snippet 只有最基本的分类、触发关键词。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024%2F05%2F202405222325764.avif&quot; alt=&quot;Hapigo-中普通的-snippet&quot;&gt;&lt;/p&gt;
+&lt;p&gt;相较之下，Raycast 的 Snippet 有更强的自定义功能，官方称之为 &amp;quot;Dynamic Placeholders&amp;quot;（动态占位符），使用它能自定义光标位置，自动替换当前时间，自动生成 UUID 等，非常适合客服一类工具人使用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024%2F05%2F202405222325780.avif&quot; alt=&quot;Raycast-的-snippet&quot;&gt;&lt;/p&gt;
+&lt;h2&gt;丰富的插件生态&lt;/h2&gt;
+&lt;p&gt;Raycast 丰富的插件生态其实才是它的核心竞争力，也是我换用 Raycast 之后才觉得相见恨晚的原因。&lt;/p&gt;
+&lt;p&gt;相较于封闭的 Hapigo，Raycast 和 Hapigo 之间的插件生态 PK 就像 Apple Silicon 的 Mac 和 Windows for ARM 的差距一样。&lt;/p&gt;
+&lt;p&gt;举个例子，换用 Raycast 我才发现，我常用的 Obsidian、Clean Shot X、Warp Terminal 等，诸多你能想到的知名第三方软件都已经有开发者为 Raycast 做插件了。这些插件与 Raycast 的结合大大增强了用户体验，例如，在 Obsidian 中，直接在启动器中输入快捷方式即可新建 Obsidian 日记。在这之前，相同结果，得操作起码三步以上，现在使用了 Raycast 只需要一步到位。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024%2F05%2F202405222325702.avif&quot; alt=&quot;使用-riji-alias-Raycast-调用-obsidian&quot;&gt;&lt;/p&gt;
+&lt;p&gt;输入我预设的 &lt;code&gt;riji&lt;/code&gt; 的 alias 就能直接为我的 Obsidian 打开今天的日记，非常强大，真是相见恨晚。&lt;/p&gt;
+&lt;p&gt;还有非常多的其他插件，比如我用了开源的 &lt;a href=&quot;https://github.com/tisfeng/Easydict&quot;&gt;Easydict&lt;/a&gt; 和 Raycast 的 &lt;a href=&quot;https://github.com/raycast/extensions/blob/1eb9ef9d103488453a7bfa4bae630d8adaa1e3da/extensions/easydict/README.md&quot;&gt;extensions/easydict&lt;/a&gt; 插件取代了 Hapigo 的翻译，能自定义用国内模型取代价格比较贵的 GPT-4 来翻译，真香。&lt;/p&gt;
+&lt;h2&gt;补充说明：Raycast 的不足&lt;/h2&gt;
+&lt;p&gt;之前阻止我使用 Raycast 的最大理由是两个：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;上手难度&lt;/li&gt;
+&lt;li&gt;没有汉化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;截止 2024 年 5 月，虽然 Raycast 也还是没有官方汉化。但是自己上首以后，发现难度更多是我自己高估了，实际上并不高，起码没有 Alfred 这么让人头痛吧！&lt;del&gt;Raycast 可能也没把主要精力放在国人上吧&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;诚然，Hapigo 某些功能有对国人使用习惯进行优化，比如在汇率转换功能中，直接输入 xx 刀，使用「刀」这个关键词就能触发美元汇率的换算，而在 Raycast 中是没有这样的优化的。但对用户而言，使用 Raycast 汇率转换功能，仅需多操作几步，输入更多符号而已。比较起 Raycast 丰富的生态，Hapigo 这些小小细节似乎不能留下我这个老用户了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024%2F05%2F202405222325726.avif&quot; alt=&quot;Hapigo-中的汇率转换功能&quot;&gt;
+&lt;img src=&quot;https://img.gaazeon.com/2024%2F05%2F202405222325818.avif&quot; alt=&quot;Raycast-中的汇率转换功能&quot;&gt;&lt;/p&gt;
+</content:encoded></item><item><title>Tailscale Site to Site 点对点两台 OpenWrt 异地组网教程</title><link>https://gaazeon.com/posts/tailscale-site-to-site-connect/</link><guid isPermaLink="true">https://gaazeon.com/posts/tailscale-site-to-site-connect/</guid><description>本文详细介绍了如何使用 Tailscale 实现两台 OpenWrt 软路由之间的异地组网，同时探讨 Tailscale 的工作原理，以及如何配置和使用它来创建稳定、安全的异地组网环境，为那些希望在不同地点的设备之间建立网络连接的人们编写。</description><pubDate>Sun, 05 May 2024 09:15:00 GMT</pubDate><content:encoded>&lt;h2&gt;Table of contents&lt;/h2&gt;
+&lt;h2&gt;前言&lt;/h2&gt;
+&lt;p&gt;因为家里和学校同时放了 2 台 OpenWrt 路由，需要相互组网方便在子网中每一个路由下的客户端不需要下载 tailscale 客户端便能相互访问，参考了网上做法都不对，于是自己写了这个教程。&lt;/p&gt;
+&lt;h2&gt;具体做法&lt;/h2&gt;
+&lt;p&gt;此处省略 OpenWrt 安装 tailscale 的具体操作&lt;/p&gt;
+&lt;p&gt;但是要提醒，要实现 P2P 直连 ：&lt;strong&gt;需要打开 &lt;code&gt;41641&lt;/code&gt; 端口的 UDP 通行防火墙&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;同时需要打开 两边 OpenWrt 的子网访问 &lt;code&gt;subnet routes&lt;/code&gt;&lt;/p&gt;
+&lt;h3&gt;修改静态路由表&lt;/h3&gt;
+&lt;p&gt;A：10.0.0.0/20 子网，需要添加一条到 tailnet 和远程 10.118.48.0/20 LAN 的静态路由：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-plaintext&quot;&gt;ip route add 100.64.0.0/10 via 10.0.0.2
+ip route add 10.118.48.0/20 via 10.0.0.2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;B：同样，10.118.48.0/20 子网，添加一条到 tailnet 和到远程 10.0.0.0/20 LAN 的静态路由：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-plaintext&quot;&gt;ip route add 100.64.0.0/10 via 10.118.48.2
+ip route add 10.0.0.0/20 via 10.118.48.2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.gaazeon.com/2024/05/openwrt202405042119416.avif&quot; alt=&quot;openwrt 静态路由设置例子&quot;&gt;&lt;/p&gt;
+&lt;p&gt;然后 tailscale 启动命令中&lt;br&gt;加上 &lt;code&gt;--accept-routes&lt;/code&gt; 属性
+例如:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;tailscale up --advertise-routes=10.0.0.0/24,10.0.1.0/24 --accept-routes --advertise-exit-node
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://openwrt.org/docs/guide-user/services/vpn/tailscale/start&quot;&gt;[OpenWrt Wiki] Tailscale --- [OpenWrt 维基] Tailscale&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://tailscale.com/kb/1214/site-to-site&quot;&gt;[Tailscale] tailscale 官方 site to site 组网说明&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</content:encoded></item><item><title>我為什麼要寫博客</title><link>https://gaazeon.com/posts/Why-did-I-start-blogging/</link><guid isPermaLink="true">https://gaazeon.com/posts/Why-did-I-start-blogging/</guid><description>在這篇博客中，我分享了我開始寫博客的原因。我希望通過寫作，分享我的知識和經驗，我也希望通過寫作，提高我的溝通和表達能力，同時也能從讀者的反饋中學習和成長</description><pubDate>Sat, 02 Oct 2021 16:00:00 GMT</pubDate><content:encoded>&lt;p&gt;上大學已經一年了，一年之中在大學閱讀過的書籍大大話話都有二十本以上。但是對比我這不多不少的閱讀量，目前我所寫作的書評也好，生活紀錄也罢卻显得少得可憐。變成了所謂的「有入冇出」——只是文字內容的消費者，而不是消費者。在李怡先生主持的「一分鐘閱讀節目」的第36集&lt;a href=&quot;%5B%E9%A6%99%E6%B8%AF%E9%9B%BB%E8%87%BA%E7%B6%B2%E7%AB%99%EF%BC%9A%E4%B8%80%E5%88%86%E9%90%98%E9%96%B1%E8%AE%80-%E6%9D%8E%E6%80%A1%5D(https://app7.rthk.hk/elearning/1minreading/index.php?pid=1&amp;p=23#36)&quot;&gt;^1&lt;/a&gt;中，李先生告訴我們，提高語文能力無他，唯在「靠閱讀和寫作」。&lt;/p&gt;
+&lt;p&gt;其實，我還有一個更「冠冕堂皇」的理由，就是打算為歷史留下我自己的「經歷」。在閱讀完美國歷史家柯文 (Paul A. Cohen) 的《歷史三調》&lt;a href=&quot;%5B%E8%B1%86%E7%93%A3%E8%AE%80%E6%9B%B8%EF%BC%9A%E3%80%8A%E6%AD%B7%E5%8F%B2%E4%B8%89%E8%AA%BF%E3%80%8B%5D(https://book.douban.com/subject/1439260/)&quot;&gt;^2&lt;/a&gt;之後，令我影響最深的反而不是最後的神話篇，而是另外一章「作為「經歷」的義和團」。當一段特定的時空或特別的事件逝去，它便成作「歷史」，作為歷史的親歷者或者說是當事人，實際上我可能永遠都生活在一個「不知道歷史結果」的真實生活中。正如柯文所称「 他们不知道局势会如何演变，会有什么样的结果。」而在這個生活之中，因為歷史細節的複雜與細微加之具體到每個人個體的差異，人人對歷史的具體認識與感受上大不一樣。我這個部落格即是紀錄了我對當下「經歷」的感受，如果有可能或者我有如此幸運，或者這些文字亦可被後人把我的「經歷」當作「史料」去研究我這個時代的歷史。&lt;/p&gt;
+&lt;h3&gt;footnote：&lt;/h3&gt;
+</content:encoded></item></channel></rss>

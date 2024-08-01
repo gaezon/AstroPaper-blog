@@ -7,6 +7,7 @@ export const SITE: Site = {
   title: "Gaazeon's blog.",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
+  postPerIndex: 4,
   postPerPage: 3,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
 };
@@ -136,6 +137,12 @@ export const SOCIALS: SocialObjects = [
     name: "Telegram",
     href: "https://github.com/satnaing/astro-paper",
     linkTitle: `${SITE.title} on Telegram`,
+    active: false,
+  },
+  {
+    name: "Mastodon",
+    href: "https://github.com/satnaing/astro-paper",
+    linkTitle: `${SITE.title} on Mastodon`,
     active: false,
   },
 ];
