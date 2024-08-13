@@ -13,6 +13,7 @@
       "tags:",
       "  - $7",
       "description: $8",
+      "slug: $9",
       "---",
     ],
     "description": "Adds the frontmatter block for the AstroPaper Blog post"
