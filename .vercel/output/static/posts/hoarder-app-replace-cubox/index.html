@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://gaazeon.com/posts/hoarder-app-replace-cubox/"><meta name="generator" content="Astro v4.14.2"><!-- General Meta Tags --><title>自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon&#39;s blog.</title><meta name="title" content="自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog."><meta name="description" content="了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本"><meta name="author" content="gaazeon"><link rel="sitemap" href="/sitemap-index.xml"><!-- Open Graph / Facebook --><meta property="og:title" content="自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog."><meta property="og:description" content="了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本"><meta property="og:url" content="https://gaazeon.com/posts/hoarder-app-replace-cubox/"><meta property="og:image" content="https://gaazeon.com/posts/%E8%87%AA%E5%BB%BA-hoarder-%E5%89%AA%E8%97%8F%E6%9C%8D%E5%8A%A1%E5%8F%96%E4%BB%A3-cubox%E8%A7%A3%E5%86%B3%E9%9A%90%E7%A7%81%E4%B8%8E%E6%88%90%E6%9C%AC%E9%97%AE%E9%A2%98.png"><!-- Article Published/Modified time --><meta property="article:published_time" content="2024-06-08T09:21:00.000Z"><meta property="article:modified_time" content="2024-06-08T09:21:00.000Z"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://gaazeon.com/posts/hoarder-app-replace-cubox/"><meta property="twitter:title" content="自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog."><meta property="twitter:description" content="了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本"><meta property="twitter:image" content="https://gaazeon.com/posts/%E8%87%AA%E5%BB%BA-hoarder-%E5%89%AA%E8%97%8F%E6%9C%8D%E5%8A%A1%E5%8F%96%E4%BB%A3-cubox%E8%A7%A3%E5%86%B3%E9%9A%90%E7%A7%81%E4%B8%8E%E6%88%90%E6%9C%AC%E9%97%AE%E9%A2%98.png"><!-- Google JSON-LD Structured data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog.","image":"https://gaazeon.com/posts/%E8%87%AA%E5%BB%BA-hoarder-%E5%89%AA%E8%97%8F%E6%9C%8D%E5%8A%A1%E5%8F%96%E4%BB%A3-cubox%E8%A7%A3%E5%86%B3%E9%9A%90%E7%A7%81%E4%B8%8E%E6%88%90%E6%9C%AC%E9%97%AE%E9%A2%98.png","datePublished":"2024-06-08T09:21:00.000Z","dateModified":"2024-06-08T09:21:00.000Z","author":[{"@type":"Person","name":"gaazeon","url":"undefined"}]}</script><!-- Google Font --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet"><meta name="theme-color" content=""><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script src="/toggle-theme.js"></script><style>.breadcrumb:where(.astro-ilhxcym7){margin-left:auto;margin-right:auto;margin-bottom:.25rem;margin-top:2rem;width:100%;max-width:48rem;padding-left:1rem;padding-right:1rem}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7){display:inline}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7) a:where(.astro-ilhxcym7){text-transform:capitalize;opacity:.7}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7) span:where(.astro-ilhxcym7){opacity:.7}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7):not(:last-child) a:where(.astro-ilhxcym7):hover{opacity:1}
+<!DOCTYPE html><html lang="zh" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://gaazeon.com/posts/hoarder-app-replace-cubox/"><meta name="generator" content="Astro v4.14.2"><!-- General Meta Tags --><title>自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon&#39;s blog.</title><meta name="title" content="自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog."><meta name="description" content="了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本"><meta name="author" content="gaazeon"><link rel="sitemap" href="/sitemap-index.xml"><!-- Open Graph / Facebook --><meta property="og:title" content="自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog."><meta property="og:description" content="了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本"><meta property="og:url" content="https://gaazeon.com/posts/hoarder-app-replace-cubox/"><meta property="og:image" content="https://gaazeon.com/posts/%E8%87%AA%E5%BB%BA-hoarder-%E5%89%AA%E8%97%8F%E6%9C%8D%E5%8A%A1%E5%8F%96%E4%BB%A3-cubox%EF%BC%9A%E8%A7%A3%E5%86%B3%E9%9A%90%E7%A7%81%E4%B8%8E%E6%88%90%E6%9C%AC%E9%97%AE%E9%A2%98.png"><!-- Article Published/Modified time --><meta property="article:published_time" content="2024-06-08T09:21:00.000Z"><meta property="article:modified_time" content="2024-06-08T09:21:00.000Z"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://gaazeon.com/posts/hoarder-app-replace-cubox/"><meta property="twitter:title" content="自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog."><meta property="twitter:description" content="了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本"><meta property="twitter:image" content="https://gaazeon.com/posts/%E8%87%AA%E5%BB%BA-hoarder-%E5%89%AA%E8%97%8F%E6%9C%8D%E5%8A%A1%E5%8F%96%E4%BB%A3-cubox%EF%BC%9A%E8%A7%A3%E5%86%B3%E9%9A%90%E7%A7%81%E4%B8%8E%E6%88%90%E6%9C%AC%E9%97%AE%E9%A2%98.png"><!-- Google JSON-LD Structured data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题 | Gaazeon's blog.","image":"https://gaazeon.com/posts/%E8%87%AA%E5%BB%BA-hoarder-%E5%89%AA%E8%97%8F%E6%9C%8D%E5%8A%A1%E5%8F%96%E4%BB%A3-cubox%EF%BC%9A%E8%A7%A3%E5%86%B3%E9%9A%90%E7%A7%81%E4%B8%8E%E6%88%90%E6%9C%AC%E9%97%AE%E9%A2%98.png","datePublished":"2024-06-08T09:21:00.000Z","dateModified":"2024-06-08T09:21:00.000Z","author":[{"@type":"Person","name":"gaazeon","url":"undefined"}]}</script><!-- Google Font --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet"><meta name="theme-color" content=""><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script src="/toggle-theme.js"></script><style>.breadcrumb:where(.astro-ilhxcym7){margin-left:auto;margin-right:auto;margin-bottom:.25rem;margin-top:2rem;width:100%;max-width:48rem;padding-left:1rem;padding-right:1rem}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7){display:inline}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7) a:where(.astro-ilhxcym7){text-transform:capitalize;opacity:.7}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7) span:where(.astro-ilhxcym7){opacity:.7}.breadcrumb:where(.astro-ilhxcym7) ul:where(.astro-ilhxcym7) li:where(.astro-ilhxcym7):not(:last-child) a:where(.astro-ilhxcym7):hover{opacity:1}
 </style>
 <link rel="stylesheet" href="/_astro/about.PPbWPHyi.css">
 <style>#main-content:where(.astro-hsp6otuf){margin-left:auto;margin-right:auto;width:100%;max-width:48rem;padding-left:1rem;padding-right:1rem;padding-bottom:1rem}#main-content:where(.astro-hsp6otuf) h1:where(.astro-hsp6otuf){font-size:1.5rem;line-height:2rem;font-weight:600}@media (min-width: 640px){#main-content:where(.astro-hsp6otuf) h1:where(.astro-hsp6otuf){font-size:1.875rem;line-height:2.25rem}}#main-content:where(.astro-hsp6otuf) p:where(.astro-hsp6otuf){margin-bottom:1.5rem;margin-top:.5rem;font-style:italic}
@@ -13,19 +13,19 @@ a:where(.astro-blwjyjpt){position:relative;text-decoration-line:underline;text-d
 		script.src = '/_vercel/insights/script.js';
 		var head = document.querySelector('head');
 		head.appendChild(script);
-	</script><style>[data-astro-transition-scope="astro-ti6a3mbw-1"] { view-transition-name: \81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898; }@layer astro { ::view-transition-old(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
+	</script><style>[data-astro-transition-scope="astro-ti6a3mbw-1"] { view-transition-name: \81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\FF1A\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898; }@layer astro { ::view-transition-old(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\FF1A\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
 	animation-duration: 180ms;
 	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
 	animation-fill-mode: both;
-	animation-name: astroFadeOut; }::view-transition-new(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
+	animation-name: astroFadeOut; }::view-transition-new(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\FF1A\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
 	animation-duration: 180ms;
 	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
 	animation-fill-mode: both;
-	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\FF1A\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
 	animation-duration: 180ms;
 	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
 	animation-fill-mode: both;
-	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(\81EA\5EFA-hoarder-\526A\85CF\670D\52A1\53D6\4EE3-cubox\FF1A\89E3\51B3\9690\79C1\4E0E\6210\672C\95EE\9898) { 
 	animation-duration: 180ms;
 	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
 	animation-fill-mode: both;
@@ -558,8 +558,10 @@ CC BY-NC-SA 4.0
   /** Attaches links to headings in the document,
    *  allowing sharing of sections easily */
   function addHeadingLinks() {
-    let headings = Array.from(document.querySelectorAll("h2, h3, h4, h5, h6"));
-    for (let heading of headings) {
+    const headings = Array.from(
+      document.querySelectorAll("h2, h3, h4, h5, h6")
+    );
+    for (const heading of headings) {
       heading.classList.add("group");
       const link = document.createElement("a");
       link.className =
@@ -578,14 +580,14 @@ CC BY-NC-SA 4.0
   /** Attaches copy buttons to code blocks in the document,
    * allowing users to copy code easily. */
   function attachCopyButtons() {
-    let copyButtonLabel = "Copy";
-    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+    const copyButtonLabel = "Copy";
+    const codeBlocks = Array.from(document.querySelectorAll("pre"));
 
-    for (let codeBlock of codeBlocks) {
-      let wrapper = document.createElement("div");
+    for (const codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
       wrapper.style.position = "relative";
 
-      let copyButton = document.createElement("button");
+      const copyButton = document.createElement("button");
       copyButton.className =
         "copy-code absolute right-3 -top-3 rounded bg-skin-card px-2 py-1 text-xs leading-4 text-skin-base font-medium";
       copyButton.innerHTML = copyButtonLabel;
@@ -602,8 +604,8 @@ CC BY-NC-SA 4.0
     }
 
     async function copyCode(block, button) {
-      let code = block.querySelector("code");
-      let text = code?.innerText;
+      const code = block.querySelector("code");
+      const text = code?.innerText;
 
       await navigator.clipboard.writeText(text ?? "");
 
