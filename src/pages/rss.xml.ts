@@ -31,5 +31,11 @@ export async function GET() {
         content: marked(cleanedBody),
       };
     }),
+    customData: `
+      <follow_challenge>
+        <feedId>67109915060801536</feedId>
+        <userId>55624164824231936</userId>
+      </follow_challenge>
+    `,
   });
 }
