@@ -14,7 +14,7 @@ export const SITE: Site = {
   editPost: {
     url: "https://github.com/satnaing/astro-paper/edit/main/src/content/blog",
     text: "Suggest Changes",
-    appendFilePath: true,
+    appendFilePath: false,
   },
 };
 
