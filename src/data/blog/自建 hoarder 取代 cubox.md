@@ -113,7 +113,7 @@ volumes:
 
 其中要说明的是 `.env` 环境变量，需要自己创建 `.env` 文件并在其中指定所需的环境变量。Docker Compose 不会自动创建这个文件。启动时，Docker Compose 会读取你提供的 .env 文件，并将其中的变量注入到相应的服务中，每次修改 `.env` 需要重构 Docker Compose
 
-```.env
+```plaintext
 HOARDER_VERSION=release
 NEXTAUTH_SECRET=xxxx # xxx为随机字符串
 MEILI_MASTER_KEY=xxxx # xxx为随机字符串

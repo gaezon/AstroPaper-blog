@@ -29,7 +29,7 @@ export const SOCIALS = [
   // },
   {
     name: "Mail",
-    href: "gaazeon@gaazeon.com",
+    href: "mailto:gaazeon@gaazeon.com",
     linkTitle: `Send an email to ${SITE.title}`,
     icon: IconMail,
   },
