@@ -22,32 +22,35 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
 <Layout>
   <Header />
-  <main id="main-content">
-    <section id="hero">
-      <h1 class="text-3xl font-bold sm:text-4xl md:text-5xl">Gaazeon</h1>
-      <a
-        target="_blank"
-        href="/rss.xml"
-        class="inline-block"
-        aria-label="rss feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="scale-125 stroke-accent stroke-3"
-        />
-        <span class="sr-only">RSS Feed</span>
-      </a>
+  <main id="main-content" aria-labelledby="hero-heading">
+    <section id="hero" class="py-4">
+      <div class="flex items-center gap-2">
+        <h1 id="hero-heading" class="text-3xl font-bold sm:text-4xl md:text-5xl">Gaazeon</h1>
+        <a
+          target="_blank"
+          href="/rss.xml"
+          class="inline-block"
+          aria-label="rss feed"
+          title="RSS Feed"
+        >
+          <IconRss
+            width={20}
+            height={20}
+            class="scale-125 stroke-accent stroke-3"
+            aria-hidden="true"
+          />
+          <span class="sr-only">RSS Feed</span>
+        </a>
+      </div>
 
-      <p>
+      <p class="mt-4">
         Welcome to Gaazeon, a blog about web development, design, and other
         interesting topics.
       </p>
       {
         // only display if at least one social link is enabled
         SOCIALS.length > 0 && (
-          <div class="mt-4 flex flex-col sm:flex-row sm:items-center">
+          <div class="mt-2 flex flex-col sm:flex-row sm:items-center">
             <div class="mr-2 mb-1 whitespace-nowrap sm:mb-0">Social Links:</div>
             <Socials />
           </div>
@@ -55,28 +58,28 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       }
     </section>
 
-    <Hr />
+    <Hr noPadding={true} />
 
     {
       featuredPosts.length > 0 && (
         <>
-          <section id="featured" class="pt-12 pb-6">
-            <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
+          <section id="featured" class="pt-6 pb-4">
+            <h2 id="featured-heading" class="text-2xl font-semibold tracking-wide">Featured</h2>
             <ul>
               {featuredPosts.map(data => (
                 <Card variant="h3" {...data} />
               ))}
             </ul>
           </section>
-          {recentPosts.length > 0 && <Hr />}
+          {recentPosts.length > 0 && <Hr noPadding={true} />}
         </>
       )
     }
 
     {
       recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
+        <section id="recent-posts" class="pt-6 pb-4">
+          <h2 id="recent-posts-heading" class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
           <ul>
             {recentPosts.map(
               (data, index) =>
@@ -88,9 +91,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     }
 
     <div class="my-8 text-center">
-      <LinkButton href="/posts/">
+      <LinkButton href="/posts/" ariaLabel="查看所有文章">
         All Posts
-        <IconArrowRight class="inline-block" />
+        <IconArrowRight class="inline-block" aria-hidden="true" />
       </LinkButton>
     </div>
   </main>

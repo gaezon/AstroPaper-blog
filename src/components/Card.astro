@@ -22,6 +22,7 @@ const headerProps = {
   <a
     href={getPath(id, filePath)}
     class="inline-block text-lg font-medium text-accent decoration-dashed underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
+    aria-label={`阅读文章：${title}`}
   >
     {
       variant === "h2" ? (
