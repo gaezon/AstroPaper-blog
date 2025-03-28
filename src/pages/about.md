@@ -12,5 +12,5 @@ Feel free to explore the different sections of my blog and dive into the article
 Happy reading!
 
 <div>
-  <img src="/assets/dev.svg" class="sm:w-1/2 mx-auto" alt="coding dev illustration">
+  <img src="/dev.svg" class="sm:w-1/2 mx-auto" alt="coding dev illustration">
 </div>

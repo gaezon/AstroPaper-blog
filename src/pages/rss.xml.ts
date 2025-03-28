@@ -1,7 +1,8 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
-import getSortedPosts from "@utils/getSortedPosts";
-import { SITE } from "@config";
+import { getPath } from "@/utils/getPath";
+import getSortedPosts from "@/utils/getSortedPosts";
+import { SITE } from "@/config";
 
 // 引入 marked 依赖，通过 npm install marked 安装
 import { marked } from "marked";
@@ -17,25 +18,11 @@ export async function GET() {
     title: SITE.title,
     description: SITE.desc,
     site: SITE.website,
-    items: latestPosts.map(({ data, slug, body }) => {
-      // 移除 "## Table of Contents" 部分
-      const cleanedBody = body.replace(
-        /## Table of Contents\s*([\s\S]*?)(?=\n## |\n# |$)/g,
-        ""
-      );
-      return {
-        link: `posts/${slug}/`,
-        title: data.title,
-        description: data.description,
-        pubDate: new Date(data.modDatetime ?? data.pubDatetime),
-        content: marked(cleanedBody),
-      };
-    }),
-    customData: `
-      <follow_challenge>
-        <feedId>67109915060801536</feedId>
-        <userId>55624164824231936</userId>
-      </follow_challenge>
-    `,
+    items: sortedPosts.map(({ data, id, filePath }) => ({
+      link: getPath(id, filePath),
+      title: data.title,
+      description: data.description,
+      pubDate: new Date(data.modDatetime ?? data.pubDatetime),
+    })),
   });
 }
