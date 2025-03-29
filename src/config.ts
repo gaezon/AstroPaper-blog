@@ -1,4 +1,4 @@
-import type { Site, SocialObjects } from "./types";
+import type { Site } from "./types";
 
 export const SITE: Site = {
   website: "https://gaazeon.com/", // replace this with your deployed domain
