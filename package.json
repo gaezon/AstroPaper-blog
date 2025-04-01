@@ -17,6 +17,7 @@
     "@astrojs/sitemap": "^3.3.0",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.0.17",
+    "@vercel/analytics": "^1.5.0",
     "astro": "^5.5.5",
     "dayjs": "^1.11.13",
     "lodash.kebabcase": "^4.1.1",
