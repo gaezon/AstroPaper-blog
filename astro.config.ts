@@ -4,7 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import { SITE } from "./src/config";
-import vercel from "@vercel/analytics";
+import { inject } from "@vercel/analytics";
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,7 +13,14 @@ export default defineConfig({
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
-    vercel(),
+    {
+      name: "vercel-analytics",
+      hooks: {
+        "astro:config:setup": ({ injectScript }) => {
+          injectScript("page", `import { inject } from "@vercel/analytics"; inject();`);
+        },
+      },
+    },
   ],
   markdown: {
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
