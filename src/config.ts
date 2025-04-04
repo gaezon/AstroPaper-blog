@@ -1,7 +1,7 @@
 import type { Site } from "./types";
 
 export const SITE: Site = {
-  website: "https://gaazeon.com/", // replace this with your deployed domain
+  website: "https://blog.gaazeon.com/", // replace this with your deployed domain
   author: "Gaazeon",
   desc: "Gaazeon's blog, sharing my thoughts and experiences.",
   profile: "",
