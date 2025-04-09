@@ -16,7 +16,7 @@ slug: remove-tracking-qinglong
 
 ## Table of contents
 
-##  前言
+## 前言
 
 青龙面板（截止本文 20240915 青龙面板的最新版本号为 `2.17.11`）使用 Sentry 来跟踪错误日志，但作者未提供让用户自行选择关闭的选项，导致家里的 AdGuardHome 总是拦截 o1098464.ingest.sentry.io，使其在拦截排行中位居首位，显得不太美观。同时，频繁的 DNS 请求也会消耗小主机的性能。
 
@@ -68,7 +68,9 @@ services:
     restart: unless-stopped
     entrypoint: ["/bin/sh", "/remove-tracking.sh"]
 ```
+
 `docker-compose up -d` 启动容器后，青龙面板将不再发送跟踪请求。
 
-## 参考:
-1. [Github｜一直在发送dns请求 · Issue #2001  ](https://github.com/whyour/qinglong/issues/2001)
+## 参考
+
+1. [Github｜一直在发送dns请求 · Issue #2001](https://github.com/whyour/qinglong/issues/2001)
