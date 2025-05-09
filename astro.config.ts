@@ -37,12 +37,11 @@ export default defineConfig({
     },
   },
   image: {
-    // Used for all Markdown images; not configurable per-image
-    // Used for all `<Image />` and `<Picture />` components unless overridden with a prop
-    experimentalLayout: "responsive",
+    // 使用新的有效值替换 'responsive'
+    // 例如使用 'full-width'
+    experimentalLayout: "full-width",
   },
   experimental: {
-    svg: true,
     responsiveImages: true,
     preserveScriptOrder: true,
   },
