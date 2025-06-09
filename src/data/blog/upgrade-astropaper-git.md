@@ -67,7 +67,7 @@ git pull astro-paper main --allow-unrelated-histories
 
 ```sh
 npm run build
-npm run prewview
+npm run preview
 ```
 
 5. 将更新分支合并到主分支
