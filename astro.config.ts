@@ -1,4 +1,4 @@
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
@@ -37,9 +37,18 @@ export default defineConfig({
     },
   },
   image: {
-    // 使用新的有效值替换 'responsive'
-    // 例如使用 'full-width'
-    experimentalLayout: "full-width",
+    // Used for all Markdown images; not configurable per-image
+    // Used for all `<Image />` and `<Picture />` components unless overridden with a prop
+    experimentalLayout: "constrained",
+  },
+  env: {
+    schema: {
+      PUBLIC_GOOGLE_SITE_VERIFICATION: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
+    },
   },
   experimental: {
     responsiveImages: true,
