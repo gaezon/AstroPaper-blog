@@ -70,12 +70,13 @@ const layoutProps = {
 
 /* ========== Prev/Next Posts ========== */
 
-const allPosts = posts.map(({ data: { title }, id }) => ({
-  slug: id,
+const allPosts = posts.map(({ data: { title }, id, filePath }) => ({
+  id,
   title,
+  filePath,
 }));
 
-const currentPostIndex = allPosts.findIndex(a => a.slug === post.id);
+const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
 
 const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
 const nextPost =
@@ -103,7 +104,10 @@ const nextPost =
       <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" class="my-2" />
       <EditPost class="max-sm:hidden" {hideEditPost} {post} />
     </div>
-    <article id="article" class="mx-auto prose mt-8 max-w-app">
+    <article
+      id="article"
+      class="app-prose mx-auto mt-8 max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+    >
       <Content />
     </article>
 
@@ -127,10 +131,10 @@ const nextPost =
       {
         prevPost && (
           <a
-            href={`/posts/${prevPost.slug}`}
+            href={getPath(prevPost.id, prevPost.filePath)}
             class="flex w-full gap-1 hover:opacity-75"
           >
-            <IconChevronLeft class="inline-block flex-none" />
+            <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
             <div>
               <span>Previous Post</span>
               <div class="text-sm text-accent/85">{prevPost.title}</div>
@@ -141,14 +145,14 @@ const nextPost =
       {
         nextPost && (
           <a
-            href={`/posts/${nextPost.slug}`}
-            class="flex w-full justify-end gap-1 text-right hover:opacity-75 sm:col-start-2"
+            href={getPath(nextPost.id, nextPost.filePath)}
+            class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
           >
             <div>
               <span>Next Post</span>
               <div class="text-sm text-accent/85">{nextPost.title}</div>
             </div>
-            <IconChevronRight class="inline-block flex-none" />
+            <IconChevronRight class="inline-block flex-none rtl:rotate-180" />
           </a>
         )
       }
@@ -209,7 +213,7 @@ const nextPost =
       heading.classList.add("group");
       const link = document.createElement("a");
       link.className =
-        "heading-link ml-2 opacity-0 group-hover:opacity-100 focus:opacity-100";
+        "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
       link.href = "#" + heading.id;
 
       const span = document.createElement("span");
@@ -233,7 +237,7 @@ const nextPost =
 
       const copyButton = document.createElement("button");
       copyButton.className =
-        "copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs leading-4 text-foreground font-medium";
+        "copy-code absolute end-3 top-3 rounded bg-muted/80 px-2 py-1 text-xs leading-4 text-foreground font-medium";
       copyButton.innerHTML = copyButtonLabel;
       codeBlock.setAttribute("tabindex", "0");
       codeBlock.appendChild(copyButton);
