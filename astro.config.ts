@@ -10,7 +10,6 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
-import { inject } from "@vercel/analytics";
 
 // https://astro.build/config
 export default defineConfig({
