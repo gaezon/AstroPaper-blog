@@ -19,6 +19,7 @@ export interface Site {
   dynamicOgImage: boolean;
   lang?: string;
   timezone: string;
+  dir?: "ltr" | "rtl" | "auto";
 }
 
 export type SocialObjects = {
