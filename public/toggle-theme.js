@@ -46,7 +46,21 @@ function reflectPreference() {
     document
       .querySelector("meta[name='theme-color']")
       ?.setAttribute("content", bgColor);
+
+    // 同步 mermaid 图表的深浅配色
+    updateMermaidMedia(themeValue);
   }
+}
+
+// 根据当前主题显示对应的 mermaid 资源
+function updateMermaidMedia(theme) {
+  // rehype-mermaid 在启用 dark:true 时，会生成 <picture> → <source id="mermaid-dark-n">
+  document
+    .querySelectorAll('source[id^="mermaid-dark-"]')
+    .forEach(el => {
+      // 在深色主题下展示暗色 SVG，其余情况下禁用
+      el.setAttribute("media", theme === "dark" ? "all" : "none");
+    });
 }
 
 // set early so no page flashes / CSS is made aware

@@ -67,3 +67,10 @@ html[data-theme="dark"] {
 :target {
   scroll-margin-block: 1rem;
 }
+
+/* Mermaid diagrams */
+picture>img[id^="mermaid-"],
+picture>source[id^="mermaid-"],
+svg[id^="mermaid-"] {
+  @apply mx-auto my-6;
+}
