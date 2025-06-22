@@ -15,6 +15,8 @@ description: 深入探究 IBKR 盈透证券的股息再投资计划 (DRIP)「零
 slug: is-ibkr-drip-really-commission-free
 ---
 
+## Table of contents
+
 ## 一笔来自 $NVDA 的「神秘」股息再投资
 
 2025 年 4 月 3 日，我突然发现，自己购买的 $NVDA，居然多了 0.0003 股，下意识反应，应该是打开了 IBKR 的 DRIP（股息再投资）[^1] 功能，
