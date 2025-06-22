@@ -136,7 +136,14 @@ const structuredData = {
     <script type="module">
       document.addEventListener('DOMContentLoaded', async () => {
         try {
-          const { default: mermaid } = await import('https://cdn.skypack.dev/mermaid@10');
+          // Try multiple CDN sources for reliability
+          let mermaid;
+          try {
+            mermaid = (await import('https://unpkg.com/mermaid@10/dist/mermaid.esm.min.mjs')).default;
+          } catch (e) {
+            console.log('Unpkg failed, trying jsdelivr:', e);
+            mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs')).default;
+          }
           
           mermaid.initialize({
             startOnLoad: false,
