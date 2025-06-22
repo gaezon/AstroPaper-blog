@@ -135,8 +135,9 @@ const structuredData = {
     <!-- Mermaid.js for diagram rendering -->
     <script type="module">
       import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      
       mermaid.initialize({
-        startOnLoad: true,
+        startOnLoad: false,
         theme: 'base',
         themeVariables: {
           primaryColor: '#f5fafc',
@@ -148,6 +149,29 @@ const structuredData = {
           tertiaryColor: '#eef3f6',
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
         }
+      });
+
+      // Wait for DOM to be ready
+      document.addEventListener('DOMContentLoaded', () => {
+        // Find all pre elements with mermaid class
+        const mermaidElements = document.querySelectorAll('pre.mermaid, .mermaid');
+        
+        mermaidElements.forEach((element, index) => {
+          const graphDefinition = element.textContent || element.innerText;
+          const graphId = `mermaid-graph-${index}`;
+          
+          // Create a new div to hold the rendered graph
+          const graphDiv = document.createElement('div');
+          graphDiv.id = graphId;
+          
+          // Render the mermaid diagram
+          mermaid.render(graphId, graphDefinition).then(({ svg }) => {
+            graphDiv.innerHTML = svg;
+            element.parentNode.replaceChild(graphDiv, element);
+          }).catch((error) => {
+            console.error('Mermaid rendering error:', error);
+          });
+        });
       });
     </script>
     
