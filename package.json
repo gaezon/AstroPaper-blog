@@ -4,7 +4,7 @@
   "version": "5.4.2",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/copy-mermaid.js && astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
+    "build": "pnpm tsx scripts/copy-mermaid.ts && astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
@@ -49,6 +49,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.12",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.0"
   },
