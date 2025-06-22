@@ -184,6 +184,7 @@ description: 想在 OBS 实现安全延时却遇到音频爆音？真实踩坑�
 
 图示（以双机 OBS RTMP 传输为例）
 
+<!--
 ```mermaid
 graph TD
     subgraph "A. 实时机 (Real-time Machine)"
@@ -208,6 +209,7 @@ graph TD
     A_Config -- "内网实时流" --> B_Input
     B_Output -- "公网延时流" --> C_Platform
 ```
+-->
 
 ---
 
