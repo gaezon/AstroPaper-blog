@@ -1,204 +1,177 @@
 ---
-// Mermaid client-side component - using local mermaid.min.js with theme switching
+// Mermaid client-side component - Event-driven theme switching
 ---
 
 <script is:inline>
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
-      // Check if mermaid is already loaded globally
-      if (typeof window.mermaid === 'undefined') {
-        // Load mermaid from local public directory
-        const script = document.createElement('script');
-        script.src = '/mermaid.min.js';
-        script.onload = initializeMermaid;
-        script.onerror = () => {
-          console.error('Failed to load local Mermaid library');
-          showMermaidError();
-        };
-        document.head.appendChild(script);
-      } else {
-        initializeMermaid();
-      }
-    } catch (error) {
-      console.error('Error setting up Mermaid:', error);
-      showMermaidError();
-    }
-  });
+  let mermaidInstance = null;
+  const mermaidDiagrams = new Map();
 
-  function getCurrentTheme() {
-    // Check if we're in dark mode
-    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  // Load Mermaid library and render diagrams for the first time
+  async function setupMermaid() {
+    if (mermaidInstance) return; // Already initialized
+
+    try {
+      if (typeof window.mermaid !== 'undefined') {
+        mermaidInstance = window.mermaid;
+      } else {
+        await loadMermaidScript();
+        mermaidInstance = window.mermaid;
+      }
+      
+      // Get initial theme and render diagrams
+      const initialTheme = getInitialTheme();
+      await renderAllDiagrams(initialTheme);
+      
+      // Listen for theme changes after mermaid is loaded
+      document.addEventListener('theme-changed', (e) => handleThemeChange(e.detail.theme));
+      
+      console.log('Mermaid setup completed with theme:', initialTheme);
+    } catch (error) {
+      console.error('Failed to load local Mermaid library:', error);
+      showMermaidError('load');
+    }
+  }
+
+  function getInitialTheme() {
+    // Check localStorage first
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    // Check if dark class is present
+    if (document.documentElement.classList.contains('dark')) {
+      return 'dark';
+    }
+    // Check media query
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  }
+
+  function loadMermaidScript() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = '/mermaid.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
   }
 
   function getMermaidConfig(theme) {
-    if (theme === 'dark') {
-      return {
-        startOnLoad: false,
-        theme: 'dark',
-        themeVariables: {
-          darkMode: true,
-          primaryColor: '#4f46e5',
-          primaryTextColor: '#e5e7eb',
-          primaryBorderColor: '#6366f1',
-          lineColor: '#6366f1',
-          secondaryColor: '#1f2937',
-          secondaryBorderColor: '#374151',
-          secondaryTextColor: '#d1d5db',
-          tertiaryColor: '#111827',
-          background: '#111827',
-          mainBkg: '#1f2937',
-          secondBkg: '#374151',
-          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-        }
-      };
-    } else {
-      return {
-        startOnLoad: false,
-        theme: 'base',
-        themeVariables: {
-          darkMode: false,
-          primaryColor: '#f5fafc',
-          primaryTextColor: '#282728',
-          primaryBorderColor: '#7aa4c7',
-          lineColor: '#7aa4c7',
-          secondaryBorderColor: '#cdd6dd',
-          secondaryColor: '#ffffff',
-          tertiaryColor: '#eef3f6',
-          background: '#ffffff',
-          mainBkg: '#ffffff',
-          secondBkg: '#f9fafb',
-          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-        }
-      };
-    }
-  }
-
-  function initializeMermaid() {
-    try {
-      const mermaid = window.mermaid;
-      const currentTheme = getCurrentTheme();
-      const config = getMermaidConfig(currentTheme);
-      
-      mermaid.initialize(config);
-
-      // Find all mermaid code blocks
-      const codeBlocks = document.querySelectorAll('pre > code.language-mermaid, code.language-mermaid');
-      
-      console.log('Found mermaid blocks:', codeBlocks.length);
-      console.log('Current theme:', currentTheme);
-      
-      codeBlocks.forEach(async (codeElement, i) => {
-        const preElement = codeElement.parentElement;
-        const code = codeElement.textContent;
-        
-        console.log('Processing mermaid code:', code);
-        
-        if (code && code.trim()) {
-          try {
-            const id = 'mermaid-diagram-' + i;
-            const result = await mermaid.render(id, code.trim());
-            
-            // Create wrapper div with Tailwind classes
-            const wrapper = document.createElement('div');
-            wrapper.className = 'mermaid-diagram my-6 flex justify-center overflow-x-auto';
-            wrapper.innerHTML = result.svg;
-            
-            // Replace the pre element with the rendered SVG
-            if (preElement && preElement.parentNode) {
-              preElement.parentNode.replaceChild(wrapper, preElement);
-            } else if (codeElement.parentNode) {
-              codeElement.parentNode.replaceChild(wrapper, codeElement);
-            }
-            
-            console.log('Successfully rendered mermaid diagram');
-          } catch (err) {
-            console.error('Mermaid render error:', err);
-            showRenderError(preElement || codeElement, err);
-          }
-        }
-      });
-
-      // Listen for theme changes and re-render diagrams
-      setupThemeListener(mermaid);
-    } catch (initError) {
-      console.error('Failed to initialize Mermaid:', initError);
-      showMermaidError();
-    }
-  }
-
-  function setupThemeListener(mermaid) {
-    // Watch for theme changes using MutationObserver
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-          const currentTheme = getCurrentTheme();
-          console.log('Theme changed to:', currentTheme);
-          
-          // Re-render all mermaid diagrams with new theme
-          setTimeout(() => {
-            reRenderDiagrams(mermaid, currentTheme);
-          }, 100);
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-  }
-
-  function reRenderDiagrams(mermaid, theme) {
-    try {
-      // Update mermaid configuration for new theme
-      const config = getMermaidConfig(theme);
-      mermaid.initialize(config);
-
-      // Find all existing mermaid diagrams
-      const diagrams = document.querySelectorAll('.mermaid-diagram');
-      
-      diagrams.forEach(async (diagram, i) => {
-        // We need the original code, but since it's already rendered, 
-        // we'll skip re-rendering for now to avoid complexity
-        // In a future version, we could store the original code in data attributes
-        console.log('Theme changed - diagram', i, 'would need re-rendering');
-      });
-    } catch (error) {
-      console.error('Error re-rendering diagrams:', error);
-    }
-  }
-
-  function showRenderError(element, err) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 my-4';
-    errorDiv.innerHTML = 
-      '<p class="text-red-800 dark:text-red-200 font-medium">Mermaid 图表渲染失败</p>' +
-      '<details class="mt-2">' +
-      '<summary class="text-red-600 dark:text-red-300 cursor-pointer">查看错误详情</summary>' +
-      '<pre class="text-red-600 dark:text-red-300 text-sm mt-2 whitespace-pre-wrap">' + String(err) + '</pre>' +
-      '</details>';
+    const isDark = theme === 'dark';
+    const darkThemeConfig = {
+      background: '#0f172a',
+      primaryColor: '#1e293b',
+      secondaryColor: '#334155',
+      primaryTextColor: '#ffffff',
+      secondaryTextColor: '#f1f5f9',
+      primaryBorderColor: '#60a5fa',
+      lineColor: '#60a5fa',
+      clusterBkg: '#334155',
+      titleColor: '#ffffff',
+    };
+    const lightThemeConfig = {
+      background: '#ffffff',
+      primaryColor: '#f5fafc',
+      secondaryColor: '#ffffff',
+      primaryTextColor: '#282728',
+      secondaryTextColor: '#475569',
+      primaryBorderColor: '#7aa4c7',
+      lineColor: '#7aa4c7',
+    };
     
-    if (element.parentNode) {
-      element.parentNode.replaceChild(errorDiv, element);
+    return {
+      startOnLoad: false,
+      theme: isDark ? 'dark' : 'base',
+      themeVariables: {
+        darkMode: isDark,
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
+        ...(isDark ? darkThemeConfig : lightThemeConfig)
+      }
+    };
+  }
+
+  async function renderAllDiagrams(theme) {
+    if (!mermaidInstance) return;
+
+    console.log(`Rendering all diagrams with theme: ${theme}`);
+    mermaidInstance.initialize(getMermaidConfig(theme));
+    
+    for (const [element, code] of mermaidDiagrams.entries()) {
+      try {
+        const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+        const { svg } = await mermaidInstance.render(id, code);
+        element.innerHTML = svg;
+        console.log('Successfully rendered diagram with theme:', theme);
+      } catch (err) {
+        console.error('Mermaid render error:', err);
+        showMermaidError('render', element, err);
+      }
     }
   }
 
-  function showMermaidError() {
-    // Show global error for library loading failure
+  function handleThemeChange(theme) {
+    console.log('Theme change event received:', theme);
+    if (!mermaidInstance) {
+      console.log('Mermaid not ready, skipping theme change handling.');
+      return;
+    }
+    renderAllDiagrams(theme);
+  }
+
+  function collectDiagrams() {
     const codeBlocks = document.querySelectorAll('pre > code.language-mermaid, code.language-mermaid');
-    codeBlocks.forEach(codeElement => {
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 my-4';
-      errorDiv.innerHTML = 
-        '<p class="text-yellow-800 dark:text-yellow-200 font-medium">⚠️ Mermaid 库加载失败</p>' +
-        '<p class="text-yellow-700 dark:text-yellow-300 text-sm mt-2">无法加载本地图表渲染库，请联系管理员。</p>';
-      
-      const preElement = codeElement.parentElement;
-      if (preElement && preElement.parentNode) {
-        preElement.parentNode.replaceChild(errorDiv, preElement);
-      } else if (codeElement.parentNode) {
-        codeElement.parentNode.replaceChild(errorDiv, codeElement);
+    console.log('Found mermaid blocks:', codeBlocks.length);
+    
+    codeBlocks.forEach((codeElement, i) => {
+      const code = codeElement.textContent;
+      if (code && code.trim()) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mermaid-diagram my-6 flex justify-center overflow-x-auto';
+        wrapper.setAttribute('data-mermaid-id', i);
+        
+        const preElement = codeElement.parentElement;
+        if (preElement?.parentNode) {
+          preElement.parentNode.replaceChild(wrapper, preElement);
+        } else if (codeElement.parentNode) {
+          codeElement.parentNode.replaceChild(wrapper, codeElement);
+        }
+        
+        mermaidDiagrams.set(wrapper, code.trim());
+        console.log('Collected diagram', i, ':', code.trim().substring(0, 50) + '...');
       }
     });
   }
+  
+  function showMermaidError(type, element, error) {
+    const isDark = document.documentElement.classList.contains('dark');
+    const [bgColor, borderColor, textColor, detailsColor] = isDark
+      ? ['bg-red-900/20', 'border-red-800', 'text-red-200', 'text-red-300']
+      : ['bg-red-50', 'border-red-200', 'text-red-800', 'text-red-600'];
+
+    const message = type === 'load' ? 'Mermaid 库加载失败' : 'Mermaid 图表渲染失败';
+    const details = type === 'load' 
+      ? '无法加载本地图表渲染库，请联系管理员。'
+      : `<details class="mt-2"><summary class="${detailsColor} cursor-pointer">查看错误详情</summary><pre class="text-sm mt-2 whitespace-pre-wrap">${String(error)}</pre></details>`;
+      
+    const errorHTML = `<div class="${bgColor} border ${borderColor} rounded-lg p-4 my-4"><p class="${textColor} font-medium">${message}</p>${details}</div>`;
+
+    if (element) {
+      element.innerHTML = errorHTML;
+    } else {
+      // If it's a load error, replace all diagram holders
+      for (const [el] of mermaidDiagrams.entries()) {
+        el.innerHTML = errorHTML;
+      }
+    }
+  }
+
+  // Initial setup
+  document.addEventListener('DOMContentLoaded', () => {
+    collectDiagrams();
+    if (mermaidDiagrams.size > 0) {
+      setupMermaid();
+    }
+  });
 </script> 
