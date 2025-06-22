@@ -33,28 +33,31 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
     // @ts-expect-error – Typings mismatch between unified & vite, safe to ignore
-    rehypePlugins: [[
-      rehypeMermaid,
-      {
-        strategy: "pre-mermaid",
-        dark: true,
-        colorScheme: "light",
-        mermaidConfig: {
-          // 低饱和浅色主题，配合本站配色
-          theme: "base",
-          themeVariables: {
-            primaryColor: "#f5fafc",          // 节点背景: 极浅蓝
-            primaryTextColor: "#282728",      // 文字: 与正文一致
-            primaryBorderColor: "#7aa4c7",    // 边框: 低饱和蓝
-            lineColor: "#7aa4c7",             // 连线: 同边框
-            secondaryBorderColor: "#cdd6dd",
-            secondaryColor: "#ffffff",
-            tertiaryColor: "#eef3f6",
-            fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
-          },
-        },
-      },
-    ]] as any,
+    rehypePlugins: [
+      // Temporarily disable rehype-mermaid
+      // [[
+      //   rehypeMermaid,
+      //   {
+      //     strategy: "pre-mermaid",
+      //     dark: true,
+      //     colorScheme: "light",
+      //     mermaidConfig: {
+      //       // 低饱和浅色主题，配合本站配色
+      //       theme: "base",
+      //       themeVariables: {
+      //         primaryColor: "#f5fafc",          // 节点背景: 极浅蓝
+      //         primaryTextColor: "#282728",      // 文字: 与正文一致
+      //         primaryBorderColor: "#7aa4c7",    // 边框: 低饱和蓝
+      //         lineColor: "#7aa4c7",             // 连线: 同边框
+      //         secondaryBorderColor: "#cdd6dd",
+      //         secondaryColor: "#ffffff",
+      //         tertiaryColor: "#eef3f6",
+      //         fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+      //       },
+      //     },
+      //   },
+      // ]] as any,
+    ],
     syntaxHighlight: {
       excludeLangs: ["mermaid"],
     },
