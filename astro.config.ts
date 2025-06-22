@@ -78,7 +78,18 @@ export default defineConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
+      include: ["mermaid"]
     },
+    build: {
+      rollupOptions: {
+        external: [],
+        output: {
+          manualChunks: {
+            mermaid: ['mermaid']
+          }
+        }
+      }
+    }
   },
   image: {
     // Used for all Markdown images; not configurable per-image
