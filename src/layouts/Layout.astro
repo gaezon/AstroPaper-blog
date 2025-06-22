@@ -132,6 +132,57 @@ const structuredData = {
 
     <script is:inline src="/toggle-theme.js"></script>
     
+    <!-- Mermaid.js for rendering diagrams -->
+    <script type="module">
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const { default: mermaid } = await import('https://cdn.skypack.dev/mermaid@10');
+          
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+              primaryColor: '#f5fafc',
+              primaryTextColor: '#282728',
+              primaryBorderColor: '#7aa4c7',
+              lineColor: '#7aa4c7',
+              secondaryBorderColor: '#cdd6dd',
+              secondaryColor: '#ffffff',
+              tertiaryColor: '#eef3f6'
+            }
+          });
+
+          // Find all mermaid code blocks
+          const codeBlocks = document.querySelectorAll('pre code.language-mermaid, pre.mermaid, .mermaid');
+          
+          for (let i = 0; i < codeBlocks.length; i++) {
+            const block = codeBlocks[i];
+            const code = block.textContent || block.innerText;
+            
+            if (code && code.trim()) {
+              try {
+                const id = `mermaid-diagram-${i}`;
+                const { svg } = await mermaid.render(id, code.trim());
+                
+                // Replace the code block with the rendered SVG
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mermaid-diagram my-6 flex justify-center';
+                wrapper.innerHTML = svg;
+                
+                if (block.parentNode) {
+                  block.parentNode.replaceChild(wrapper, block);
+                }
+              } catch (error) {
+                console.error('Mermaid render error:', error);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load Mermaid:', error);
+        }
+      });
+    </script>
+    
     <!-- Vercel Speed Insights -->
     <script is:inline defer src="/_vercel/speed-insights/script.js"></script>
   </head>
