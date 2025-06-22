@@ -186,27 +186,31 @@ description: 想在 OBS 实现安全延时却遇到音频爆音？真实踩坑�
 
 ```mermaid
 graph TD
-    subgraph A ["实时机 (Real-time Machine)"]
-        A_OBS["OBS Studio: 捕捉现场"]
-        A_Config["推流配置: 开启20s直播延时, 推流到延时机"]
-        A_OBS --> A_Config
+    subgraph A ["实时机 Real-time Machine"]
+        A1["OBS Studio<br/>捕捉现场画面"]
+        A2["设置-高级-直播延时<br/>启动20秒延迟"]
+        A3["推流配置<br/>rtmp://延时机IP:1935/live/app"]
+        A1 --> A2
+        A2 --> A3
     end
 
-    subgraph B ["延时机 (Delay Machine) - Mute/Dump操作"]
-        B_OBS["OBS Studio: 延时机导播操作台"]
-        B_Input["输入配置: 监听来自实时机的20s延时内网流"]
-        B_Output["输出配置: 将延时后的画面推向公网平台"]
-        B_Firewall["注意: 本机防火墙需开放1935端口"]
+    subgraph B ["延时机 Delay Machine"]
+        B1["OBS Studio<br/>导播操作台"]
+        B2["媒体源配置<br/>监听RTMP内网流<br/>listen=1"]
+        B3["Mute/Dump<br/>紧急控制"]
+        B4["推流输出<br/>各大直播平台"]
+        B5["防火墙设置<br/>开放1935端口"]
         
-        B_OBS --> B_Input
-        B_OBS --> B_Output
-        B_Input -.-> B_Firewall
+        B1 --> B2
+        B1 --> B3
+        B1 --> B4
+        B2 -.-> B5
     end
 
-    C_Platform["最终直播平台"]
+    C["最终直播平台<br/>YouTube/Bilibili等"]
 
-    A_Config --> B_Input
-    B_Output --> C_Platform
+    A3 --> B2
+    B4 --> C
 ```
 
 ---
