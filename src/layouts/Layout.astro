@@ -4,6 +4,7 @@ import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import "@/styles/global.css";
 import MermaidClient from "@/components/MermaidClient.astro";
+import GoogleAdsense from "@/components/GoogleAdsense.astro";
 
 export interface Props {
   title?: string;
@@ -140,6 +141,9 @@ const structuredData = {
 
     <script is:inline src="/toggle-theme.js"></script>
     
+    <!-- Google AdSense -->
+    <GoogleAdsense />
+
     <!-- Include Mermaid client component -->
     <MermaidClient />
     

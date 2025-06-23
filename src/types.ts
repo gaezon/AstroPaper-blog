@@ -19,6 +19,7 @@ export interface Site {
   dynamicOgImage: boolean;
   lang?: string;
   timezone: string;
+  adsenseID?: string;
   /**
    * 文档书写方向，默认为 ltr，可选值 'ltr' | 'rtl' | 'auto'
    */

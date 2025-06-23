@@ -22,4 +22,5 @@ export const SITE: Site = {
   dir: "ltr", // "rtl" | "auto"
   lang: "zh-CN", // html lang code. Set this empty and default will be "en"
   timezone: "Asia/Shanghai", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  adsenseID: "ca-pub-4340594748765829", // Your AdSense Publisher ID
 } as const;

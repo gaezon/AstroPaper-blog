@@ -1,0 +1,13 @@
+---
+import { SITE } from "@/config";
+---
+
+{
+  SITE.adsenseID && (
+    <script
+      async
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseID}`}
+      crossorigin="anonymous"
+    />
+  )
+} 
