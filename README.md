@@ -28,6 +28,40 @@ Read [the blog posts](https://astro-paper.pages.dev/posts/) or check [the README
 
 _Note: I've tested screen-reader accessibility of AstroPaper using **VoiceOver** on Mac and **TalkBack** on Android. I couldn't test all other screen-readers out there. However, accessibility enhancements in AstroPaper should be working fine on others as well._
 
+## 🔒 Privacy & Compliance Features
+
+AstroPaper includes comprehensive privacy and compliance features to meet modern web standards and advertising requirements:
+
+- [x] **Privacy Policy** - Complete privacy policy page explaining data collection and usage
+- [x] **Cookie Policy** - Detailed cookie policy with types, purposes, and management options
+- [x] **Terms of Service** - Comprehensive terms of service covering usage rights and responsibilities
+- [x] **Contact Page** - Professional contact page with multiple communication options
+- [x] **Cookie Consent Banner** - GDPR-compliant cookie consent with granular controls
+- [x] **Cookie Settings Modal** - Advanced cookie preferences with category selection
+- [x] **Local Storage Management** - Persistent cookie preferences storage
+- [x] **Responsive Design** - All compliance pages work perfectly on mobile and desktop
+
+### Compliance Pages
+
+All compliance pages are accessible via footer links and include:
+
+- `/privacy-policy` - Privacy policy with GDPR considerations
+- `/cookie-policy` - Cookie usage and management information
+- `/terms-of-service` - Legal terms and conditions
+- `/contact` - Contact information and communication guidelines
+
+### Cookie Consent Features
+
+The cookie consent system provides:
+
+- **Three consent options**: Accept all, Essential only, Custom settings
+- **Granular controls**: Separate toggles for Analytics and Advertising cookies
+- **Persistent preferences**: User choices saved in localStorage
+- **Theme integration**: Matches site's light/dark theme
+- **Mobile optimized**: Responsive design for all screen sizes
+
+These features are designed to help with Google AdSense approval and compliance with privacy regulations like GDPR.
+
 ## ✅ Lighthouse Score
 
 <p align="center">

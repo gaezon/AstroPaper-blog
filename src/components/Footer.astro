@@ -13,11 +13,9 @@ const { noMarginTop = false } = Astro.props;
 
 <footer class:list={["w-full", { "mt-auto": !noMarginTop }]}>
   <Hr noPadding />
-  <div
-    class="flex flex-col items-center justify-between py-6 sm:flex-row-reverse sm:py-4"
-  >
+  <div class="flex flex-col items-center py-6 sm:py-4">
     <Socials centered />
-    <div class="copyright-wrapper">
+    <div class="copyright-wrapper mt-4 text-center">
       <span> Copyright &#169; {currentYear}</span>
       <span class="separator">&nbsp;|&nbsp;</span>
       <a
@@ -27,6 +25,32 @@ const { noMarginTop = false } = Astro.props;
         rel="noopener noreferrer"
       >
         CC BY-NC-SA 4.0
+      </a>
+    </div>
+    <div class="legal-links mt-2 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
+      <a
+        class="underline decoration-dashed underline-offset-4 hover:text-skin-accent"
+        href="/privacy-policy"
+      >
+        隐私政策
+      </a>
+      <a
+        class="underline decoration-dashed underline-offset-4 hover:text-skin-accent"
+        href="/cookie-policy"
+      >
+        Cookie 政策
+      </a>
+      <a
+        class="underline decoration-dashed underline-offset-4 hover:text-skin-accent"
+        href="/terms-of-service"
+      >
+        服务条款
+      </a>
+      <a
+        class="underline decoration-dashed underline-offset-4 hover:text-skin-accent"
+        href="/contact"
+      >
+        联系我们
       </a>
     </div>
   </div>

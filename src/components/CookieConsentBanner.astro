@@ -1,0 +1,262 @@
+---
+// Cookie 同意横幅组件
+---
+
+<div
+  id="cookie-consent-banner"
+  class="fixed bottom-4 right-4 z-50 hidden max-w-sm rounded-lg bg-background border border-border p-3 shadow-md backdrop-blur-sm"
+>
+  <div class="space-y-3">
+    <p class="text-xs text-foreground">
+      我们使用 Cookies 来改善体验。查看
+      <a
+        href="/cookie-policy"
+        class="underline decoration-dashed underline-offset-2 hover:text-skin-accent"
+      >
+        Cookie 政策
+      </a>
+    </p>
+    <div class="flex gap-2">
+      <button
+        id="cookie-accept-btn"
+        class="flex-1 rounded bg-skin-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-skin-accent/90"
+      >
+        接受
+      </button>
+      <button
+        id="cookie-reject-btn"
+        class="rounded border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-100"
+      >
+        拒绝
+      </button>
+      <button
+        id="cookie-settings-btn"
+        class="rounded border border-border px-2 py-1.5 text-xs font-medium text-foreground hover:bg-surface-100"
+      >
+        ⚙️
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Cookie 设置模态框 -->
+<div
+  id="cookie-settings-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-black/60"
+>
+  <div class="mx-4 max-w-lg rounded-lg bg-background p-6 shadow-xl">
+    <div class="mb-4">
+      <h3 class="text-lg font-semibold text-foreground">Cookie 设置</h3>
+      <p class="mt-2 text-sm text-foreground/80">
+        选择您希望允许的 Cookie 类型：
+      </p>
+    </div>
+    
+    <div class="space-y-4">
+      <!-- 必要 Cookies -->
+      <div class="flex items-start gap-3">
+        <input
+          type="checkbox"
+          id="essential-cookies"
+          checked
+          disabled
+          class="mt-1 h-4 w-4 rounded border-border text-skin-accent focus:ring-skin-accent"
+        />
+        <div>
+          <label for="essential-cookies" class="font-medium text-foreground">
+            必要 Cookies
+          </label>
+          <p class="text-sm text-foreground/80">
+            这些 Cookies 对于网站正常运行是必需的，包括主题设置和基本功能。
+          </p>
+        </div>
+      </div>
+      
+             <!-- 分析 Cookies -->
+       <div class="flex items-start gap-3">
+         <input
+           type="checkbox"
+           id="analytics-cookies"
+           class="mt-1 h-4 w-4 rounded border-border text-skin-accent focus:ring-skin-accent"
+         />
+         <div>
+           <label for="analytics-cookies" class="font-medium text-foreground">
+             分析 Cookies
+           </label>
+           <p class="text-sm text-foreground/80">
+             用于其他可能的分析工具。注：当前使用的 Umami 不需要此同意。
+           </p>
+         </div>
+       </div>
+      
+      <!-- 广告 Cookies -->
+      <div class="flex items-start gap-3">
+        <input
+          type="checkbox"
+          id="advertising-cookies"
+          class="mt-1 h-4 w-4 rounded border-border text-skin-accent focus:ring-skin-accent"
+        />
+        <div>
+          <label for="advertising-cookies" class="font-medium text-foreground">
+            广告 Cookies
+          </label>
+          <p class="text-sm text-foreground/80">
+            用于显示个性化广告和衡量广告效果。
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-6 flex gap-3">
+      <button
+        id="save-cookie-settings"
+        class="flex-1 rounded-lg bg-skin-accent px-4 py-2 text-sm font-medium text-white hover:bg-skin-accent/90 focus:outline-none focus:ring-2 focus:ring-skin-accent focus:ring-offset-2"
+      >
+        保存设置
+      </button>
+      <button
+        id="close-cookie-settings"
+        class="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-100 focus:outline-none focus:ring-2 focus:ring-border focus:ring-offset-2"
+      >
+        取消
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initCookieConsent() {
+    const banner = document.getElementById('cookie-consent-banner');
+    const modal = document.getElementById('cookie-settings-modal');
+    const acceptBtn = document.getElementById('cookie-accept-btn');
+    const rejectBtn = document.getElementById('cookie-reject-btn');
+    const settingsBtn = document.getElementById('cookie-settings-btn');
+    const saveBtn = document.getElementById('save-cookie-settings');
+    const closeBtn = document.getElementById('close-cookie-settings');
+    
+    const analyticsCheckbox = document.getElementById('analytics-cookies') as HTMLInputElement;
+    const advertisingCheckbox = document.getElementById('advertising-cookies') as HTMLInputElement;
+
+    if (!banner || !modal || !acceptBtn || !rejectBtn || !settingsBtn || !saveBtn || !closeBtn) {
+      return;
+    }
+
+    // 检查是否已经设置了 Cookie 偏好
+    const cookieConsent = localStorage.getItem('cookie-consent');
+    if (!cookieConsent) {
+      banner.classList.remove('hidden');
+    }
+
+    // 加载保存的设置
+    const savedSettings = localStorage.getItem('cookie-settings');
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      if (analyticsCheckbox) analyticsCheckbox.checked = settings.analytics || false;
+      if (advertisingCheckbox) advertisingCheckbox.checked = settings.advertising || false;
+    }
+
+    // 接受全部按钮
+    acceptBtn.addEventListener('click', () => {
+      localStorage.setItem('cookie-consent', 'accepted');
+      localStorage.setItem('cookie-settings', JSON.stringify({
+        essential: true,
+        analytics: true,
+        advertising: true
+      }));
+      banner.classList.add('hidden');
+      loadOptionalCookies(true, true);
+    });
+
+    // 仅必要按钮
+    rejectBtn.addEventListener('click', () => {
+      localStorage.setItem('cookie-consent', 'rejected');
+      localStorage.setItem('cookie-settings', JSON.stringify({
+        essential: true,
+        analytics: false,
+        advertising: false
+      }));
+      banner.classList.add('hidden');
+      loadOptionalCookies(false, false);
+    });
+
+    // 设置按钮
+    settingsBtn.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    });
+
+    // 保存设置按钮
+    saveBtn.addEventListener('click', () => {
+      const settings = {
+        essential: true,
+        analytics: analyticsCheckbox?.checked || false,
+        advertising: advertisingCheckbox?.checked || false
+      };
+      
+      localStorage.setItem('cookie-consent', 'custom');
+      localStorage.setItem('cookie-settings', JSON.stringify(settings));
+      
+      banner.classList.add('hidden');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      
+      loadOptionalCookies(settings.analytics, settings.advertising);
+    });
+
+    // 关闭模态框
+    closeBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    // 点击模态框外部关闭
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    });
+
+    // 加载可选 Cookies
+    function loadOptionalCookies(analytics: boolean, advertising: boolean) {
+      // 注：Umami Analytics 已在 Layout.astro 中加载，不需要Cookie同意
+      if (analytics) {
+        console.log('Analytics cookies enabled');
+        // 可以在这里加载其他需要同意的分析工具
+      }
+      
+      if (advertising) {
+        console.log('Advertising cookies enabled');
+        // 加载 Google AdSense
+        // loadGoogleAdSense();
+      }
+    }
+
+    // 检查现有的同意状态并加载相应的脚本
+    if (cookieConsent) {
+      const settings = JSON.parse(savedSettings || '{}');
+      loadOptionalCookies(settings.analytics || false, settings.advertising || false);
+    }
+  }
+
+  // 初始化
+  initCookieConsent();
+
+  // 在页面切换时重新初始化
+  document.addEventListener('astro:after-swap', initCookieConsent);
+</script>
+
+<style>
+  /* 确保横幅在所有主题下都有正确的样式 */
+  #cookie-consent-banner {
+    background: rgb(var(--color-background));
+    border-color: rgb(var(--color-border));
+    color: rgb(var(--color-foreground));
+  }
+  
+  #cookie-settings-modal > div {
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+    border: 1px solid rgb(var(--color-border));
+  }
+</style> 
