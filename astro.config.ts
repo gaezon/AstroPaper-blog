@@ -11,7 +11,6 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
-import { inject } from "@vercel/analytics";
 import rehypeMermaid from "rehype-mermaid";
 
 // https://astro.build/config
@@ -21,14 +20,6 @@ export default defineConfig({
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
-    {
-      name: "vercel-analytics",
-      hooks: {
-        "astro:config:setup": ({ injectScript }) => {
-          injectScript("page", `import { inject } from "@vercel/analytics"; inject();`);
-        },
-      },
-    },
   ],
   markdown: {
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
