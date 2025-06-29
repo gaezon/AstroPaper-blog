@@ -1,0 +1,132 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# AstroPaper Blog Development Guide
+
+这是一个基于Astro框架的技术博客项目，遵循以下开发规范和最佳实践。
+
+## 项目架构概览
+
+### 核心文件结构
+- [astro.config.ts](mdc:astro.config.ts) - Astro配置文件，定义构建和插件设置
+- [src/config.ts](mdc:src/config.ts) - 网站配置，包含站点信息、作者信息等
+- [src/content.config.ts](mdc:src/content.config.ts) - 内容集合配置，定义博客文章结构
+- [package.json](mdc:package.json) - 项目依赖和脚本配置
+
+### 组件系统
+- [src/components/](mdc:src/components) - Astro组件库，包含所有复用组件
+- [src/layouts/](mdc:src/layouts) - 页面布局组件
+- [src/pages/](mdc:src/pages) - 页面路由和静态页面
+
+### 内容管理
+- [src/data/blog/](mdc:src/data/blog) - 博客文章Markdown文件
+- [src/utils/](mdc:src/utils) - 工具函数，如内容处理和SEO工具
+
+## 开发原则
+
+### 1. 语言和交流
+- 使用简体中文与用户交流
+- 技术术语可以使用英文，但解释用中文
+- 代码注释和文档用中文编写
+
+### 2. 代码质量标准
+- 使用TypeScript确保类型安全
+- 遵循现有的ESLint配置 [eslint.config.js](mdc:eslint.config.js)
+- 使用描述性变量名，避免缩写和模糊命名
+- 实现健壮的错误处理机制
+- 考虑边界情况和异常情况
+
+### 3. 性能优化
+- 优先使用Astro的静态生成
+- 最小化客户端JavaScript使用
+- 合理使用client:*指令进行部分水合
+- 图片优化和懒加载
+- 实现性能预算和监控
+
+### 4. 安全性
+- 实施输入验证和输出转义
+- 使用HTTPS和安全标头
+- 定期更新依赖项以修复安全漏洞
+
+## Quick Start 命令
+
+```bash
+# 开发环境启动
+pnpm dev
+
+# 构建生产版本
+pnpm build
+
+# 预览构建结果
+pnpm preview
+
+# 代码检查
+pnpm lint
+
+# 格式化代码
+pnpm format
+```
+
+## 内容创建流程
+
+### 博客文章创建
+1. 在 [src/data/blog/](mdc:src/data/blog) 目录下创建Markdown文件
+2. 添加正确的frontmatter元数据
+3. 遵循 [.cursor/rules/writing-md-rule.mdc](mdc:.cursor/rules/writing-md-rule.mdc) 的写作规范
+4. 使用中文写作，使用直角引号「」
+
+### 文章结构要求
+- 必须包含：前言、正文、总结、参考资料
+- 使用清晰的标题层级
+- 提供可执行的代码示例
+- 必要时使用Mermaid图表说明
+
+## 组件开发规范
+
+### Astro组件
+- 使用 `.astro` 扩展名
+- 实现组件复用和组合
+- 使用Astro.props传递数据
+- 适当使用TypeScript类型定义
+
+### 样式规范
+- 使用Tailwind CSS utility classes
+- 避免使用@apply指令
+- 实现响应式设计
+- 保持样式一致性
+
+## 部署和维护
+
+### 构建优化
+- 使用Astro的静态生成优化
+- 实现适当的环境变量管理
+- 使用现代静态托管平台（Vercel, Netlify等）
+
+### SEO和可访问性
+- 实现语义化HTML结构
+- 添加适当的ARIA属性
+- 支持键盘导航
+- 优化Core Web Vitals指标
+
+## 故障排除
+
+### 常见问题
+- 检查Node.js和pnpm版本兼容性
+- 验证Astro配置文件语法
+- 确认所有依赖项正确安装
+- 查看构建日志和错误信息
+
+### 调试工具
+- 使用Astro Dev Tools
+- Chrome DevTools进行性能分析
+- Lighthouse进行SEO和性能审计
+
+## 贡献指南
+
+### 代码提交
+- 使用有意义的提交消息
+- 遵循现有的代码格式规范
+- 添加适当的测试覆盖
+- 更新相关文档
