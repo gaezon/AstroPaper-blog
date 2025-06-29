@@ -10,7 +10,8 @@
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "validate:meta": "pnpm tsx scripts/validate-meta-descriptions.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",

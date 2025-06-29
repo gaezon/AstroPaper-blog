@@ -1,7 +1,7 @@
 ---
 layout: ../layouts/AboutLayout.astro
 title: "Cookie 政策"
-description: "了解我们网站如何使用Cookies、Cookie类型、管理选项以及第三方服务。查看完整的Cookie政策和设置指南。"
+description: "深入了解 Gaazeon 技术博客如何使用 Cookies 技术。详细说明必要性 Cookie、分析 Cookie 和广告 Cookie 的具体用途，提供完整的 Cookie 管理选项和浏览器设置指南。包含第三方服务集成和用户隐私保护措施的全面解读。"
 ---
 
 最后更新时间：2025年6月

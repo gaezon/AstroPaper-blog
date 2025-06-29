@@ -1,7 +1,7 @@
 ---
 layout: ../layouts/AboutLayout.astro
 title: "About"
-description: "了解Gaazeon的技术背景和博客创建初衷。我热衷于分享软件开发、Web技术和编程经验，帮助开发者学习和成长。"
+description: "深入探索 Gaazeon 的技术世界。本页面详细介绍我的技术背景、专业领域以及创建此博客的初衷。我致力于分享有关软件开发、Web前端与后端技术、DevOps实践以及编程语言的深入见解和实践经验，旨在创建一个共同学习与成长的技术社区。欢迎通过RSS订阅或社交媒体关注，获取最新文章和动态。"
 ---
 
 Welcome to my blog!

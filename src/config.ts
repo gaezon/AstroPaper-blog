@@ -3,7 +3,7 @@ import type { Site } from "./types";
 export const SITE: Site = {
   website: "https://blog.gaazeon.com/", // replace this with your deployed domain
   author: "Gaazeon",
-  desc: "Gaazeon's blog, sharing my thoughts and experiences.",
+  desc: "Gaazeon 的技术博客，专注分享软件开发、Web 前端技术、编程工具使用心得和开发经验。以及实用的开发工具推荐和使用技巧，助力自我与广大开发者共同提升技能。",
   profile: "",
   title: "Gaazeon's blog.",
   ogImage: "astropaper-og.jpg",

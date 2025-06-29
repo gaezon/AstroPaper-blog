@@ -10,7 +10,7 @@ tags:
   - git
   - astro
   - astropaper
-description: 探索如何使用 Git 升级 Astropaper 主题，包括注意事项、步骤和测试方法。学习保持项目依赖和模板更新的重要性，确保博客始终保持最新状态
+description: 完整指南：如何使用 Git 安全升级 Astropaper 博客主题到最新版本。详细介绍升级前的重要注意事项、具体操作步骤、合并冲突解决方法和升级后的全面测试验证流程。帮助开发者掌握保持项目依赖和模板更新的最佳实践，确保博客始终保持最新功能和安全性。
 ---
 
 [Astropaper](https://github.com/satnaing/astro-paper) 作为一个开源项目，会不断进行错误修复和功能更新。如果你使用 AstroPaper 作为模板，可能希望保持最新版本。

@@ -13,7 +13,7 @@ tags:
   - 数字囤积
   - 自建服务
   - selfhost
-description: 了解如何通过自建 Hoarder 剪藏服务来替代 Cubox，提高隐私保护并降低成本
+description: 详细教程：如何通过 Docker 自建开源的 Hoarder 剪藏服务来替代 Cubox，实现更好的隐私保护、完全数据控制和显著成本节约。包含完整的 Docker 安装配置步骤、数据迁移详细指南和深度使用对比分析，助你搭建功能完善的个人专属网页收藏和知识管理系统。
 slug: hoarder-app-replace-cubox
 ---
 

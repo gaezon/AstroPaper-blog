@@ -11,7 +11,7 @@ tags:
   - 投资
   - 股息再投资
   - DRIP
-description: 深入探究 IBKR 盈透证券的股息再投资计划 (DRIP)「零佣金」背后的真相。通过一笔 0.0003 股的 $NVDA 交易，揭示其真实的佣金规则与后台记账系统。
+description: 深入探究 IBKR 盈透证券的股息再投资计划 (DRIP)「零佣金」背后的真相。通过实际的 0.0003 股 $NVDA 交易案例，详细分析其真实的佣金计算规则、后台记账系统和碎股处理机制。为投资者揭示美股 DRIP 投资的真实成本和注意事项。
 slug: is-ibkr-drip-really-commission-free
 ---
 
