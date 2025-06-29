@@ -18,7 +18,10 @@ export const getStaticPaths = (async ({ paginate }) => {
 const { page } = Astro.props;
 ---
 
-<Layout title={`Posts | ${SITE.title}`}>
+<Layout 
+  title={`Posts | ${SITE.title}`}
+  description="查看Gaazeon博客的所有技术文章和教程，涵盖软件开发、Web技术、编程工具使用等领域的深度内容和实践经验分享。"
+>
   <Header />
   <Main pageTitle="Posts" pageDesc="All the articles I've posted.">
     <ul>

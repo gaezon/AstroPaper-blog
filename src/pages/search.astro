@@ -9,7 +9,10 @@ import { SITE } from "@/config";
 const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 ---
 
-<Layout title={`Search | ${SITE.title}`}>
+<Layout 
+  title={`Search | ${SITE.title}`}
+  description="搜索Gaazeon博客中的技术文章和教程，快速找到您需要的编程知识、开发工具使用指南和软件技术解决方案。"
+>
   <Header />
   <Main pageTitle="Search" pageDesc="Search any article ...">
     <div id="pagefind-search" transition:persist data-backurl={backUrl}></div>

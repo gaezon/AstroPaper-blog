@@ -20,7 +20,10 @@ const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
-<Layout>
+<Layout 
+  title={SITE.title}
+  description="欢迎来到Gaazeon的技术博客，分享Web开发、编程技术、工具使用和软件开发经验。探索最新的技术文章、教程和开发心得。"
+>
   <Header />
   <main id="main-content" data-layout="index">
     <section id="hero" class="pt-8 pb-6">
