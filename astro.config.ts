@@ -58,7 +58,7 @@ export default defineConfig({
       defaultColor: false,
       wrap: false,
       transformers: [
-        transformerFileName(),
+        transformerFileName({ style: "v2", hideDot: false }),
         transformerNotationHighlight(),
         transformerNotationWordHighlight(),
         transformerNotationDiff({ matchAlgorithm: "v3" }),
@@ -66,6 +66,10 @@ export default defineConfig({
     },
   },
   vite: {
+    // eslint-disable-next-line
+    // @ts-ignore
+    // This will be fixed in Astro 6 with Vite 7 support
+    // See: https://github.com/withastro/astro/issues/14030
     plugins: [tailwindcss()],
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
