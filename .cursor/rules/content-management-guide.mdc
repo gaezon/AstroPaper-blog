@@ -1,4 +1,51 @@
 ---
+alwaysApply: false
+description: 博客内容创建、文章写作、SEO优化、多语言管理与发布流程的可请求指南
+---
+## 内容管理与 SEO 指南
+
+本指南用于撰写与管理 `src/data/blog/` 与 `src/pages/*.md` 内容，结合站点配置 [src/config.ts](mdc:src/config.ts)、集合模式 [src/content.config.ts](mdc:src/content.config.ts)、与构建脚本。
+
+### 目录与命名
+- 文章放置在 `src/data/blog/`，可按主题建子目录（英文小写、短横线分隔）。
+- 需要固定 slug 时，使用 Frontmatter `slug` 字段。
+
+### Frontmatter 模板
+详见规则：[writing-md-rule.mdc](mdc:.cursor/rules/writing-md-rule.mdc)。关键：`pubDatetime`、`title`、`description`、`tags`。
+
+### 发布策略
+- 草稿：`draft: true` 将在所有生产输出中过滤。
+- 定时：未来 `pubDatetime` 会在超出 `SITE.scheduledPostMargin` 后自动入列。
+
+### 标签体系
+- 标签格式自由，slug 化由 [slugify.ts](mdc:src/utils/slugify.ts)。
+- 列表与归档页面依赖 [getUniqueTags.ts](mdc:src/utils/getUniqueTags.ts) 与 [getSortedPosts.ts](mdc:src/utils/getSortedPosts.ts)。
+
+### SEO 与元数据
+- 文章 `description` 建议 150–160 字符，使用命令 `pnpm validate:meta` 做批量校验（脚本： [scripts/validate-meta-descriptions.ts](mdc:scripts/validate-meta-descriptions.ts)）。
+- 站点级 `SITE.desc` 与 `SITE.title` 决定 RSS 与默认描述；RSS 输出最新 10 篇（见 [src/pages/rss.xml.ts](mdc:src/pages/rss.xml.ts)）。
+- 如内容同步至其他平台，建议配置 `canonicalURL`。
+
+### OG 图像
+- 开启 `SITE.dynamicOgImage` 后：
+  - 站点 OG：`/og.png`（见 [src/pages/og.png.ts](mdc:src/pages/og.png.ts)）。
+  - 文章 OG：`/posts/[...slug]/index.png.ts` 动态生成（模板：[src/utils/og-templates/post.js](mdc:src/utils/og-templates/post.js)）。
+- 也可在 Frontmatter 设置 `ogImage` 覆盖默认逻辑。
+
+### Mermaid 与图表
+- 推荐使用 ` ```mermaid` 代码块；客户端组件 `MermaidClient.astro` 会在明暗主题间切换样式。
+- 图片请压缩并提供 Alt，放置在 `public/` 或专用资源目录。
+
+### 多语言与在地化
+- 使用 `lang`、`dir`、`timezone` 由 [src/config.ts](mdc:src/config.ts) 配置站点级默认；文章可用 `timezone` 覆盖。
+- 若提供多语言并行内容，建议在目录层面划分（如 `en/`、`zh/`）。
+
+### 工作流与检查
+- 本地预览：`pnpm dev`；构建：`pnpm build`；预览：`pnpm preview`。
+- 代码与文档风格：`pnpm lint`、`pnpm format`。
+- 内容质量检查侧重：标题准确、前言开门见山、段落清晰、总结可执行、参考资料规范。
+
+---
 description: 博客内容创建、文章写作、SEO优化、多语言管理等内容相关任务时使用。包含Frontmatter规范、写作风格、标签分类、内容质量检查等完整指导
 globs: 
 alwaysApply: false
