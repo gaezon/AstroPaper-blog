@@ -11,7 +11,6 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
-// import rehypeMermaid from "rehype-mermaid";
 
 // https://astro.build/config
 export default defineConfig({
