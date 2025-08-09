@@ -221,12 +221,10 @@
     function loadOptionalCookies(analytics: boolean, advertising: boolean) {
       // 注：Umami Analytics 已在 Layout.astro 中加载，不需要Cookie同意
       if (analytics) {
-        console.log('Analytics cookies enabled');
         // 可以在这里加载其他需要同意的分析工具
       }
       
       if (advertising) {
-        console.log('Advertising cookies enabled');
         // 加载 Google AdSense
         // loadGoogleAdSense();
       }

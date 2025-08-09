@@ -44,8 +44,8 @@ async function tryLoadLocalFont(fontName: string, weight: number): Promise<Array
       fontBuffer.byteOffset,
       fontBuffer.byteOffset + fontBuffer.byteLength
     ) as ArrayBuffer;
-  } catch (error) {
-    console.error("Error loading local font:", error);
+  } catch (e) {
+    console.error("Error loading local font:", e);
     return null;
   }
 }
@@ -91,8 +91,9 @@ async function loadGoogleFont(
     }
 
     return res.arrayBuffer();
-  } catch (error) {
-    console.error("Error loading Google Font:", error);
+  } catch (e) {
+    // 静默失败并回退到最小字体，避免控制台噪音
+    console.error("Error loading Google Font:", e);
     return await getFallbackFont();
   }
 }
@@ -138,7 +139,7 @@ async function loadGoogleFonts(
         try {
           const data = await loadGoogleFont(font, text, weight);
           return { name, data, weight, style };
-        } catch (error) {
+        } catch {
           console.warn(`Error loading font ${name}, using fallback`);
           const data = await getFallbackFont();
           return { name, data, weight, style };
@@ -146,8 +147,8 @@ async function loadGoogleFonts(
       })
     );
     return fonts;
-  } catch (error) {
-    console.error("Error in loadGoogleFonts:", error);
+  } catch {
+    // 忽略详细错误输出，避免控制台噪音
     // 在失败情况下，提供最小的字体数组
     return fontsConfig.map(({ name, weight, style }) => ({
       name,

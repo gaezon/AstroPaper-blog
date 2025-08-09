@@ -1,4 +1,4 @@
-// @ts-nocheck
+// 兼容 unified 与 vite 类型差异：尽量不关闭校验，使用局部忽略
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
@@ -11,7 +11,7 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
-import rehypeMermaid from "rehype-mermaid";
+// import rehypeMermaid from "rehype-mermaid";
 
 // https://astro.build/config
 export default defineConfig({
@@ -23,7 +23,6 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
-    // @ts-expect-error – Typings mismatch between unified & vite, safe to ignore
     rehypePlugins: [
       // Temporarily disable rehype-mermaid
       // [[
