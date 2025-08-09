@@ -38,7 +38,7 @@ const socialImageURL = new URL(
   Astro.url.origin
 ).href;
 
-const parsedCanonicalUrl = new URL(canonicalURL);
+// 注意：保留变量示例时请避免未使用的赋值以通过 ESLint
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -162,18 +162,17 @@ const siteHostname = new URL(SITE.website).hostname;
 
     <!-- Vercel Speed Insights -->
     <script is:inline defer src="/_vercel/speed-insights/script.js"></script>
+    <style is:inline>
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
     <slot />
     <CookieConsentBanner />
   </body>
 </html>
-
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>
