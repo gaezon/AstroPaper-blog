@@ -6,42 +6,54 @@
   // @ts-nocheck
   import { extractTocFromDOM } from '@/utils/extractToc';
 
-  // 保证仅初始化一次
-  let tocInitialized = false;
-  const runOnce = () => {
-    if (tocInitialized) return;
-    tocInitialized = true;
-    initializeToc();
-  };
-
   // 多事件保障：首次加载 / DOM 就绪 / Astro 路由切换
+  const tryInit = () => initializeTocWithRetry();
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(runOnce, 0);
+    setTimeout(tryInit, 0);
   } else {
-    document.addEventListener('DOMContentLoaded', runOnce);
+    document.addEventListener('DOMContentLoaded', tryInit, { once: true });
   }
-  document.addEventListener('astro:page-load', runOnce);
-  document.addEventListener('astro:after-swap', runOnce);
+  document.addEventListener('astro:page-load', tryInit);
+  document.addEventListener('astro:after-swap', tryInit);
 
-  function initializeToc() {
+  async function initializeTocWithRetry(maxRetries = 20, intervalMs = 100) {
+    // 等待 #article 和至少一个标题元素就绪
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const article = document.getElementById('article');
+      const hasHeadings = !!document.querySelector('#article h2, #article h3, #article h4, #article h5, #article h6');
+      if (article && hasHeadings) break;
+      attempt += 1;
+      await new Promise(r => setTimeout(r, intervalMs));
+    }
+
     const tocItems = extractTocFromDOM();
-    
-    // 如果没有标题，隐藏目录
+
+    const tocContainer = document.getElementById('table-of-contents');
+    const tocToggle = document.getElementById('toc-toggle');
+
     if (tocItems.length === 0) {
-      const tocContainer = document.getElementById('table-of-contents');
-      const tocToggle = document.getElementById('toc-toggle');
+      // 没有目录时隐藏，但不永久放弃，下次导航会再次尝试
       if (tocContainer) tocContainer.style.display = 'none';
       if (tocToggle) tocToggle.style.display = 'none';
       return;
     }
 
+    // 确保显示（避免上一次初始化失败时被隐藏）
+    if (tocContainer) tocContainer.style.display = '';
+    if (tocToggle) tocToggle.style.display = '';
+
+    // 清空已有内容避免重复渲染
+    const nav = document.getElementById('toc-nav');
+    if (nav) nav.innerHTML = '';
+
     // 渲染目录
     renderToc(tocItems);
-    
+
     // 设置滚动监听
     setupScrollObserver();
-    
-    // 设置移动端交互
+
+    // 设置移动端交互（避免重复绑定）
     setupMobileInteractions();
   }
 

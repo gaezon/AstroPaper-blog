@@ -90,7 +90,7 @@ const nextPost =
   <main
     id="main-content"
     class:list={[
-      "mx-auto w-full max-w-app px-4 pb-12 relative",
+      "w-full px-4 pb-12 relative",
       { "mt-8": !SITE.showBackButton },
     ]}
     data-pagefind-body
@@ -99,7 +99,7 @@ const nextPost =
     <TableOfContents />
     
     <!-- 文章内容容器，在大屏幕上限制宽度并居中 -->
-    <div class="flex justify-center">
+    <div class="flex justify-center w-full">
       <div class="w-full max-w-3xl xl:max-w-4xl px-4">
       <h1
         transition:name={slugifyStr(title)}
