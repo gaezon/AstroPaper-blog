@@ -8,22 +8,31 @@ export interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<!-- 目录容器 -->
+<!-- 目录容器（桌面端可折叠） -->
 <aside
   id="table-of-contents"
   class:list={[
     "fixed top-20 z-40 hidden xl:block",
     // xl 下靠近视口右侧；2xl 起锚定到内容容器右侧（以 4xl=64rem 内容宽度为基准，中心 + 33rem ≈ 内容右缘 + 1rem）
     "xl:right-4 2xl:left-[calc(50%+33rem)]",
-    "w-64 max-h-[calc(100vh-8rem)] overflow-y-auto",
+    "w-64 max-h-[calc(100vh-8rem)] overflow-y-auto transition-opacity",
     "bg-background/80 backdrop-blur-sm border border-border rounded-lg p-4",
     className
   ]}
   aria-label="文章目录"
 >
-  <h3 class="text-sm font-semibold text-foreground mb-3 border-b border-border pb-2">
-    目录
-  </h3>
+  <div class="mb-3 flex items-center justify-between border-b border-border pb-2">
+    <h3 class="text-sm font-semibold text-foreground">目录</h3>
+    <!-- 桌面端折叠按钮（仅 >=xl 显示） -->
+    <button
+      id="toc-collapse"
+      class="hidden xl:inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-xs text-muted hover:text-foreground hover:bg-muted/40 transition-colors"
+      aria-label="收起目录"
+      type="button"
+    >
+      收起
+    </button>
+  </div>
   
   <!-- 目录列表容器，由客户端JavaScript填充 -->
   <nav id="toc-nav" class="space-y-1">
@@ -47,6 +56,19 @@ const { class: className = "" } = Astro.props;
     </svg>
   </button>
 </aside>
+
+<!-- 桌面端展开按钮：当目录被收起时显示（仅 >=xl 显示） -->
+<button
+  id="toc-open-desktop"
+  class:list={[
+    "hidden xl:inline-flex items-center gap-1 fixed top-20 z-40 rounded bg-accent text-background px-2 py-1 text-xs shadow",
+    "xl:right-4 2xl:left-[calc(50%+33rem)]"
+  ]}
+  aria-label="展开目录"
+  type="button"
+>
+  打开目录
+ </button>
 
 <!-- 移动端覆盖层 -->
 <div

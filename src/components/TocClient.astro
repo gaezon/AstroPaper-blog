@@ -55,6 +55,9 @@
 
     // 设置移动端交互（避免重复绑定）
     setupMobileInteractions();
+
+    // 设置桌面端折叠/展开
+    setupDesktopToggle();
   }
 
   function renderToc(items, containerId = 'toc-nav', level = 0) {
@@ -236,5 +239,29 @@
         closeOverlay();
       }
     });
+  }
+
+  function setupDesktopToggle() {
+    const aside = document.getElementById('table-of-contents');
+    const collapseBtn = document.getElementById('toc-collapse');
+    const openBtn = document.getElementById('toc-open-desktop');
+    if (!aside || !collapseBtn || !openBtn) return;
+
+    // 初始：目录可见，打开按钮隐藏
+    openBtn.style.display = 'none';
+
+    const hideAside = () => {
+      aside.style.opacity = '0';
+      aside.style.pointerEvents = 'none';
+      openBtn.style.display = 'inline-flex';
+    };
+    const showAside = () => {
+      aside.style.opacity = '';
+      aside.style.pointerEvents = '';
+      openBtn.style.display = 'none';
+    };
+
+    collapseBtn.addEventListener('click', hideAside);
+    openBtn.addEventListener('click', showAside);
   }
 </script>
