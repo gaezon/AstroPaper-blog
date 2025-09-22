@@ -147,16 +147,20 @@
 #toc-nav-mobile a {
   position: relative;
   transition: all 0.2s ease;
+  /* 提高非选中状态的可读性：使用更深的颜色 */
+  color: hsl(var(--foreground) / 0.8) !important;
 }
 
 #toc-nav a:hover,
 #toc-nav-mobile a:hover {
   transform: translateX(2px);
+  color: hsl(var(--foreground) / 0.95) !important;
 }
 
 #toc-nav a.active,
 #toc-nav-mobile a.active {
   font-weight: 500;
+  color: hsl(var(--accent)) !important;
 }
 
 /* 移动端目录样式优化 */
