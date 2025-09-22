@@ -1,0 +1,79 @@
+---
+import TocClient from './TocClient.astro';
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<!-- 目录容器 -->
+<aside
+  id="table-of-contents"
+  class:list={[
+    "fixed top-20 z-40 hidden xl:block",
+    "xl:right-4 2xl:right-[max(1rem,calc((100vw-80rem)/2-36rem))]", // 在超大屏幕上保持与内容的合理间距
+    "w-64 max-h-[calc(100vh-8rem)] overflow-y-auto",
+    "bg-background/80 backdrop-blur-sm border border-border rounded-lg p-4",
+    className
+  ]}
+  aria-label="文章目录"
+>
+  <h3 class="text-sm font-semibold text-foreground mb-3 border-b border-border pb-2">
+    目录
+  </h3>
+  
+  <!-- 目录列表容器，由客户端JavaScript填充 -->
+  <nav id="toc-nav" class="space-y-1">
+    <!-- 加载占位符 -->
+    <div id="toc-loading" class="space-y-2">
+      <div class="h-4 bg-muted/50 rounded animate-pulse"></div>
+      <div class="h-4 bg-muted/50 rounded animate-pulse w-3/4"></div>
+      <div class="h-4 bg-muted/50 rounded animate-pulse w-1/2"></div>
+    </div>
+  </nav>
+  
+  <!-- 移动端切换按钮 -->
+  <button
+    id="toc-toggle"
+    class="xl:hidden fixed bottom-4 right-4 z-50 p-3 bg-accent text-background rounded-full shadow-lg"
+    aria-label="切换目录"
+    type="button"
+  >
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+    </svg>
+  </button>
+</aside>
+
+<!-- 移动端覆盖层 -->
+<div
+  id="toc-overlay"
+  class="xl:hidden fixed inset-0 z-30 bg-background/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200"
+  role="dialog"
+  aria-labelledby="toc-title"
+  aria-modal="true"
+>
+  <div class="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-background border-l border-border shadow-xl transform translate-x-full transition-transform duration-200">
+    <div class="flex items-center justify-between p-4 border-b border-border">
+      <h3 id="toc-title" class="text-lg font-semibold text-foreground">目录</h3>
+      <button
+        id="toc-close"
+        class="p-2 text-muted hover:text-foreground transition-colors"
+        aria-label="关闭目录"
+        type="button"
+      >
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
+    <nav id="toc-nav-mobile" class="p-4 overflow-y-auto h-[calc(100%-4rem)]">
+      <!-- 移动端目录内容，由客户端JavaScript填充 -->
+    </nav>
+  </div>
+</div>
+
+<!-- 引入客户端交互组件 -->
+<TocClient />

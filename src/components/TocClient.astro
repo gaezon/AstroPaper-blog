@@ -1,0 +1,228 @@
+---
+// 客户端交互组件，用于处理目录的滚动检测和移动端交互
+---
+
+<script>
+  // @ts-nocheck
+  import { extractTocFromDOM } from '@/utils/extractToc';
+
+  // 保证仅初始化一次
+  let tocInitialized = false;
+  const runOnce = () => {
+    if (tocInitialized) return;
+    tocInitialized = true;
+    initializeToc();
+  };
+
+  // 多事件保障：首次加载 / DOM 就绪 / Astro 路由切换
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(runOnce, 0);
+  } else {
+    document.addEventListener('DOMContentLoaded', runOnce);
+  }
+  document.addEventListener('astro:page-load', runOnce);
+  document.addEventListener('astro:after-swap', runOnce);
+
+  function initializeToc() {
+    const tocItems = extractTocFromDOM();
+    
+    // 如果没有标题，隐藏目录
+    if (tocItems.length === 0) {
+      const tocContainer = document.getElementById('table-of-contents');
+      const tocToggle = document.getElementById('toc-toggle');
+      if (tocContainer) tocContainer.style.display = 'none';
+      if (tocToggle) tocToggle.style.display = 'none';
+      return;
+    }
+
+    // 渲染目录
+    renderToc(tocItems);
+    
+    // 设置滚动监听
+    setupScrollObserver();
+    
+    // 设置移动端交互
+    setupMobileInteractions();
+  }
+
+  function renderToc(items, containerId = 'toc-nav', level = 0) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // 清除加载占位符
+    const loading = container.querySelector('#toc-loading');
+    if (loading) loading.remove();
+
+    const ul = document.createElement('ul');
+    ul.className = level === 0 ? 'space-y-1' : 'ml-4 space-y-1';
+
+    items.forEach((item) => {
+      const li = document.createElement('li');
+      
+      const link = document.createElement('a');
+      link.href = `#${item.id}`;
+      link.textContent = item.title;
+      link.className = `block py-1 px-2 text-sm text-muted hover:text-accent hover:bg-muted/50 rounded transition-colors ${
+        level > 0 ? 'text-xs' : ''
+      }`;
+      
+      // 平滑滚动，添加偏移避免闪烁
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(item.id);
+        if (target) {
+          // 计算偏移位置，避免标题被顶部遮挡
+          const yOffset = -100; // 负值向上偏移
+          const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          
+          // 先立即更新高亮状态，避免等待 IntersectionObserver 导致的闪烁
+          document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
+            el.classList.remove('active', 'text-accent', 'bg-muted/50');
+            el.classList.add('text-muted');
+          });
+          link.classList.add('active', 'text-accent', 'bg-muted/50');
+          link.classList.remove('text-muted');
+          
+          // 然后平滑滚动
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
+
+      li.appendChild(link);
+
+      // 如果有子项，先创建子级 ul 再递归渲染，避免无效容器 id
+      if (item.children && item.children.length > 0) {
+        const childUlWrapper = document.createElement('div');
+        const childContainerId = `toc-child-${item.id}`;
+        childUlWrapper.id = childContainerId;
+        childUlWrapper.className = 'mt-1';
+        li.appendChild(childUlWrapper);
+        renderToc(item.children, childContainerId, level + 1);
+      }
+
+      ul.appendChild(li);
+    });
+
+    container.appendChild(ul);
+  }
+
+  function setupScrollObserver() {
+    const headings = document.querySelectorAll('#article h2, #article h3, #article h4, #article h5, #article h6');
+    
+    if (headings.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          const id = entry.target.id;
+          const link = document.querySelector(`#toc-nav a[href="#${id}"]`);
+          const mobileLink = document.querySelector(`#toc-nav-mobile a[href="#${id}"]`);
+          
+          if (entry.isIntersecting) {
+            // 移除所有活动状态
+            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
+              el.classList.remove('active', 'text-accent', 'bg-muted/50');
+              el.classList.add('text-muted');
+            });
+            
+            // 添加当前活动状态
+            if (link) {
+              link.classList.add('active', 'text-accent', 'bg-muted/50');
+              link.classList.remove('text-muted');
+            }
+            if (mobileLink) {
+              mobileLink.classList.add('active', 'text-accent', 'bg-muted/50');
+              mobileLink.classList.remove('text-muted');
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '-100px 0px -70% 0px', // 调整顶部边距以匹配滚动偏移
+        threshold: 0
+      }
+    );
+
+    headings.forEach(heading => observer.observe(heading));
+  }
+
+  function setupMobileInteractions() {
+    const toggle = document.getElementById('toc-toggle');
+    const overlay = document.getElementById('toc-overlay');
+    const close = document.getElementById('toc-close');
+    const mobileNav = document.getElementById('toc-nav-mobile');
+
+    if (!toggle || !overlay || !close || !mobileNav) return;
+
+    // 复制桌面端目录到移动端
+    const desktopNav = document.getElementById('toc-nav');
+    if (desktopNav) {
+      mobileNav.innerHTML = desktopNav.innerHTML;
+      // 为移动端链接绑定平滑滚动
+      mobileNav.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const href = e.currentTarget && e.currentTarget.getAttribute ? e.currentTarget.getAttribute('href') : null;
+          if (!href) return;
+          const target = document.querySelector(href);
+          if (target) {
+            // 计算偏移位置
+            const yOffset = -100;
+            const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            
+            // 先更新高亮状态
+            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
+              el.classList.remove('active', 'text-accent', 'bg-muted/50');
+              el.classList.add('text-muted');
+            });
+            const clickedLink = e.currentTarget;
+            clickedLink.classList.add('active', 'text-accent', 'bg-muted/50');
+            clickedLink.classList.remove('text-muted');
+            
+            // 然后平滑滚动
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+          // 关闭抽屉
+          const evt = new Event('click');
+          close.dispatchEvent(evt);
+        });
+      });
+    }
+
+    // 切换显示
+    toggle.addEventListener('click', () => {
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100', 'pointer-events-auto');
+      const slidePanel = overlay.querySelector('.transform');
+      if (slidePanel) {
+        slidePanel.classList.remove('translate-x-full');
+        slidePanel.classList.add('translate-x-0');
+      }
+    });
+
+    // 关闭
+    const closeOverlay = () => {
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+      overlay.classList.remove('opacity-100', 'pointer-events-auto');
+      const slidePanel = overlay.querySelector('.transform');
+      if (slidePanel) {
+        slidePanel.classList.add('translate-x-full');
+        slidePanel.classList.remove('translate-x-0');
+      }
+    };
+
+    close.addEventListener('click', closeOverlay);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        closeOverlay();
+      }
+    });
+
+    // ESC键关闭
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !overlay.classList.contains('opacity-0')) {
+        closeOverlay();
+      }
+    });
+  }
+</script>
