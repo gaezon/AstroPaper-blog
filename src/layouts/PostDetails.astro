@@ -98,15 +98,18 @@ const nextPost =
     <!-- 目录组件放在main外部，避免影响内容布局 -->
     <TableOfContents />
     
-    <!-- 文章内容容器，在大屏幕上限制宽度并居中 -->
+    <!-- 文章内容容器，使用标准宽度 -->
     <div class="flex justify-center w-full">
-      <div class="w-full max-w-3xl xl:max-w-4xl px-4">
-      <h1
-        transition:name={slugifyStr(title)}
-        class="inline-block text-2xl font-bold text-accent sm:text-3xl"
-      >
-        {title}
-      </h1>
+      <div class="w-full max-w-app px-4">
+        <!-- 文章标题区域，增加上边距以避免与Go back按钮重叠 -->
+        <div class="mt-6 mb-4">
+          <h1
+            transition:name={slugifyStr(title)}
+            class="text-2xl font-bold text-accent sm:text-3xl leading-tight"
+          >
+            {title}
+          </h1>
+        </div>
       <div class="my-2 flex items-center gap-2">
         <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
         <span aria-hidden="true" class="max-sm:hidden">|</span>
@@ -165,7 +168,7 @@ const nextPost =
           )
         }
       </div>
-      </div><!-- 关闭内容容器 div -->
+      </div><!-- 关闭article-container div -->
     </div><!-- 关闭flex容器 div -->
   </main>
   <Footer />
