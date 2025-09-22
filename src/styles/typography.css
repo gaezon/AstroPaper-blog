@@ -142,25 +142,32 @@
   background-color: var(--color-accent);
 }
 
-/* 目录链接样式 */
+/* 目录链接样式 - 保持 liquid glass 效果 */
 #toc-nav a,
 #toc-nav-mobile a {
   position: relative;
-  transition: all 0.2s ease;
-  /* 提高非选中状态的可读性：使用更深的颜色 */
-  color: hsl(var(--foreground) / 0.8) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 平衡可读性与玻璃效果：使用 65% 不透明度 */
+  color: hsl(var(--foreground) / 0.65) !important;
+  backdrop-filter: blur(1px);
 }
 
 #toc-nav a:hover,
 #toc-nav-mobile a:hover {
   transform: translateX(2px);
-  color: hsl(var(--foreground) / 0.95) !important;
+  color: hsl(var(--foreground) / 0.85) !important;
+  /* 悬停时增强玻璃效果 */
+  backdrop-filter: blur(2px);
+  text-shadow: 0 0 8px hsl(var(--foreground) / 0.1);
 }
 
 #toc-nav a.active,
 #toc-nav-mobile a.active {
   font-weight: 500;
   color: hsl(var(--accent)) !important;
+  /* 选中时的玻璃光泽效果 */
+  backdrop-filter: blur(3px);
+  text-shadow: 0 0 12px hsl(var(--accent) / 0.3);
 }
 
 /* 移动端目录样式优化 */

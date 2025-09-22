@@ -16,7 +16,7 @@ const { class: className = "" } = Astro.props;
     // xl 下靠近视口右侧；2xl 起锚定到内容容器右侧（以 4xl=64rem 内容宽度为基准，中心 + 33rem ≈ 内容右缘 + 1rem）
     "xl:right-4 2xl:left-[calc(50%+33rem)]",
     "w-64 max-h-[calc(100vh-8rem)] overflow-y-auto transition-opacity",
-    "bg-background/80 backdrop-blur-sm border border-border rounded-lg p-4",
+    "bg-background/70 backdrop-blur-md border border-border/50 rounded-lg p-4 shadow-lg shadow-foreground/5",
     className
   ]}
   aria-label="文章目录"
