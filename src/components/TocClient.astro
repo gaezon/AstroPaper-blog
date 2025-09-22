@@ -29,7 +29,7 @@
 
     const tocItems = extractTocFromDOM();
 
-    const tocContainer = document.getElementById('table-of-contents');
+    const tocContainer = document.getElementById('toc-sidebar');
     const tocToggle = document.getElementById('toc-toggle');
 
     if (tocItems.length === 0) {
@@ -69,7 +69,8 @@
     if (loading) loading.remove();
 
     const ul = document.createElement('ul');
-    ul.className = level === 0 ? 'space-y-1' : 'ml-4 space-y-1';
+    ul.className = level === 0 ? 'space-y-1.5' : 'ml-4 space-y-1 mt-1';
+    ul.setAttribute('role', 'list');
 
     items.forEach((item) => {
       const li = document.createElement('li');
@@ -77,26 +78,28 @@
       const link = document.createElement('a');
       link.href = `#${item.id}`;
       link.textContent = item.title;
-      link.className = `block py-1 px-2 text-sm text-muted hover:text-accent hover:bg-muted/50 rounded transition-colors ${
-        level > 0 ? 'text-xs' : ''
+      link.className = `block py-2 px-3 text-sm leading-relaxed text-muted hover:text-accent hover:bg-muted/40 rounded-md transition-all duration-200 border-l-2 border-transparent hover:border-accent/30 ${
+        level > 0 ? 'text-xs py-1.5 ml-2' : 'font-medium'
       }`;
+      link.setAttribute('role', 'listitem');
       
       // 平滑滚动，添加偏移避免闪烁
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.getElementById(item.id);
         if (target) {
-          // 计算偏移位置，避免标题被顶部遮挡
-          const yOffset = -100; // 负值向上偏移
+          // 计算偏移位置，避免标题被顶部遮挡（增加更多缓冲）
+          const yOffset = -120; // 负值向上偏移，给出更多空间
           const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
           
           // 先立即更新高亮状态，避免等待 IntersectionObserver 导致的闪烁
           document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
-            el.classList.remove('active', 'text-accent', 'bg-muted/50');
-            el.classList.add('text-muted');
+            el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+            el.classList.add('text-muted', 'border-transparent');
           });
-          link.classList.add('active', 'text-accent', 'bg-muted/50');
-          link.classList.remove('text-muted');
+          link.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+          link.classList.remove('text-muted', 'border-transparent');
+          link.setAttribute('aria-current', 'true');
           
           // 然后平滑滚动
           window.scrollTo({ top: y, behavior: 'smooth' });
@@ -110,7 +113,7 @@
         const childUlWrapper = document.createElement('div');
         const childContainerId = `toc-child-${item.id}`;
         childUlWrapper.id = childContainerId;
-        childUlWrapper.className = 'mt-1';
+        childUlWrapper.className = 'mt-2';
         li.appendChild(childUlWrapper);
         renderToc(item.children, childContainerId, level + 1);
       }
@@ -136,25 +139,28 @@
           if (entry.isIntersecting) {
             // 移除所有活动状态
             document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
-              el.classList.remove('active', 'text-accent', 'bg-muted/50');
-              el.classList.add('text-muted');
+              el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+              el.classList.add('text-muted', 'border-transparent');
+              el.removeAttribute('aria-current');
             });
             
             // 添加当前活动状态
             if (link) {
-              link.classList.add('active', 'text-accent', 'bg-muted/50');
-              link.classList.remove('text-muted');
+              link.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+              link.classList.remove('text-muted', 'border-transparent');
+              link.setAttribute('aria-current', 'true');
             }
             if (mobileLink) {
-              mobileLink.classList.add('active', 'text-accent', 'bg-muted/50');
-              mobileLink.classList.remove('text-muted');
+              mobileLink.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+              mobileLink.classList.remove('text-muted', 'border-transparent');
+              mobileLink.setAttribute('aria-current', 'true');
             }
           }
         });
       },
       {
-        rootMargin: '-100px 0px -70% 0px', // 调整顶部边距以匹配滚动偏移
-        threshold: 0
+        rootMargin: '-120px 0px -60% 0px', // 调整顶部边距以匹配滚动偏移，增加缓冲区
+        threshold: [0, 0.1, 0.5]
       }
     );
 
@@ -181,18 +187,20 @@
           if (!href) return;
           const target = document.querySelector(href);
           if (target) {
-            // 计算偏移位置
-            const yOffset = -100;
+            // 计算偏移位置，保持与桌面端一致
+            const yOffset = -120;
             const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
             
             // 先更新高亮状态
             document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
-              el.classList.remove('active', 'text-accent', 'bg-muted/50');
-              el.classList.add('text-muted');
+              el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+              el.classList.add('text-muted', 'border-transparent');
+              el.removeAttribute('aria-current');
             });
             const clickedLink = e.currentTarget;
-            clickedLink.classList.add('active', 'text-accent', 'bg-muted/50');
-            clickedLink.classList.remove('text-muted');
+            clickedLink.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+            clickedLink.classList.remove('text-muted', 'border-transparent');
+            clickedLink.setAttribute('aria-current', 'true');
             
             // 然后平滑滚动
             window.scrollTo({ top: y, behavior: 'smooth' });
@@ -213,6 +221,7 @@
         slidePanel.classList.remove('translate-x-full');
         slidePanel.classList.add('translate-x-0');
       }
+      toggle.setAttribute('aria-expanded', 'true');
     });
 
     // 关闭
@@ -224,6 +233,7 @@
         slidePanel.classList.add('translate-x-full');
         slidePanel.classList.remove('translate-x-0');
       }
+      toggle.setAttribute('aria-expanded', 'false');
     };
 
     close.addEventListener('click', closeOverlay);
@@ -242,7 +252,7 @@
   }
 
   function setupDesktopToggle() {
-    const aside = document.getElementById('table-of-contents');
+    const aside = document.getElementById('toc-sidebar');
     const collapseBtn = document.getElementById('toc-collapse');
     const openBtn = document.getElementById('toc-open-desktop');
     if (!aside || !collapseBtn || !openBtn) return;
@@ -253,12 +263,18 @@
     const hideAside = () => {
       aside.style.opacity = '0';
       aside.style.pointerEvents = 'none';
+      aside.style.transform = 'translateX(20px)';
       openBtn.style.display = 'inline-flex';
+      collapseBtn.setAttribute('aria-expanded', 'false');
+      openBtn.setAttribute('aria-expanded', 'false');
     };
     const showAside = () => {
       aside.style.opacity = '';
       aside.style.pointerEvents = '';
+      aside.style.transform = '';
       openBtn.style.display = 'none';
+      collapseBtn.setAttribute('aria-expanded', 'true');
+      openBtn.setAttribute('aria-expanded', 'true');
     };
 
     collapseBtn.addEventListener('click', hideAside);

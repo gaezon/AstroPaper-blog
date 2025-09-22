@@ -8,66 +8,76 @@ export interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<!-- 目录容器（桌面端可折叠） -->
-<aside
-  id="table-of-contents"
+<!-- 目录导航容器（桌面端粘性侧栏） -->
+<nav
+  id="toc-sidebar"
   class:list={[
     "fixed top-20 z-40 hidden xl:block",
-    // xl 下靠近视口右侧；2xl 起基于内容区域右边缘定位，但使用更合理的计算方式
-    "xl:right-4 2xl:left-[calc(50%+28rem)]",
-    "w-64 max-h-[calc(100vh-8rem)] overflow-y-auto transition-opacity",
-    "bg-background/70 backdrop-blur-md border border-border/50 rounded-lg p-4 shadow-lg shadow-foreground/5",
+    // 优化定位：基于视口宽度的自适应定位
+    "xl:right-8 2xl:right-[calc((100vw-1024px)/2+32px)]",
+    "w-72 max-h-[calc(100vh-8rem)] overflow-y-auto transition-all duration-200",
+    "bg-background/80 backdrop-blur-lg border border-border/60 rounded-xl p-5 shadow-xl shadow-foreground/10",
+    "hover:shadow-2xl hover:shadow-foreground/15 hover:bg-background/85",
     className
   ]}
-  aria-label="文章目录"
+  aria-label="On this page"
+  role="navigation"
 >
-  <div class="mb-3 flex items-center justify-between border-b border-border pb-2">
-    <h3 class="text-sm font-semibold text-foreground">目录</h3>
+  <div class="mb-4 flex items-center justify-between border-b border-border/70 pb-3">
+    <h3 class="text-base font-semibold text-foreground tracking-wide">目录</h3>
     <!-- 桌面端折叠按钮（仅 >=xl 显示） -->
     <button
       id="toc-collapse"
-      class="hidden xl:inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-xs text-muted hover:text-foreground hover:bg-muted/40 transition-colors"
+      class="hidden xl:inline-flex items-center gap-1.5 rounded-md border border-border/60 px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground hover:bg-muted/50 hover:border-border transition-all duration-200"
       aria-label="收起目录"
+      aria-expanded="true"
       type="button"
     >
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
       收起
     </button>
   </div>
   
   <!-- 目录列表容器，由客户端JavaScript填充 -->
-  <nav id="toc-nav" class="space-y-1">
+  <div id="toc-nav" class="space-y-1.5" role="list">
     <!-- 加载占位符 -->
-    <div id="toc-loading" class="space-y-2">
-      <div class="h-4 bg-muted/50 rounded animate-pulse"></div>
-      <div class="h-4 bg-muted/50 rounded animate-pulse w-3/4"></div>
-      <div class="h-4 bg-muted/50 rounded animate-pulse w-1/2"></div>
+    <div id="toc-loading" class="space-y-3">
+      <div class="h-4 bg-muted/40 rounded-md animate-pulse"></div>
+      <div class="h-4 bg-muted/40 rounded-md animate-pulse w-4/5"></div>
+      <div class="h-3.5 bg-muted/30 rounded-md animate-pulse w-3/5 ml-4"></div>
+      <div class="h-3.5 bg-muted/30 rounded-md animate-pulse w-2/3 ml-4"></div>
     </div>
-  </nav>
+  </div>
   
-  <!-- 移动端切换按钮 -->
-  <button
-    id="toc-toggle"
-    class="xl:hidden fixed bottom-4 right-4 z-50 p-3 bg-accent text-background rounded-full shadow-lg"
-    aria-label="切换目录"
-    type="button"
-  >
-    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-      <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-    </svg>
-  </button>
-</aside>
+</nav>
+
+<!-- 移动端切换按钮（独立于桌面端容器） -->
+<button
+  id="toc-toggle"
+  class="xl:hidden fixed bottom-6 right-6 z-50 p-3.5 bg-accent/90 hover:bg-accent text-background rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+  aria-label="打开文章目录"
+  aria-expanded="false"
+  type="button"
+>
+  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+  </svg>
+</button>
 
 <!-- 桌面端展开按钮：当目录被收起时显示（仅 >=xl 显示） -->
 <button
   id="toc-open-desktop"
   class:list={[
-    "hidden xl:flex items-center justify-center fixed top-20 z-40 w-12 h-12 rounded-full",
-    "bg-gradient-to-br from-accent/90 to-accent/70 backdrop-blur-md border border-accent/30",
-    "shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 hover:scale-105",
+    "hidden xl:flex items-center justify-center fixed top-20 z-40 w-14 h-14 rounded-full",
+    "bg-gradient-to-br from-accent/90 to-accent/70 backdrop-blur-lg border border-accent/40",
+    "shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/35 hover:scale-105",
     "transition-all duration-300 group",
-    "xl:right-4 2xl:left-[calc(50%+28rem)]"
+    "xl:right-8 2xl:right-[calc((100vw-1024px)/2+32px)]"
   ]}
   aria-label="展开目录"
+  aria-expanded="false"
   type="button"
 >
   <!-- 抽象的目录展开图标：三条动态线条 -->
@@ -87,17 +97,17 @@ const { class: className = "" } = Astro.props;
 <!-- 移动端覆盖层 -->
 <div
   id="toc-overlay"
-  class="xl:hidden fixed inset-0 z-30 bg-background/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200"
+  class="xl:hidden fixed inset-0 z-30 bg-background/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200"
   role="dialog"
   aria-labelledby="toc-title"
   aria-modal="true"
 >
-  <div class="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-background border-l border-border shadow-xl transform translate-x-full transition-transform duration-200">
-    <div class="flex items-center justify-between p-4 border-b border-border">
-      <h3 id="toc-title" class="text-lg font-semibold text-foreground">目录</h3>
+  <div class="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-background border-l border-border/70 shadow-2xl transform translate-x-full transition-transform duration-250">
+    <div class="flex items-center justify-between p-5 border-b border-border/70">
+      <h3 id="toc-title" class="text-lg font-semibold text-foreground tracking-wide">目录</h3>
       <button
         id="toc-close"
-        class="p-2 text-muted hover:text-foreground transition-colors"
+        class="p-2 text-muted hover:text-foreground hover:bg-muted/30 rounded-md transition-all duration-200"
         aria-label="关闭目录"
         type="button"
       >
@@ -106,7 +116,7 @@ const { class: className = "" } = Astro.props;
         </svg>
       </button>
     </div>
-    <nav id="toc-nav-mobile" class="p-4 overflow-y-auto h-[calc(100%-4rem)]">
+    <nav id="toc-nav-mobile" class="p-5 overflow-y-auto h-[calc(100%-5rem)]" role="navigation" aria-label="On this page">
       <!-- 移动端目录内容，由客户端JavaScript填充 -->
     </nav>
   </div>

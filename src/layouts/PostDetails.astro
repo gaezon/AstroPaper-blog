@@ -87,6 +87,9 @@ const nextPost =
 <Layout {...layoutProps}>
   <Header />
   <BackButton />
+  <!-- 目录组件放在main外部，作为独立的导航辅助元素 -->
+  <TableOfContents />
+  
   <main
     id="main-content"
     class:list={[
@@ -95,15 +98,14 @@ const nextPost =
     ]}
     data-pagefind-body
   >
-    <!-- 目录组件放在main外部，避免影响内容布局 -->
-    <TableOfContents />
     
-    <!-- 文章内容容器，使用标准宽度 -->
+    <!-- 文章内容容器，保持居中对齐 -->
     <div class="flex justify-center w-full">
       <div class="w-full max-w-app px-4">
         <!-- 文章标题区域，增加上边距以避免与Go back按钮重叠 -->
         <div class="mt-6 mb-4">
           <h1
+            id="article-title"
             transition:name={slugifyStr(title)}
             class="text-2xl font-bold text-accent sm:text-3xl leading-tight"
           >
@@ -118,6 +120,8 @@ const nextPost =
       <article
         id="article"
         class="app-prose mx-auto mt-8 max-w-full prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+        role="main"
+        aria-labelledby="article-title"
       >
         <Content />
       </article>
