@@ -61,14 +61,28 @@ const { class: className = "" } = Astro.props;
 <button
   id="toc-open-desktop"
   class:list={[
-    "hidden xl:inline-flex items-center gap-1 fixed top-20 z-40 rounded bg-accent text-background px-2 py-1 text-xs shadow",
+    "hidden xl:flex items-center justify-center fixed top-20 z-40 w-12 h-12 rounded-full",
+    "bg-gradient-to-br from-accent/90 to-accent/70 backdrop-blur-md border border-accent/30",
+    "shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 hover:scale-105",
+    "transition-all duration-300 group",
     "xl:right-4 2xl:left-[calc(50%+33rem)]"
   ]}
   aria-label="展开目录"
   type="button"
 >
-  打开目录
- </button>
+  <!-- 抽象的目录展开图标：三条动态线条 -->
+  <div class="relative w-6 h-6 flex flex-col justify-center items-center gap-1">
+    <!-- 第一条线：短 -->
+    <div class="w-3 h-0.5 bg-background rounded-full transition-all duration-300 group-hover:w-4 group-hover:translate-x-0.5"></div>
+    <!-- 第二条线：中 -->
+    <div class="w-4 h-0.5 bg-background rounded-full transition-all duration-300 group-hover:w-5"></div>
+    <!-- 第三条线：长 -->
+    <div class="w-5 h-0.5 bg-background rounded-full transition-all duration-300 group-hover:w-6 group-hover:-translate-x-0.5"></div>
+    
+    <!-- 微妙的光晕效果 -->
+    <div class="absolute inset-0 bg-background/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+  </div>
+</button>
 
 <!-- 移动端覆盖层 -->
 <div
