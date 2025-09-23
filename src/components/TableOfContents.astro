@@ -56,7 +56,8 @@ const { class: className = "" } = Astro.props;
 <!-- 移动端切换按钮（独立于桌面端容器） -->
 <button
   id="toc-toggle"
-  class="hidden xl:hidden fixed right-5 bottom-24 sm:bottom-8 z-50 p-3.5 bg-accent/90 hover:bg-accent text-background rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+  class="xl:hidden fixed right-5 bottom-24 sm:bottom-8 z-50 p-3.5 bg-accent/90 hover:bg-accent text-background rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+  style="display: none;"
   aria-label="打开文章目录"
   aria-expanded="false"
   type="button"
