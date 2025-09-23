@@ -31,4 +31,4 @@ export type SocialObjects = {
   href: string;
   icon: string;
   linkTitle: string;
-}[]; 
+}[];

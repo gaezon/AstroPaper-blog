@@ -17,7 +17,7 @@ description: 完整指南：如何使用 Git 安全升级 Astropaper 博客主�
 
 截止 2024.8 Astropaper 最新主题为 `4.3.1`，作者在经历一段时间的停更，恢复更新（作者 Sat Naing 是一位来自缅甸的开发者，之前其在 GitHub 表示`由于祖国局势，作者被迫迁移到泰国`，处理完繁重事情后再更新，见 [Github discussion｜astro-paper](https://github.com/satnaing/astro-paper/discussions/309)
 
-以下内容参考翻译自 Astropaper 主题作者 [satnaing](https://github.com/satnaing) 的文章 [How to update dependencies of AstroPaper](https://astro-paper.pages.dev/posts/[how-to-update-dependencies](https://astro-paper.pages.dev/posts/how-to-update-dependencies/)/)，仅翻译成中文并增加相关注释，版权归原作者所有
+以下内容参考翻译自 Astropaper 主题作者 [satnaing](https://github.com/satnaing) 的文章 [How to update dependencies of AstroPaper](<https://astro-paper.pages.dev/posts/[how-to-update-dependencies](https://astro-paper.pages.dev/posts/how-to-update-dependencies/)/>)，仅翻译成中文并增加相关注释，版权归原作者所有
 
 ## Table of contents
 
@@ -31,7 +31,7 @@ description: 完整指南：如何使用 Git 安全升级 Astropaper 博客主�
 - `public/`
 - `src/styles/base.css`
 
- 这些文件可能已经被你自定义，因此在更新时应小心处理。
+这些文件可能已经被你自定义，因此在更新时应小心处理。
 
 ## 使用 Git 更新 AstroPaper
 
@@ -80,4 +80,4 @@ npm run preview
 
 ## 参考
 
-1. [How to update dependencies of AstroPaper｜Astropaper](https://astro-paper.pages.dev/posts/[how-to-update-dependencies](https://astro-paper.pages.dev/posts/how-to-update-dependencies/)/)
+1. [How to update dependencies of AstroPaper｜Astropaper](<https://astro-paper.pages.dev/posts/[how-to-update-dependencies](https://astro-paper.pages.dev/posts/how-to-update-dependencies/)/>)

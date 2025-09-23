@@ -2,32 +2,41 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 // 尝试从本地加载字体
-async function tryLoadLocalFont(fontName: string, weight: number): Promise<ArrayBuffer | null> {
+async function tryLoadLocalFont(
+  fontName: string,
+  weight: number
+): Promise<ArrayBuffer | null> {
   try {
-    let fontPath = '';
-    
+    let fontPath = "";
+
     // 根据字体名称选择正确的路径
-    if (fontName.includes('Noto+Sans+SC')) {
+    if (fontName.includes("Noto+Sans+SC")) {
       // Noto Sans SC 字体
-      fontPath = path.resolve(process.cwd(), `node_modules/@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-${weight}-normal.woff`);
-    } else if (fontName.includes('Noto+Sans')) {
+      fontPath = path.resolve(
+        process.cwd(),
+        `node_modules/@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-${weight}-normal.woff`
+      );
+    } else if (fontName.includes("Noto+Sans")) {
       // Noto Sans 字体
-      fontPath = path.resolve(process.cwd(), `node_modules/@fontsource/noto-sans/files/noto-sans-latin-${weight}-normal.woff`);
+      fontPath = path.resolve(
+        process.cwd(),
+        `node_modules/@fontsource/noto-sans/files/noto-sans-latin-${weight}-normal.woff`
+      );
     } else {
       return null;
     }
-    
+
     // 检查文件是否存在
     try {
       await fs.access(fontPath);
     } catch {
       // 尝试使用.woff2扩展名
-      fontPath = fontPath.replace('.woff', '.woff2');
+      fontPath = fontPath.replace(".woff", ".woff2");
       try {
         await fs.access(fontPath);
       } catch {
         // 尝试寻找其他可能的字体格式
-        const alternativePath = fontPath.replace('.woff2', '.ttf');
+        const alternativePath = fontPath.replace(".woff2", ".ttf");
         try {
           await fs.access(alternativePath);
           fontPath = alternativePath;
@@ -37,7 +46,7 @@ async function tryLoadLocalFont(fontName: string, weight: number): Promise<Array
         }
       }
     }
-    
+
     // 读取字体文件
     const fontBuffer = await fs.readFile(fontPath);
     return fontBuffer.buffer.slice(

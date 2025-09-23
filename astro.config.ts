@@ -71,18 +71,18 @@ export default defineConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
-      include: ["mermaid"]
+      include: ["mermaid"],
     },
     build: {
       rollupOptions: {
         external: [],
         output: {
           manualChunks: {
-            mermaid: ['mermaid']
-          }
-        }
-      }
-    }
+            mermaid: ["mermaid"],
+          },
+        },
+      },
+    },
   },
   image: {
     responsiveStyles: true,

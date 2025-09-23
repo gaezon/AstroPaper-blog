@@ -11,11 +11,19 @@
   let themeDebounceTimer = null;
 
   function isAlreadyInitialized() {
-    try { return Boolean(window.__MERMAID_CLIENT_INITIALIZED__); } catch { return false; }
+    try {
+      return Boolean(window.__MERMAID_CLIENT_INITIALIZED__);
+    } catch {
+      return false;
+    }
   }
 
   function markInitialized() {
-    try { window.__MERMAID_CLIENT_INITIALIZED__ = true; } catch { /* no-op */ }
+    try {
+      window.__MERMAID_CLIENT_INITIALIZED__ = true;
+    } catch {
+      /* no-op */
+    }
   }
 
   // 加载 Mermaid 并启用懒加载渲染
@@ -23,7 +31,7 @@
     if (mermaidInstance) return;
 
     try {
-      if (typeof window.mermaid !== 'undefined') {
+      if (typeof window.mermaid !== "undefined") {
         mermaidInstance = window.mermaid;
       } else {
         await loadMermaidScript();
@@ -35,44 +43,51 @@
       setupIntersectionObserver();
 
       // 监听站内主题切换事件
-      document.addEventListener('theme-changed', (e) => {
-        const nextTheme = e && e.detail && e.detail.theme ? e.detail.theme : getInitialTheme();
+      document.addEventListener("theme-changed", e => {
+        const nextTheme =
+          e && e.detail && e.detail.theme ? e.detail.theme : getInitialTheme();
         handleThemeChange(nextTheme);
       });
 
       // 监听系统主题变化（补充处理）
       if (window.matchMedia) {
-        const media = window.matchMedia('(prefers-color-scheme: dark)');
-        if (media && typeof media.addEventListener === 'function') {
-          media.addEventListener('change', (evt) => handleThemeChange(evt.matches ? 'dark' : 'light'));
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        if (media && typeof media.addEventListener === "function") {
+          media.addEventListener("change", evt =>
+            handleThemeChange(evt.matches ? "dark" : "light")
+          );
         }
       }
     } catch {
-      showMermaidError('load');
+      showMermaidError("load");
     }
   }
 
   function getInitialTheme() {
-    if (typeof localStorage !== 'undefined') {
-      const stored = localStorage.getItem('theme');
+    if (typeof localStorage !== "undefined") {
+      const stored = localStorage.getItem("theme");
       if (stored) return stored;
     }
-    if (document.documentElement.classList.contains('dark')) return 'dark';
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
-    return 'light';
+    if (document.documentElement.classList.contains("dark")) return "dark";
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    )
+      return "dark";
+    return "light";
   }
 
   function loadMermaidScript() {
     return new Promise((resolve, reject) => {
       const existing = document.querySelector('script[src="/mermaid.min.js"]');
       if (existing) {
-        if (typeof window.mermaid !== 'undefined') resolve();
-        existing.addEventListener('load', resolve, { once: true });
-        existing.addEventListener('error', reject, { once: true });
+        if (typeof window.mermaid !== "undefined") resolve();
+        existing.addEventListener("load", resolve, { once: true });
+        existing.addEventListener("error", reject, { once: true });
         return;
       }
-      const script = document.createElement('script');
-      script.src = '/mermaid.min.js';
+      const script = document.createElement("script");
+      script.src = "/mermaid.min.js";
       script.async = true;
       script.onload = resolve;
       script.onerror = reject;
@@ -81,36 +96,37 @@
   }
 
   function getMermaidConfig(theme) {
-    const isDark = theme === 'dark';
+    const isDark = theme === "dark";
     const darkThemeConfig = {
-      background: '#0f172a',
-      primaryColor: '#1e293b',
-      secondaryColor: '#334155',
-      primaryTextColor: '#ffffff',
-      secondaryTextColor: '#f1f5f9',
-      primaryBorderColor: '#60a5fa',
-      lineColor: '#60a5fa',
-      clusterBkg: '#334155',
-      titleColor: '#ffffff',
+      background: "#0f172a",
+      primaryColor: "#1e293b",
+      secondaryColor: "#334155",
+      primaryTextColor: "#ffffff",
+      secondaryTextColor: "#f1f5f9",
+      primaryBorderColor: "#60a5fa",
+      lineColor: "#60a5fa",
+      clusterBkg: "#334155",
+      titleColor: "#ffffff",
     };
     const lightThemeConfig = {
-      background: '#ffffff',
-      primaryColor: '#f5fafc',
-      secondaryColor: '#ffffff',
-      primaryTextColor: '#282728',
-      secondaryTextColor: '#475569',
-      primaryBorderColor: '#7aa4c7',
-      lineColor: '#7aa4c7',
+      background: "#ffffff",
+      primaryColor: "#f5fafc",
+      secondaryColor: "#ffffff",
+      primaryTextColor: "#282728",
+      secondaryTextColor: "#475569",
+      primaryBorderColor: "#7aa4c7",
+      lineColor: "#7aa4c7",
     };
 
     return {
       startOnLoad: false,
-      securityLevel: 'strict',
+      securityLevel: "strict",
       htmlLabels: false,
-      theme: isDark ? 'dark' : 'base',
+      theme: isDark ? "dark" : "base",
       themeVariables: {
         darkMode: isDark,
-        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
+        fontFamily:
+          'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
         ...(isDark ? darkThemeConfig : lightThemeConfig),
       },
     };
@@ -126,25 +142,26 @@
     try {
       const id = `mermaid-${Math.random().toString(36).slice(2, 10)}`;
       const normalized = code
-        .replace(/&lt;br\s*\/?&gt;/gi, '\n')
-        .replace(/<br\s*\/?>(\s*)/gi, '\n$1');
+        .replace(/&lt;br\s*\/?&gt;/gi, "\n")
+        .replace(/<br\s*\/?>(\s*)/gi, "\n$1");
       const result = await mermaidInstance.render(id, normalized);
       element.innerHTML = result.svg;
-      element.setAttribute('role', 'img');
-      if (!element.getAttribute('aria-label')) element.setAttribute('aria-label', 'Mermaid 图表');
+      element.setAttribute("role", "img");
+      if (!element.getAttribute("aria-label"))
+        element.setAttribute("aria-label", "Mermaid 图表");
       renderedElements.add(element);
     } catch (err) {
-      showMermaidError('render', element, err);
+      showMermaidError("render", element, err);
     }
   }
 
   function setupIntersectionObserver() {
-    const options = { root: null, rootMargin: '200px', threshold: 0.01 };
+    const options = { root: null, rootMargin: "200px", threshold: 0.01 };
     if (!intersectionObserver) {
-      intersectionObserver = new IntersectionObserver((entries) => {
+      intersectionObserver = new IntersectionObserver(entries => {
         const currentTheme = getInitialTheme();
         initializeMermaid(currentTheme);
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           if (!entry.isIntersecting) return;
           const element = entry.target;
           const code = mermaidDiagrams.get(element);
@@ -176,14 +193,17 @@
   }
 
   function collectDiagrams() {
-    const codeBlocks = document.querySelectorAll('pre > code.language-mermaid, code.language-mermaid');
+    const codeBlocks = document.querySelectorAll(
+      "pre > code.language-mermaid, code.language-mermaid"
+    );
     let idx = 0;
-    codeBlocks.forEach((codeElement) => {
+    codeBlocks.forEach(codeElement => {
       const code = codeElement.textContent;
       if (code && code.trim()) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'mermaid-diagram my-6 flex justify-center overflow-x-auto';
-        wrapper.setAttribute('data-mermaid-id', String(idx++));
+        const wrapper = document.createElement("div");
+        wrapper.className =
+          "mermaid-diagram my-6 flex justify-center overflow-x-auto";
+        wrapper.setAttribute("data-mermaid-id", String(idx++));
 
         const preElement = codeElement.parentElement;
         if (preElement?.parentNode) {
@@ -198,47 +218,50 @@
   }
 
   function showMermaidError(type, element, error) {
-    const isDark = document.documentElement.classList.contains('dark');
-    const container = document.createElement('div');
-    container.className = `${isDark ? 'bg-red-900/20 border-red-800 text-red-200' : 'bg-red-50 border-red-200 text-red-800'} border rounded-lg p-4 my-4`;
+    const isDark = document.documentElement.classList.contains("dark");
+    const container = document.createElement("div");
+    container.className = `${isDark ? "bg-red-900/20 border-red-800 text-red-200" : "bg-red-50 border-red-200 text-red-800"} border rounded-lg p-4 my-4`;
 
-    const title = document.createElement('p');
-    title.className = 'font-medium';
-    title.textContent = type === 'load' ? 'Mermaid 库加载失败' : 'Mermaid 图表渲染失败';
+    const title = document.createElement("p");
+    title.className = "font-medium";
+    title.textContent =
+      type === "load" ? "Mermaid 库加载失败" : "Mermaid 图表渲染失败";
     container.appendChild(title);
 
-    if (type !== 'load' && error) {
-      const details = document.createElement('details');
-      details.className = 'mt-2';
-      const summary = document.createElement('summary');
-      summary.className = isDark ? 'text-red-300 cursor-pointer' : 'text-red-600 cursor-pointer';
-      summary.textContent = '查看错误详情';
-      const pre = document.createElement('pre');
-      pre.className = 'text-sm mt-2 whitespace-pre-wrap';
+    if (type !== "load" && error) {
+      const details = document.createElement("details");
+      details.className = "mt-2";
+      const summary = document.createElement("summary");
+      summary.className = isDark
+        ? "text-red-300 cursor-pointer"
+        : "text-red-600 cursor-pointer";
+      summary.textContent = "查看错误详情";
+      const pre = document.createElement("pre");
+      pre.className = "text-sm mt-2 whitespace-pre-wrap";
       pre.textContent = String(error);
       details.appendChild(summary);
       details.appendChild(pre);
       container.appendChild(details);
-    } else if (type === 'load') {
-      const info = document.createElement('p');
-      info.className = isDark ? 'text-red-300' : 'text-red-600';
-      info.textContent = '无法加载本地图表渲染库，请联系管理员。';
+    } else if (type === "load") {
+      const info = document.createElement("p");
+      info.className = isDark ? "text-red-300" : "text-red-600";
+      info.textContent = "无法加载本地图表渲染库，请联系管理员。";
       container.appendChild(info);
     }
 
     if (element) {
-      element.innerHTML = '';
+      element.innerHTML = "";
       element.appendChild(container);
     } else {
       for (const [el] of mermaidDiagrams.entries()) {
-        el.innerHTML = '';
+        el.innerHTML = "";
         el.appendChild(container.cloneNode(true));
       }
     }
   }
 
   // 初始化
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     if (isAlreadyInitialized()) return;
     collectDiagrams();
     if (mermaidDiagrams.size > 0) {
@@ -254,10 +277,10 @@
       setupMermaid(); // 幂等：不会重复初始化，但会观测新加入的图表
     }
   }
-  document.addEventListener('astro:page-load', handleAstroPageLoad);
-  document.addEventListener('astro:after-swap', handleAstroPageLoad);
-  if (document.readyState !== 'loading') {
+  document.addEventListener("astro:page-load", handleAstroPageLoad);
+  document.addEventListener("astro:after-swap", handleAstroPageLoad);
+  if (document.readyState !== "loading") {
     // 若脚本注入时文档已解析完成，立即执行一次以避免错过 DOMContentLoaded
     handleAstroPageLoad();
   }
-</script> 
+</script>

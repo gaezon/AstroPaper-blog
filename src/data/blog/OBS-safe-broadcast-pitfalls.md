@@ -43,7 +43,7 @@ description: 想在 OBS 实现安全延时却遇到音频爆音问题？分享�
 
 我当时的尝试流程如下：
 
-1. 在 **混音器 → 高级音频属性** 中，把需要直播出去的各路音频源的「同步偏移 (Sync Offset)」全部填成 `20000 ms`，力求与视频帧保持同一延迟。  
+1. 在 **混音器 → 高级音频属性** 中，把需要直播出去的各路音频源的「同步偏移 (Sync Offset)」全部填成 `20000 ms`，力求与视频帧保持同一延迟。
 2. 但我在「音频监控」里勾选 **监听并输出 (Monitor and Output)**，虽然此时监听并不会受 Sync Offset 影响依旧是实时的，但直播推流出去的确实已经延迟了 20 秒，与视频的延迟同步了。
 
 ![obs-audio-sync-offset](https://img.gaazeon.com/2025/06/OBS-audio-sync-offset.avif)
@@ -64,10 +64,10 @@ description: 想在 OBS 实现安全延时却遇到音频爆音问题？分享�
 在发现视频滞后以后，我第一反应是去 **高级音频属性 → 同步偏移 (Sync Offset)** 里硬填 `20000 ms`，并在「混音器」面板手动把麦克风通道 **推迟监听**，妄图用音频侧的「手动延时」与视频对齐。  
 但结果依旧翻车，原因有两点：
 
-- **上限仍然被 960 ms 卡死**：Sync Offset 实际调用的是同一份音频缓冲区，它同样会被内核的 `max buffering` 强制截断。  
+- **上限仍然被 960 ms 卡死**：Sync Offset 实际调用的是同一份音频缓冲区，它同样会被内核的 `max buffering` 强制截断。
 - **混音器不会改写封包时间戳**：即便声卡监听听起来「同步」了，OBS 推向 RTMP 时仍按原始时间戳发送，服务器端依旧视为「音早画晚」，重采样/丢包操作仍然发生。
 
-换句话说，*你在本地听到的并不等于观众听到的*——混音器的小推子和滤镜里的「同步偏移」只能满足 <1 秒的口型微调，面对 20 秒级别的安全延时毫无胜算。
+换句话说，_你在本地听到的并不等于观众听到的_——混音器的小推子和滤镜里的「同步偏移」只能满足 <1 秒的口型微调，面对 20 秒级别的安全延时毫无胜算。
 
 当我天真地填入 `20000 ms` 时，灾难发生了：
 
@@ -115,9 +115,9 @@ description: 想在 OBS 实现安全延时却遇到音频爆音问题？分享�
    - 缓存 20 秒的视频流，并设置好紧急情况下的 `DUMP` (快速丢帧) / `MUTE` (静音) 热键。
 
 2. **播出机 (你的主力 OBS)**
-    - 通过 **RTMP 或 SRT 协议** *监听* 上一台机器处理好的延时流。
-    - **不再使用任何延迟滤镜**。
-    - 像往常一样，正常推流到各大直播平台。
+   - 通过 **RTMP 或 SRT 协议** _监听_ 上一台机器处理好的延时流。
+   - **不再使用任何延迟滤镜**。
+   - 像往常一样，正常推流到各大直播平台。
 
 这个方案的妙处在于，音视频在抵达你的播出机之前就已经完美同步了，播出机也无需消耗大量内存来缓存那 20 秒的画面，从根本上杜绝了爆音的可能。
 
@@ -133,17 +133,17 @@ description: 想在 OBS 实现安全延时却遇到音频爆音问题？分享�
 2. **取消勾选**「本地文件」。
 3. 在「**输入**」框中填入：
 
-    ```text
-    rtmp://0.0.0.0:1935/live/app
-    ```
+   ```text
+   rtmp://0.0.0.0:1935/live/app
+   ```
 
 4. 在「**FFmpeg 选项**」中，填入一个关键参数：
 
-    ```text
-    listen=1
-    ```
+   ```text
+   listen=1
+   ```
 
-    做完这一步，你的播出机就已经在 1935 端口「竖起耳朵」，等待推流机「上门」。
+   做完这一步，你的播出机就已经在 1935 端口「竖起耳朵」，等待推流机「上门」。
 
 ##### RTMP 发送端 (延时机 OBS)
 
@@ -200,7 +200,7 @@ graph TD
         B3["Mute/Dump<br/>紧急控制"]
         B4["推流输出<br/>各大直播平台"]
         B5["防火墙设置<br/>开放1935端口"]
-        
+
         B1 --> B2
         B1 --> B3
         B1 --> B4
@@ -244,7 +244,11 @@ A: 不可以。NDI 插件只用于**实时传输**，特点就是为了低延迟
 ## Footnotes
 
 [^1]: [Render Delay Filter | 渲染延迟滤镜官方说明](https://obsproject.com/kb/render-delay-filter)
+
 [^2]: [MAX_BUFFERING_TICKS — Artificial Limit to Audio Sync Offset? | OBS 960 ms 音频缓冲上限讨论](https://obsproject.com/forum/threads/max_buffering_ticks-artificial-limit-to-audio-sync_offset.54867/)
+
 [^3]: [OBS Forum 讨论 "help with media source and rtmp" 指出 `media source` 中设置 `listen=1` 可使 OBS 充当 RTMP 服务器](https://obsproject.com/forum/threads/help-with-media-source-and-rtmp.56959/)
+
 [^4]: [OBS 论坛帖子 "Adding a timed delay to my stream" 说明在 Settings → Broadcast/Advanced 中可直接启用 Broadcast/Stream Delay](https://obsproject.com/forum/threads/adding-a-timed-delay-to-my-stream.2483/)
+
 [^5]: [OBS 官方知识库《SRT Protocol Streaming Guide》阐述在 URL 中使用 `mode=listener` / `mode=caller` 等参数的写法与含义](https://obsproject.com/kb/srt-protocol-streaming-guide)

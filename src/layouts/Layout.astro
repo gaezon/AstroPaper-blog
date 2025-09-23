@@ -19,8 +19,6 @@ export interface Props {
   scrollSmooth?: boolean;
 }
 
-
-
 const {
   title = SITE.title,
   author = SITE.author,
@@ -33,10 +31,7 @@ const {
   scrollSmooth = false,
 } = Astro.props;
 
-const socialImageURL = new URL(
-  ogImage ?? "/og.png",
-  Astro.url.origin
-).href;
+const socialImageURL = new URL(ogImage ?? "/og.png", Astro.url.origin).href;
 
 // 注意：保留变量示例时请避免未使用的赋值以通过 ESLint
 
@@ -143,22 +138,24 @@ const siteHostname = new URL(SITE.website).hostname;
     <ClientRouter />
 
     <script is:inline src="/toggle-theme.js"></script>
-    
+
     <!-- Google AdSense -->
     <GoogleAdsense />
 
     <!-- Include Mermaid client component -->
     <MermaidClient />
-    
-    {import.meta.env.PROD && (
-      // Umami Analytics（仅生产环境 & 限定域名）
-      <script
-        defer
-        src="https://umami.gaazeon.com/umami"
-        data-website-id="82ee4d3c-d021-4a8b-94b3-6ce6840b6416"
-        data-domains={siteHostname}
-      ></script>
-    )}
+
+    {
+      import.meta.env.PROD && (
+        // Umami Analytics（仅生产环境 & 限定域名）
+        <script
+          defer
+          src="https://umami.gaazeon.com/umami"
+          data-website-id="82ee4d3c-d021-4a8b-94b3-6ce6840b6416"
+          data-domains={siteHostname}
+        />
+      )
+    }
 
     <!-- Vercel Speed Insights -->
     <script is:inline defer src="/_vercel/speed-insights/script.js"></script>

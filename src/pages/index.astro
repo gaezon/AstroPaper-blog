@@ -20,7 +20,7 @@ const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
-<Layout 
+<Layout
   title={SITE.title}
   description="欢迎来到 Gaazeon 的技术博客！专注分享现代 Web 开发技术、前端框架、编程工具使用技巧和软件开发最佳实践。这里有不同数字技术的使用经验与心得，帮助开发者提升编程技能和开发效率。"
 >
@@ -28,7 +28,12 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
   <main id="main-content" data-layout="index">
     <section id="hero" class="pt-8 pb-6">
       <div class="flex items-center gap-2">
-        <h1 id="hero-heading" class="text-3xl font-bold sm:text-4xl md:text-5xl">Gaazeon</h1>
+        <h1
+          id="hero-heading"
+          class="text-3xl font-bold sm:text-4xl md:text-5xl"
+        >
+          Gaazeon
+        </h1>
         <a
           target="_blank"
           href="/rss.xml"
@@ -67,7 +72,12 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       featuredPosts.length > 0 && (
         <>
           <section id="featured" class="pt-6 pb-4">
-            <h2 id="featured-heading" class="text-2xl font-semibold tracking-wide">Featured</h2>
+            <h2
+              id="featured-heading"
+              class="text-2xl font-semibold tracking-wide"
+            >
+              Featured
+            </h2>
             <ul>
               {featuredPosts.map(data => (
                 <Card variant="h3" {...data} />
@@ -82,7 +92,12 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-6 pb-4">
-          <h2 id="recent-posts-heading" class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
+          <h2
+            id="recent-posts-heading"
+            class="text-2xl font-semibold tracking-wide"
+          >
+            Recent Posts
+          </h2>
           <ul>
             {recentPosts.map(
               (data, index) =>

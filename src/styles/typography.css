@@ -117,3 +117,180 @@
     }
   }
 }
+
+/* ===== 目录组件样式 ===== */
+#table-of-contents,
+#toc-sidebar {
+  /* 确保目录在滚动时保持可见 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-muted) transparent;
+}
+
+#table-of-contents::-webkit-scrollbar,
+#toc-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+#table-of-contents::-webkit-scrollbar-track,
+#toc-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#table-of-contents::-webkit-scrollbar-thumb,
+#toc-sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--color-muted);
+  border-radius: 2px;
+}
+
+#table-of-contents::-webkit-scrollbar-thumb:hover,
+#toc-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-accent);
+}
+
+/* 目录链接样式 - 保持 liquid glass 效果 */
+#toc-nav a,
+#toc-nav-mobile a {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 平衡可读性与玻璃效果：使用 65% 不透明度 */
+  color: hsl(var(--foreground) / 0.65) !important;
+  backdrop-filter: blur(1px);
+}
+
+#toc-nav a:hover,
+#toc-nav-mobile a:hover {
+  transform: translateX(2px);
+  color: hsl(var(--foreground) / 0.85) !important;
+  /* 悬停时增强玻璃效果 */
+  backdrop-filter: blur(2px);
+  text-shadow: 0 0 8px hsl(var(--foreground) / 0.1);
+}
+
+#toc-nav a.active,
+#toc-nav-mobile a.active {
+  font-weight: 500;
+  color: hsl(var(--accent)) !important;
+  /* 选中时的玻璃光泽效果 */
+  backdrop-filter: blur(3px);
+  text-shadow: 0 0 12px hsl(var(--accent) / 0.3);
+}
+
+/* 移动端目录样式优化 */
+@media (max-width: 1279px) {
+  #toc-overlay {
+    backdrop-filter: blur(8px);
+  }
+
+  #toc-overlay .transform {
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* 确保目录不遮挡主要内容 */
+@media (min-width: 1280px) {
+  #main-content {
+    margin-right: 0;
+  }
+
+  /* 当目录存在时，为主内容添加右边距 */
+  body:has(#table-of-contents:not([style*="display: none"])) #main-content,
+  body:has(#toc-sidebar:not([style*="display: none"])) #main-content {
+    margin-right: 20rem; /* 16rem (w-64) + 4rem padding */
+  }
+}
+
+/* 目录动画效果 */
+#toc-nav ul,
+#toc-nav-mobile ul {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 目录项层级缩进 */
+#toc-nav ul ul,
+#toc-nav-mobile ul ul {
+  margin-left: 1rem;
+  border-left: 1px solid var(--color-border);
+  padding-left: 0.5rem;
+}
+
+/* 目录按钮样式 */
+#toc-toggle {
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#toc-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+#toc-toggle:active {
+  transform: scale(0.95);
+}
+
+/* 桌面端打开目录按钮的高级动画效果 */
+#toc-open-desktop {
+  /* 呼吸动画 */
+  animation: toc-breathe 3s ease-in-out infinite;
+}
+
+#toc-open-desktop:hover {
+  animation-play-state: paused;
+}
+
+/* 线条展开动画 */
+#toc-open-desktop .w-3,
+#toc-open-desktop .w-4,
+#toc-open-desktop .w-5 {
+  transform-origin: left center;
+}
+
+/* 呼吸效果关键帧 */
+@keyframes toc-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px hsl(var(--accent) / 0.2);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px hsl(var(--accent) / 0.3);
+  }
+}
+
+/* 按钮内部线条的微动画 */
+@keyframes line-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+#toc-open-desktop:not(:hover) .w-3 {
+  animation: line-pulse 2s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+#toc-open-desktop:not(:hover) .w-4 {
+  animation: line-pulse 2s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+#toc-open-desktop:not(:hover) .w-5 {
+  animation: line-pulse 2s ease-in-out infinite;
+  animation-delay: 0.6s;
+}

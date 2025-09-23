@@ -30,3 +30,6 @@ public/pagefind
 # Cursor
 .cursor/*
 !.cursor/rules
+
+# Playwright MCP artifacts
+.playwright-mcp/
