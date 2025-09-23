@@ -262,6 +262,14 @@
       // 默认底部 1.5rem (24px)
       let bottom = 24;
 
+      // 移动端固定安全底边距，避免随滚动抖动
+      const isMobile = window.innerWidth < 640;
+      if (isMobile) {
+        bottom = 112; // 7rem，稳定避让 Back To Top
+        toggle.style.bottom = `${bottom}px`;
+        return;
+      }
+
       // 检查回到顶部按钮是否存在且可见
       if (backTop && btnContainer) {
         const toggleRect = toggle.getBoundingClientRect();
@@ -280,8 +288,7 @@
 
           if (overlap) {
             // 如果重叠，根据屏幕尺寸动态计算避让距离
-            const isMobile = window.innerWidth < 640;
-            bottom = isMobile ? 112 : 96; // 移动端 7rem，桌面端 6rem
+            bottom = 96; // 桌面端 6rem
           }
         }
       }
