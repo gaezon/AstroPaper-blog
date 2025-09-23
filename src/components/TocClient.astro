@@ -3,8 +3,14 @@
 ---
 
 <script>
-  // @ts-nocheck
   import { extractTocFromDOM } from '@/utils/extractToc';
+
+  // 目录项类型定义
+  type TocItem = {
+    id: string;
+    title: string;
+    children?: TocItem[];
+  };
 
   // 多事件保障：首次加载 / DOM 就绪 / Astro 路由切换
   const tryInit = () => initializeTocWithRetry();
@@ -63,7 +69,7 @@
     setupDesktopToggle();
   }
 
-  function renderToc(items, containerId = 'toc-nav', level = 0) {
+  function renderToc(items: TocItem[], containerId: string = 'toc-nav', level: number = 0) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -75,7 +81,7 @@
     ul.className = level === 0 ? 'space-y-1.5' : 'ml-4 space-y-1 mt-1';
     ul.setAttribute('role', 'list');
 
-    items.forEach((item) => {
+    items.forEach((item: TocItem) => {
       const li = document.createElement('li');
       
       const link = document.createElement('a');
@@ -87,7 +93,7 @@
       // 避免无效的 ARIA：锚点不应标记为 listitem，列表语义由 <li> 提供
       
       // 平滑滚动，添加偏移避免闪烁
-      link.addEventListener('click', (e) => {
+      link.addEventListener('click', (e: MouseEvent) => {
         e.preventDefault();
         const target = document.getElementById(item.id);
         if (target) {
@@ -96,7 +102,7 @@
           const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
           // 先立即更新高亮状态，避免等待 IntersectionObserver 导致的闪烁
-          document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
+          document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach((el) => {
             el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
             el.classList.add('text-muted', 'border-transparent');
           });
@@ -127,7 +133,7 @@
     container.appendChild(ul);
   }
 
-  function setupScrollObserver() {
+  function setupScrollObserver(): void {
     const headings = document.querySelectorAll('#article h2, #article h3, #article h4, #article h5, #article h6');
     
     if (headings.length === 0) return;
@@ -141,19 +147,19 @@
           
           if (entry.isIntersecting) {
             // 移除所有活动状态
-            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
+            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach((el) => {
               el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
               el.classList.add('text-muted', 'border-transparent');
               el.removeAttribute('aria-current');
             });
             
             // 添加当前活动状态
-            if (link) {
+            if (link instanceof HTMLAnchorElement) {
               link.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
               link.classList.remove('text-muted', 'border-transparent');
               link.setAttribute('aria-current', 'true');
             }
-            if (mobileLink) {
+            if (mobileLink instanceof HTMLAnchorElement) {
               mobileLink.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
               mobileLink.classList.remove('text-muted', 'border-transparent');
               mobileLink.setAttribute('aria-current', 'true');
@@ -170,7 +176,7 @@
     headings.forEach(heading => observer.observe(heading));
   }
 
-  function setupMobileInteractions() {
+  function setupMobileInteractions(): void {
     const toggle = document.getElementById('toc-toggle');
     const overlay = document.getElementById('toc-overlay');
     const close = document.getElementById('toc-close');
@@ -184,26 +190,29 @@
       mobileNav.innerHTML = desktopNav.innerHTML;
       // 为移动端链接绑定平滑滚动
       mobileNav.querySelectorAll('a[href^="#"]').forEach((a) => {
-        a.addEventListener('click', (e) => {
+        (a as HTMLAnchorElement).addEventListener('click', (e) => {
           e.preventDefault();
-          const href = e.currentTarget && e.currentTarget.getAttribute ? e.currentTarget.getAttribute('href') : null;
+          const current = e.currentTarget;
+          const href = current instanceof HTMLAnchorElement ? current.getAttribute('href') : null;
           if (!href) return;
           const target = document.querySelector(href);
-          if (target) {
+          if (target instanceof HTMLElement) {
             // 计算偏移位置，保持与桌面端一致
             const yOffset = -120;
             const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
             
             // 先更新高亮状态
-            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
+            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach((el) => {
               el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
               el.classList.add('text-muted', 'border-transparent');
               el.removeAttribute('aria-current');
             });
-            const clickedLink = e.currentTarget;
-            clickedLink.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-            clickedLink.classList.remove('text-muted', 'border-transparent');
-            clickedLink.setAttribute('aria-current', 'true');
+            const clickedLink = current instanceof HTMLAnchorElement ? current : null;
+            if (clickedLink) {
+              clickedLink.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
+              clickedLink.classList.remove('text-muted', 'border-transparent');
+              clickedLink.setAttribute('aria-current', 'true');
+            }
             
             // 然后平滑滚动
             window.scrollTo({ top: y, behavior: 'smooth' });
