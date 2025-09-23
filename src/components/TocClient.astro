@@ -81,7 +81,7 @@
       link.className = `block py-2 px-3 text-sm leading-relaxed text-muted hover:text-accent hover:bg-muted/40 rounded-md transition-all duration-200 border-l-2 border-transparent hover:border-accent/30 ${
         level > 0 ? 'text-xs py-1.5 ml-2' : 'font-medium'
       }`;
-      link.setAttribute('role', 'listitem');
+      // 避免无效的 ARIA：锚点不应标记为 listitem，列表语义由 <li> 提供
       
       // 平滑滚动，添加偏移避免闪烁
       link.addEventListener('click', (e) => {
@@ -338,19 +338,26 @@
 
     // 初始：目录可见，打开按钮隐藏
     openBtn.style.display = 'none';
+    aside.style.display = '';
+    aside.setAttribute('aria-hidden', 'false');
 
     const hideAside = () => {
-      aside.style.opacity = '0';
-      aside.style.pointerEvents = 'none';
-      aside.style.transform = 'translateX(20px)';
+      // 使用 display 切换，确保视觉/可访问均隐藏
+      aside.style.display = 'none';
+      aside.style.opacity = '';
+      aside.style.pointerEvents = '';
+      aside.style.transform = '';
+      aside.setAttribute('aria-hidden', 'true');
       openBtn.style.display = 'inline-flex';
       collapseBtn.setAttribute('aria-expanded', 'false');
       openBtn.setAttribute('aria-expanded', 'false');
     };
     const showAside = () => {
+      aside.style.display = '';
       aside.style.opacity = '';
       aside.style.pointerEvents = '';
       aside.style.transform = '';
+      aside.setAttribute('aria-hidden', 'false');
       openBtn.style.display = 'none';
       collapseBtn.setAttribute('aria-expanded', 'true');
       openBtn.setAttribute('aria-expanded', 'true');
