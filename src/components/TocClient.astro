@@ -33,7 +33,7 @@
     const tocToggle = document.getElementById('toc-toggle');
 
     if (tocItems.length === 0) {
-      // 没有目录时隐藏，但不永久放弃，下次导航会再次尝试
+      // 没有目录时隐藏按钮与容器
       if (tocContainer) tocContainer.style.display = 'none';
       if (tocToggle) tocToggle.style.display = 'none';
       return;
