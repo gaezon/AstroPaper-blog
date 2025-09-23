@@ -31,17 +31,20 @@
 
     const tocContainer = document.getElementById('toc-sidebar');
     const tocToggle = document.getElementById('toc-toggle');
+    const tocOpenDesktop = document.getElementById('toc-open-desktop');
 
     if (tocItems.length === 0) {
       // 没有目录时隐藏按钮与容器
       if (tocContainer) tocContainer.style.display = 'none';
       if (tocToggle) tocToggle.style.display = 'none';
+      if (tocOpenDesktop) tocOpenDesktop.style.display = 'none';
       return;
     }
 
     // 确保显示（避免上一次初始化失败时被隐藏）
     if (tocContainer) tocContainer.style.display = '';
     if (tocToggle) tocToggle.style.display = '';
+    if (tocOpenDesktop) tocOpenDesktop.style.display = 'none';
 
     // 清空已有内容避免重复渲染
     const nav = document.getElementById('toc-nav');
