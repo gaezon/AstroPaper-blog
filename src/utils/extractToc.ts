@@ -18,7 +18,12 @@ export function extractTocFromDOM(): TocItem[] {
   
   headings.forEach((heading) => {
     const id = heading.id;
-    const title = heading.textContent?.trim() || '';
+    // 清理标题文本：去除末尾由自动锚点产生的「#」，并规范空白
+    const rawTitle = heading.textContent || '';
+    const title = rawTitle
+      .replace(/\s*#\s*$/, '') // 删除结尾的 #
+      .replace(/\s+/g, ' ')     // 规范空白
+      .trim();
     const level = parseInt(heading.tagName.substring(1));
     
     // 排除 Footnotes 和其他特殊标题
@@ -26,7 +31,9 @@ export function extractTocFromDOM(): TocItem[] {
         !title.toLowerCase().includes('footnote') && 
         !id.toLowerCase().includes('footnote') &&
         !id.startsWith('fnref-') &&
-        !id.startsWith('fn-')) {
+        !id.startsWith('fn-') &&
+        // 排除自动生成目录的标题（remark-toc）
+        title.toLowerCase() !== 'table of contents') {
       tocItems.push({
         id,
         title,
