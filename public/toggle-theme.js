@@ -28,7 +28,10 @@ function reflectPreference() {
 
   const themeBtn = document.querySelector("#theme-btn");
   if (themeBtn) {
-    themeBtn.setAttribute("aria-label", themeValue === "dark" ? "Switch to light theme" : "Switch to dark theme");
+    themeBtn.setAttribute(
+      "aria-label",
+      themeValue === "dark" ? "Switch to light theme" : "Switch to dark theme"
+    );
   }
 
   // Get a reference to the body element
@@ -55,12 +58,10 @@ function reflectPreference() {
 // 根据当前主题显示对应的 mermaid 资源
 function updateMermaidMedia(theme) {
   // rehype-mermaid 在启用 dark:true 时，会生成 <picture> → <source id="mermaid-dark-n">
-  document
-    .querySelectorAll('source[id^="mermaid-dark-"]')
-    .forEach(el => {
-      // 在深色主题下展示暗色 SVG，其余情况下禁用
-      el.setAttribute("media", theme === "dark" ? "all" : "none");
-    });
+  document.querySelectorAll('source[id^="mermaid-dark-"]').forEach(el => {
+    // 在深色主题下展示暗色 SVG，其余情况下禁用
+    el.setAttribute("media", theme === "dark" ? "all" : "none");
+  });
 }
 
 // set early so no page flashes / CSS is made aware
@@ -124,8 +125,10 @@ if (theme === "light") {
 
 window.localStorage.setItem("theme", theme);
 
-const dispatchThemeChangeEvent = (newTheme) => {
-  const event = new CustomEvent('theme-changed', { detail: { theme: newTheme } });
+const dispatchThemeChangeEvent = newTheme => {
+  const event = new CustomEvent("theme-changed", {
+    detail: { theme: newTheme },
+  });
   document.dispatchEvent(event);
   console.log(`Dispatched theme-changed event: ${newTheme}`);
 };
@@ -137,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.localStorage.setItem("theme", newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
-    
+
     dispatchThemeChangeEvent(newTheme);
   };
 

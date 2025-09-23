@@ -3,7 +3,7 @@
 ---
 
 <script>
-  import { extractTocFromDOM } from '@/utils/extractToc';
+  import { extractTocFromDOM } from "@/utils/extractToc";
 
   // 目录项类型定义
   type TocItem = {
@@ -14,20 +14,25 @@
 
   // 多事件保障：首次加载 / DOM 就绪 / Astro 路由切换
   const tryInit = () => initializeTocWithRetry();
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
     setTimeout(tryInit, 0);
   } else {
-    document.addEventListener('DOMContentLoaded', tryInit, { once: true });
+    document.addEventListener("DOMContentLoaded", tryInit, { once: true });
   }
-  document.addEventListener('astro:page-load', tryInit);
-  document.addEventListener('astro:after-swap', tryInit);
+  document.addEventListener("astro:page-load", tryInit);
+  document.addEventListener("astro:after-swap", tryInit);
 
   async function initializeTocWithRetry(maxRetries = 20, intervalMs = 100) {
     // 等待 #article 和至少一个标题元素就绪
     let attempt = 0;
     while (attempt < maxRetries) {
-      const article = document.getElementById('article');
-      const hasHeadings = !!document.querySelector('#article h2, #article h3, #article h4, #article h5, #article h6');
+      const article = document.getElementById("article");
+      const hasHeadings = !!document.querySelector(
+        "#article h2, #article h3, #article h4, #article h5, #article h6"
+      );
       if (article && hasHeadings) break;
       attempt += 1;
       await new Promise(r => setTimeout(r, intervalMs));
@@ -35,26 +40,26 @@
 
     const tocItems = extractTocFromDOM();
 
-    const tocContainer = document.getElementById('toc-sidebar');
-    const tocToggle = document.getElementById('toc-toggle');
-    const tocOpenDesktop = document.getElementById('toc-open-desktop');
+    const tocContainer = document.getElementById("toc-sidebar");
+    const tocToggle = document.getElementById("toc-toggle");
+    const tocOpenDesktop = document.getElementById("toc-open-desktop");
 
     if (tocItems.length === 0) {
       // 没有目录时隐藏按钮与容器
-      if (tocContainer) tocContainer.style.display = 'none';
-      if (tocToggle) tocToggle.style.display = 'none';
-      if (tocOpenDesktop) tocOpenDesktop.style.display = 'none';
+      if (tocContainer) tocContainer.style.display = "none";
+      if (tocToggle) tocToggle.style.display = "none";
+      if (tocOpenDesktop) tocOpenDesktop.style.display = "none";
       return;
     }
 
     // 确保显示（避免上一次初始化失败时被隐藏）
-    if (tocContainer) tocContainer.style.display = '';
-    if (tocToggle) tocToggle.style.display = '';
-    if (tocOpenDesktop) tocOpenDesktop.style.display = 'none';
+    if (tocContainer) tocContainer.style.display = "";
+    if (tocToggle) tocToggle.style.display = "";
+    if (tocOpenDesktop) tocOpenDesktop.style.display = "none";
 
     // 清空已有内容避免重复渲染
-    const nav = document.getElementById('toc-nav');
-    if (nav) nav.innerHTML = '';
+    const nav = document.getElementById("toc-nav");
+    if (nav) nav.innerHTML = "";
 
     // 渲染目录
     renderToc(tocItems);
@@ -69,49 +74,68 @@
     setupDesktopToggle();
   }
 
-  function renderToc(items: TocItem[], containerId: string = 'toc-nav', level: number = 0) {
+  function renderToc(
+    items: TocItem[],
+    containerId: string = "toc-nav",
+    level: number = 0
+  ) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     // 清除加载占位符
-    const loading = container.querySelector('#toc-loading');
+    const loading = container.querySelector("#toc-loading");
     if (loading) loading.remove();
 
-    const ul = document.createElement('ul');
-    ul.className = level === 0 ? 'space-y-1.5' : 'ml-4 space-y-1 mt-1';
-    ul.setAttribute('role', 'list');
+    const ul = document.createElement("ul");
+    ul.className = level === 0 ? "space-y-1.5" : "ml-4 space-y-1 mt-1";
+    ul.setAttribute("role", "list");
 
     items.forEach((item: TocItem) => {
-      const li = document.createElement('li');
-      
-      const link = document.createElement('a');
+      const li = document.createElement("li");
+
+      const link = document.createElement("a");
       link.href = `#${item.id}`;
       link.textContent = item.title;
       link.className = `block py-2 px-3 text-sm leading-relaxed text-muted hover:text-accent hover:bg-muted/40 rounded-md transition-all duration-200 border-l-2 border-transparent hover:border-accent/30 ${
-        level > 0 ? 'text-xs py-1.5 ml-2' : 'font-medium'
+        level > 0 ? "text-xs py-1.5 ml-2" : "font-medium"
       }`;
       // 避免无效的 ARIA：锚点不应标记为 listitem，列表语义由 <li> 提供
-      
+
       // 平滑滚动，添加偏移避免闪烁
-      link.addEventListener('click', (e: MouseEvent) => {
+      link.addEventListener("click", (e: MouseEvent) => {
         e.preventDefault();
         const target = document.getElementById(item.id);
         if (target) {
           // 计算偏移位置，避免标题被顶部遮挡（增加更多缓冲）
           const yOffset = -120; // 负值向上偏移，给出更多空间
-          const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          const y =
+            target.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
           // 先立即更新高亮状态，避免等待 IntersectionObserver 导致的闪烁
-          document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach((el) => {
-            el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-            el.classList.add('text-muted', 'border-transparent');
-          });
-          link.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-          link.classList.remove('text-muted', 'border-transparent');
-          link.setAttribute('aria-current', 'true');
+          document
+            .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
+            .forEach(el => {
+              el.classList.remove(
+                "active",
+                "text-accent",
+                "bg-muted/40",
+                "border-accent",
+                "font-semibold"
+              );
+              el.classList.add("text-muted", "border-transparent");
+            });
+          link.classList.add(
+            "active",
+            "text-accent",
+            "bg-muted/40",
+            "border-accent",
+            "font-semibold"
+          );
+          link.classList.remove("text-muted", "border-transparent");
+          link.setAttribute("aria-current", "true");
 
           // 然后平滑滚动
-          window.scrollTo({ top: y, behavior: 'smooth' });
+          window.scrollTo({ top: y, behavior: "smooth" });
         }
       });
 
@@ -119,10 +143,10 @@
 
       // 如果有子项，先创建子级 ul 再递归渲染，避免无效容器 id
       if (item.children && item.children.length > 0) {
-        const childUlWrapper = document.createElement('div');
+        const childUlWrapper = document.createElement("div");
         const childContainerId = `toc-child-${item.id}`;
         childUlWrapper.id = childContainerId;
-        childUlWrapper.className = 'mt-2';
+        childUlWrapper.className = "mt-2";
         li.appendChild(childUlWrapper);
         renderToc(item.children, childContainerId, level + 1);
       }
@@ -134,42 +158,66 @@
   }
 
   function setupScrollObserver(): void {
-    const headings = document.querySelectorAll('#article h2, #article h3, #article h4, #article h5, #article h6');
-    
+    const headings = document.querySelectorAll(
+      "#article h2, #article h3, #article h4, #article h5, #article h6"
+    );
+
     if (headings.length === 0) return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         entries.forEach(entry => {
           const id = entry.target.id;
           const link = document.querySelector(`#toc-nav a[href="#${id}"]`);
-          const mobileLink = document.querySelector(`#toc-nav-mobile a[href="#${id}"]`);
-          
+          const mobileLink = document.querySelector(
+            `#toc-nav-mobile a[href="#${id}"]`
+          );
+
           if (entry.isIntersecting) {
             // 移除所有活动状态
-            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach((el) => {
-              el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-              el.classList.add('text-muted', 'border-transparent');
-              el.removeAttribute('aria-current');
-            });
-            
+            document
+              .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
+              .forEach(el => {
+                el.classList.remove(
+                  "active",
+                  "text-accent",
+                  "bg-muted/40",
+                  "border-accent",
+                  "font-semibold"
+                );
+                el.classList.add("text-muted", "border-transparent");
+                el.removeAttribute("aria-current");
+              });
+
             // 添加当前活动状态
             if (link instanceof HTMLAnchorElement) {
-              link.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-              link.classList.remove('text-muted', 'border-transparent');
-              link.setAttribute('aria-current', 'true');
+              link.classList.add(
+                "active",
+                "text-accent",
+                "bg-muted/40",
+                "border-accent",
+                "font-semibold"
+              );
+              link.classList.remove("text-muted", "border-transparent");
+              link.setAttribute("aria-current", "true");
             }
             if (mobileLink instanceof HTMLAnchorElement) {
-              mobileLink.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-              mobileLink.classList.remove('text-muted', 'border-transparent');
-              mobileLink.setAttribute('aria-current', 'true');
+              mobileLink.classList.add(
+                "active",
+                "text-accent",
+                "bg-muted/40",
+                "border-accent",
+                "font-semibold"
+              );
+              mobileLink.classList.remove("text-muted", "border-transparent");
+              mobileLink.setAttribute("aria-current", "true");
             }
           }
         });
       },
       {
-        rootMargin: '-120px 0px -60% 0px', // 调整顶部边距以匹配滚动偏移，增加缓冲区
-        threshold: [0, 0.1, 0.5]
+        rootMargin: "-120px 0px -60% 0px", // 调整顶部边距以匹配滚动偏移，增加缓冲区
+        threshold: [0, 0.1, 0.5],
       }
     );
 
@@ -177,87 +225,106 @@
   }
 
   function setupMobileInteractions(): void {
-    const toggle = document.getElementById('toc-toggle');
-    const overlay = document.getElementById('toc-overlay');
-    const close = document.getElementById('toc-close');
-    const mobileNav = document.getElementById('toc-nav-mobile');
+    const toggle = document.getElementById("toc-toggle");
+    const overlay = document.getElementById("toc-overlay");
+    const close = document.getElementById("toc-close");
+    const mobileNav = document.getElementById("toc-nav-mobile");
 
     if (!toggle || !overlay || !close || !mobileNav) return;
 
     // 复制桌面端目录到移动端
-    const desktopNav = document.getElementById('toc-nav');
+    const desktopNav = document.getElementById("toc-nav");
     if (desktopNav) {
       mobileNav.innerHTML = desktopNav.innerHTML;
       // 为移动端链接绑定平滑滚动
-      mobileNav.querySelectorAll('a[href^="#"]').forEach((a) => {
-        (a as HTMLAnchorElement).addEventListener('click', (e) => {
+      mobileNav.querySelectorAll('a[href^="#"]').forEach(a => {
+        (a as HTMLAnchorElement).addEventListener("click", e => {
           e.preventDefault();
           const current = e.currentTarget;
-          const href = current instanceof HTMLAnchorElement ? current.getAttribute('href') : null;
+          const href =
+            current instanceof HTMLAnchorElement
+              ? current.getAttribute("href")
+              : null;
           if (!href) return;
           const target = document.querySelector(href);
           if (target instanceof HTMLElement) {
             // 计算偏移位置，保持与桌面端一致
             const yOffset = -120;
-            const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            
+            const y =
+              target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
             // 先更新高亮状态
-            document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach((el) => {
-              el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-              el.classList.add('text-muted', 'border-transparent');
-              el.removeAttribute('aria-current');
-            });
-            const clickedLink = current instanceof HTMLAnchorElement ? current : null;
+            document
+              .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
+              .forEach(el => {
+                el.classList.remove(
+                  "active",
+                  "text-accent",
+                  "bg-muted/40",
+                  "border-accent",
+                  "font-semibold"
+                );
+                el.classList.add("text-muted", "border-transparent");
+                el.removeAttribute("aria-current");
+              });
+            const clickedLink =
+              current instanceof HTMLAnchorElement ? current : null;
             if (clickedLink) {
-              clickedLink.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
-              clickedLink.classList.remove('text-muted', 'border-transparent');
-              clickedLink.setAttribute('aria-current', 'true');
+              clickedLink.classList.add(
+                "active",
+                "text-accent",
+                "bg-muted/40",
+                "border-accent",
+                "font-semibold"
+              );
+              clickedLink.classList.remove("text-muted", "border-transparent");
+              clickedLink.setAttribute("aria-current", "true");
             }
-            
+
             // 然后平滑滚动
-            window.scrollTo({ top: y, behavior: 'smooth' });
+            window.scrollTo({ top: y, behavior: "smooth" });
           }
           // 关闭抽屉
-          const evt = new Event('click');
+          const evt = new Event("click");
           close.dispatchEvent(evt);
         });
       });
     }
 
     // 切换显示
-    toggle.addEventListener('click', () => {
-      overlay.classList.remove('opacity-0', 'pointer-events-none');
-      overlay.classList.add('opacity-100', 'pointer-events-auto');
-      const slidePanel = overlay.querySelector('.transform');
+    toggle.addEventListener("click", () => {
+      overlay.classList.remove("opacity-0", "pointer-events-none");
+      overlay.classList.add("opacity-100", "pointer-events-auto");
+      const slidePanel = overlay.querySelector(".transform");
       if (slidePanel) {
-        slidePanel.classList.remove('translate-x-full');
-        slidePanel.classList.add('translate-x-0');
+        slidePanel.classList.remove("translate-x-full");
+        slidePanel.classList.add("translate-x-0");
       }
-      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute("aria-expanded", "true");
     });
 
     // 关闭
     const closeOverlay = () => {
-      overlay.classList.add('opacity-0', 'pointer-events-none');
-      overlay.classList.remove('opacity-100', 'pointer-events-auto');
-      const slidePanel = overlay.querySelector('.transform');
+      overlay.classList.add("opacity-0", "pointer-events-none");
+      overlay.classList.remove("opacity-100", "pointer-events-auto");
+      const slidePanel = overlay.querySelector(".transform");
       if (slidePanel) {
-        slidePanel.classList.add('translate-x-full');
-        slidePanel.classList.remove('translate-x-0');
+        slidePanel.classList.add("translate-x-full");
+        slidePanel.classList.remove("translate-x-0");
       }
-      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute("aria-expanded", "false");
     };
 
-    close.addEventListener('click', closeOverlay);
-    overlay.addEventListener('click', (e) => {
+    close.addEventListener("click", closeOverlay);
+    overlay.addEventListener("click", e => {
       if (e.target === overlay) {
         closeOverlay();
       }
     });
 
     // ESC键关闭
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !overlay.classList.contains('opacity-0')) {
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && !overlay.classList.contains("opacity-0")) {
         closeOverlay();
       }
     });
@@ -266,7 +333,7 @@
     const avoidOverlap = () => {
       if (!toggle) return;
       const backTop = document.querySelector('[data-button="back-to-top"]');
-      const btnContainer = document.querySelector('#btt-btn-container');
+      const btnContainer = document.querySelector("#btt-btn-container");
 
       // 默认底部 1.5rem (24px)
       let bottom = 24;
@@ -285,15 +352,18 @@
         const backTopRect = btnContainer.getBoundingClientRect();
 
         // 检查回到顶部按钮是否可见（不透明且位置正常）
-        const isBackTopVisible = !btnContainer.classList.contains('opacity-0') &&
-                                !btnContainer.classList.contains('translate-y-14');
+        const isBackTopVisible =
+          !btnContainer.classList.contains("opacity-0") &&
+          !btnContainer.classList.contains("translate-y-14");
 
         if (isBackTopVisible) {
           // 计算重叠情况
-          const overlap = !(toggleRect.right < backTopRect.left ||
-                          toggleRect.left > backTopRect.right ||
-                          toggleRect.bottom < backTopRect.top ||
-                          toggleRect.top > backTopRect.bottom);
+          const overlap = !(
+            toggleRect.right < backTopRect.left ||
+            toggleRect.left > backTopRect.right ||
+            toggleRect.bottom < backTopRect.top ||
+            toggleRect.top > backTopRect.bottom
+          );
 
           if (overlap) {
             // 如果重叠，根据屏幕尺寸动态计算避让距离
@@ -309,7 +379,7 @@
     avoidOverlap();
 
     // 监听窗口大小变化
-    window.addEventListener('resize', avoidOverlap);
+    window.addEventListener("resize", avoidOverlap);
 
     // 监听滚动事件，因为回到顶部按钮的显示/隐藏依赖于滚动
     let ticking = false;
@@ -322,11 +392,11 @@
         ticking = true;
       }
     };
-    window.addEventListener('scroll', scrollHandler, { passive: true });
+    window.addEventListener("scroll", scrollHandler, { passive: true });
 
     // 监听回到顶部按钮容器的类变化，以响应其显示/隐藏状态变化
     if (window.MutationObserver) {
-      const btnContainer = document.querySelector('#btt-btn-container');
+      const btnContainer = document.querySelector("#btt-btn-container");
       if (btnContainer) {
         const observer = new MutationObserver(() => {
           avoidOverlap();
@@ -334,55 +404,55 @@
 
         observer.observe(btnContainer, {
           attributes: true,
-          attributeFilter: ['class'],
+          attributeFilter: ["class"],
           childList: false,
-          subtree: false
+          subtree: false,
         });
       }
     }
   }
 
   function setupDesktopToggle() {
-    const aside = document.getElementById('toc-sidebar');
-    const collapseBtn = document.getElementById('toc-collapse');
-    const openBtn = document.getElementById('toc-open-desktop');
+    const aside = document.getElementById("toc-sidebar");
+    const collapseBtn = document.getElementById("toc-collapse");
+    const openBtn = document.getElementById("toc-open-desktop");
     if (!aside || !collapseBtn || !openBtn) return;
 
     // 移动端直接隐藏桌面展开按钮，避免出现第二个悬浮按钮
-    const isDesktop = window.matchMedia('(min-width: 1280px)').matches;
+    const isDesktop = window.matchMedia("(min-width: 1280px)").matches;
     if (!isDesktop) {
-      openBtn.style.display = 'none';
+      openBtn.style.display = "none";
       return;
     }
 
     // 初始：目录可见，打开按钮隐藏
-    openBtn.style.display = 'none';
-    aside.style.display = '';
-    aside.setAttribute('aria-hidden', 'false');
+    openBtn.style.display = "none";
+    aside.style.display = "";
+    aside.setAttribute("aria-hidden", "false");
 
     const hideAside = () => {
       // 使用 display 切换，确保视觉/可访问均隐藏
-      aside.style.display = 'none';
-      aside.style.opacity = '';
-      aside.style.pointerEvents = '';
-      aside.style.transform = '';
-      aside.setAttribute('aria-hidden', 'true');
-      openBtn.style.display = 'inline-flex';
-      collapseBtn.setAttribute('aria-expanded', 'false');
-      openBtn.setAttribute('aria-expanded', 'false');
+      aside.style.display = "none";
+      aside.style.opacity = "";
+      aside.style.pointerEvents = "";
+      aside.style.transform = "";
+      aside.setAttribute("aria-hidden", "true");
+      openBtn.style.display = "inline-flex";
+      collapseBtn.setAttribute("aria-expanded", "false");
+      openBtn.setAttribute("aria-expanded", "false");
     };
     const showAside = () => {
-      aside.style.display = '';
-      aside.style.opacity = '';
-      aside.style.pointerEvents = '';
-      aside.style.transform = '';
-      aside.setAttribute('aria-hidden', 'false');
-      openBtn.style.display = 'none';
-      collapseBtn.setAttribute('aria-expanded', 'true');
-      openBtn.setAttribute('aria-expanded', 'true');
+      aside.style.display = "";
+      aside.style.opacity = "";
+      aside.style.pointerEvents = "";
+      aside.style.transform = "";
+      aside.setAttribute("aria-hidden", "false");
+      openBtn.style.display = "none";
+      collapseBtn.setAttribute("aria-expanded", "true");
+      openBtn.setAttribute("aria-expanded", "true");
     };
 
-    collapseBtn.addEventListener('click', hideAside);
-    openBtn.addEventListener('click', showAside);
+    collapseBtn.addEventListener("click", hideAside);
+    openBtn.addEventListener("click", showAside);
   }
 </script>

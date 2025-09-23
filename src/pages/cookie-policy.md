@@ -85,11 +85,11 @@ Cookies 是存储在您设备上的小型文本文件，当您访问网站时由
 
 ## 6. Cookie 表格
 
-| Cookie 名称 | 类型 | 目的 | 保留期 |
-|------------|------|------|--------|
-| theme | 必要 | 保存主题偏好 | 1年 |
-| cookie-consent | 必要 | 记录同意状态 | 1年 |
-| cookie-settings | 必要 | 保存Cookie偏好设置 | 1年 |
+| Cookie 名称     | 类型 | 目的               | 保留期 |
+| --------------- | ---- | ------------------ | ------ |
+| theme           | 必要 | 保存主题偏好       | 1年    |
+| cookie-consent  | 必要 | 记录同意状态       | 1年    |
+| cookie-settings | 必要 | 保存Cookie偏好设置 | 1年    |
 
 注：Umami Analytics 不使用传统的 Cookies 进行跟踪。
 

@@ -12,7 +12,7 @@ description: 详细教程：如何通过修改 docker-compose 配置文件和自
 slug: remove-tracking-qinglong
 ---
 
- 修改 docker-compose 配置以移除青龙面板的 sentry.io 跟踪 JS 代码。青龙面板有跟踪参数，AdGuardHome 频繁拦截 o1098464.ingest.sentry.io 的域名。本文将教你如何通过修改 docker-compose 配置和 sh 脚本来阻止青龙面板发送跟踪请求。
+修改 docker-compose 配置以移除青龙面板的 sentry.io 跟踪 JS 代码。青龙面板有跟踪参数，AdGuardHome 频繁拦截 o1098464.ingest.sentry.io 的域名。本文将教你如何通过修改 docker-compose 配置和 sh 脚本来阻止青龙面板发送跟踪请求。
 
 ## Table of contents
 
@@ -40,13 +40,13 @@ else
     echo "File not modified, applying changes and restarting"
     # 修改文件
     sed -i '/Sentry\.init/ s/^/return;/' /ql/static/build/loaders/sentry.js
-    
+
     # 获取当前容器 ID
     CONTAINER_ID=$(cat /proc/self/cgroup | grep "docker" | sed 's/^.*\///' | tail -n 1)
-    
+
     # 重启容器
     docker restart $CONTAINER_ID
-    
+
     # 退出当前进程，让 Docker 重新启动容器
     exit 0
 fi
@@ -55,7 +55,7 @@ fi
 2. 更新 docker-compose 配置，添加如下 `entrypoint` 字段
 
 ```yml
-version: '3'
+version: "3"
 
 services:
   web:

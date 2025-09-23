@@ -180,7 +180,7 @@
   #toc-overlay {
     backdrop-filter: blur(8px);
   }
-  
+
   #toc-overlay .transform {
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
   }
@@ -191,7 +191,7 @@
   #main-content {
     margin-right: 0;
   }
-  
+
   /* 当目录存在时，为主内容添加右边距 */
   body:has(#table-of-contents:not([style*="display: none"])) #main-content,
   body:has(#toc-sidebar:not([style*="display: none"])) #main-content {
@@ -258,7 +258,8 @@
 
 /* 呼吸效果关键帧 */
 @keyframes toc-breathe {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: 0 4px 12px hsl(var(--accent) / 0.2);
   }
@@ -270,7 +271,8 @@
 
 /* 按钮内部线条的微动画 */
 @keyframes line-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

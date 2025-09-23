@@ -64,7 +64,7 @@ pnpm build
 4. 点击“显示”复制这串密钥，配置到 Cline 的环境变量中。
 
 ![Notion 集成密钥和权限设置示意图](https://img.gaazeon.com/2025/04/notion-integration-token-and-permissions.avif)
-*图：Notion 集成密钥位置及权限勾选示意*
+_图：Notion 集成密钥位置及权限勾选示意_
 
 5. 打开你的订阅管理数据库页面，点击右上角“分享”，将刚创建的集成授权访问。
 6. 复制数据库页面链接中的32位ID，作为后续操作的数据库ID。
@@ -91,7 +91,7 @@ LLM 会自动理解你的意图，调用 Notion MCP，
 帮你完成这条订阅记录的添加。
 
 ![Cline 通过自然语言自动生成 Notion API 请求示意图](https://img.gaazeon.com/2025/04/cline-llm-generate-notion-api-request.avif)
-*图：Cline 识别自然语言，自动构造 Notion API 请求的过程*
+_图：Cline 识别自然语言，自动构造 Notion API 请求的过程_
 
 整个过程无需写任何 JSON 或命令，  
 只用自然语言对话，简单又高效。
@@ -128,8 +128,7 @@ LLM 会自动理解你的意图，调用 Notion MCP，
 LLM 会再调用 **Notion MCP**，  
 把这个 SVG 图标自动设置到你刚才的订阅条目前面。
 
-![Notion中为Google Cloud添加SVG图标教程截图](https://img.gaazeon.com/2025/04/notion-google-cloud-svg-icon-tutorial.avif)
-*图：使用 Cline 为 Notion 中 为 Google Cloud 添加 Google Cloud SVG 图标
+![Notion中为Google Cloud添加SVG图标教程截图](https://img.gaazeon.com/2025/04/notion-google-cloud-svg-icon-tutorial.avif) \*图：使用 Cline 为 Notion 中 为 Google Cloud 添加 Google Cloud SVG 图标
 
 如果你觉得图标不合适，  
 你也可以告诉它：
@@ -144,7 +143,7 @@ LLM 会重新用 Exa MCP 搜索，替换成新的图标。
 只管用中文或英文告诉 LLM 你的需求即可。
 
 ![Notion 订阅数据库带品牌图标示意图](https://img.gaazeon.com/2025/04/notion-subscription-database-with-brand-logo.avif)
-*图：自动化添加订阅记录后，Notion 数据库中展示的品牌logo效果，图中 Google Cloud 的记录使用调用 MCP 添加的*
+_图：自动化添加订阅记录后，Notion 数据库中展示的品牌logo效果，图中 Google Cloud 的记录使用调用 MCP 添加的_
 
 ## 总结
 

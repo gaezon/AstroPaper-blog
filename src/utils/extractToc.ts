@@ -10,34 +10,37 @@ export interface TocItem {
  * 该函数在客户端运行，从DOM中提取标题元素
  */
 export function extractTocFromDOM(): TocItem[] {
-  const article = document.getElementById('article');
+  const article = document.getElementById("article");
   if (!article) return [];
 
-  const headings = article.querySelectorAll('h2, h3, h4, h5, h6');
+  const headings = article.querySelectorAll("h2, h3, h4, h5, h6");
   const tocItems: TocItem[] = [];
-  
-  headings.forEach((heading) => {
+
+  headings.forEach(heading => {
     const id = heading.id;
     // 清理标题文本：去除末尾由自动锚点产生的「#」，并规范空白
-    const rawTitle = heading.textContent || '';
+    const rawTitle = heading.textContent || "";
     const title = rawTitle
-      .replace(/\s*#\s*$/, '') // 删除结尾的 #
-      .replace(/\s+/g, ' ')     // 规范空白
+      .replace(/\s*#\s*$/, "") // 删除结尾的 #
+      .replace(/\s+/g, " ") // 规范空白
       .trim();
     const level = parseInt(heading.tagName.substring(1));
-    
+
     // 排除 Footnotes 和其他特殊标题
-    if (id && title && 
-        !title.toLowerCase().includes('footnote') && 
-        !id.toLowerCase().includes('footnote') &&
-        !id.startsWith('fnref-') &&
-        !id.startsWith('fn-') &&
-        // 排除自动生成目录的标题（remark-toc）
-        title.toLowerCase() !== 'table of contents') {
+    if (
+      id &&
+      title &&
+      !title.toLowerCase().includes("footnote") &&
+      !id.toLowerCase().includes("footnote") &&
+      !id.startsWith("fnref-") &&
+      !id.startsWith("fn-") &&
+      // 排除自动生成目录的标题（remark-toc）
+      title.toLowerCase() !== "table of contents"
+    ) {
       tocItems.push({
         id,
         title,
-        level
+        level,
       });
     }
   });
@@ -90,13 +93,13 @@ export function extractTocFromContent(content: string): TocItem[] {
   while ((match = headingRegex.exec(content)) !== null) {
     const level = parseInt(match[1]);
     const id = match[2];
-    const title = match[3].replace(/<[^>]*>/g, '').trim(); // 移除HTML标签
+    const title = match[3].replace(/<[^>]*>/g, "").trim(); // 移除HTML标签
 
     if (id && title) {
       tocItems.push({
         id,
         title,
-        level
+        level,
       });
     }
   }

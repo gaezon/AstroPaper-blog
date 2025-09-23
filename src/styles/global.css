@@ -71,7 +71,12 @@ html[data-theme="dark"] {
 }
 
 /* 为所有标题元素添加滚动偏移，确保跳转时有足够的可视空间 */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   scroll-margin-top: 7.5rem;
 }
 
@@ -102,7 +107,7 @@ h1, h2, h3, h4, h5, h6 {
 #table-of-contents a.active::before,
 #toc-sidebar a.active::before,
 #toc-nav-mobile a.active::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -0.75rem;
   top: 50%;
@@ -115,8 +120,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Mermaid diagrams */
-picture>img[id^="mermaid-"],
-picture>source[id^="mermaid-"],
+picture > img[id^="mermaid-"],
+picture > source[id^="mermaid-"],
 svg[id^="mermaid-"] {
   @apply mx-auto my-6;
 }
