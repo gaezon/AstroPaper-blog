@@ -76,7 +76,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* 目录相关样式增强 */
-#table-of-contents {
+#table-of-contents,
+#toc-sidebar {
   /* 确保在较小屏幕上也有良好的可读性 */
   font-size: 0.875rem;
   line-height: 1.5;
@@ -84,6 +85,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 目录链接的焦点状态增强 */
 #table-of-contents a:focus-visible,
+#toc-sidebar a:focus-visible,
 #toc-nav-mobile a:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
@@ -92,11 +94,13 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 目录活跃状态的左侧指示器 */
 #table-of-contents a.active,
+#toc-sidebar a.active,
 #toc-nav-mobile a.active {
   position: relative;
 }
 
 #table-of-contents a.active::before,
+#toc-sidebar a.active::before,
 #toc-nav-mobile a.active::before {
   content: '';
   position: absolute;

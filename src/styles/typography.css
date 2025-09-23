@@ -119,26 +119,31 @@
 }
 
 /* ===== 目录组件样式 ===== */
-#table-of-contents {
+#table-of-contents,
+#toc-sidebar {
   /* 确保目录在滚动时保持可见 */
   scrollbar-width: thin;
   scrollbar-color: var(--color-muted) transparent;
 }
 
-#table-of-contents::-webkit-scrollbar {
+#table-of-contents::-webkit-scrollbar,
+#toc-sidebar::-webkit-scrollbar {
   width: 4px;
 }
 
-#table-of-contents::-webkit-scrollbar-track {
+#table-of-contents::-webkit-scrollbar-track,
+#toc-sidebar::-webkit-scrollbar-track {
   background: transparent;
 }
 
-#table-of-contents::-webkit-scrollbar-thumb {
+#table-of-contents::-webkit-scrollbar-thumb,
+#toc-sidebar::-webkit-scrollbar-thumb {
   background-color: var(--color-muted);
   border-radius: 2px;
 }
 
-#table-of-contents::-webkit-scrollbar-thumb:hover {
+#table-of-contents::-webkit-scrollbar-thumb:hover,
+#toc-sidebar::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-accent);
 }
 
@@ -188,7 +193,8 @@
   }
   
   /* 当目录存在时，为主内容添加右边距 */
-  body:has(#table-of-contents:not([style*="display: none"])) #main-content {
+  body:has(#table-of-contents:not([style*="display: none"])) #main-content,
+  body:has(#toc-sidebar:not([style*="display: none"])) #main-content {
     margin-right: 20rem; /* 16rem (w-64) + 4rem padding */
   }
 }
