@@ -91,7 +91,7 @@
           // 计算偏移位置，避免标题被顶部遮挡（增加更多缓冲）
           const yOffset = -120; // 负值向上偏移，给出更多空间
           const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          
+
           // 先立即更新高亮状态，避免等待 IntersectionObserver 导致的闪烁
           document.querySelectorAll('#toc-nav a.active, #toc-nav-mobile a.active').forEach(el => {
             el.classList.remove('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
@@ -100,7 +100,7 @@
           link.classList.add('active', 'text-accent', 'bg-muted/40', 'border-accent', 'font-semibold');
           link.classList.remove('text-muted', 'border-transparent');
           link.setAttribute('aria-current', 'true');
-          
+
           // 然后平滑滚动
           window.scrollTo({ top: y, behavior: 'smooth' });
         }

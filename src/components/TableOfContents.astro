@@ -14,8 +14,8 @@ const { class: className = "" } = Astro.props;
   class:list={[
     "fixed top-1/2 -translate-y-1/2 z-40 hidden xl:block",
     // 尽可能靠近视口左侧：xl 起 1rem 间距；超宽屏继续贴近左侧
-    "xl:left-4 2xl:left-6",
-    "w-72 max-h-[calc(100vh-8rem)] overflow-y-auto transition-all duration-200",
+    "xl:left-2 2xl:left-4",
+    "w-60 max-h-[calc(100vh-8rem)] overflow-y-auto transition-all duration-200",
     "bg-background/80 backdrop-blur-lg border border-border/60 rounded-xl p-5 shadow-xl shadow-foreground/10",
     "hover:shadow-2xl hover:shadow-foreground/15 hover:bg-background/85",
     className
@@ -70,7 +70,7 @@ const { class: className = "" } = Astro.props;
 <button
   id="toc-open-desktop"
   class:list={[
-    "hidden xl:flex items-center justify-center fixed top-1/2 -translate-y-1/2 z-40 w-14 h-14 rounded-full xl:!flex",
+    "hidden xl:flex items-center justify-center fixed top-1/2 -translate-y-1/2 z-40 w-14 h-14 rounded-full xl:flex",
     "bg-gradient-to-br from-accent/90 to-accent/70 backdrop-blur-lg border border-accent/40",
     "shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/35 hover:scale-105",
     "transition-all duration-300 group",
