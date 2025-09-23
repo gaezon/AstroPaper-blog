@@ -253,21 +253,74 @@
     // 与页面右下「Back To Top」按钮避让，防止重叠
     const avoidOverlap = () => {
       if (!toggle) return;
-      const backTop = document.querySelector('[aria-label="Back To Top"], button#back-to-top');
-      // 默认底部 1.5rem
+      const backTop = document.querySelector('[data-button="back-to-top"]');
+      const btnContainer = document.querySelector('#btt-btn-container');
+
+      // 默认底部 1.5rem (24px)
       let bottom = 24;
-      if (backTop) {
-        const r1 = toggle.getBoundingClientRect();
-        const r2 = backTop.getBoundingClientRect();
-        const overlap = !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom);
-        if (overlap) bottom = 96; // 提升到 6rem
+
+      // 检查回到顶部按钮是否存在且可见
+      if (backTop && btnContainer) {
+        const toggleRect = toggle.getBoundingClientRect();
+        const backTopRect = btnContainer.getBoundingClientRect();
+
+        // 检查回到顶部按钮是否可见（不透明且位置正常）
+        const isBackTopVisible = !btnContainer.classList.contains('opacity-0') &&
+                                !btnContainer.classList.contains('translate-y-14');
+
+        if (isBackTopVisible) {
+          // 计算重叠情况
+          const overlap = !(toggleRect.right < backTopRect.left ||
+                          toggleRect.left > backTopRect.right ||
+                          toggleRect.bottom < backTopRect.top ||
+                          toggleRect.top > backTopRect.bottom);
+
+          if (overlap) {
+            // 如果重叠，根据屏幕尺寸动态计算避让距离
+            const isMobile = window.innerWidth < 640;
+            bottom = isMobile ? 112 : 96; // 移动端 7rem，桌面端 6rem
+          }
+        }
       }
+
       toggle.style.bottom = `${bottom}px`;
     };
 
+    // 初始执行
     avoidOverlap();
+
+    // 监听窗口大小变化
     window.addEventListener('resize', avoidOverlap);
-    window.addEventListener('scroll', avoidOverlap, { passive: true });
+
+    // 监听滚动事件，因为回到顶部按钮的显示/隐藏依赖于滚动
+    let ticking = false;
+    const scrollHandler = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          avoidOverlap();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+
+    // 监听回到顶部按钮容器的类变化，以响应其显示/隐藏状态变化
+    if (window.MutationObserver) {
+      const btnContainer = document.querySelector('#btt-btn-container');
+      if (btnContainer) {
+        const observer = new MutationObserver(() => {
+          avoidOverlap();
+        });
+
+        observer.observe(btnContainer, {
+          attributes: true,
+          attributeFilter: ['class'],
+          childList: false,
+          subtree: false
+        });
+      }
+    }
   }
 
   function setupDesktopToggle() {
