@@ -19,33 +19,33 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 
 ## Background: why ‘safe broadcast’ is required
 
-在抖音、快手、淘宝直播等国内平台，直播间会被 AI 与人工双重审核，稍有不慎就可能触发秒封。因此，大多数机构都会预留 **20 秒以上的延时**，给后台运营同事留出 `DUMP/MUTE` 的反应时间。某大厂的电竞直播，为了规避风险，甚至有高达 2 分钟的延时。虽然这常被观众诟病「播出画面比实时对局慢太多」，但对于商业公司而言，给最后把关的人留出充足的反应时间来处理可能违规声音或画面，其重要性远超被观众吐槽画面延迟。
+On Chinese platforms like Douyin, Kuaishou and Taobao Live, streams are reviewed by both AI and human moderators. A single slip can get a room suspended instantly. To mitigate risk, most teams keep a delay of at least **20 seconds** so operators have time to `DUMP/MUTE`. Top esports broadcasts sometimes go as high as 2 minutes. Viewers may complain about latency, but for businesses, giving the last‑mile moderator enough time to react is far more important than shaving a few seconds off the delay.
 
 ## A costly failure: the 20‑second test
 
-没有专业的延时机，但却想在 OBS 里实现 20 秒「安全延时」，应该如何做呢？
+I didn’t have a dedicated delay unit, but still wanted a 20‑second delay in OBS. How hard could it be?
 
 ### First attempt: assuming a filter could do it all
 
-经过一番寻找，计划是使用 OBS 自带的 `Video Delay (Async)` 滤镜，来实现
+The plan was to use OBS’s built‑in `Video Delay (Async)` filter:
 
 ```text
-滤镜 → 渲染延迟（Video Delay (Async)）
-延迟：20000 ms
+Filter → Video Delay (Async)
+Delay  → 20000 ms
 ```
 
 ![obs-video-delay-filter](https://img.gaazeon.com/2025/06/obs-video-delay-filter.avif)
 
 Important: the Video Delay (Async) filter delays video frames only. Audio is still sent with real‑time timestamps.
 
-> 那声音应该如何处理延时呢？
+> So how should we delay the audio?
 
 ### How I tried to delay the audio
 
-我当时的尝试流程如下：
+Here’s what I tried:
 
-1. 在 **混音器 → 高级音频属性** 中，把需要直播出去的各路音频源的「同步偏移 (Sync Offset)」全部填成 `20000 ms`，力求与视频帧保持同一延迟。
-2. 但我在「音频监控」里勾选 **监听并输出 (Monitor and Output)**，虽然此时监听并不会受 Sync Offset 影响依旧是实时的，但直播推流出去的确实已经延迟了 20 秒，与视频的延迟同步了。
+1. In **Mixer → Advanced Audio Properties**, set the **Sync Offset** of all outbound audio sources to `20000 ms` to match the video delay.
+2. In Audio Monitoring, enable **Monitor and Output** so local monitoring stays real‑time while the outbound stream is 20 seconds late (matching video).
 
 ![obs-audio-sync-offset](https://img.gaazeon.com/2025/06/OBS-audio-sync-offset.avif)
 
@@ -53,64 +53,49 @@ Important: the Video Delay (Async) filter delays video frames only. Audio is sti
 
 ### Root cause: where the distortion comes from
 
-我百思不得其解，开始查阅 OBS 的 GitHub issue 和官方论坛。经过一番挖掘，真相浮出水面：
+This puzzled me, so I combed through GitHub issues and the OBS forum. Here’s what I found:
 
-**1) Video Delay (Async) is not designed for ‘safe broadcast’**[^1]
-这个滤镜的本名是「视频异步延迟」，它的设计目标仅仅是修正 100-200 毫秒级别的口型同步误差，根本不是为长达数十秒的「安全播出」场景设计的，虽然它确实可以设置单个滤镜 20 秒级别的视频渲染延迟。
+**1) Video Delay (Async) is not designed for ‘safe broadcast’**[^1] — its real purpose is correcting lip‑sync differences on the order of 100–200 ms. It was never designed for tens‑of‑seconds broadcast delay — even if you can type a big number in the UI.
 
-**2) OBS audio buffering has a hard cap at ~960 ms**[^2]
-我发现，OBS 的源代码里把音频的最大缓冲时间（`max buffering`）写死在了 `960 ms`。这意味着，无论你在滤镜里填入多大的数值，音频轨道最多只能延迟不到 1 秒。
+**2) OBS audio buffering has a hard cap at ~960 ms**[^2] — in OBS’s code, the maximum audio buffering (`max buffering`) is effectively limited to about `960 ms`. No matter what you type in the filter, audio won’t delay beyond ~1 second.
 
-**3) Mixers/filters can’t ‘fill’ a 20‑second gap**  
-在发现视频滞后以后，我第一反应是去 **高级音频属性 → 同步偏移 (Sync Offset)** 里硬填 `20000 ms`，并在「混音器」面板手动把麦克风通道 **推迟监听**，妄图用音频侧的「手动延时」与视频对齐。  
-但结果依旧翻车，原因有两点：
+**3) Mixers/filters can’t ‘fill’ a 20‑second gap** — After noticing video was behind, I tried forcing `20000 ms` in **Advanced Audio Properties → Sync Offset** and delaying monitoring on the mic channel. Still failed, for two reasons:
 
-- **上限仍然被 960 ms 卡死**：Sync Offset 实际调用的是同一份音频缓冲区，它同样会被内核的 `max buffering` 强制截断。
-- **混音器不会改写封包时间戳**：即便声卡监听听起来「同步」了，OBS 推向 RTMP 时仍按原始时间戳发送，服务器端依旧视为「音早画晚」，重采样/丢包操作仍然发生。
+- **The 960 ms ceiling still applies** — Sync Offset relies on the same buffer and gets clipped.
+- **Mixers don’t rewrite timestamps** — even if monitoring sounds “in sync”, RTMP packets keep original timestamps. The server still sees “audio early, video late” and starts resampling/dropping.
 
 In short, _what you hear locally is not what the audience hears_. Mixer sliders and ‘sync offset’ filters are for sub‑second lip‑sync tweaks — not 20‑second broadcast delays.
 
-当我天真地填入 `20000 ms` 时，灾难发生了：
+With `20000 ms` set:
 
-- **视频**：真的被乖乖延迟了 20 秒。
-- **音频**：由于 960ms 的限制，即使我在「高级音频属性」里设置了 20000ms 的「同步偏移量 (Sync Offset)」，该设置也会被 OBS 忽略。音频实际上仍以接近实时的时间戳被发送出去。
+- **Video** really was 20 seconds late.
+- **Audio** ignored the offset due to the 960 ms cap and remained close to real time.
 
-音视频两条轨道的时间戳，就此产生了接近 20 秒的巨大鸿沟。当这两条流被推送到 RTMP 服务器（如 YouTube、Bilibili）后，服务器为了强行将它们对齐，只能对音频数据进行剧烈的、破坏性的重采样或丢包处理——这，就是我们听到的「兹啦」爆音的根源。
+That ~20‑second timestamp gap forced the RTMP server (YouTube/Bilibili) to “fix” sync by aggressive resampling/dropping on the audio track — the source of the crackling.
 
 I validated this repeatedly on YouTube: **once Video Delay exceeds ~10 seconds, crackling/distortion almost always appears for viewers.**
-
-搞清楚了问题根源，真正的解决方案也就浮出水面了。
-
 
 ---
 
 ## Lesson learned: fix the layer, not the knob
 
-这次惨痛的翻车经历，让我彻底想明白了一件事：我之前对「延时」的理解，从根上就错了。
-
-我天真地以为延时就是「把东西卡住一会儿再放出去」，所以满世界找 OBS 里那些「能拖动的旋钮」，比如滤镜和同步偏移。
-
-事实证明，我错误地把**底层「渲染层」的调节**，当成了**高层「协议层」的缓冲**。
-
-真正的安全延时，必须在**完整的流封装层**（如 RTMP/SRT）进行整体滞后，让音视频数据包整整齐齐地一起排队出发。任何试图在渲染层动刀子的行为，最终都会导致音画不同步，甚至爆音，从而翻车。
+My mistake was treating **render‑layer knobs** as if they were **transport‑layer buffers**. Proper broadcast delay must happen at the **stream/packaging layer** (RTMP/SRT), where audio and video packets are delayed together.
 
 ### Engineering takeaways
 
-这次踩坑，也让我对技术方案的设计有了更深的体会：
-
-1. **分层思维**：UI 界面上一个小旋钮，背后可往往是完全不同的技术抽象。延时属于「传输层」的问题，如果强行在「渲染层」解决，最终只会得到一个「看似可用」的假象。
-2. **端到端视角**：永远不要相信本地的耳朵和眼睛。监听端「感觉同步」不等于 CDN 服务端「逻辑同步」。诊断问题必须依赖对最终输出流的检查。
+1. **Layering matters** — a small UI slider can hide a very different abstraction underneath. Delay belongs to the transport layer; forcing it in the render layer yields a fragile illusion.
+2. **End‑to‑end view** — local monitoring “feels fine” is not the same as CDN ingest being logically in sync. Always inspect the final output stream.
 
 ## A pragmatic dual‑OBS ‘safe broadcast’ architecture
 
-在国内做直播，嘉宾一句口误就可能让整场直播瞬间下线。电视台有几十万的专业硬件延时器，但我们小团队没有这个预算，就必须依靠**架构设计来弥补**：
+If you don’t have a hardware delay box, architecture can still save you:
 
-- **技术实现**：利用「上游延时 + 本机监听」的方案，搭建出经济实惠的「乞丐版安全播出」系统。
-- **操作流程**：将 `DUMP`（丢帧）、`MUTE`（静音）等关键操作绑定到 Stream Deck 这类设备上，为人工审核创造 5-10 秒的黄金反应窗口。
+- **Technique**: keep the delay upstream and monitor locally; your broadcast box consumes an already‑delayed stream.
+- **Operations**: bind `DUMP/MUTE` to a Stream Deck (or similar) to give operators a 5–10‑second reaction window.
 
 ### Concrete setup
 
-搞清楚了原理，我们就可以着手搭建一套真正可用的延时方案了。这套方案的核心，就是**将延时任务交给上游的「推流机」，而你的主力「播出机」只负责接收处理好的、已经带延时的音视频流。**
+The core idea: **the upstream delay box** handles buffering and emergency actions; **the broadcast box** just listens and forwards.
 
 1) **Delay / upstream box**
    - Use **OBS’s Broadcast Delay**, vMix, or a dedicated delay unit on this box.
@@ -121,15 +106,15 @@ I validated this repeatedly on YouTube: **once Video Delay exceeds ~10 seconds, 
    - **Do not** use any delay filters here.
    - Push to platforms as usual.
 
-这个方案的妙处在于，音视频在抵达你的播出机之前就已经完美同步了，播出机也无需消耗大量内存来缓存那 20 秒的画面，从根本上杜绝了爆音的可能。
+This way audio and video arrive already in sync, and the broadcast box does not need to buffer 20 seconds of frames — eliminating the root cause of crackling.
 
-### 用 OBS 实现的极简方案：无需插件，OBS 变身推流服务器
+### Minimal OBS‑only setup: no plugins, make OBS the server
 
-#### 方案一：RTMP — 媒体源 + `listen=1`[^3]
+#### Option 1: RTMP — Media Source + `listen=1`[^3]
 
-这是最经典、兼容性最好的方案。
+This is the most compatible approach.
 
-##### RTMP 接收端 (播出机 OBS)
+##### RTMP receiver (broadcast OBS)
 
 1. 在场景中添加一个新的「**媒体源**」。
 2. **取消勾选**「本地文件」。
@@ -163,29 +148,29 @@ I validated this repeatedly on YouTube: **once Video Delay exceeds ~10 seconds, 
 
 ---
 
-#### 同理，方案二：SRT — OBS 25+ 内置，更低延迟
+#### Option 2: SRT — built into OBS 25+, lower latency
 
-自 OBS 25.0 起，官方内置 SRT 协议，配置更简单；其基于 UDP 的特性在网络状况不佳时通常优于基于 TCP 的 RTMP
+Since OBS 25.0, SRT is built‑in. Setup is simple, and its UDP nature usually performs better than TCP‑based RTMP on shaky networks.
 
-##### SRT 接收端 (播出机 OBS)[^5]
-
-```text
-媒体源 → 取消勾选「本地文件」
-输入 = srt://0.0.0.0:6000?mode=listener
-```
-
-##### SRT 发送端 (延时机 OBS)
+##### SRT receiver (broadcast OBS)[^5]
 
 ```text
-设置 → 推流 → 自定义
-服务器 = srt://<播出机 IP>:6000?mode=caller
+Media Source → uncheck Local File
+Input = srt://0.0.0.0:6000?mode=listener
 ```
 
-在 OBS 设置-高级-直播延时，启动延迟，设置为 20 秒
+##### SRT sender (delay OBS)
 
-同样，点击「**开始推流**」，画面即达，此时使用 SRT 协议的延时画面，会比 RTMP 的延迟更低。
+```text
+Settings → Stream → Custom
+Server = srt://<broadcast-box IP>:6000?mode=caller
+```
 
-图示（以双机 OBS RTMP 传输为例）
+Enable **Stream Delay** in Settings → Advanced and set **20 s**.
+
+Click **Start Streaming**; the picture arrives with lower end‑to‑end latency than RTMP.
+
+Diagram (dual‑OBS over RTMP)
 
 ```mermaid
 graph TD
@@ -219,32 +204,30 @@ graph TD
 
 ---
 
-## 常见问答 (FAQ)
+## FAQ
 
-**Q: 用 OBS-NDI 插件可以实现上述效果吗？**
+**Q: Can the OBS‑NDI plugin achieve the same effect?**
 
-A: 不可以。NDI 插件只用于**实时传输**，特点就是为了低延迟，用来做局域网内延时，是本末倒置。
+A: No. NDI is built for real‑time, low‑latency transport. Using it for long LAN delays is the wrong tool for the job.
 
 
 ---
 
-### 补充
+### Extra notes
 
-#### 直播间高危词汇（举例）
+#### High‑risk words (examples)
 
-- 「总书记」等党和国家领导人职务/姓名（幽默的是，笔者亲历过就算现场嘉宾说的是，「高举 xxx 同志思想旗帜」，这种正面宣传也可能导致直播间会被封禁）
-- 各类敏感政治事件（8²事件）、口号
-- 少数民族语言（如藏语）——平台语音识别模型无法及时判别，极易被误判违规
+- Names/titles of state leaders
+- Sensitive political events/slogans
+- Minority languages (e.g., Tibetan) — current ASR often misclassifies and flags them
 
-#### 直播间高危画面
+#### High‑risk visuals
 
-- 境外人士出镜
-- 未成年人出镜
-- 国旗、党旗、国徽、党徽等官方标识
+- Foreign nationals on camera
+- Minors on camera
+- National/party flags or emblems
 
-只要踩到以上任意一条，直播间都有被立即封禁的风险。
-
-**安全播出（延时 + 实时监控处理问题声音画面）** 因而成为国内做商业直播的标配。
+Touching any of the above can get a live room suspended instantly. Hence **safe broadcast (delay + active monitoring for DUMP/MUTE)** is effectively mandatory for commercial streaming in China.
 
 ## Footnotes
 
