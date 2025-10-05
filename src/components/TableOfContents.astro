@@ -23,7 +23,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
     "hover:bg-background/85 hover:shadow-2xl hover:shadow-foreground/15",
     className,
   ]}
-  aria-label="On this page"
+  aria-label={tr("ui.tableOfContents")}
   role="navigation"
 >
   <div
@@ -161,7 +161,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
       id="toc-nav-mobile"
       class="h-[calc(100%-5rem)] overflow-y-auto p-5"
       role="navigation"
-      aria-label="On this page"
+      aria-label={tr("ui.tableOfContents")}
     >
       <!-- 移动端目录内容，由客户端JavaScript填充 -->
     </nav>

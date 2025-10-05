@@ -43,6 +43,8 @@ export default {
     editPost: "建议修改",
     draft: "草稿",
     featured: "精选",
+    listTitle: "所有文章",
+    listDescription: "浏览 Gaazeon 博客发布的全部技术文章与教程。",
   },
 
   // 关于页面
@@ -62,6 +64,7 @@ export default {
   search: {
     title: "搜索",
     placeholder: "搜索文章...",
+    metaDescription: "在 Gaazeon 博客中搜索技术文章与教程，快速找到所需的编程知识、工具指南和开发经验。",
     noResults: "没有找到相关文章",
     searchResults: "搜索结果",
     searching: "搜索中...",
@@ -72,6 +75,7 @@ export default {
   tags: {
     title: "标签",
     allTags: "所有标签",
+    description: "探索 Gaazeon 博客涵盖的所有主题，从 Web 开发到工具使用与效率提升。",
     postsWithTag: "包含此标签的文章",
     noTags: "暂无标签",
   },

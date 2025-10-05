@@ -2,7 +2,19 @@
 import { getCurrentLocale, t } from "@/i18n/utils";
 
 const currentLocale = getCurrentLocale(Astro);
-const localeUrl = (path: string) => (currentLocale === "zh-CN" ? path : `/en${path}`);
+const ensureLeadingSlash = (path: string) => (path.startsWith("/") ? path : `/${path}`);
+const ensureTrailingSlash = (path: string) =>
+  path.endsWith("/") ? path : `${path}/`;
+const localeUrl = (path: string) => {
+  const normalized = ensureTrailingSlash(ensureLeadingSlash(path));
+
+  if (currentLocale === "zh-CN") {
+    return normalized;
+  }
+
+  const prefixed = `/en${normalized}`;
+  return prefixed.replace(/\/+/g, "/");
+};
 const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
 ---
 
@@ -36,6 +48,8 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
       <button
         id="cookie-settings-btn"
         class="hover:bg-surface-100 rounded border border-border px-2 py-1.5 text-xs font-medium text-foreground"
+        aria-label={tr("ui.cookie.settings")}
+        title={tr("ui.cookie.settings")}
       >
         ⚙️
       </button>

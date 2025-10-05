@@ -9,6 +9,7 @@ import Card from "@/components/Card.astro";
 import Pagination from "@/components/Pagination.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 import { SITE } from "@/config";
+import { t } from "@/i18n/utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -16,14 +17,17 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
+const pageTitle = t(Astro, "post.listTitle");
+const pageDescription = t(Astro, "post.listDescription");
+const layoutTitle = `${pageTitle} | ${SITE.title}`;
 ---
 
 <Layout
-  title={`Posts | ${SITE.title}`}
-  description="查看Gaazeon博客的所有技术文章和教程，涵盖软件开发、Web技术、编程工具使用等领域的深度内容和实践经验分享。"
+  title={layoutTitle}
+  description={pageDescription}
 >
   <Header />
-  <Main pageTitle="Posts" pageDesc="All the articles I've posted.">
+  <Main pageTitle={pageTitle} pageDesc={pageDescription}>
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>

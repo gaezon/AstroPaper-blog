@@ -9,7 +9,7 @@ import getUniqueTags from "@/utils/getUniqueTags";
 import { SITE } from "@/config";
 import { t } from "@/i18n/utils";
 
-const posts = await getCollection("blog");
+const posts = await getCollection("blog-en");
 
 let tags = getUniqueTags(posts);
 const pageTitle = t(Astro, "tags.title");

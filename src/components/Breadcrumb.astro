@@ -1,59 +1,80 @@
 ---
 import { getCurrentLocale, t } from "@/i18n/utils";
 
-// Remove current url path and remove trailing slash if exists
-const currentUrlPath = Astro.url.pathname.replace(/\/+$/, "");
-
-// Get url array from path
-// eg: /tags/tailwindcss => ['tags', 'tailwindcss']
-let breadcrumbList = currentUrlPath.split("/").slice(1);
-
-// Remove language code from breadcrumb (e.g., "en")
 const currentLocale = getCurrentLocale(Astro);
-const supportedLocales = ["zh-CN", "en"];
-if (breadcrumbList[0] && supportedLocales.includes(breadcrumbList[0])) {
-  breadcrumbList.shift();
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
+
+// Remove trailing slash and split pathname
+const currentUrlPath = Astro.url.pathname.replace(/\/+$/, "");
+const rawSegments = currentUrlPath
+  .split("/")
+  .slice(1)
+  .filter(Boolean);
+
+// Remove locale prefix segment if present (e.g. "en")
+const supportedLocales = new Set(["zh-CN", "en"]);
+const visibleSegments = [...rawSegments];
+if (visibleSegments[0] && supportedLocales.has(visibleSegments[0])) {
+  visibleSegments.shift();
 }
 
-const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
+const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
 
-// Translation map for common breadcrumb terms
-const translateBreadcrumbTerm = (term: string) => {
-  const translations: Record<string, string> = {
-    posts: tr("nav.blog"),
-    tags: tr("nav.tags"),
-    about: tr("nav.about"),
-    contact: tr("ui.contact"),
-    archives: tr("nav.archives"),
-    search: tr("nav.search"),
-    privacy: tr("ui.privacyPolicy"),
-    cookie: tr("ui.cookiePolicy"),
-    terms: tr("ui.termsOfService"),
-  };
-  return translations[term] || term;
+const translationMap: Record<string, string> = {
+  posts: tr("nav.blog"),
+  tags: tr("nav.tags"),
+  about: tr("nav.about"),
+  contact: tr("ui.contact"),
+  archives: tr("nav.archives"),
+  search: tr("nav.search"),
+  "privacy-policy": tr("ui.privacyPolicy"),
+  "cookie-policy": tr("ui.cookiePolicy"),
+  "terms-of-service": tr("ui.termsOfService"),
 };
 
-// if breadcrumb is Home > Posts > 1 <etc>
-// replace Posts with Posts (page number)
-if (breadcrumbList[0] === "posts") {
-  const pageNum = breadcrumbList[1] ? parseInt(breadcrumbList[1]) : 1;
-  if (isNaN(pageNum)) {
-    breadcrumbList.splice(0, 1, translateBreadcrumbTerm("posts"));
-  } else {
-    breadcrumbList.splice(0, 2, `${translateBreadcrumbTerm("posts")} ${tr("pagination.pageOnly", { page: pageNum })}`);
+const isNumeric = (value: string) => !Number.isNaN(Number(value));
+
+const buildHref = (segments: string[]) => {
+  if (segments.length === 0) {
+    return currentLocale === "zh-CN" ? "/" : `${localePrefix}/`;
   }
-}
 
-// if breadcrumb is Home > Tags > [tag] > [page] <etc>
-// replace [tag] > [page] with [tag] (page number)
-if (breadcrumbList[0] === "tags" && !isNaN(Number(breadcrumbList[2]))) {
-  const pageNum = parseInt(breadcrumbList[2]);
-  const tagPageText = pageNum === 1 ? breadcrumbList[1] : `${breadcrumbList[1]} ${tr("pagination.page", { page: pageNum })}`;
-  breadcrumbList.splice(1, 3, tagPageText);
-}
+  const joined = segments.join("/");
+  let href = `${localePrefix}/${joined}`.replace(/\/+/g, "/");
+  if (!href.startsWith("/")) {
+    href = `/${href}`;
+  }
+  return href.endsWith("/") ? href : `${href}/`;
+};
 
-// Translate breadcrumb terms
-breadcrumbList = breadcrumbList.map(term => translateBreadcrumbTerm(term));
+const breadcrumbItems = [] as Array<{
+  href: string;
+  label: string;
+  isCurrent: boolean;
+}>;
+
+const accumulatedSegments: string[] = [];
+
+visibleSegments.forEach((segment, index) => {
+  accumulatedSegments.push(segment);
+
+  let label = translationMap[segment] ?? decodeURIComponent(segment);
+
+  if (index > 0 && visibleSegments[index - 1] === "posts" && isNumeric(segment)) {
+    label = tr("pagination.pageOnly", { page: Number(segment) });
+  }
+
+  if (index > 0 && visibleSegments[index - 1] === "tags" && isNumeric(segment)) {
+    label = tr("pagination.pageOnly", { page: Number(segment) });
+  }
+
+  breadcrumbItems.push({
+    href: buildHref(accumulatedSegments),
+    label,
+    isCurrent: index + 1 === visibleSegments.length,
+  });
+});
 ---
 
 <nav class="mx-auto mt-8 mb-1 w-full max-w-app px-4" aria-label="breadcrumb">
@@ -61,32 +82,21 @@ breadcrumbList = breadcrumbList.map(term => translateBreadcrumbTerm(term));
     class="font-light [&>li]:inline [&>li:not(:last-child)>a]:hover:opacity-100"
   >
     <li>
-      <a href={currentLocale === "zh-CN" ? "/" : "/en/"} class="opacity-80">{tr("nav.home")}</a>
+      <a href={buildHref([])} class="opacity-80">{tr("nav.home")}</a>
       <span aria-hidden="true" class="opacity-80">&raquo;</span>
     </li>
     {
-      breadcrumbList.map((breadcrumb, index) =>
-        index + 1 === breadcrumbList.length ? (
+      breadcrumbItems.map(item =>
+        item.isCurrent ? (
           <li>
-            <span
-              class:list={["capitalize opacity-75", { lowercase: index > 0 }]}
-              aria-current="page"
-            >
-              {/* make the last part lowercase in Home > Tags > some-tag */}
-              {decodeURIComponent(breadcrumb)}
+            <span class="capitalize opacity-75" aria-current="page">
+              {item.label}
             </span>
           </li>
         ) : (
           <li>
-            <a
-              href={
-                currentLocale === "zh-CN"
-                  ? `/${breadcrumb}/`
-                  : `/en/${breadcrumb}/`
-              }
-              class="capitalize opacity-70"
-            >
-              {breadcrumb}
+            <a href={item.href} class="capitalize opacity-70">
+              {item.label}
             </a>
             <span aria-hidden="true">&raquo;</span>
           </li>

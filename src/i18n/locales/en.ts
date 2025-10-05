@@ -43,6 +43,8 @@ export default {
     editPost: "Suggest Changes",
     draft: "Draft",
     featured: "Featured",
+    listTitle: "All Posts",
+    listDescription: "Browse every article published on Gaazeon's blog.",
   },
 
   // About page
@@ -62,6 +64,7 @@ export default {
   search: {
     title: "Search",
     placeholder: "Search posts...",
+    metaDescription: "Search Gaazeon's blog to quickly find technical articles, tutorials, and development insights.",
     noResults: "No posts found",
     searchResults: "Search Results",
     searching: "Searching...",
@@ -72,6 +75,7 @@ export default {
   tags: {
     title: "Tags",
     allTags: "All Tags",
+    description: "Explore every topic covered on Gaazeon's blog, from web development to tooling and productivity.",
     postsWithTag: "Posts with this tag",
     noTags: "No tags yet",
   },

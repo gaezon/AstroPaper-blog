@@ -13,7 +13,7 @@ import { SITE } from "@/config";
 import { t } from "@/i18n/utils";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-  const posts = await getCollection("blog");
+  const posts = await getCollection("blog-en");
   const tags = getUniqueTags(posts);
 
   return tags.flatMap(({ tag, tagName }) => {
@@ -31,12 +31,12 @@ const params = Astro.params;
 const { tag } = params;
 const { page, tagName } = Astro.props;
 const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
-const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
+const pageDescription = t(Astro, "tags.postsWithTag");
 ---
 
 <Layout
   title={`${pageTitle} | ${SITE.title}`}
-  description={pageDescription}
+  description={`${t(Astro, "tags.postsWithTag")} ${tagName}.`}
 >
   <Header />
   <Main
