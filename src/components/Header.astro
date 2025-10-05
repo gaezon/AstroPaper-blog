@@ -150,8 +150,8 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
             </LinkButton>
           </li>
           <!-- 语言切换器 -->
-          <li class="col-span-2 sm:col-span-1 flex items-center justify-center">
-            <LanguageSwitcher variant="toggle" class="language-switcher-compact" override={switchOverride} />
+          <li class="col-span-2 sm:col-span-1 flex items-center justify-center px-2 sm:px-0">
+            <LanguageSwitcher variant="compact" override={switchOverride} />
           </li>
           {
             SITE.lightAndDarkMode && (
@@ -183,7 +183,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
   <Hr />
 </header>
 
-<script define:vars={{ tr }}>
+<script define:vars={{ menuLabel: tr("ui.menu"), closeLabel: tr("ui.close") }}>
   function toggleNav() {
     const menuBtn = document.querySelector("#menu-btn");
     const menuItems = document.querySelector("#menu-items");
@@ -196,7 +196,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
       const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
 
       menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? tr("ui.menu") : tr("ui.close"));
+      menuBtn.setAttribute("aria-label", openMenu ? menuLabel : closeLabel);
 
       menuItems.classList.toggle("hidden");
       menuIcon.classList.toggle("hidden");
@@ -211,20 +211,19 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
 </script>
 
 <style>
-  .language-switcher-compact {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .language-switcher-compact a {
-    min-width: auto;
-    padding: 0.25rem 0.5rem;
-  }
-
+  /* 移动端语言切换器样式优化 */
   @media (max-width: 640px) {
-    .language-switcher-compact {
-      justify-content: center;
-      width: 100%;
+    #menu-items > li:has(.language-switcher-compact) {
+      padding: 0.25rem 0;
+    }
+  }
+
+  /* 确保桌面端语言切换器与其他图标对齐 */
+  @media (min-width: 641px) {
+    #menu-items > li:has(.language-switcher-compact) {
+      display: flex;
+      align-items: center;
     }
   }
 </style>
+

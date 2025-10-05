@@ -3,7 +3,7 @@ import { getCurrentLocale, getLocaleSwitchUrl, getAvailableLocales, t } from "@/
 
 interface Props {
   class?: string;
-  variant?: "dropdown" | "toggle";
+  variant?: "dropdown" | "toggle" | "compact";
   override?: Record<string, string | undefined>;
 }
 
@@ -13,18 +13,24 @@ const currentLocale = getCurrentLocale(Astro);
 const availableLocales = getAvailableLocales();
 const currentLocaleInfo = availableLocales.find(l => l.code === currentLocale);
 const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
+
+// 获取语言代码的简短显示
+const getShortLabel = (code: string) => {
+  return code === "zh-CN" ? "中" : "EN";
+};
 ---
 
 {variant === "dropdown" ? (
-  <div class={`relative language-switcher ${className}`}>
+  <div class={`language-switcher-dropdown ${className}`}>
     <button
       type="button"
-      class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
-      aria-label={currentLocaleInfo?.name || "Language"}
-      onclick="this.parentElement.classList.toggle('open')"
+      class="lang-dropdown-btn focus-outline"
+      aria-label={tr("language.selectLanguage")}
+      aria-expanded="false"
+      data-dropdown-toggle
     >
       <svg
-        class="w-4 h-4"
+        class="globe-icon"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -34,12 +40,12 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width={2}
-          d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
         />
       </svg>
-      <span>{currentLocaleInfo?.profile.label || currentLocaleInfo?.name || currentLocale}</span>
+      <span class="current-lang">{currentLocaleInfo?.profile.label || currentLocaleInfo?.name}</span>
       <svg
-        class="w-4 h-4 transition-transform"
+        class="chevron-icon"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -54,39 +60,67 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
       </svg>
     </button>
 
-    <div class="absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 opacity-0 invisible transition-all duration-200">
+    <div class="lang-dropdown-menu" role="menu">
       {availableLocales.map(locale => (
         <a
           href={override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code)}
-          class={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            locale.code === currentLocale
-              ? "text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20"
-              : "text-gray-700 dark:text-gray-300"
-          }`}
+          class={`lang-dropdown-item ${locale.code === currentLocale ? "active" : ""}`}
           lang={locale.profile.langTag}
           hreflang={locale.code}
+          role="menuitem"
+          data-astro-reload
         >
-          <span class="flex items-center gap-2">
-            {locale.name}
-            {locale.isDefault && (
-              <span class="text-xs text-gray-500 dark:text-gray-400">{tr("language.default")}</span>
-            )}
-            {locale.code === currentLocale && (
-              <svg
-                class="w-4 h-4 text-blue-600 dark:text-blue-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            )}
-          </span>
+          <span class="lang-name">{locale.name}</span>
+          {locale.code === currentLocale && (
+            <svg
+              class="check-icon"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          )}
         </a>
+      ))}
+    </div>
+  </div>
+) : variant === "compact" ? (
+  <div class={`language-switcher-compact ${className}`}>
+    <div class="lang-compact-wrapper">
+      <svg
+        class="globe-icon-compact"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width={2}
+          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+        />
+      </svg>
+      {availableLocales.map((locale, index) => (
+        <>
+          <a
+            href={override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code)}
+            class={`lang-compact-btn ${locale.code === currentLocale ? "active" : ""}`}
+            lang={locale.profile.langTag}
+            hreflang={locale.code}
+            aria-label={locale.name}
+            title={locale.name}
+            data-astro-reload
+          >
+            {getShortLabel(locale.code)}
+          </a>
+          {index < availableLocales.length - 1 && <span class="lang-separator">/</span>}
+        </>
       ))}
     </div>
   </div>
@@ -95,13 +129,12 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
     {availableLocales.map(locale => (
       <a
         href={override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code)}
-        class={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-          locale.code === currentLocale
-            ? "bg-blue-600 text-white"
-            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-        }`}
+        class={`lang-toggle-btn ${locale.code === currentLocale ? "active" : ""}`}
         lang={locale.profile.langTag}
         hreflang={locale.code}
+        aria-label={locale.name}
+        title={locale.name}
+        data-astro-reload
       >
         {locale.profile.label || locale.name}
       </a>
@@ -110,36 +143,328 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
 )}
 
 <style>
-  .language-switcher .open > div:last-child {
-    opacity: 1;
-    visibility: visible;
+  /* ========== 下拉菜单样式 ========== */
+  .language-switcher-dropdown {
+    position: relative;
+    display: inline-block;
   }
 
-  .language-switcher .open > button svg:last-child {
+  .lang-dropdown-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-card-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-base);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lang-dropdown-btn:hover {
+    background: var(--color-card);
+    border-color: var(--color-accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .globe-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .current-lang {
+    white-space: nowrap;
+  }
+
+  .chevron-icon {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .language-switcher-dropdown[data-open="true"] .chevron-icon {
     transform: rotate(180deg);
   }
 
-  .language-switcher-toggle {
-    display: flex;
-    gap: 0.5rem;
+  .lang-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    z-index: 50;
+    min-width: 10rem;
+    padding: 0.25rem;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .language-switcher-dropdown[data-open="true"] .lang-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .lang-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--color-text-base);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .lang-dropdown-item:hover {
+    background: var(--color-card-muted);
+  }
+
+  .lang-dropdown-item.active {
+    background: var(--color-accent);
+    color: var(--color-card);
+    font-weight: 600;
+  }
+
+  .lang-dropdown-item.active:hover {
+    background: var(--color-accent);
+    opacity: 0.9;
+  }
+
+  .check-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* ========== 紧凑样式 ========== */
+  .language-switcher-compact {
+    display: inline-flex;
+    width: 100%;
+  }
+
+  .lang-compact-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.625rem;
+    background: var(--color-card-muted);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+
+  .lang-compact-wrapper:hover {
+    background: var(--color-card);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .globe-icon-compact {
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-text-base);
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .lang-compact-btn {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    color: var(--color-text-base);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    opacity: 0.6;
+    white-space: nowrap;
+    min-width: 2rem;
+    text-align: center;
+  }
+
+  .lang-compact-btn:hover {
+    opacity: 1;
+    background: var(--color-fill);
+  }
+
+  .lang-compact-btn.active {
+    opacity: 1;
+    color: var(--color-accent);
+    font-weight: 600;
+    background: var(--color-fill);
+  }
+
+  .lang-separator {
+    color: var(--color-text-base);
+    opacity: 0.3;
+    font-weight: 300;
+    user-select: none;
+  }
+
+  /* ========== 切换按钮样式 ========== */
+  .language-switcher-toggle {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.25rem;
+    background: var(--color-card-muted);
+    border-radius: 0.5rem;
+  }
+
+  .lang-toggle-btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-base);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+  }
+
+  .lang-toggle-btn:hover {
+    opacity: 1;
+    background: var(--color-fill);
+  }
+
+  .lang-toggle-btn.active {
+    background: var(--color-accent);
+    color: var(--color-card);
+    opacity: 1;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ========== 响应式设计 ========== */
   @media (max-width: 640px) {
-    .language-switcher .absolute {
-      right: 0;
+    .lang-dropdown-menu {
       left: auto;
+      right: 0;
     }
+
+    .lang-dropdown-btn .current-lang {
+      display: none;
+    }
+
+    /* 移动端紧凑模式优化 */
+    .language-switcher-compact {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .lang-compact-wrapper {
+      font-size: 0.875rem;
+      padding: 0.5rem 0.75rem;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .lang-compact-btn {
+      padding: 0.25rem 0.625rem;
+      font-size: 0.875rem;
+    }
+
+    .globe-icon-compact {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+
+  /* 超小屏幕优化 */
+  @media (max-width: 375px) {
+    .lang-compact-wrapper {
+      gap: 0.25rem;
+      padding: 0.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .lang-compact-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* ========== 动画效果 ========== */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .language-switcher-dropdown[data-open="true"] .lang-dropdown-menu {
+    animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 </style>
 
 <script>
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (event) => {
-    const switchers = document.querySelectorAll('.language-switcher');
-    switchers.forEach(switcher => {
-      if (!switcher.contains(event.target as Node)) {
-        switcher.classList.remove('open');
-      }
+  function initLanguageSwitcher() {
+    // 处理下拉菜单
+    const dropdowns = document.querySelectorAll('.language-switcher-dropdown');
+    
+    dropdowns.forEach(dropdown => {
+      const button = dropdown.querySelector('[data-dropdown-toggle]');
+      if (!button) return;
+
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.getAttribute('data-open') === 'true';
+        
+        // 关闭所有其他下拉菜单
+        dropdowns.forEach(d => d.setAttribute('data-open', 'false'));
+        
+        // 切换当前下拉菜单
+        dropdown.setAttribute('data-open', (!isOpen).toString());
+        button.setAttribute('aria-expanded', (!isOpen).toString());
+      });
     });
-  });
+
+    // 点击外部关闭下拉菜单
+    document.addEventListener('click', () => {
+      dropdowns.forEach(dropdown => {
+        dropdown.setAttribute('data-open', 'false');
+        const button = dropdown.querySelector('[data-dropdown-toggle]');
+        if (button) {
+          button.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+
+    // 键盘导航支持
+    dropdowns.forEach(dropdown => {
+      const button = dropdown.querySelector('[data-dropdown-toggle]') as HTMLElement;
+      const menu = dropdown.querySelector('.lang-dropdown-menu');
+      
+      if (!button || !menu) return;
+
+      button.addEventListener('keydown', (e) => {
+        const event = e as KeyboardEvent;
+        if (event.key === 'Escape') {
+          dropdown.setAttribute('data-open', 'false');
+          button.setAttribute('aria-expanded', 'false');
+          button.focus();
+        }
+      });
+    });
+  }
+
+  // 初始化
+  initLanguageSwitcher();
+
+  // View Transitions API 支持
+  document.addEventListener('astro:after-swap', initLanguageSwitcher);
 </script>
