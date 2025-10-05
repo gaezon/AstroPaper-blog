@@ -116,34 +116,34 @@ This is the most compatible approach.
 
 ##### RTMP receiver (broadcast OBS)
 
-1. 在场景中添加一个新的「**媒体源**」。
-2. **取消勾选**「本地文件」。
-3. 在「**输入**」框中填入：
+1. Add a new **Media Source** to the scene.
+2. **Uncheck** “Local File”.
+3. Set **Input** to:
 
    ```text
    rtmp://0.0.0.0:1935/live/app
    ```
 
-4. 在「**FFmpeg 选项**」中，填入一个关键参数：
+4. In **FFmpeg Options**, set the key parameter:
 
    ```text
    listen=1
    ```
 
-   做完这一步，你的播出机就已经在 1935 端口「竖起耳朵」，等待推流机「上门」。
+   After this, your broadcast box is listening on port 1935 for the upstream delay box.
 
-##### RTMP 发送端 (延时机 OBS)
+##### RTMP sender (delay OBS)
 
-1. 打开 `设置` → `推流`。
-2. 服务选「**自定义**」。
-3. 服务器地址填写 `rtmp://<播出机 IP>:1935/live/app`。
-4. 串流密钥无需填写或随意填写。
+1. Open `Settings` → `Stream`.
+2. Service: **Custom**.
+3. Server: `rtmp://<broadcast-box IP>:1935/live/app`.
+4. Stream key: leave empty or arbitrary.
 
-接着在 OBS 设置-高级-直播延时，启动延迟，这里设置为 20 秒[^4]
+Then enable **Stream Delay** in `Settings → Advanced` and set **20 s**[^4].
 
 ![OBS-Intranet-RTMP-latency](https://img.gaazeon.com/2025/06/OBS-Intranet-RTMP-latency.avif)
 
-点击「**开始推流**」，延时画面就会稳稳地出现在播出机的媒体源里。
+Click **Start Streaming**. The delayed picture will appear in the broadcast box media source.
 
 
 ---
@@ -174,20 +174,20 @@ Diagram (dual‑OBS over RTMP)
 
 ```mermaid
 graph TD
-    subgraph A ["实时机 Real-time Machine"]
-        A1["OBS Studio<br/>捕捉现场画面"]
-        A2["设置-高级-直播延时<br/>启动20秒延迟"]
-        A3["推流配置<br/>rtmp://延时机IP:1935/live/app"]
+    subgraph A ["Real-time Machine"]
+        A1["OBS Studio<br/>Capture live feed"]
+        A2["Settings → Advanced → Stream Delay<br/>(20 seconds)"]
+        A3["Stream config<br/>rtmp://delay-box-ip:1935/live/app"]
         A1 --> A2
         A2 --> A3
     end
 
-    subgraph B ["延时机 Delay Machine"]
-        B1["OBS Studio<br/>导播操作台"]
-        B2["媒体源配置<br/>监听RTMP内网流<br/>listen=1"]
-        B3["Mute/Dump<br/>紧急控制"]
-        B4["推流输出<br/>各大直播平台"]
-        B5["防火墙设置<br/>开放1935端口"]
+    subgraph B ["Delay Machine"]
+        B1["OBS Studio<br/>Control desk"]
+        B2["Media Source<br/>listen to RTMP (listen=1)"]
+        B3["Mute/Dump<br/>emergency controls"]
+        B4["Push output<br/>to platforms"]
+        B5["Firewall<br/>open 1935"]
 
         B1 --> B2
         B1 --> B3
@@ -195,7 +195,7 @@ graph TD
         B2 -.-> B5
     end
 
-    C["最终直播平台<br/>YouTube/Bilibili等"]
+    C["Final platforms<br/>YouTube/Bilibili"]
 
     A3 --> B2
     B4 --> C
@@ -231,12 +231,12 @@ Touching any of the above can get a live room suspended instantly. Hence **safe 
 
 ## Footnotes
 
-[^1]: [Render Delay Filter | 渲染延迟滤镜官方说明](https://obsproject.com/kb/render-delay-filter)
+[^1]: [Render Delay Filter — official docs](https://obsproject.com/kb/render-delay-filter)
 
-[^2]: [MAX_BUFFERING_TICKS — Artificial Limit to Audio Sync Offset? | OBS 960 ms 音频缓冲上限讨论](https://obsproject.com/forum/threads/max_buffering_ticks-artificial-limit-to-audio-sync_offset.54867/)
+[^2]: [MAX_BUFFERING_TICKS — audio sync/offset limit discussion (~960 ms)](https://obsproject.com/forum/threads/max_buffering_ticks-artificial-limit-to-audio-sync_offset.54867/)
 
-[^3]: [OBS Forum 讨论 "help with media source and rtmp" 指出 `media source` 中设置 `listen=1` 可使 OBS 充当 RTMP 服务器](https://obsproject.com/forum/threads/help-with-media-source-and-rtmp.56959/)
+[^3]: [OBS forum: media source + RTMP `listen=1` to make OBS act as a server](https://obsproject.com/forum/threads/help-with-media-source-and-rtmp.56959/)
 
-[^4]: [OBS 论坛帖子 "Adding a timed delay to my stream" 说明在 Settings → Broadcast/Advanced 中可直接启用 Broadcast/Stream Delay](https://obsproject.com/forum/threads/adding-a-timed-delay-to-my-stream.2483/)
+[^4]: [OBS forum: adding a timed delay (enable Broadcast/Stream Delay)](https://obsproject.com/forum/threads/adding-a-timed-delay-to-my-stream.2483/)
 
-[^5]: [OBS 官方知识库《SRT Protocol Streaming Guide》阐述在 URL 中使用 `mode=listener` / `mode=caller` 等参数的写法与含义](https://obsproject.com/kb/srt-protocol-streaming-guide)
+[^5]: [OBS KB: SRT Protocol Streaming Guide (mode=listener / mode=caller)](https://obsproject.com/kb/srt-protocol-streaming-guide)
