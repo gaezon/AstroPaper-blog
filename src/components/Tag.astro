@@ -1,5 +1,7 @@
 ---
 import IconHash from "@/assets/icons/IconHash.svg";
+import { getCurrentLocale } from "@/i18n/utils";
+import { DEFAULT_LOCALE } from "@/i18n/config";
 
 export interface Props {
   tag: string;
@@ -8,6 +10,9 @@ export interface Props {
 }
 
 const { tag, tagName, size = "sm" } = Astro.props;
+const locale = getCurrentLocale(Astro);
+const hrefPrefix = locale === DEFAULT_LOCALE ? '' : `/${locale}`;
+const localizedHref = `${hrefPrefix}/tags/${tag}/`;
 ---
 
 <li
@@ -17,7 +22,7 @@ const { tag, tagName, size = "sm" } = Astro.props;
   ]}
 >
   <a
-    href={`/tags/${tag}/`}
+    href={localizedHref}
     transition:name={tag}
     class:list={[
       "relative pe-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 focus-visible:no-underline",

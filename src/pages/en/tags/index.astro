@@ -8,15 +8,10 @@ import Footer from "@/components/Footer.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
 import { SITE } from "@/config";
 import { t } from "@/i18n/utils";
-import { getEnglishTag } from "@/i18n/tagMap";
 
-// 基于中文文章集合构建标签（确保与中文一致）
-const posts = await getCollection("blog");
-
-let tags = getUniqueTags(posts).map(({ tag, tagName }) => {
-  const meta = getEnglishTag(tagName);
-  return { tag: meta.enSlug, tagName: meta.enName };
-});
+// Build the English tag list from the English post collection
+const posts = await getCollection("blog-en");
+const tags = getUniqueTags(posts);
 const pageTitle = t(Astro, "tags.title");
 const pageDescription = t(Astro, "tags.description");
 ---
