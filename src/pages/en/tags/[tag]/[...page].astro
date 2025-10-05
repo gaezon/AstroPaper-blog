@@ -11,26 +11,34 @@ import getUniqueTags from "@/utils/getUniqueTags";
 import getPostsByTag from "@/utils/getPostsByTag";
 import { SITE } from "@/config";
 import { t } from "@/i18n/utils";
+import { getEnglishTag, resolveZhFromEnSlug } from "@/i18n/tagMap";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-  const posts = await getCollection("blog-en");
-  const tags = getUniqueTags(posts);
+  // 使用中文集合生成 EN 路由，URL 用英文 slug，分页列表用中文标签筛选
+  const posts = await getCollection("blog");
+  const zhTags = getUniqueTags(posts);
 
-  return tags.flatMap(({ tag, tagName }) => {
-    const tagPosts = getPostsByTag(posts, tag);
+  return zhTags.flatMap(({ tag: zhSlug, tagName: zhName }) => {
+    const meta = getEnglishTag(zhName);
+    const tagPosts = getPostsByTag(posts, zhSlug);
 
     return paginate(tagPosts, {
-      params: { tag },
-      props: { tagName },
+      params: { tag: meta.enSlug },
+      props: { tagName: meta.enName, zhTag: zhName },
       pageSize: SITE.postPerPage,
     });
   });
 }
 
-const params = Astro.params;
-const { tag } = params;
-const { page, tagName } = Astro.props;
-const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
+const { tag: enSlug } = Astro.params;
+// 分页属性来自 getStaticPaths 的 props
+const { page, tagName, zhTag } = Astro.props as {
+  page: any;
+  tagName: string;
+  zhTag: string;
+};
+const meta = getEnglishTag(zhTag);
+const pageTitle = `${t(Astro, "tags.title")}: ${meta.enName}`;
 const pageDescription = t(Astro, "tags.postsWithTag");
 ---
 
@@ -40,11 +48,11 @@ const pageDescription = t(Astro, "tags.postsWithTag");
 >
   <Header />
   <Main
-    pageTitle={[`${t(Astro, "tags.title")}:`, `${tagName}`]}
-    titleTransition={tag}
+    pageTitle={[`${t(Astro, "tags.title")}:`, `${meta.enName}`]}
+    titleTransition={enSlug}
     pageDesc={pageDescription}
   >
-    <h1 slot="title" transition:name={tag}>{`${t(Astro, "tags.title")}:${tag}`}</h1>
+    <h1 slot="title" transition:name={enSlug}>{`${t(Astro, "tags.title")}:${meta.enName}`}</h1>
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>

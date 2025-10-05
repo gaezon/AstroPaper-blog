@@ -12,7 +12,7 @@ export default {
   nav: {
     home: "首页",
     about: "关于",
-    blog: "博客",
+    blog: "博文",
     archives: "归档",
     search: "搜索",
     tags: "标签",
