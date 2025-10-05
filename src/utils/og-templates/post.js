@@ -94,6 +94,33 @@ import loadGoogleFonts from "../loadGoogleFont";
 //     </div>`;
 
 export default async post => {
+  // Derive locale from post data; default to zh-CN
+  const locale = (post?.data?.locale || "zh-CN").toString();
+
+  // Select a readable font size based on title length
+  const rawTitle = (post?.data?.title || "").toString();
+  // Normalize special spaces and variation selectors that some fonts don't support well
+  const titleText = rawTitle
+    .replace(/[\u00A0\u202F\u2009\u200A\u2002\u2003\u2005]/g, " ")
+    .replace(/[\uFE0E\uFE0F]/g, "");
+  const len = titleText.length;
+  let computedSize = 58; // base size
+  if (len > 80) computedSize = 38;
+  else if (len > 60) computedSize = 44;
+  else if (len > 40) computedSize = 50;
+
+  // Locale-aware title style with IBM Plex Sans preference and fallbacks
+  const titleStyle = {
+    fontSize: computedSize,
+    fontWeight: "700",
+    lineHeight: 1.15,
+    maxHeight: "84%",
+    overflow: "hidden",
+    // Prefer IBM Plex Sans; fallback to CJK-capable Noto for Chinese
+    fontFamily:
+      locale === "zh-CN" ? "IBM Plex Sans, Noto Sans SC" : "IBM Plex Sans, Noto Sans",
+  };
+
   return satori(
     {
       type: "div",
@@ -154,13 +181,8 @@ export default async post => {
                     {
                       type: "p",
                       props: {
-                        style: {
-                          fontSize: 72,
-                          fontWeight: "bold",
-                          maxHeight: "84%",
-                          overflow: "hidden",
-                        },
-                        children: post.data.title,
+                        style: titleStyle,
+                        children: titleText,
                       },
                     },
                     {
