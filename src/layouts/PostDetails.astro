@@ -94,7 +94,9 @@ const switchOverride: Record<string, string | undefined> = {};
 try {
   if (currentLocale === "zh-CN") {
     const enPosts = await getCollection("blog-en");
-    const matched = enPosts.find(p => p.data.originalTitle === post.data.title);
+    const matched = enPosts.find(
+      p => p.data.originalTitle === post.data.title && !p.data.draft
+    );
     if (matched) {
       switchOverride["en"] = getPath(matched.id, matched.filePath);
     }
@@ -102,7 +104,9 @@ try {
     const zhPosts = await getCollection("blog");
     const originTitle = post.data.originalTitle as string | undefined;
     if (originTitle) {
-      const matched = zhPosts.find(p => p.data.title === originTitle);
+      const matched = zhPosts.find(
+        p => p.data.title === originTitle && !p.data.draft
+      );
       if (matched) {
         switchOverride["zh-CN"] = getPath(matched.id, matched.filePath);
       }
