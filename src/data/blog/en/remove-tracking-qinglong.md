@@ -2,61 +2,57 @@
 author: gaazeon
 pubDatetime: 2024-09-15T10:06:57.000+08:00
 modDatetime: 2024-09-15T10:06:57.000+08:00
-title: "TODO: Translate — 修改 docker-compose 配置移除青龙面板 sentry.io 跟踪 js 代码"
+title: "Remove sentry.io tracking code from Qinglong (via docker‑compose + startup script)"
 featured: false
-draft: true
+draft: false
 tags:
   - docker-compose
-  - 青龙面板
-description: "TODO: Translate — 详细教程：如何通过修改 docker-compose 配置文件和自定义脚本，彻底移除青龙面板中的
-  sentry.io 跟踪 JavaScript 代码。解决 AdGuardHome 频繁拦截 o1098464.ingest.sentry.io
-  域名的问题，提升系统运行效率和隐私保护。"
+  - Qinglong
+  - Privacy
+description: "How to prevent Qinglong from loading Sentry tracking JS by overriding the container entrypoint. Fixes constant DNS hits to o1098464.ingest.sentry.io seen in AdGuardHome and improves privacy."
 locale: en
 originalTitle: 修改 docker-compose 配置移除青龙面板 sentry.io 跟踪 js 代码
 ---
 
-<!-- TODO: Translate body content below into English -->
-修改 docker-compose 配置以移除青龙面板的 sentry.io 跟踪 JS 代码。青龙面板有跟踪参数，AdGuardHome 频繁拦截 o1098464.ingest.sentry.io 的域名。本文将教你如何通过修改 docker-compose 配置和 sh 脚本来阻止青龙面板发送跟踪请求。
+Qinglong embeds Sentry for error telemetry, which triggers constant requests to `o1098464.ingest.sentry.io`. Here’s a simple way to block that by replacing the container entrypoint with a tiny shell script that disables the Sentry loader.
 
 ## Table of contents
 
-## 前言
+## Why
 
-青龙面板（截止本文 20240915 青龙面板的最新版本号为 `2.17.11`）使用 Sentry 来跟踪错误日志，但作者未提供让用户自行选择关闭的选项，导致家里的 AdGuardHome 总是拦截 o1098464.ingest.sentry.io，使其在拦截排行中位居首位，显得不太美观。同时，频繁的 DNS 请求也会消耗小主机的性能。
+As of 2024‑09‑15 (Qinglong `2.17.11`), there’s no built‑in switch to opt out of Sentry. On my network, AdGuardHome’s blocklist spammed entries for `o1098464.ingest.sentry.io`, and the extra DNS traffic is unnecessary.
 
 ![adguardhome 拦截排名.avif](https://img.gaazeon.com/2024/09/202409151035933.avif)
 
 GitHub issue 上有老哥给出了[解决方案](https://github.com/whyour/qinglong/issues/2001)，但是没有给出具体的操作步骤，本文将教你如何通过修改 docker-compose 配置和 sh 脚本，使用更优雅的方法在启动时阻止青龙面板发送跟踪请求。
 
-## 修改 docker-compose.yml 文件
+## docker‑compose.yml changes
 
-1. 创建名为 `remove-tracking.sh` 的 shell 脚本，在 `docker-compose.yml` 同一目录下
+1) Create a `remove-tracking.sh` next to your `docker-compose.yml`:
 
 ```sh
 #!/bin/sh
 
-# 检查文件是否已修改
+# If already patched, run the original entrypoint
 if grep -q "return;" /ql/static/build/loaders/sentry.js; then
     echo "File already modified, starting normally"
-    # 执行原始入口点命令
     exec ./docker/docker-entrypoint.sh
 else
     echo "File not modified, applying changes and restarting"
-    # 修改文件
     sed -i '/Sentry\.init/ s/^/return;/' /ql/static/build/loaders/sentry.js
 
-    # 获取当前容器 ID
+    # Get current container ID
     CONTAINER_ID=$(cat /proc/self/cgroup | grep "docker" | sed 's/^.*\///' | tail -n 1)
 
-    # 重启容器
+    # Restart container so the patched JS is picked up
     docker restart $CONTAINER_ID
 
-    # 退出当前进程，让 Docker 重新启动容器
+    # Exit so Docker restarts us
     exit 0
 fi
 ```
 
-2. 更新 docker-compose 配置，添加如下 `entrypoint` 字段
+2) Update your docker‑compose service with a custom `entrypoint`:
 
 ```yml
 version: "3"
@@ -73,8 +69,8 @@ services:
     entrypoint: ["/bin/sh", "/remove-tracking.sh"]
 ```
 
-`docker-compose up -d` 启动容器后，青龙面板将不再发送跟踪请求。
+After `docker-compose up -d`, Qinglong will stop sending Sentry telemetry.
 
-## 参考
+## Reference
 
-1. [Github｜一直在发送dns请求 · Issue #2001](https://github.com/whyour/qinglong/issues/2001)
+1. [GitHub — “一直在发送dns请求” · Issue #2001](https://github.com/whyour/qinglong/issues/2001)

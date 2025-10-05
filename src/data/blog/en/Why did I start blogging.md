@@ -1,27 +1,24 @@
 ---
 author: gaazeon
 pubDatetime: 2021-10-03T00:00:00.000+08:00
-title: "TODO: Translate — 我為什麼要寫博客"
+title: "Why I Started Blogging"
 featured: false
-draft: true
+draft: false
 tags:
   - blog
   - thinking
-description: "TODO: Translate —
-  在這篇博客文章中，我將深入探討自己從大學本科開始寫博客的心路歷程。文章從閱讀與寫作失衡的困惑出發，闡述了寫作不僅是提升語文能力的途徑，更是一種記錄個人「經\
-  歷」以貢獻於未來歷史的宏大嘗試。受到歷史學家柯文著作的啟發，我將分享為何把個人當下的所思所感視為珍貴的「史料」，並希望通過這個博客為我所處的時代留下獨特的\
-  個人印記。"
+description: "A short reflection on why I began writing online: closing the gap between reading and writing, and treating my present experiences as future ‘primary sources’."
 locale: en
 originalTitle: 我為什麼要寫博客
 ---
 
-<!-- TODO: Translate body content below into English -->
-上大學已經一年了，一年之中在大學閱讀過的書籍大大話話都有二十本以上。但是對比我這不多不少的閱讀量，目前我所寫作的書評也好，生活紀錄也罢卻显得少得可憐。變成了所謂的「有入冇出」——只是文字內容的消費者，而不是消費者。在李怡先生主持的「一分鐘閱讀節目」的第36集[^1]中，李先生告訴我們，提高語文能力無他，唯在「靠閱讀和寫作」。
+When I finished my first year at university, I realized I had read more than twenty books but written almost nothing. I was happily consuming words, not producing them. In Li Yi's radio series “One‑Minute Reading” (episode 36)[^1], he said language ability grows from two habits only: reading and writing.
 
-其實，我還有一個更「冠冕堂皇」的理由，就是打算為歷史留下我自己的「經歷」。在閱讀完美國歷史家柯文 (Paul A. Cohen) 的《歷史三調》[^2]之後，令我影響最深的反而不是最後的神話篇，而是另外一章「作為「經歷」的義和團」。當一段特定的時空或特別的事件逝去，它便成作「歷史」，作為歷史的親歷者或者說是當事人，實際上我可能永遠都生活在一個「不知道歷史結果」的真實生活中。正如柯文所称「 他们不知道局势会如何演变，会有什么样的结果。」而在這個生活之中，因為歷史細節的複雜與細微加之具體到每個人個體的差異，人人對歷史的具體認識與感受上大不一樣。我這個部落格即是紀錄了我對當下「經歷」的感受，如果有可能或者我有如此幸運，或者這些文字亦可被後人把我的「經歷」當作「史料」去研究我這個時代的歷史。
+There’s a grander reason too: I want to leave a trace for history. After reading historian Paul A. Cohen’s book “History in Three Keys”[^2], the chapter that stayed with me most wasn’t the myth section, but “The Boxers as Experience.” People living through events do not know how things will turn out; they act without hindsight. Our present is messy and personal, and every person’s understanding is necessarily partial. That is exactly why individual records matter.
+
+This blog is my way of recording my own experience of the present. If I’m lucky, perhaps one day these notes can be read as tiny “primary sources” for the time I lived through. But even if that never happens, writing still closes the loop: it forces me to think, to decide what I actually believe, and to leave behind something that wasn’t there before.
 
 ### footnote
 
-[^1]: [香港電臺網站：一分鐘閱讀-李怡](https://app7.rthk.hk/elearning/1minreading/index.php?pid=1&p=23#36)
-
-[^2]: [豆瓣讀書：《歷史三調》](https://book.douban.com/subject/1439260/)
+[^1]: Cantonese public‑radio series “One‑Minute Reading” (hosted by Li Yi) — episode 36.
+[^2]: Paul A. Cohen, “History in Three Keys: The Boxers as Event, Experience, and Myth”.
