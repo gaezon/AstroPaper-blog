@@ -22,7 +22,7 @@ function svgBufferToPngBuffer(svg: string) {
   }
 }
 
-export async function generateOgImageForPost(post: CollectionEntry<"blog">) {
+export async function generateOgImageForPost(post: CollectionEntry<"blog" | "blog-en">) {
   try {
     const svg = await postOgImage(post);
     return svgBufferToPngBuffer(svg);

@@ -1,6 +1,7 @@
 ---
 import Hr from "./Hr.astro";
 import Socials from "./Socials.astro";
+import { getCurrentLocale, t } from "@/i18n/utils";
 
 const currentYear = new Date().getFullYear();
 
@@ -9,6 +10,16 @@ export interface Props {
 }
 
 const { noMarginTop = false } = Astro.props;
+
+// 国际化相关变量
+const currentLocale = getCurrentLocale(Astro);
+const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
+const localeUrl = (path: string) => {
+  const fullPath = `${localePrefix}${path}`;
+  // 确保根路径返回 "/"，其他路径以 "/" 结尾
+  return fullPath === "/" ? "/" : fullPath.endsWith("/") ? fullPath : `${fullPath}/`;
+};
+const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
 ---
 
 <footer class:list={["w-full", { "mt-auto": !noMarginTop }]}>
@@ -16,7 +27,7 @@ const { noMarginTop = false } = Astro.props;
   <div class="flex flex-col items-center py-6 sm:py-4">
     <Socials centered />
     <div class="copyright-wrapper mt-4 text-center">
-      <span> Copyright &#169; {currentYear}</span>
+      <span>{tr("footer.copyright", { year: currentYear, author: "Gaazeon" })}</span>
       <span class="separator">&nbsp;|&nbsp;</span>
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
@@ -32,27 +43,27 @@ const { noMarginTop = false } = Astro.props;
     >
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
-        href="/privacy-policy"
+        href={localeUrl("/privacy-policy")}
       >
-        隐私政策
+        {tr("ui.privacyPolicy")}
       </a>
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
-        href="/cookie-policy"
+        href={localeUrl("/cookie-policy")}
       >
-        Cookie 政策
+        {tr("ui.cookiePolicy")}
       </a>
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
-        href="/terms-of-service"
+        href={localeUrl("/terms-of-service")}
       >
-        服务条款
+        {tr("ui.termsOfService")}
       </a>
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
-        href="/contact"
+        href={localeUrl("/contact")}
       >
-        联系我们
+        {tr("ui.contact")}
       </a>
     </div>
   </div>

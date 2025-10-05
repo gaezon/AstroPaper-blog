@@ -1,6 +1,13 @@
+---
+import { getCurrentLocale, getLangTag } from "@/i18n/utils";
+
+const currentLocale = getCurrentLocale(Astro);
+const langTag = getLangTag(Astro);
+---
+
 <div id="tcomment"></div>
 
-<script>
+<script define:vars={{ langTag }}>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");
@@ -15,6 +22,7 @@
             twikoo.init({
                 envId: 'https://comment.gaazeon.com/',
                 el: '#tcomment',
+                lang: '${langTag}',
             });
         `;
           document.body.appendChild(initScript);

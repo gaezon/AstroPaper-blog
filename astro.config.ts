@@ -20,6 +20,16 @@ export default defineConfig({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
   ],
+  // 国际化路由配置
+  output: "static",
+  trailingSlash: "always",
+  i18n: {
+    defaultLocale: "zh-CN",
+    locales: ["zh-CN", "en"],
+    routing: {
+      prefixDefaultLocale: false, // 中文默认不使用前缀，保持 URL 简洁
+    },
+  },
   markdown: {
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
     rehypePlugins: [

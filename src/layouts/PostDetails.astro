@@ -18,8 +18,8 @@ import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
 
 export interface Props {
-  post: CollectionEntry<"blog">;
-  posts: CollectionEntry<"blog">[];
+  post: any;
+  posts: any[];
 }
 
 const { post, posts } = Astro.props;
@@ -130,7 +130,7 @@ const nextPost =
         <EditPost class="sm:hidden" {hideEditPost} {post} />
 
         <ul class="mt-4 mb-8 sm:my-8">
-          {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
+          {tags.map((tag: string) => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
         </ul>
 
         <Comment />

@@ -1,0 +1,144 @@
+---
+import { getCurrentLocale, getLocaleSwitchUrl, getAvailableLocales, t } from "@/i18n/utils";
+
+interface Props {
+  class?: string;
+  variant?: "dropdown" | "toggle";
+}
+
+const { class: className = "", variant = "dropdown" } = Astro.props;
+
+const currentLocale = getCurrentLocale(Astro);
+const availableLocales = getAvailableLocales();
+const currentLocaleInfo = availableLocales.find(l => l.code === currentLocale);
+const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
+---
+
+{variant === "dropdown" ? (
+  <div class={`relative language-switcher ${className}`}>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
+      aria-label={currentLocaleInfo?.name || "Language"}
+      onclick="this.parentElement.classList.toggle('open')"
+    >
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width={2}
+          d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+        />
+      </svg>
+      <span>{currentLocaleInfo?.profile.label || currentLocaleInfo?.name || currentLocale}</span>
+      <svg
+        class="w-4 h-4 transition-transform"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </button>
+
+    <div class="absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 opacity-0 invisible transition-all duration-200">
+      {availableLocales.map(locale => (
+        <a
+          href={getLocaleSwitchUrl(Astro, locale.code)}
+          class={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+            locale.code === currentLocale
+              ? "text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20"
+              : "text-gray-700 dark:text-gray-300"
+          }`}
+          lang={locale.profile.langTag}
+          hreflang={locale.code}
+        >
+          <span class="flex items-center gap-2">
+            {locale.name}
+            {locale.isDefault && (
+              <span class="text-xs text-gray-500 dark:text-gray-400">{tr("language.default")}</span>
+            )}
+            {locale.code === currentLocale && (
+              <svg
+                class="w-4 h-4 text-blue-600 dark:text-blue-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            )}
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+) : (
+  <div class={`language-switcher-toggle ${className}`}>
+    {availableLocales.map(locale => (
+      <a
+        href={getLocaleSwitchUrl(Astro, locale.code)}
+        class={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+          locale.code === currentLocale
+            ? "bg-blue-600 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+        }`}
+        lang={locale.profile.langTag}
+        hreflang={locale.code}
+      >
+        {locale.profile.label || locale.name}
+      </a>
+    ))}
+  </div>
+)}
+
+<style>
+  .language-switcher .open > div:last-child {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .language-switcher .open > button svg:last-child {
+    transform: rotate(180deg);
+  }
+
+  .language-switcher-toggle {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .language-switcher .absolute {
+      right: 0;
+      left: auto;
+    }
+  }
+</style>
+
+<script>
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    const switchers = document.querySelectorAll('.language-switcher');
+    switchers.forEach(switcher => {
+      if (!switcher.contains(event.target as Node)) {
+        switcher.classList.remove('open');
+      }
+    });
+  });
+</script>
