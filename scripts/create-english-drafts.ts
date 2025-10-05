@@ -1,10 +1,12 @@
 #!/usr/bin/env tsx
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { join, relative } from "node:path";
+import YAML from "yaml";
 
 const BLOG_BASE = "src/data/blog";
 const EN_BASE = join(BLOG_BASE, "en");
+const FORCE = process.argv.includes("--force");
 
 function isMarkdown(file: string) {
   return file.toLowerCase().endsWith(".md");
@@ -18,50 +20,54 @@ function readFrontmatter(filePath: string) {
   const content = readFileSync(filePath, "utf-8");
   const parts = content.split(/^---\s*$/m);
   if (parts.length >= 3) {
-    const fm = parts[1];
+    const frontmatter = parts[1];
     const body = parts.slice(2).join("\n---\n");
-    return { frontmatter: fm, body };
+    return { frontmatter, body };
   }
   return { frontmatter: "", body: content };
 }
 
-function buildEnglishDraft(frontmatter: string, body: string) {
-  // 朴素替换：标记为英文草稿，保留原始标签以便后续人工修订
-  const lines = frontmatter.split(/\r?\n/);
-  const kv = new Map<string, string>();
-  for (const line of lines) {
-    const idx = line.indexOf(":");
-    if (idx > -1) {
-      const k = line.slice(0, idx).trim();
-      const v = line.slice(idx + 1).trim();
-      kv.set(k, v);
-    }
+function normalizeDate(value: unknown): string | undefined {
+  if (!value) return undefined;
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === "string" && value.trim().length > 0) return value;
+  return undefined;
+}
+
+function toArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map(item => String(item));
   }
+  return [];
+}
 
-  const cnTitle = kv.get("title")?.replace(/^"|"$/g, "") ?? "";
-  const cnDesc = kv.get("description")?.replace(/^"|"$/g, "") ?? "";
+function buildEnglishDraft(frontmatter: string, body: string) {
+  const data = frontmatter ? YAML.parse(frontmatter) ?? {} : {};
 
-  const out: string[] = [];
-  out.push("---");
-  out.push(`author: ${kv.get("author") ?? "\"Gaazeon\""}`);
-  out.push(`pubDatetime: ${kv.get("pubDatetime") ?? new Date().toISOString()}`);
-  if (kv.has("modDatetime")) out.push(`modDatetime: ${kv.get("modDatetime")}`);
-  out.push(`title: "TODO: Translate — ${cnTitle}"`);
-  out.push(`featured: ${kv.get("featured") ?? "false"}`);
-  out.push(`draft: true`);
-  if (kv.has("tags")) out.push(`tags: ${kv.get("tags")}`);
-  if (kv.has("ogImage")) out.push(`ogImage: ${kv.get("ogImage")}`);
-  out.push(`description: "TODO: Translate — ${cnDesc}"`);
-  if (kv.has("canonicalURL")) out.push(`canonicalURL: ${kv.get("canonicalURL")}`);
-  if (kv.has("hideEditPost")) out.push(`hideEditPost: ${kv.get("hideEditPost")}`);
-  if (kv.has("timezone")) out.push(`timezone: ${kv.get("timezone")}`);
-  out.push(`locale: "en"`);
-  out.push(`originalTitle: "${cnTitle}"`);
-  out.push("---\n");
-  out.push("<!-- TODO: Translate body content below into English -->\n");
-  out.push(body);
+  const cnTitle = data.title ? String(data.title) : "";
+  const cnDesc = data.description ? String(data.description) : "";
 
-  return out.join("\n");
+  const english: Record<string, any> = {};
+  english.author = data.author ?? "Gaazeon";
+  english.pubDatetime = normalizeDate(data.pubDatetime) ?? new Date().toISOString();
+  const mod = normalizeDate(data.modDatetime);
+  if (mod) english.modDatetime = mod;
+  english.title = `TODO: Translate — ${cnTitle}`;
+  english.featured = Boolean(data.featured);
+  english.draft = true;
+  english.tags = toArray(data.tags);
+  if (data.ogImage) english.ogImage = data.ogImage;
+  english.description = `TODO: Translate — ${cnDesc}`;
+  if (data.canonicalURL) english.canonicalURL = data.canonicalURL;
+  if (typeof data.hideEditPost !== "undefined") english.hideEditPost = data.hideEditPost;
+  if (data.timezone) english.timezone = data.timezone;
+  english.locale = "en";
+  english.originalTitle = cnTitle;
+
+  const yaml = YAML.stringify(english, { indent: 2 }).trimEnd();
+  const bodyContent = body.startsWith("\n") ? body : `\n${body}`;
+
+  return `---\n${yaml}\n---\n\n<!-- TODO: Translate body content below into English -->${bodyContent}`;
 }
 
 function main() {
@@ -72,20 +78,18 @@ function main() {
   for (const ent of entries) {
     if (ent.isDirectory()) {
       if (ent.name === "en" || ent.name.startsWith("_")) continue;
-      // 处理子目录（浅层）
       const sub = join(BLOG_BASE, ent.name);
       const files = readdirSync(sub, { withFileTypes: true });
       for (const f of files) {
         if (f.isFile() && isMarkdown(f.name)) {
           const src = join(sub, f.name);
           const dst = join(EN_BASE, f.name);
-          if (!existsSync(dst)) {
-            const { frontmatter, body } = readFrontmatter(src);
-            const out = buildEnglishDraft(frontmatter, body);
-            writeFileSync(dst, out, "utf-8");
-            created++;
-            console.log(`Created EN draft: ${relative(process.cwd(), dst)}`);
-          }
+          if (existsSync(dst) && !FORCE) continue;
+          const { frontmatter, body } = readFrontmatter(src);
+          const out = buildEnglishDraft(frontmatter, body);
+          writeFileSync(dst, out, "utf-8");
+          created++;
+          console.log(`Created EN draft: ${relative(process.cwd(), dst)}`);
         }
       }
       continue;
@@ -93,13 +97,12 @@ function main() {
     if (ent.isFile() && isMarkdown(ent.name)) {
       const src = join(BLOG_BASE, ent.name);
       const dst = join(EN_BASE, ent.name);
-      if (!existsSync(dst)) {
-        const { frontmatter, body } = readFrontmatter(src);
-        const out = buildEnglishDraft(frontmatter, body);
-        writeFileSync(dst, out, "utf-8");
-        created++;
-        console.log(`Created EN draft: ${relative(process.cwd(), dst)}`);
-      }
+      if (existsSync(dst) && !FORCE) continue;
+      const { frontmatter, body } = readFrontmatter(src);
+      const out = buildEnglishDraft(frontmatter, body);
+      writeFileSync(dst, out, "utf-8");
+      created++;
+      console.log(`Created EN draft: ${relative(process.cwd(), dst)}`);
     }
   }
 
@@ -107,4 +110,3 @@ function main() {
 }
 
 main();
-
