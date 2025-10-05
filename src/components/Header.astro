@@ -12,7 +12,12 @@ import DummyLogo from "@/assets/dummy-logo.svg";
 import { getCurrentLocale, t } from "@/i18n/utils";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 
+interface HeaderProps {
+  switchOverride?: Record<string, string | undefined>;
+}
+
 const { pathname } = Astro.url;
+const { switchOverride } = Astro.props as HeaderProps;
 
 // 国际化相关变量
 const currentLocale = getCurrentLocale(Astro);
@@ -146,7 +151,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
           </li>
           <!-- 语言切换器 -->
           <li class="col-span-2 sm:col-span-1 flex items-center justify-center">
-            <LanguageSwitcher variant="toggle" class="language-switcher-compact" />
+            <LanguageSwitcher variant="toggle" class="language-switcher-compact" override={switchOverride} />
           </li>
           {
             SITE.lightAndDarkMode && (

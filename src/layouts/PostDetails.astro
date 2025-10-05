@@ -1,5 +1,5 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
+import { render, type CollectionEntry, getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
@@ -16,6 +16,8 @@ import { slugifyStr } from "@/utils/slugify";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
+import { getPath } from "@/utils/getPath";
+import { getCurrentLocale } from "@/i18n/utils";
 import { t } from "@/i18n/utils";
 
 export interface Props {
@@ -85,10 +87,32 @@ const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
 const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
 const nextPost =
   currentPostIndex !== allPosts.length ? allPosts[currentPostIndex + 1] : null;
+
+// ===== 语言切换：文章互链覆盖（在前端模板前预先计算） =====
+const currentLocale = getCurrentLocale(Astro);
+const switchOverride: Record<string, string | undefined> = {};
+try {
+  if (currentLocale === "zh-CN") {
+    const enPosts = await getCollection("blog-en");
+    const matched = enPosts.find(p => p.data.originalTitle === post.data.title);
+    if (matched) {
+      switchOverride["en"] = getPath(matched.id, matched.filePath);
+    }
+  } else {
+    const zhPosts = await getCollection("blog");
+    const originTitle = post.data.originalTitle as string | undefined;
+    if (originTitle) {
+      const matched = zhPosts.find(p => p.data.title === originTitle);
+      if (matched) {
+        switchOverride["zh-CN"] = getPath(matched.id, matched.filePath);
+      }
+    }
+  }
+} catch {}
 ---
 
 <Layout {...layoutProps}>
-  <Header />
+  <Header switchOverride={switchOverride} />
   <BackButton />
   <!-- 目录组件放在main外部，作为独立的导航辅助元素 -->
   <TableOfContents />

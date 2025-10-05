@@ -4,9 +4,10 @@ import { getCurrentLocale, getLocaleSwitchUrl, getAvailableLocales, t } from "@/
 interface Props {
   class?: string;
   variant?: "dropdown" | "toggle";
+  override?: Record<string, string | undefined>;
 }
 
-const { class: className = "", variant = "dropdown" } = Astro.props;
+const { class: className = "", variant = "dropdown", override } = Astro.props;
 
 const currentLocale = getCurrentLocale(Astro);
 const availableLocales = getAvailableLocales();
@@ -56,7 +57,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
     <div class="absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 opacity-0 invisible transition-all duration-200">
       {availableLocales.map(locale => (
         <a
-          href={getLocaleSwitchUrl(Astro, locale.code)}
+          href={override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code)}
           class={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
             locale.code === currentLocale
               ? "text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20"
@@ -93,7 +94,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
   <div class={`language-switcher-toggle ${className}`}>
     {availableLocales.map(locale => (
       <a
-        href={getLocaleSwitchUrl(Astro, locale.code)}
+        href={override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code)}
         class={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
           locale.code === currentLocale
             ? "bg-blue-600 text-white"
