@@ -1,17 +1,15 @@
 ---
 author: gaazeon
 pubDatetime: 2025-06-22T20:00:00.000+08:00
-title: "TODO: Translate — OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案"
+title: "OBS live streaming pitfalls: why a 20‑second ‘safe broadcast’ delay blows up your audio — and a dual‑OBS solution"
 featured: false
-draft: true
+draft: false
 tags:
   - OBS
-  - 直播
-  - 安全播出
-  - 延时直播
-description: "TODO: Translate — 想在 OBS 实现安全延时却遇到音频爆音问题？分享真实踩坑案例和解决方案。深入剖析 OBS
-  渲染延迟滤镜的技术陷阱，提供一套无需专业延迟硬件和 OBS 插件的双机 RTMP/SRT
-  架构方案。包含详细的配置步骤和优化建议，助你搭建稳定、零成本的专业安全播出系统。"
+  - Live Streaming
+  - Safe Broadcast
+  - Delay
+description: "Tried to build a 20‑second ‘safe broadcast’ delay in OBS but ran into crackling audio? This post explains the technical trap behind OBS’s Video Delay (Async) filter and offers a dual‑OBS solution (RTMP/SRT) that requires no dedicated delay hardware or extra plugins."
 locale: en
 originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
 ---
@@ -19,15 +17,15 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 <!-- TODO: Translate body content below into English -->
 ## Table of contents
 
-## 背景：为什么国内直播必须做「安全播出」
+## Background: why ‘safe broadcast’ is required
 
 在抖音、快手、淘宝直播等国内平台，直播间会被 AI 与人工双重审核，稍有不慎就可能触发秒封。因此，大多数机构都会预留 **20 秒以上的延时**，给后台运营同事留出 `DUMP/MUTE` 的反应时间。某大厂的电竞直播，为了规避风险，甚至有高达 2 分钟的延时。虽然这常被观众诟病「播出画面比实时对局慢太多」，但对于商业公司而言，给最后把关的人留出充足的反应时间来处理可能违规声音或画面，其重要性远超被观众吐槽画面延迟。
 
-## 前言：一个价值 20 秒的翻车现场
+## A costly failure: the 20‑second test
 
 没有专业的延时机，但却想在 OBS 里实现 20 秒「安全延时」，应该如何做呢？
 
-### 初步尝试：天真地以为滤镜能搞定一切
+### First attempt: assuming a filter could do it all
 
 经过一番寻找，计划是使用 OBS 自带的 `Video Delay (Async)` 滤镜，来实现
 
@@ -38,11 +36,11 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 
 ![obs-video-delay-filter](https://img.gaazeon.com/2025/06/obs-video-delay-filter.avif)
 
-需要注意的是，OBS 的渲染延迟滤镜，只针对视频帧进行延时，音频依旧按实时时间戳发送
+Important: the Video Delay (Async) filter delays video frames only. Audio is still sent with real‑time timestamps.
 
 > 那声音应该如何处理延时呢？
 
-### 声音这一段：我的做法
+### How I tried to delay the audio
 
 我当时的尝试流程如下：
 
@@ -51,26 +49,26 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 
 ![obs-audio-sync-offset](https://img.gaazeon.com/2025/06/OBS-audio-sync-offset.avif)
 
-**然而，推流到远程服务器后，直播开始没多久，直播间瞬间变成事故现场，负责监流的同事反馈间歇性出现噼里啪啦的爆音，直播画面无法使用！**
+**However, once pushed upstream, the live room soon turned into a disaster: intermittent crackling and unusable audio on the platform side.**
 
-### 探寻真相：是什么导致了数字失真？
+### Root cause: where the distortion comes from
 
 我百思不得其解，开始查阅 OBS 的 GitHub issue 和官方论坛。经过一番挖掘，真相浮出水面：
 
-**1. 「渲染延迟」滤镜的设计初衷并非用于「安全播出」**[^1]
+**1) Video Delay (Async) is not designed for ‘safe broadcast’**[^1]
 这个滤镜的本名是「视频异步延迟」，它的设计目标仅仅是修正 100-200 毫秒级别的口型同步误差，根本不是为长达数十秒的「安全播出」场景设计的，虽然它确实可以设置单个滤镜 20 秒级别的视频渲染延迟。
 
-**2. OBS 音频缓冲存在 960 ms 的硬性上限**[^2]
+**2) OBS audio buffering has a hard cap at ~960 ms**[^2]
 我发现，OBS 的源代码里把音频的最大缓冲时间（`max buffering`）写死在了 `960 ms`。这意味着，无论你在滤镜里填入多大的数值，音频轨道最多只能延迟不到 1 秒。
 
-**3. 混音器 & 音频滤镜并不能「弥补」这 20 秒空洞**  
+**3) Mixers/filters can’t ‘fill’ a 20‑second gap**  
 在发现视频滞后以后，我第一反应是去 **高级音频属性 → 同步偏移 (Sync Offset)** 里硬填 `20000 ms`，并在「混音器」面板手动把麦克风通道 **推迟监听**，妄图用音频侧的「手动延时」与视频对齐。  
 但结果依旧翻车，原因有两点：
 
 - **上限仍然被 960 ms 卡死**：Sync Offset 实际调用的是同一份音频缓冲区，它同样会被内核的 `max buffering` 强制截断。
 - **混音器不会改写封包时间戳**：即便声卡监听听起来「同步」了，OBS 推向 RTMP 时仍按原始时间戳发送，服务器端依旧视为「音早画晚」，重采样/丢包操作仍然发生。
 
-换句话说，_你在本地听到的并不等于观众听到的_——混音器的小推子和滤镜里的「同步偏移」只能满足 <1 秒的口型微调，面对 20 秒级别的安全延时毫无胜算。
+In short, _what you hear locally is not what the audience hears_. Mixer sliders and ‘sync offset’ filters are for sub‑second lip‑sync tweaks — not 20‑second broadcast delays.
 
 当我天真地填入 `20000 ms` 时，灾难发生了：
 
@@ -79,14 +77,14 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 
 音视频两条轨道的时间戳，就此产生了接近 20 秒的巨大鸿沟。当这两条流被推送到 RTMP 服务器（如 YouTube、Bilibili）后，服务器为了强行将它们对齐，只能对音频数据进行剧烈的、破坏性的重采样或丢包处理——这，就是我们听到的「兹啦」爆音的根源。
 
-为了验证我的猜想，我用自己的 YouTube 账号反复推流测试，最终确认：**一旦「渲染延迟」滤镜的数值超过 10 秒，直播观看端几乎 100% 会产生这种爆破式数字失真。**
+I validated this repeatedly on YouTube: **once Video Delay exceeds ~10 seconds, crackling/distortion almost always appears for viewers.**
 
 搞清楚了问题根源，真正的解决方案也就浮出水面了。
 
 
 ---
 
-## 破案了：问题出在「层」，而非「旋钮」
+## Lesson learned: fix the layer, not the knob
 
 这次惨痛的翻车经历，让我彻底想明白了一件事：我之前对「延时」的理解，从根上就错了。
 
@@ -96,32 +94,32 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 
 真正的安全延时，必须在**完整的流封装层**（如 RTMP/SRT）进行整体滞后，让音视频数据包整整齐齐地一起排队出发。任何试图在渲染层动刀子的行为，最终都会导致音画不同步，甚至爆音，从而翻车。
 
-### 我的工程反思
+### Engineering takeaways
 
 这次踩坑，也让我对技术方案的设计有了更深的体会：
 
 1. **分层思维**：UI 界面上一个小旋钮，背后可往往是完全不同的技术抽象。延时属于「传输层」的问题，如果强行在「渲染层」解决，最终只会得到一个「看似可用」的假象。
 2. **端到端视角**：永远不要相信本地的耳朵和眼睛。监听端「感觉同步」不等于 CDN 服务端「逻辑同步」。诊断问题必须依赖对最终输出流的检查。
 
-## 实战：如何搭建「乞丐版」安全播出架构
+## A pragmatic dual‑OBS ‘safe broadcast’ architecture
 
 在国内做直播，嘉宾一句口误就可能让整场直播瞬间下线。电视台有几十万的专业硬件延时器，但我们小团队没有这个预算，就必须依靠**架构设计来弥补**：
 
 - **技术实现**：利用「上游延时 + 本机监听」的方案，搭建出经济实惠的「乞丐版安全播出」系统。
 - **操作流程**：将 `DUMP`（丢帧）、`MUTE`（静音）等关键操作绑定到 Stream Deck 这类设备上，为人工审核创造 5-10 秒的黄金反应窗口。
 
-### 具体搭建方案
+### Concrete setup
 
 搞清楚了原理，我们就可以着手搭建一套真正可用的延时方案了。这套方案的核心，就是**将延时任务交给上游的「推流机」，而你的主力「播出机」只负责接收处理好的、已经带延时的音视频流。**
 
-1. **推流机 / 延时机**
-   - 在这台设备上使用 **OBS 的 Broadcast Delay**、vMix 或专业硬件延时器。
-   - 缓存 20 秒的视频流，并设置好紧急情况下的 `DUMP` (快速丢帧) / `MUTE` (静音) 热键。
+1) **Delay / upstream box**
+   - Use **OBS’s Broadcast Delay**, vMix, or a dedicated delay unit on this box.
+   - Buffer ~20 seconds, and map hotkeys for `DUMP` (drop frames) / `MUTE` (silence) in emergencies.
 
-2. **播出机 (你的主力 OBS)**
-   - 通过 **RTMP 或 SRT 协议** _监听_ 上一台机器处理好的延时流。
-   - **不再使用任何延迟滤镜**。
-   - 像往常一样，正常推流到各大直播平台。
+2) **Main broadcast box (your primary OBS)**
+   - **Listen** to the delayed stream via **RTMP or SRT**.
+   - **Do not** use any delay filters here.
+   - Push to platforms as usual.
 
 这个方案的妙处在于，音视频在抵达你的播出机之前就已经完美同步了，播出机也无需消耗大量内存来缓存那 20 秒的画面，从根本上杜绝了爆音的可能。
 
