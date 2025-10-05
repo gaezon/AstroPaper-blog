@@ -27,11 +27,22 @@ const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
 const currentPath =
   pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
 
-const isActive = (path: string) => {
-  const currentPathArray = currentPath.split("/").filter(p => p.trim());
-  const pathArray = path.split("/").filter(p => p.trim());
+const normalizeSegments = (segments: string[]) => {
+  if (!segments.length) return segments;
+  return segments[0] === currentLocale ? segments.slice(1) : segments;
+};
 
-  return currentPath === path || currentPathArray[0] === pathArray[0];
+const normalizedCurrentPath = normalizeSegments(currentPath.split("/").filter(p => p.trim()));
+
+const isActive = (path: string) => {
+  const targetSegments = normalizeSegments(path.split("/").filter(p => p.trim()));
+  const currentFirst = normalizedCurrentPath[0];
+  const targetFirst = targetSegments[0];
+
+  const normalizedCurrent = `/${normalizedCurrentPath.join("/")}` || "/";
+  const normalizedTarget = `/${targetSegments.join("/")}` || "/";
+
+  return normalizedCurrent === normalizedTarget || (!!currentFirst && currentFirst === targetFirst);
 };
 
 // 构建本地化的URL
@@ -273,4 +284,3 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
     }
   }
 </style>
-

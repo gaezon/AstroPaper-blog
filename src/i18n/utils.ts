@@ -58,11 +58,17 @@ export function t(
  */
 export function getLocaleSwitchUrl(Astro: AstroGlobal, targetLocale: string): string {
   const currentPath = Astro.url.pathname;
+  const currentSearch = Astro.url.search;
+  const currentHash = Astro.url.hash;
   const currentLocale = getCurrentLocale(Astro);
 
   // 如果已经是目标语言，返回当前 URL
   if (currentLocale === targetLocale) {
-    return ensureTrailingSlash(currentPath);
+    return appendUrlParts(
+      ensureTrailingSlash(currentPath),
+      currentSearch,
+      currentHash
+    );
   }
 
   // 检查当前是否在文章详情页
@@ -70,7 +76,13 @@ export function getLocaleSwitchUrl(Astro: AstroGlobal, targetLocale: string): st
 
   // 如果不是文章页，直接进行语言切换
   if (!isPostPage) {
-    return getLocaleSwitchUrlForPath(currentPath, currentLocale, targetLocale);
+    return getLocaleSwitchUrlForPath(
+      currentPath,
+      currentLocale,
+      targetLocale,
+      currentSearch,
+      currentHash
+    );
   }
 
   // 对于文章页，检查目标语言的翻译是否存在
@@ -92,13 +104,25 @@ export function getLocaleSwitchUrl(Astro: AstroGlobal, targetLocale: string): st
   }
 
   // 默认情况：直接进行语言切换
-  return getLocaleSwitchUrlForPath(currentPath, currentLocale, targetLocale);
+  return getLocaleSwitchUrlForPath(
+    currentPath,
+    currentLocale,
+    targetLocale,
+    currentSearch,
+    currentHash
+  );
 }
 
 /**
  * 获取指定路径的语言切换 URL
  */
-function getLocaleSwitchUrlForPath(currentPath: string, currentLocale: string, targetLocale: string): string {
+function getLocaleSwitchUrlForPath(
+  currentPath: string,
+  currentLocale: string,
+  targetLocale: string,
+  search = "",
+  hash = ""
+): string {
   // 构建新的路径
   let newPath = currentPath;
 
@@ -117,13 +141,17 @@ function getLocaleSwitchUrlForPath(currentPath: string, currentLocale: string, t
     }
   }
 
-  return ensureTrailingSlash(newPath);
+  return appendUrlParts(ensureTrailingSlash(newPath), search, hash);
 }
 
 // 辅助函数：确保 URL 以 / 结尾
 function ensureTrailingSlash(path: string): string {
   if (path === "/") return "/";
   return path.endsWith("/") ? path : `${path}/`;
+}
+
+function appendUrlParts(path: string, search: string, hash: string): string {
+  return `${path}${search ?? ""}${hash ?? ""}`;
 }
 
 /**
