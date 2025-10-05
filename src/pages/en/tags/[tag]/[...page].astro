@@ -48,7 +48,7 @@ const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
   >
     <h1 slot="title" transition:name={tag}>{`${t(Astro, "tags.title")}:${tagName}`}</h1>
     <ul>
-      {page.data.map(data => <Card {...data} />)}
+      {page.data.map((data: any) => <Card {...data} />)}
     </ul>
   </Main>
 

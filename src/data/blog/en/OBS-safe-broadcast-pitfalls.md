@@ -13,8 +13,6 @@ description: "Tried to build a 20‑second ‘safe broadcast’ delay in OBS but
 locale: en
 originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
 ---
-
-<!-- TODO: Translate body content below into English -->
 ## Table of contents
 
 ## Background: why ‘safe broadcast’ is required

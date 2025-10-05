@@ -2,123 +2,107 @@
 author: gaazeon
 pubDatetime: 2025-06-20T20:00:00.000+08:00
 modDatetime: 2025-06-20T20:00:00.000+08:00
-title: "TODO: Translate — IBKR 股息再投资 (DRIP) 是零佣金吗？美股盈透证券佣金小数点后的收费规则"
+title: "Is IBKR’s DRIP really zero‑commission? The truth behind the rounding"
 featured: false
-draft: true
+draft: false
 tags:
-  - 美股
+  - US Stocks
   - IBKR
-  - 投资
-  - 股息再投资
+  - Investing
+  - Dividends
   - DRIP
-description: "TODO: Translate — 深入探究 IBKR 盈透证券的股息再投资计划 (DRIP)「零佣金」背后的真相。通过实际的
-  0.0003 股 $NVDA 交易案例，详细分析其真实的佣金计算规则、后台记账系统和碎股处理机制。为投资者揭示美股 DRIP 投资的真实成本和注意事项。"
+description: "Is Interactive Brokers’ dividend reinvestment plan (DRIP) truly ‘zero‑commission’? A real NVDA DRIP example reveals how fees are computed at full precision then rounded for display, why you often see $0.00, and how DRIP compares to manual fractional trades."
 locale: en
 originalTitle: IBKR 股息再投资 (DRIP) 是零佣金吗？美股盈透证券佣金小数点后的收费规则
 ---
 
-<!-- TODO: Translate body content below into English -->
 ## Table of contents
 
 ## TL;DR
 
-**IBKR 的 DRIP 并非真正免佣，只是佣金微小到被四舍五入显示为 $0.00。**
+IBKR’s DRIP isn’t literally fee‑free — the commission is so small that it’s rounded to $0.00 in reports.
 
-- **真实佣金规则**：DRIP 佣金 = `min(1% × 成交额, $0.35/$1)`，通常远低于手动交易的最低佣金门槛
-- **隐形收费机制**：系统以完整精度计算佣金（如 $0.000031），然后四舍五入到美分显示，日终还会进行汇总校正
-- **实际案例**：0.0003 股 $NVDA 交易，成交额 $0.031，实际佣金 $0.000031，显示为 $0.00
-- **值得开启吗**：对长线投资者绝对值得，核心优势是自动化复利和极低费率，而非「免佣」
-- **对比手动交易**：纯碎股单最低 $0.01，含整股单最低 $0.35/$1，DRIP 通常更划算
+- Real rule: DRIP commission = `min(1% × trade value, $0.35 / $1)` — typically lower than manual trade minimums
+- “Invisible” fee handling: fees are computed at full precision (e.g., $0.000031) then rounded to cents for display; day‑end aggregation applies rounding once more
+- Example: 0.0003 share of $NVDA, trade value $0.031 → actual fee $0.000031 → shown as $0.00
+- Should you enable DRIP? For long‑term investors, yes — the advantage is automated compounding at extremely low cost, not literal zero fees
+- Manual vs DRIP: pure fractional orders have a $0.01 minimum; mixed/whole‑share orders $0.35 (tiered) / $1 (fixed); DRIP is usually cheaper
 
-## 一笔来自 $NVDA 的「神秘」股息再投资
+## A “mysterious” $NVDA dividend reinvestment
 
-2025 年 4 月 3 日，我突然发现，自己购买的 $NVDA，居然多了 0.0003 股，下意识反应，应该是打开了 IBKR 的 DRIP（股息再投资）[^1] 功能，
-经过核实，确实是收到了一笔来自 $NVDA 的股息，并通过 DRIP 自动再投资了 0.0003 股，成交价约 $104.28，总金额仅 $0.031。
-但是在 web 端导出的 HTML 交易报告中，佣金一栏赫然显示为 **$0.00**。
-
-**此时我就心生疑惑了？不是说 IBKR Pro 最低的佣金是 $0.35 吗？难道 IBKR 自己通过 DRIP 功能进行的交易，难不成免佣金？**
+On 2025‑04‑03 I noticed my $NVDA position increased by 0.0003 share — clearly from IBKR’s DRIP[^1]. The execution price was about $104.28 and the total value only $0.031. Yet the web HTML report showed the commission as **$0.00**.
 
 ![IBKR HTML Report DRIP Transaction](https://img.gaazeon.com/2025/06/IBKR-HTML-Report-DRIP-Transaction.avif)
 
-看起来，IBKR 似乎慷慨地免除了这笔小额交易的佣金。但直觉告诉我事情没那么简单。
-
-于是，经查阅 IBKR 的文档，只有导出 CSV 格式的报告才能显示出小数点后 4 位的数据，于是我导出了更详细的 CSV 格式流水，发现了隐藏在后台的真实数据：
+It looked like IBKR waived the fee — but that felt unlikely. Exporting the detailed CSV (which shows 4 decimal places) revealed the actual numbers underneath:
 
 ```csv
-交易 Data Order 股票 USD NVDA 2025-04-03, 09:31:11 0.0003 104.28 101.8 -0.031284 -0.000031381 0.031315381 0 -0.0007 O;R
+Trade Data Order Stock USD NVDA 2025-04-03, 09:31:11 0.0003 104.28 101.8 -0.031284 -0.000031381 0.031315381 0 -0.0007 O;R
 ```
 
-实际上，这笔交易的佣金并非为零，而是 **0.000031381 美元**。
+So the fee wasn’t zero — it was **$0.000031381**. Tiny, but enough to expose how DRIP commissions really work.
 
-一个几乎可以忽略不计的数字，却暴露了 IBKR DRIP 佣金的真实规则。
+## DRIP vs manual trades: different minimums
 
-## DRIP vs. 手动交易：佣金规则大不同
+Based on IBKR docs[^2], these are the key rules:
 
-以下是查阅 IBKR 官方文档后，总结的佣金规则[^2]：
+| Scenario                        | Commission formula                     | Notes                                                                 | Display rounding            |
+| --------------------------------| --------------------------------------- | --------------------------------------------------------------------- | --------------------------- |
+| Manual whole/mixed share order  | `max(1% × trade value, $0.35 / $1)`     | If the order contains ≥1 whole share; tiered min $0.35, fixed min $1 | Per‑order rounded to $0.01  |
+| Manual pure fractional order    | `max(1% × trade value, $0.01)`          | All fractional shares → min $0.01                                    | Same as above               |
+| DRIP (auto reinvest)            | `min(1% × trade value, $0.35 / $1)`     | Preferential to ensure it won’t exceed whole‑share minimums           | Often $0.00; day‑end adjust |
 
-| 场景                  | 佣金公式                        | 说明                                                                                 | 四舍五入展示            |
-| --------------------- | ------------------------------- | ------------------------------------------------------------------------------------ | ----------------------- |
-| **手动整股 / 混合单** | `max(1 % × 成交额, $0.35 / $1)` | 订单里含有 ≥ 1 股整股；阶梯账户最低 \$0.35，固定账户最低 \$1；若 1 % 更高则按 1 % 收 | 逐笔四舍五入到 \$0.01   |
-| **手动纯碎股单**      | `max(1 % × 成交额, $0.01)`      | 订单全部是小数股时，最低 \$0.01                                                      | 同上                    |
-| **DRIP 自动再投资**   | `min(1 % × 成交额, $0.35 / $1)` | IBKR 为 DRIP 设的优惠，确保佣金不会高于整股最低门槛                                  | 常见 \$0.00；日终再聚合 |
+With the $NVDA example:
 
-让我们用我那笔 $NVDA 交易来实际计算一下：
+- Trade value: ~$0.0313
+- 1% fee: $0.0313 × 1% = $0.000313
+- DRIP rule: `min($0.000313, $0.35)` (tiered) or `min($0.000313, $1)` (fixed) → $0.000313
 
-- **成交金额**: ~$0.0313
-- **1% 佣金**: $0.0313 × 1% = $0.000313
-- **DRIP 特定的规则**: 比较 `$0.000313` 和 `$0.01`，取较小值 `$0.000313`。
+The recorded precise fee was `-0.000031381`. When shown in reports limited to two decimals, it becomes $0.00.
 
-最终的实际佣金约 $0.000313，但由于后台系统的高精度，记录为了 `-0.000031381`。当这个数字呈现在只显示两位小数的交易报告中时，自然就变成了 $0.00。
+## How does IBKR handle sub‑cent fees?
 
-## IBKR 如何实现「隐形」收费？
+USD’s smallest display unit is a cent ($0.01). How can a broker account for fees much smaller than one cent? IBKR’s back‑office explains this[^3]:
 
-你可能会好奇，美元的最小单位应该是 1 美分（$0.01），IBKR 是如何处理这些厘甚至毫厘级别的费用的？如果不能处理的话 IBKR 不就当大善人把这点钱给用户了？
+Each fee is first computed at full precision, then immediately rounded to the currency’s minimal display unit for presentation:
 
-当然不可能白嫖！答案在于其强大的后台记账系统。根据 IBKR 官方文档[^3]的说法：
+- If original < $0.005, display $0.00
+- If ≥ $0.005, display $0.01
 
-简单来说，每笔 DRIP（或任何交易）产生的佣金都会**先以完整精度计算**，然后**立即**按货币最小单位（美元为 $0.01）四舍五入：
+Additionally, at the end of the day, IBKR sums the unrounded fees again and performs another rounding pass. This may cause the “total commission” in your cash ledger to differ by up to ±$0.01 from the sum of per‑order displayed values (IBKR calls this _fractional fee rounding_).
 
-- 若原始值 < $0.005 则显示 $0.00
-- 若 ≥ $0.005 则显示 $0.01。
+In other words, “$0.00” does not mean IBKR waived the fee — it’s simply a display rounding effect. The true fee is accounted for precisely in the ledger.
 
-此外，IBKR 还会在**日终**再把所有「未四舍五入前的原始费用」重新求和并再进行一次四舍五入。  
-这就导致现金余额里的「合计佣金」有时会比交易明细的逐笔加总高出或低于 1 美分（官方文档称之为 _fractional fee rounding_）。
+## So… is DRIP worth enabling?
 
-> 换句话说：系统并不会先把这些厘级费用存进某个「隐形桶」攒够 $0.01 再扣，而是**每笔先四舍五入**，后来再做一次汇总校正，最终差额最多 ±$0.01。你看到的 0.00 并非免佣，只是四舍五入后的展示效果，IBKR 已经帮你把这笔钱记在账上了。
+For most long‑term investors, **yes**.
 
-## 总结：DRIP 值得开启吗？
+- The real win is automation and very low effective costs — not literal zero commissions.
+- If you prefer manual timing, you can turn DRIP off and place your own orders. Keep in mind:
+  - Pure fractional orders: `max(1% × value, $0.01)`[^4]
+  - Orders containing whole shares: min becomes $0.35 (tiered) or $1 (fixed)
+  - DRIP: `min(1% × value, $0.35 / $1)` and frequently displays as $0.00 after rounding[^5]
 
-搞清楚了 DRIP 的佣金真相后，我们来回答最关键的问题：这个功能还值得开启吗？
+- Taxes still apply: dividends are subject to withholding. If you’re a non‑US resident, default is 30% unless reduced by treaty via W‑8BEN (often 10%–15%). DRIP doesn’t reduce taxes — it simply automates reinvestment.
 
-我的建议是：**对于大多数长线投资者来说，绝对值得。**
+When you see that tempting “$0.00 commission” next time, take it for what it is: a rounding artifact on a fee that’s small enough to be effectively negligible.
 
-- **真正的优势**：DRIP 的核心优势并非「免佣」，而是**自动化**和**低费率**。它能让你以极低的成本，持续不断地将股息复利投入，聚沙成塔。
-- **适合懒人策略**：如果你不想为每笔小额股息手动计算买入时机，DRIP 是实现「自动复利」的最佳工具。
-- **手动 vs. 自动**：如果你想自己把握买入价位，可以关闭 DRIP，攒够资金手动下单。需要注意：
-  - **纯碎股单**：佣金 = `max(1 % × 金额, $0.01)`，最低 1 美分[^4]；
-  - **含整股单**：一旦订单里出现整股，最低佣金立刻变为 \$0.35（阶梯）或 \$1（固定）；
-  - **DRIP**：佣金 = `min(1 % × 金额, $0.35 / $1)`，金额小到常被四舍五入显示 \$0.00[^5]。
+### FAQ: If I only have one tiny DRIP that day, will $0.01 be “charged later”?
 
-- **税收无法避免**：无论哪种方式，股息都需要缴纳预扣税（Withholding Tax），若你是非美国纳税居民，分红先按 30 % 默认预提（若填过 W-8BEN 且有税收协定，可降到 10%-15% 不等），中国大陆身份可通过 W-8BEN 申请 10% 的预扣税，但无法通过 DRIP 免除。
-
-所以，下次再次看到 IBKR 报表中看到那诱人的「$0.00 佣金」时，不妨会心一笑。它并非不存在，只是微小到隐身了而已。
-
-### 补充：当天只有这一笔 DRIP，会不会被补扣 1 美分？
-
-> 不会。_fractional fee rounding_ 每日结清，不留尾巴到次日。当天累加 < $0.005，就永远是 $0.00。
+No. _Fractional fee rounding_ is settled daily; nothing is carried over. If the day’s aggregate is < $0.005, it remains $0.00.
 
 ### footnote
 
 <!-- markdownlint-disable MD053 -->
 
-[^1]: [Overview of Our Dividend Reinvestment Program (DRIP)| 股息再投资计划（DRIP）简介](https://ibkrguides.com/kb/en-us/overview-of-drip.htm)
+[^1]: Overview of Our Dividend Reinvestment Program (DRIP): https://ibkrguides.com/kb/en-us/overview-of-drip.htm
 
-[^2]: [Commissions Stocks | 美股佣金表（固定 / 阶梯）](https://www.interactivebrokers.com/en/index.php?f=49637)
+[^2]: Commissions — Stocks (fixed / tiered): https://www.interactivebrokers.com/en/index.php?f=49637
 
-[^3]: [Handling Procedures for Fractional Fees| 小数金额手续费的处理流程](https://www.ibkrguides.com/kb/en-us/article-1241.htm)
+[^3]: Handling Procedures for Fractional Fees: https://www.ibkrguides.com/kb/en-us/article-1241.htm
 
-[^4]: [Fractional Share Trading | 碎股交易计费说明](https://www.ibkrguides.com/kb/fractional-share-trading.htm)
+[^4]: Fractional Share Trading — fee notes: https://www.ibkrguides.com/kb/fractional-share-trading.htm
 
-[^5]: [Dividend Election | Client Portal DRIP 设置与佣金说明](https://ibkrguides.com/clientportal/dividendreinvestment.htm)
+[^5]: Dividend Election — DRIP settings and notes: https://ibkrguides.com/clientportal/dividendreinvestment.htm
 
 <!-- markdownlint-enable MD053 -->

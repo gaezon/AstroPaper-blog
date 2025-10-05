@@ -16,8 +16,6 @@ description: "Run the open‑source Hoarder clipper with Docker to replace Cubox
 locale: en
 originalTitle: 自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题
 ---
-
-<!-- TODO: Translate body content below into English -->
 ## Table of contents
 
 ## Why leave Cubox
@@ -47,7 +45,7 @@ services:
     volumes:
       - data:/data
     ports:
-      - 3000:3000 #修改成自己想要的端口
+      - 3000:3000 # change to any port you prefer
     env_file:
       - .env
     environment:
@@ -105,15 +103,15 @@ Create a `.env` file yourself (compose won’t generate it) and restart the stac
 
 ```plaintext
 HOARDER_VERSION=release
-NEXTAUTH_SECRET=xxxx # xxx为随机字符串
-MEILI_MASTER_KEY=xxxx # xxx为随机字符串
-NEXTAUTH_URL=http://localhost:3000 # 本地访问 hoarder 的 url 或者反代之后的 url
+NEXTAUTH_SECRET=xxxx # random string
+MEILI_MASTER_KEY=xxxx # random string
+NEXTAUTH_URL=http://localhost:3000 # local URL of Hoarder or your reverse-proxy URL
 
-## 下面为可选
-OPENAI_BASE_URL=https://xxx.com/v1 # OpenAI api 官方端口或者第三方服务端口
+## Optional below
+OPENAI_BASE_URL=https://xxx.com/v1 # OpenAI official endpoint or third-party compatible endpoint
 OPENAI_API_KEY=sk-xxxxx # OpenAI API key
 INFERENCE_LANG=chinese
-INFERENCE_TEXT_MODEL=qwen2-72b-instruct #用于打标的模型，我自己用上最新的 qwen2-72b-instruct开源模型很香
+INFERENCE_TEXT_MODEL=qwen2-72b-instruct # model used for auto-tagging; qwen2-72b-instruct works great in my setup
 ```
 
 ## What I like

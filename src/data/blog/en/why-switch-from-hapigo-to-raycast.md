@@ -39,21 +39,21 @@ Besides global/Everything‑style search, these are the Hapigo features I used m
 
 Both launchers let you type a short alias + space + {query}. The difference: Hapigo makes you set icons manually; Raycast reads the site favicon automatically. Even common Chinese sites show the right icon out of the box.
 
-![Raycast-QuickLinks-示例](https://img.gaazeon.com/2024/05/202405230923546.avif)
+![Raycast Quicklinks example](https://img.gaazeon.com/2024/05/202405230923546.avif)
 
 Raycast also ships a curated Quicklink library and, more importantly, a Store full of extensions. For example, instead of a bare Perplexity quicklink, the official Perplexity extension exposes richer features (like a "Use Copilot" toggle).
 
-![Raycast-中的-perplexity-插件示例](https://img.gaazeon.com/2024%2F05%2F202405222325800.avif)
+![Perplexity extension in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325800.avif)
 
 ### 2) Snippets & Clipboard History
 
 Raycast's Snippets are significantly more capable. Hapigo only covers the basics (categories + trigger keywords).
 
-![Hapigo-中普通的-snippet](https://img.gaazeon.com/2024%2F05%2F202405222325764.avif)
+![Basic snippet in Hapigo](https://img.gaazeon.com/2024%2F05%2F202405222325764.avif)
 
 In Raycast you get "Dynamic Placeholders" — cursor placement, auto‑insert current time, UUID generation, etc. If you do lots of templated replies or routine notes, this is a big deal.
 
-![Raycast-的-snippet](https://img.gaazeon.com/2024%2F05%2F202405222325780.avif)
+![Snippet in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325780.avif)
 
 ## The extension ecosystem is the real differentiator
 
@@ -61,7 +61,7 @@ This is the reason I wish I'd switched earlier. Compared to Hapigo's closed appr
 
 For example: Obsidian, CleanShot X, Warp Terminal — many popular apps already have solid Raycast extensions. They wire into everyday tasks in a way that saves steps. In Obsidian, I can create today's daily note directly from the launcher.
 
-![使用-riji-alias-Raycast-调用-obsidian](https://img.gaazeon.com/2024%2F05%2F202405222325702.avif)
+![Using 'riji' alias to open Obsidian in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325702.avif)
 
 Typing my `riji` alias opens today's Obsidian journal. One step, done.
 
@@ -78,5 +78,5 @@ As of May 2024, Raycast still doesn't ship official Chinese UI. After actually u
 
 Hapigo does have some China‑specific conveniences (e.g. currency conversions triggered by colloquial keywords). In Raycast you may need a few extra keystrokes. For me, the extension ecosystem easily outweighs those small niceties.
 
-![Hapigo-中的汇率转换功能](https://img.gaazeon.com/2024%2F05%2F202405222325726.avif)
-![Raycast-中的汇率转换功能](https://img.gaazeon.com/2024%2F05%2F202405222325818.avif)
+![Currency conversion in Hapigo](https://img.gaazeon.com/2024%2F05%2F202405222325726.avif)
+![Currency conversion in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325818.avif)

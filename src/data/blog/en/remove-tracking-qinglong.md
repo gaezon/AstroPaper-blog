@@ -22,9 +22,9 @@ Qinglong embeds Sentry for error telemetry, which triggers constant requests to 
 
 As of 2024‑09‑15 (Qinglong `2.17.11`), there’s no built‑in switch to opt out of Sentry. On my network, AdGuardHome’s blocklist spammed entries for `o1098464.ingest.sentry.io`, and the extra DNS traffic is unnecessary.
 
-![adguardhome 拦截排名.avif](https://img.gaazeon.com/2024/09/202409151035933.avif)
+![AdGuardHome blocked requests ranking](https://img.gaazeon.com/2024/09/202409151035933.avif)
 
-GitHub issue 上有老哥给出了[解决方案](https://github.com/whyour/qinglong/issues/2001)，但是没有给出具体的操作步骤，本文将教你如何通过修改 docker-compose 配置和 sh 脚本，使用更优雅的方法在启动时阻止青龙面板发送跟踪请求。
+A solution was mentioned in a GitHub issue, but without concrete steps. This post walks through a cleaner approach: tweak `docker-compose` and use a small shell script so Qinglong stops sending Sentry tracking requests at startup.
 
 ## docker‑compose.yml changes
 
