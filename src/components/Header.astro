@@ -149,10 +149,6 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
               <span class="sr-only">{tr("nav.search")}</span>
             </LinkButton>
           </li>
-          <!-- 语言切换器 -->
-          <li class="col-span-2 sm:col-span-1 flex items-center justify-center px-2 sm:px-0">
-            <LanguageSwitcher variant="compact" override={switchOverride} />
-          </li>
           {
             SITE.lightAndDarkMode && (
               <li class="col-span-1 flex items-center justify-center">
@@ -177,6 +173,14 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
             )
           }
         </ul>
+        <!-- 语言切换器 - 桌面端和移动端 -->
+        <div class="lang-switcher-container hidden sm:flex">
+          <LanguageSwitcher variant="dropdown" override={switchOverride} />
+        </div>
+        <!-- 移动端语言切换器（完整标签显示） -->
+        <div class="lang-switcher-mobile hidden">
+          <LanguageSwitcher variant="dropdown" override={switchOverride} class="mobile-dropdown" />
+        </div>
       </nav>
     </div>
   </div>
@@ -187,6 +191,7 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
   function toggleNav() {
     const menuBtn = document.querySelector("#menu-btn");
     const menuItems = document.querySelector("#menu-items");
+    const langSwitcher = document.querySelector(".lang-switcher-mobile");
     const menuIcon = document.querySelector("#menu-icon");
     const closeIcon = document.querySelector("#close-icon");
 
@@ -199,6 +204,9 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
       menuBtn.setAttribute("aria-label", openMenu ? menuLabel : closeLabel);
 
       menuItems.classList.toggle("hidden");
+      if (langSwitcher) {
+        langSwitcher.classList.toggle("hidden");
+      }
       menuIcon.classList.toggle("hidden");
       closeIcon.classList.toggle("hidden");
     });
@@ -211,18 +219,57 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
 </script>
 
 <style>
-  /* 移动端语言切换器样式优化 */
-  @media (max-width: 640px) {
-    #menu-items > li:has(.language-switcher-compact) {
-      padding: 0.25rem 0;
+  /* 桌面端语言切换器 */
+  .lang-switcher-container {
+    display: none;
+  }
+
+  @media (min-width: 641px) {
+    .lang-switcher-container {
+      display: flex;
+      align-items: center;
+      margin-left: 0.75rem;
     }
   }
 
-  /* 确保桌面端语言切换器与其他图标对齐 */
-  @media (min-width: 641px) {
-    #menu-items > li:has(.language-switcher-compact) {
-      display: flex;
-      align-items: center;
+  /* 移动端语言切换器独立区域 */
+  .lang-switcher-mobile {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .lang-switcher-mobile {
+      display: block;
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid hsl(var(--border) / 0.2);
+      width: 100%;
+    }
+
+    .lang-switcher-mobile.hidden {
+      display: none;
+    }
+
+    /* 移动端下拉菜单优化 - 显示完整语言名称 */
+    .lang-switcher-mobile :global(.lang-dropdown-btn .current-lang) {
+      display: inline !important;
+    }
+
+    /* 移动端下拉菜单全宽显示 */
+    .lang-switcher-mobile :global(.language-switcher-dropdown) {
+      width: 100%;
+    }
+
+    .lang-switcher-mobile :global(.lang-dropdown-btn) {
+      width: 100%;
+      justify-content: space-between;
+      padding: 0.875rem 1.25rem;
+    }
+
+    .lang-switcher-mobile :global(.lang-dropdown-menu) {
+      left: 0;
+      right: 0;
+      width: 100%;
     }
   }
 </style>
