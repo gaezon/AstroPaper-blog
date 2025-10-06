@@ -4,6 +4,8 @@ import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
 
 // Font configuration for different locales
+// Centralized font configuration to avoid hardcoding font selections in multiple places
+// and make it easier to maintain font choices across the application.
 const FONT_CONFIG = {
   "zh-CN": "IBM Plex Sans, Noto Sans SC",
   default: "IBM Plex Sans, Noto Sans",
@@ -111,7 +113,9 @@ export default async post => {
   const rawTitle = (post?.data?.title || "").toString();
   // Normalize special spaces and variation selectors that some fonts don't support well
   const titleText = rawTitle
+    // Replace various Unicode space characters (non-breaking, thin, hair, en, em, etc.) with a regular space for font compatibility
     .replace(/[\u00A0\u202F\u2009\u200A\u2002\u2003\u2005]/g, " ")
+    // Remove Unicode Variation Selectors (U+FE0E: text style, U+FE0F: emoji style) to avoid font rendering issues
     .replace(/[\uFE0E\uFE0F]/g, "");
   const len = titleText.length;
   let computedSize = 58; // base size

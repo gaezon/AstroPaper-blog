@@ -2,64 +2,102 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import zlib from "node:zlib";
 
+/**
+ * Converts a WOFF (Web Open Font Format) font to TTF (TrueType Font) format.
+ *
+ * WOFF Header Structure (44 bytes):
+ * - UInt32 signature         (0-3): "wOFF" signature
+ * - UInt32 flavor           (4-7): Font format (e.g., 0x00010000 for TrueType)
+ * - UInt32 length          (8-11): Total file size
+ * - UInt16 numTables     (12-13): Number of font tables
+ * - UInt16 reserved      (14-15): Reserved, must be 0
+ * - UInt32 totalSfntSize (16-19): Uncompressed font data size
+ * - UInt16 majorVersion  (20-21): Major version of the font
+ * - UInt16 minorVersion  (22-23): Minor version of the font
+ * - UInt32 metaOffset    (24-27): Offset to metadata block
+ * - UInt32 metaLength    (28-31): Length of compressed metadata
+ * - UInt32 metaOrigLength (32-35): Uncompressed metadata length
+ * - UInt32 privOffset    (36-39): Offset to private data block
+ * - UInt32 privLength    (40-43): Length of private data block
+ *
+ * @param buffer - The WOFF font buffer to convert
+ * @returns The converted TTF font buffer or null if invalid
+ */
 function convertWoffToTtf(buffer: Buffer): Buffer | null {
+  // Minimum WOFF file size is 44 bytes (header size)
   if (buffer.length < 44) return null;
+
+  // Check WOFF signature
   const signature = buffer.toString("ascii", 0, 4);
   if (signature !== "wOFF") return null;
 
-  const flavor = buffer.readUInt32BE(4);
-  const numTables = buffer.readUInt16BE(12);
-  const totalSfntSize = buffer.readUInt32BE(16);
+  // Parse WOFF header fields
+  const flavor = buffer.readUInt32BE(4);        // Font format identifier
+  const numTables = buffer.readUInt16BE(12);    // Number of font tables
+  const totalSfntSize = buffer.readUInt32BE(16); // Uncompressed font data size
 
+  // Calculate table directory search parameters
   const entrySelector = Math.floor(Math.log2(numTables));
   const searchRange = Math.pow(2, entrySelector) * 16;
   const rangeShift = numTables * 16 - searchRange;
 
+  // Allocate buffer for the output TTF font
   const out = Buffer.alloc(totalSfntSize);
+
+  // Write TTF header (same as WOFF flavor field)
   out.writeUInt32BE(flavor, 0);
   out.writeUInt16BE(numTables, 4);
   out.writeUInt16BE(searchRange, 6);
   out.writeUInt16BE(entrySelector, 8);
   out.writeUInt16BE(rangeShift, 10);
 
-  let tableDirOffset = 12;
-  let tableDataOffset = 12 + numTables * 16;
-  let offset = 44;
+  // Initialize offsets for table directory and table data
+  let tableDirOffset = 12;      // Table directory starts after TTF header
+  let tableDataOffset = 12 + numTables * 16; // Table data follows directory
+  let offset = 44;              // First table record in WOFF
 
+  // Process each font table
   for (let i = 0; i < numTables; i++) {
-    const tag = buffer.toString("ascii", offset, offset + 4);
-    const srcOffset = buffer.readUInt32BE(offset + 4);
-    const compLength = buffer.readUInt32BE(offset + 8);
-    const origLength = buffer.readUInt32BE(offset + 12);
-    const checksum = buffer.readUInt32BE(offset + 16);
+    // Read table record fields
+    const tag = buffer.toString("ascii", offset, offset + 4);        // Table identifier
+    const srcOffset = buffer.readUInt32BE(offset + 4);              // Offset to compressed data
+    const compLength = buffer.readUInt32BE(offset + 8);             // Compressed data length
+    const origLength = buffer.readUInt32BE(offset + 12);            // Uncompressed data length
+    const checksum = buffer.readUInt32BE(offset + 16);              // Checksum of uncompressed data
 
+    // Extract and decompress table data
     const rawTable = buffer.subarray(srcOffset, srcOffset + compLength);
     const inflated =
       compLength === origLength
-        ? rawTable
+        ? rawTable  // No compression
         : zlib.inflateSync(rawTable, {
             finishFlush: zlib.constants.Z_SYNC_FLUSH,
           });
 
+    // Verify decompressed data length
     if (inflated.length !== origLength) {
       throw new Error(`WOFF inflate length mismatch for ${tag}`);
     }
 
+    // Write table directory entry
     out.write(tag, tableDirOffset, 4, "ascii");
     out.writeUInt32BE(checksum, tableDirOffset + 4);
     out.writeUInt32BE(tableDataOffset, tableDirOffset + 8);
     out.writeUInt32BE(origLength, tableDirOffset + 12);
 
+    // Copy decompressed table data
     inflated.copy(out, tableDataOffset);
     tableDirOffset += 16;
     tableDataOffset += origLength;
 
+    // Pad table data to 4-byte boundary
     const pad = (4 - (origLength % 4)) % 4;
     if (pad) {
       out.fill(0, tableDataOffset, tableDataOffset + pad);
       tableDataOffset += pad;
     }
 
+    // Move to next table record
     offset += 20;
   }
 
@@ -142,8 +180,13 @@ async function loadGoogleFont(
   text: string,
   weight: number
 ): Promise<ArrayBuffer> {
-  const tryLocalFallback = async () =>
-    ALLOW_LOCAL_FALLBACK ? await tryLoadLocalFont(font, weight, true) : null;
+  const tryLocalFallback = async () => {
+    if (ALLOW_LOCAL_FALLBACK) {
+      return await tryLoadLocalFont(font, weight, true);
+    } else {
+      return null;
+    }
+  };
 
   if (PREFER_LOCAL_FONTS) {
     const eager = await tryLoadLocalFont(font, weight);
