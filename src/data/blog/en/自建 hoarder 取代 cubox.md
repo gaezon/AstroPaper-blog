@@ -12,7 +12,7 @@ tags:
   - NAS
   - Digital hoarding
   - Self‑host
-description: "Run the open‑source Hoarder clipper with Docker to replace Cubox. Better privacy and full data control at lower cost. Includes compose config, .env notes and pros/cons from daily use."
+description: "Self-host the Hoarder web clipper with Docker to replace Cubox, covering privacy gains, lower cost, compose/.env configuration and real-world pros and cons."
 locale: en
 originalTitle: 自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题
 ---

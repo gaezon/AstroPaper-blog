@@ -11,7 +11,7 @@ tags:
   - Investing
   - Dividends
   - DRIP
-description: "Is Interactive Brokers’ dividend reinvestment plan (DRIP) truly ‘zero‑commission’? A real NVDA DRIP example reveals how fees are computed at full precision then rounded for display, why you often see $0.00, and how DRIP compares to manual fractional trades."
+description: "Explains IBKR DRIP fees using a real NVDA trade, why statements show $0.00 commission, and how automatic reinvest compares with manual fractional orders."
 locale: en
 originalTitle: IBKR 股息再投资 (DRIP) 是零佣金吗？美股盈透证券佣金小数点后的收费规则
 ---

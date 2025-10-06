@@ -10,7 +10,7 @@ tags:
   - MCP
   - Automation
   - LLM
-description: "Use Cline + Notion MCP with an OpenRouter model to add rows to a Notion subscription database using natural language. Covers setup, permissions, example prompts and auto‑adding SVG brand icons."
+description: "Show Cline working with Notion MCP to add subscription database rows from natural language, with setup steps, required permissions and prompt examples."
 locale: en
 originalTitle: Cline + Notion MCP 用自然语言为 Notion 数据库增加记录 —— 以管理个人订阅服务 notion 数据库为例
 ---

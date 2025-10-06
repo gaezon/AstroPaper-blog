@@ -9,7 +9,7 @@ tags:
   - docker-compose
   - Qinglong
   - Privacy
-description: "How to prevent Qinglong from loading Sentry tracking JS by overriding the container entrypoint. Fixes constant DNS hits to o1098464.ingest.sentry.io seen in AdGuardHome and improves privacy."
+description: "Shows how to strip Qinglong's sentry.io tracking by overriding the Docker entrypoint with a small script, stopping outbound telemetry without breaking updates."
 locale: en
 originalTitle: 修改 docker-compose 配置移除青龙面板 sentry.io 跟踪 js 代码
 ---

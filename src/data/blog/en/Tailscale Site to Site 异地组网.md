@@ -9,7 +9,7 @@ tags:
   - tailscale
   - Networking
   - OpenWrt
-description: "A concise guide to building a Tailscale site‑to‑site network between two OpenWrt routers so clients on both LANs can talk to each other without installing Tailscale on every device. Covers firewall/ports, subnet routes and static routes, plus the tailscale up flags to make it work."
+description: "Connect two OpenWrt routers with Tailscale site-to-site by opening UDP 41641, advertising subnets and adding static routes so both LANs reach each other."
 locale: en
 originalTitle: Tailscale Site to Site 点对点两台 OpenWrt 异地组网教程
 ---

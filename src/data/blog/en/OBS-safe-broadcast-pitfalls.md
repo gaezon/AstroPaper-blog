@@ -9,7 +9,7 @@ tags:
   - Live Streaming
   - Safe Broadcast
   - Delay
-description: "Tried to build a 20‑second ‘safe broadcast’ delay in OBS but ran into crackling audio? This post explains the technical trap behind OBS’s Video Delay (Async) filter and offers a dual‑OBS solution (RTMP/SRT) that requires no dedicated delay hardware or extra plugins."
+description: "Shows why pushing OBS Video Delay to 20 seconds wrecks audio and how a dual-OBS RTMP/SRT workflow delivers a safe broadcast buffer without special hardware."
 locale: en
 originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
 ---

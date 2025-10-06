@@ -9,7 +9,7 @@ tags:
   - Raycast
   - GPT AI
   - macOS Launcher
-description: "Why I stopped using the macOS launcher Hapigo after two years and switched to Raycast. A practical comparison of features, why Hapigo's stalled updates became a blocker, and how Raycast's extension ecosystem changed my workflow. Includes migration notes and tips for macOS users."
+description: "Explains why Hapigo's slow updates pushed me to Raycast, comparing GPT AI features, extensions and workflow changes plus migration notes for macOS users."
 locale: en
 originalTitle: 为什么放弃已经使用两年多的 Hapigo：官方更新停滞与 Raycast 的强大替代
 ---
