@@ -5,16 +5,17 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { SITE } from "@/config";
+import { t } from "@/i18n/utils";
 
 const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
+const pageTitle = t(Astro, "search.title");
+const pageDescription = t(Astro, "search.metaDescription");
+const layoutTitle = `${pageTitle} | ${SITE.title}`;
 ---
 
-<Layout
-  title={`Search | ${SITE.title}`}
-  description="搜索Gaazeon博客中的技术文章和教程，快速找到您需要的编程知识、开发工具使用指南和软件技术解决方案。"
->
+<Layout title={layoutTitle} description={pageDescription}>
   <Header />
-  <Main pageTitle="Search" pageDesc="Search any article ...">
+  <Main pageTitle={pageTitle} pageDesc={t(Astro, "search.placeholder")}>
     <div id="pagefind-search" transition:persist data-backurl={backUrl}></div>
   </Main>
   <Footer />

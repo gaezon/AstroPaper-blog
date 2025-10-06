@@ -1,15 +1,17 @@
 ---
-import type { Page } from "astro";
-import type { CollectionEntry } from "astro:content";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import LinkButton from "./LinkButton.astro";
+import { t } from "@/i18n/utils";
 
 export interface Props {
-  page: Page<CollectionEntry<"blog">>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  page: any;
 }
 
 const { page } = Astro.props;
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 ---
 
 {
@@ -19,19 +21,22 @@ const { page } = Astro.props;
         disabled={!page.url.prev}
         href={page.url.prev as string}
         class:list={["me-4 select-none", { "opacity-50": !page.url.prev }]}
-        ariaLabel="Previous"
+        ariaLabel={tr("pagination.previous")}
       >
         <IconArrowLeft class="inline-block rtl:rotate-180" />
-        Prev
+        {tr("pagination.prev")}
       </LinkButton>
-      {page.currentPage} / {page.lastPage}
+      {tr("pagination.page", {
+        current: page.currentPage,
+        total: page.lastPage,
+      })}
       <LinkButton
         disabled={!page.url.next}
         href={page.url.next as string}
         class:list={["ms-4 select-none", { "opacity-50": !page.url.next }]}
-        ariaLabel="Next"
+        ariaLabel={tr("pagination.next")}
       >
-        Next
+        {tr("pagination.next")}
         <IconArrowRight class="inline-block rtl:rotate-180" />
       </LinkButton>
     </nav>

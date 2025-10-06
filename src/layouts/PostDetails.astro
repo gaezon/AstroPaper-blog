@@ -1,5 +1,5 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
+import { render, getCollection, type CollectionEntry } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
@@ -11,18 +11,24 @@ import BackButton from "@/components/BackButton.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import Comment from "@/components/Comment.astro";
-import { getPath } from "@/utils/getPath";
 import { slugifyStr } from "@/utils/slugify";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
+import { getPath } from "@/utils/getPath";
+import { getCurrentLocale } from "@/i18n/utils";
+import { t } from "@/i18n/utils";
+
+type PostEntry = CollectionEntry<"blog" | "blog-en">;
 
 export interface Props {
-  post: CollectionEntry<"blog">;
-  posts: CollectionEntry<"blog">[];
+  post: PostEntry;
+  posts: PostEntry[];
 }
 
 const { post, posts } = Astro.props;
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 
 const {
   title,
@@ -50,7 +56,8 @@ if (typeof initOgImage === "string") {
 
 // Use dynamic OG image if enabled and no remote|local ogImage
 if (!ogImageUrl && SITE.dynamicOgImage) {
-  ogImageUrl = `${getPath(post.id, post.filePath)}/index.png`;
+  // getPath returns a trailing slash, so don't insert another slash
+  ogImageUrl = `${getPath(post.id, post.filePath)}index.png`;
 }
 
 // Resolve OG image URL (or fallback to SITE.ogImage / default `og.png`)
@@ -82,10 +89,36 @@ const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
 const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
 const nextPost =
   currentPostIndex !== allPosts.length ? allPosts[currentPostIndex + 1] : null;
+
+// ===== 语言切换：文章互链覆盖（在前端模板前预先计算） =====
+const currentLocale = getCurrentLocale(Astro);
+const switchOverride: Record<string, string | undefined> = {};
+try {
+  if (currentLocale === "zh-CN") {
+    const enPosts = await getCollection("blog-en");
+    const matched = enPosts.find(
+      p => p.data.originalTitle === post.data.title && !p.data.draft
+    );
+    if (matched) {
+      switchOverride["en"] = getPath(matched.id, matched.filePath);
+    }
+  } else {
+    const zhPosts = await getCollection("blog");
+    const originTitle = post.data.originalTitle as string | undefined;
+    if (originTitle) {
+      const matched = zhPosts.find(
+        p => p.data.title === originTitle && !p.data.draft
+      );
+      if (matched) {
+        switchOverride["zh-CN"] = getPath(matched.id, matched.filePath);
+      }
+    }
+  }
+} catch {}
 ---
 
 <Layout {...layoutProps}>
-  <Header />
+  <Header switchOverride={switchOverride} />
   <BackButton />
   <!-- 目录组件放在main外部，作为独立的导航辅助元素 -->
   <TableOfContents />
@@ -130,7 +163,11 @@ const nextPost =
         <EditPost class="sm:hidden" {hideEditPost} {post} />
 
         <ul class="mt-4 mb-8 sm:my-8">
-          {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
+          {
+            tags.map((tag: string) => (
+              <Tag tag={slugifyStr(tag)} tagName={tag} />
+            ))
+          }
         </ul>
 
         <Comment />
@@ -150,7 +187,7 @@ const nextPost =
               >
                 <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
                 <div>
-                  <span>Previous Post</span>
+                  <span>{tr("post.previousPost")}</span>
                   <div class="text-sm text-accent/85">{prevPost.title}</div>
                 </div>
               </a>
@@ -163,7 +200,7 @@ const nextPost =
                 class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
               >
                 <div>
-                  <span>Next Post</span>
+                  <span>{tr("post.nextPost")}</span>
                   <div class="text-sm text-accent/85">{nextPost.title}</div>
                 </div>
                 <IconChevronRight class="inline-block flex-none rtl:rotate-180" />

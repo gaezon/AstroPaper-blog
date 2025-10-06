@@ -9,19 +9,63 @@ import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
 import DummyLogo from "@/assets/dummy-logo.svg";
+import { getCurrentLocale, t } from "@/i18n/utils";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+
+interface HeaderProps {
+  switchOverride?: Record<string, string | undefined>;
+}
 
 const { pathname } = Astro.url;
+const { switchOverride } = Astro.props as HeaderProps;
+
+// 国际化相关变量
+const currentLocale = getCurrentLocale(Astro);
+const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
 
 // Remove trailing slash from current pathname if exists
 const currentPath =
   pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
 
-const isActive = (path: string) => {
-  const currentPathArray = currentPath.split("/").filter(p => p.trim());
-  const pathArray = path.split("/").filter(p => p.trim());
-
-  return currentPath === path || currentPathArray[0] === pathArray[0];
+const normalizeSegments = (segments: string[]) => {
+  if (!segments.length) return segments;
+  return segments[0] === currentLocale ? segments.slice(1) : segments;
 };
+
+const normalizedCurrentPath = normalizeSegments(
+  currentPath.split("/").filter(p => p.trim())
+);
+
+const isActive = (path: string) => {
+  const targetSegments = normalizeSegments(
+    path.split("/").filter(p => p.trim())
+  );
+  const currentFirst = normalizedCurrentPath[0];
+  const targetFirst = targetSegments[0];
+
+  const normalizedCurrent = `/${normalizedCurrentPath.join("/")}` || "/";
+  const normalizedTarget = `/${targetSegments.join("/")}` || "/";
+
+  return (
+    normalizedCurrent === normalizedTarget ||
+    (!!currentFirst && currentFirst === targetFirst)
+  );
+};
+
+// 构建本地化的URL
+const localeUrl = (path: string) => {
+  const fullPath = `${localePrefix}${path}`;
+  // 确保根路径返回 "/"，其他路径以 "/" 结尾
+  return fullPath === "/"
+    ? "/"
+    : fullPath.endsWith("/")
+      ? fullPath
+      : `${fullPath}/`;
+};
+
+// 获取翻译函数
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 ---
 
 <header>
@@ -30,7 +74,7 @@ const isActive = (path: string) => {
     href="#main-content"
     class="absolute start-16 -top-full z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4"
   >
-    Skip to content
+    {tr("ui.skipToContent")}
   </a>
   <div
     id="nav-container"
@@ -41,7 +85,11 @@ const isActive = (path: string) => {
       class="relative flex w-full items-center justify-between bg-background p-4 sm:py-4"
     >
       <div class="flex items-center">
-        <a href="/" class="flex items-center" aria-label="首页">
+        <a
+          href={localeUrl("/")}
+          class="flex items-center"
+          aria-label={tr("nav.home")}
+        >
           <DummyLogo class="h-auto w-[45px] sm:w-[50px]" />
         </a>
       </div>
@@ -52,7 +100,7 @@ const isActive = (path: string) => {
         <button
           id="menu-btn"
           class="focus-outline self-end p-2 sm:hidden"
-          aria-label="Open Menu"
+          aria-label={tr("ui.menu")}
           aria-expanded="false"
           aria-controls="menu-items"
         >
@@ -69,63 +117,72 @@ const isActive = (path: string) => {
           ]}
         >
           <li class="col-span-2">
-            <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-              Posts
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-              Tags
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-              About
+            <a
+              href={localeUrl("/posts")}
+              class:list={{ "active-nav": isActive("/posts") }}
+            >
+              {tr("nav.blog")}
             </a>
           </li>
           <li class="col-span-2">
             <a
-              href="/contact"
+              href={localeUrl("/tags")}
+              class:list={{ "active-nav": isActive("/tags") }}
+            >
+              {tr("nav.tags")}
+            </a>
+          </li>
+          <li class="col-span-2">
+            <a
+              href={localeUrl("/about")}
+              class:list={{ "active-nav": isActive("/about") }}
+            >
+              {tr("nav.about")}
+            </a>
+          </li>
+          <li class="col-span-2">
+            <a
+              href={localeUrl("/contact")}
               class:list={{ "active-nav": isActive("/contact") }}
             >
-              Contact
+              {tr("ui.contact")}
             </a>
           </li>
           {
             SITE.showArchives && (
               <li class="col-span-2">
                 <LinkButton
-                  href="/archives"
+                  href={localeUrl("/archives")}
                   class:list={[
                     "focus-outline flex justify-center p-3 sm:p-1",
                     {
                       "active-nav [&>svg]:stroke-accent": isActive("/archives"),
                     },
                   ]}
-                  ariaLabel="Archives"
-                  title="Archives"
+                  ariaLabel={tr("nav.archives")}
+                  title={tr("nav.archives")}
                 >
                   <IconArchive
                     class="hidden sm:inline-block"
                     aria-hidden="true"
                   />
-                  <span class="sm:sr-only">Archives</span>
+                  <span class="sm:sr-only">{tr("nav.archives")}</span>
                 </LinkButton>
               </li>
             )
           }
           <li class="col-span-1 flex items-center justify-center">
             <LinkButton
-              href="/search"
+              href={localeUrl("/search")}
               class:list={[
                 "focus-outline flex p-3 sm:p-1",
                 { "[&>svg]:stroke-accent": isActive("/search") },
               ]}
-              ariaLabel="Search"
-              title="Search"
+              ariaLabel={tr("nav.search")}
+              title={tr("nav.search")}
             >
               <IconSearch aria-hidden="true" />
-              <span class="sr-only">Search</span>
+              <span class="sr-only">{tr("nav.search")}</span>
             </LinkButton>
           </li>
           {
@@ -134,8 +191,8 @@ const isActive = (path: string) => {
                 <button
                   id="theme-btn"
                   class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
-                  title="Toggles light & dark"
-                  aria-label="Toggles light and dark theme"
+                  title={tr("theme.toggle")}
+                  aria-label={tr("theme.toggle")}
                   aria-live="polite"
                 >
                   <IconMoon
@@ -146,22 +203,35 @@ const isActive = (path: string) => {
                     class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
                     aria-hidden="true"
                   />
-                  <span class="sr-only">Toggle theme</span>
+                  <span class="sr-only">{tr("theme.toggle")}</span>
                 </button>
               </li>
             )
           }
         </ul>
+        <!-- 语言切换器 - 桌面端和移动端 -->
+        <div class="lang-switcher-container hidden sm:flex">
+          <LanguageSwitcher variant="dropdown" override={switchOverride} />
+        </div>
+        <!-- 移动端语言切换器（完整标签显示） -->
+        <div class="lang-switcher-mobile hidden">
+          <LanguageSwitcher
+            variant="dropdown"
+            override={switchOverride}
+            class="mobile-dropdown"
+          />
+        </div>
       </nav>
     </div>
   </div>
   <Hr />
 </header>
 
-<script>
+<script define:vars={{ menuLabel: tr("ui.menu"), closeLabel: tr("ui.close") }}>
   function toggleNav() {
     const menuBtn = document.querySelector("#menu-btn");
     const menuItems = document.querySelector("#menu-items");
+    const langSwitcher = document.querySelector(".lang-switcher-mobile");
     const menuIcon = document.querySelector("#menu-icon");
     const closeIcon = document.querySelector("#close-icon");
 
@@ -171,9 +241,12 @@ const isActive = (path: string) => {
       const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
 
       menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? "Open Menu" : "Close Menu");
+      menuBtn.setAttribute("aria-label", openMenu ? menuLabel : closeLabel);
 
       menuItems.classList.toggle("hidden");
+      if (langSwitcher) {
+        langSwitcher.classList.toggle("hidden");
+      }
       menuIcon.classList.toggle("hidden");
       closeIcon.classList.toggle("hidden");
     });
@@ -184,3 +257,59 @@ const isActive = (path: string) => {
   // Runs on view transitions navigation
   document.addEventListener("astro:after-swap", toggleNav);
 </script>
+
+<style>
+  /* 桌面端语言切换器 */
+  .lang-switcher-container {
+    display: none;
+  }
+
+  @media (min-width: 641px) {
+    .lang-switcher-container {
+      display: flex;
+      align-items: center;
+      margin-left: 0.75rem;
+    }
+  }
+
+  /* 移动端语言切换器独立区域 */
+  .lang-switcher-mobile {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .lang-switcher-mobile {
+      display: block;
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid hsl(var(--border) / 0.2);
+      width: 100%;
+    }
+
+    .lang-switcher-mobile.hidden {
+      display: none;
+    }
+
+    /* 移动端下拉菜单优化 - 显示完整语言名称 */
+    .lang-switcher-mobile :global(.lang-dropdown-btn .current-lang) {
+      display: inline !important;
+    }
+
+    /* 移动端下拉菜单全宽显示 */
+    .lang-switcher-mobile :global(.language-switcher-dropdown) {
+      width: 100%;
+    }
+
+    .lang-switcher-mobile :global(.lang-dropdown-btn) {
+      width: 100%;
+      justify-content: space-between;
+      padding: 0.875rem 1.25rem;
+    }
+
+    .lang-switcher-mobile :global(.lang-dropdown-menu) {
+      left: 0;
+      right: 0;
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,250 @@
+---
+import { t, getLocaleSwitchUrl } from "@/i18n/utils";
+import IconGlobe from "@/assets/icons/IconGlobe.svg";
+
+export interface Props {
+  targetLocale: string;
+  currentPostTitle: string;
+  currentPath: string;
+}
+
+const { targetLocale, currentPostTitle } = Astro.props;
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
+
+// Note: currentPath is passed but not currently used
+// It may be needed for future features
+
+// 获取目标语言信息
+const targetLocaleInfo = {
+  en: { name: "English", lang: "en" },
+  "zh-CN": { name: "简体中文", lang: "zh-CN" },
+}[targetLocale] ?? { name: targetLocale, lang: targetLocale };
+
+// 获取语言切换URL
+const switchUrl = getLocaleSwitchUrl(Astro, targetLocale);
+---
+
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+>
+  <div
+    class="mx-4 max-w-md rounded-xl border border-border/60 bg-background p-6 shadow-2xl"
+  >
+    <div class="mb-4 flex items-center gap-3">
+      <IconGlobe width={24} height={24} class="text-accent" />
+      <h3 class="text-lg font-semibold text-foreground">
+        {tr("language.translationNotFound")}
+      </h3>
+    </div>
+
+    <p class="text-muted-foreground mb-6">
+      {
+        tr("language.translationNotFoundDescription", {
+          title: currentPostTitle,
+          targetLanguage: targetLocaleInfo.name,
+        })
+      }
+    </p>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:gap-2">
+      <a
+        href={switchUrl}
+        class="text-accent-foreground flex-1 rounded-lg bg-accent px-4 py-2 text-center font-medium transition-colors hover:bg-accent/90"
+      >
+        {tr("language.viewOtherPosts")}
+      </a>
+      <button
+        onclick="history.back()"
+        class="flex-1 rounded-lg border border-border/60 bg-background px-4 py-2 text-center font-medium text-foreground transition-colors hover:bg-muted"
+      >
+        {tr("ui.back")}
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .fixed {
+    position: fixed;
+  }
+
+  .inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .z-50 {
+    z-index: 50;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .items-center {
+    align-items: center;
+  }
+
+  .justify-center {
+    justify-content: center;
+  }
+
+  .bg-black\/50 {
+    background-color: rgb(0 0 0 / 0.5);
+  }
+
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  .mx-4 {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  .max-w-md {
+    max-width: 28rem;
+  }
+
+  .rounded-xl {
+    border-radius: 0.75rem;
+  }
+
+  .border {
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .border-border\/60 {
+    border-color: hsl(var(--border) / 0.6);
+  }
+
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+
+  .p-6 {
+    padding: 1.5rem;
+  }
+
+  .shadow-2xl {
+    box-shadow:
+      0 20px 25px -5px rgb(0 0 0 / 0.1),
+      0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+
+  .mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .gap-3 {
+    gap: 0.75rem;
+  }
+
+  .text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .font-semibold {
+    font-weight: 600;
+  }
+
+  .text-foreground {
+    color: hsl(var(--foreground));
+  }
+
+  .text-accent {
+    color: hsl(var(--accent));
+  }
+
+  .mb-6 {
+    margin-bottom: 1.5rem;
+  }
+
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .flex-col {
+    flex-direction: column;
+  }
+
+  .gap-2 {
+    gap: 0.5rem;
+  }
+
+  .flex-1 {
+    flex: 1 1 0%;
+  }
+
+  .rounded-lg {
+    border-radius: 0.5rem;
+  }
+
+  .bg-accent {
+    background-color: hsl(var(--accent));
+  }
+
+  .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .text-accent-foreground {
+    color: hsl(var(--accent-foreground));
+  }
+
+  .transition-colors {
+    transition-property:
+      color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  .hover\:bg-accent\/90:hover {
+    background-color: hsl(var(--accent) / 0.9);
+  }
+
+  .border-border\/60:hover {
+    border-color: hsl(var(--border) / 0.6);
+  }
+
+  .bg-background:hover {
+    background-color: hsl(var(--background));
+  }
+
+  .text-foreground:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .hover\:bg-muted:hover {
+    background-color: hsl(var(--muted));
+  }
+
+  @media (min-width: 640px) {
+    .sm\:flex-row {
+      flex-direction: row;
+    }
+
+    .sm\:gap-2 {
+      gap: 0.5rem;
+    }
+  }
+</style>

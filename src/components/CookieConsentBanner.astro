@@ -1,5 +1,23 @@
 ---
-// Cookie 同意横幅组件
+import { getCurrentLocale, t } from "@/i18n/utils";
+
+const currentLocale = getCurrentLocale(Astro);
+const ensureLeadingSlash = (path: string) =>
+  path.startsWith("/") ? path : `/${path}`;
+const ensureTrailingSlash = (path: string) =>
+  path.endsWith("/") ? path : `${path}/`;
+const localeUrl = (path: string) => {
+  const normalized = ensureTrailingSlash(ensureLeadingSlash(path));
+
+  if (currentLocale === "zh-CN") {
+    return normalized;
+  }
+
+  const prefixed = `/en${normalized}`;
+  return prefixed.replace(/\/+/g, "/");
+};
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 ---
 
 <div
@@ -8,12 +26,12 @@
 >
   <div class="space-y-3">
     <p class="text-xs text-foreground">
-      我们使用 Cookies 来改善体验。查看
+      {tr("ui.cookie.consentText")}
       <a
-        href="/cookie-policy"
+        href={localeUrl("/cookie-policy")}
         class="hover:text-skin-accent underline decoration-dashed underline-offset-2"
       >
-        Cookie 政策
+        {tr("ui.cookiePolicy")}
       </a>
     </p>
     <div class="flex gap-2">
@@ -21,17 +39,19 @@
         id="cookie-accept-btn"
         class="bg-skin-accent hover:bg-skin-accent/90 flex-1 rounded px-3 py-1.5 text-xs font-medium text-white"
       >
-        接受
+        {tr("ui.cookie.accept")}
       </button>
       <button
         id="cookie-reject-btn"
         class="hover:bg-surface-100 rounded border border-border px-3 py-1.5 text-xs font-medium text-foreground"
       >
-        拒绝
+        {tr("ui.cookie.reject")}
       </button>
       <button
         id="cookie-settings-btn"
         class="hover:bg-surface-100 rounded border border-border px-2 py-1.5 text-xs font-medium text-foreground"
+        aria-label={tr("ui.cookie.settings")}
+        title={tr("ui.cookie.settings")}
       >
         ⚙️
       </button>
@@ -46,9 +66,11 @@
 >
   <div class="mx-4 max-w-lg rounded-lg bg-background p-6 shadow-xl">
     <div class="mb-4">
-      <h3 class="text-lg font-semibold text-foreground">Cookie 设置</h3>
+      <h3 class="text-lg font-semibold text-foreground">
+        {tr("ui.cookie.title")}
+      </h3>
       <p class="mt-2 text-sm text-foreground/80">
-        选择您希望允许的 Cookie 类型：
+        {tr("ui.cookie.description")}
       </p>
     </div>
 
@@ -64,10 +86,10 @@
         />
         <div>
           <label for="essential-cookies" class="font-medium text-foreground">
-            必要 Cookies
+            {tr("ui.cookie.essential.title")}
           </label>
           <p class="text-sm text-foreground/80">
-            这些 Cookies 对于网站正常运行是必需的，包括主题设置和基本功能。
+            {tr("ui.cookie.essential.description")}
           </p>
         </div>
       </div>
@@ -81,10 +103,10 @@
         />
         <div>
           <label for="analytics-cookies" class="font-medium text-foreground">
-            分析 Cookies
+            {tr("ui.cookie.analytics.title")}
           </label>
           <p class="text-sm text-foreground/80">
-            用于其他可能的分析工具。注：当前使用的 Umami 不需要此同意。
+            {tr("ui.cookie.analytics.description")}
           </p>
         </div>
       </div>
@@ -98,10 +120,10 @@
         />
         <div>
           <label for="advertising-cookies" class="font-medium text-foreground">
-            广告 Cookies
+            {tr("ui.cookie.advertising.title")}
           </label>
           <p class="text-sm text-foreground/80">
-            用于显示个性化广告和衡量广告效果。
+            {tr("ui.cookie.advertising.description")}
           </p>
         </div>
       </div>
@@ -112,13 +134,13 @@
         id="save-cookie-settings"
         class="bg-skin-accent hover:bg-skin-accent/90 focus:ring-skin-accent flex-1 rounded-lg px-4 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
       >
-        保存设置
+        {tr("ui.cookie.saveSettings")}
       </button>
       <button
         id="close-cookie-settings"
         class="hover:bg-surface-100 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground focus:ring-2 focus:ring-border focus:ring-offset-2 focus:outline-none"
       >
-        取消
+        {tr("ui.cookie.cancel")}
       </button>
     </div>
   </div>

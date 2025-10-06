@@ -1,26 +1,85 @@
 ---
-// Remove current url path and remove trailing slash if exists
+import { getCurrentLocale, t } from "@/i18n/utils";
+
+const currentLocale = getCurrentLocale(Astro);
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
+
+// Remove trailing slash and split pathname
 const currentUrlPath = Astro.url.pathname.replace(/\/+$/, "");
+const rawSegments = currentUrlPath.split("/").slice(1).filter(Boolean);
 
-// Get url array from path
-// eg: /tags/tailwindcss => ['tags', 'tailwindcss']
-const breadcrumbList = currentUrlPath.split("/").slice(1);
-
-// if breadcrumb is Home > Posts > 1 <etc>
-// replace Posts with Posts (page number)
-if (breadcrumbList[0] === "posts") {
-  breadcrumbList.splice(0, 2, `Posts (page ${breadcrumbList[1] || 1})`);
+// Remove locale prefix segment if present (e.g. "en")
+const supportedLocales = new Set(["zh-CN", "en"]);
+const visibleSegments = [...rawSegments];
+if (visibleSegments[0] && supportedLocales.has(visibleSegments[0])) {
+  visibleSegments.shift();
 }
 
-// if breadcrumb is Home > Tags > [tag] > [page] <etc>
-// replace [tag] > [page] with [tag] (page number)
-if (breadcrumbList[0] === "tags" && !isNaN(Number(breadcrumbList[2]))) {
-  breadcrumbList.splice(
-    1,
-    3,
-    `${breadcrumbList[1]} ${Number(breadcrumbList[2]) === 1 ? "" : "(page " + breadcrumbList[2] + ")"}`
-  );
-}
+const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
+
+const translationMap: Record<string, string> = {
+  posts: tr("nav.blog"),
+  tags: tr("nav.tags"),
+  about: tr("nav.about"),
+  contact: tr("ui.contact"),
+  archives: tr("nav.archives"),
+  search: tr("nav.search"),
+  "privacy-policy": tr("ui.privacyPolicy"),
+  "cookie-policy": tr("ui.cookiePolicy"),
+  "terms-of-service": tr("ui.termsOfService"),
+};
+
+const isNumeric = (value: string) => !Number.isNaN(Number(value));
+
+const buildHref = (segments: string[]) => {
+  if (segments.length === 0) {
+    return currentLocale === "zh-CN" ? "/" : `${localePrefix}/`;
+  }
+
+  const joined = segments.join("/");
+  let href = `${localePrefix}/${joined}`.replace(/\/+/g, "/");
+  if (!href.startsWith("/")) {
+    href = `/${href}`;
+  }
+  return href.endsWith("/") ? href : `${href}/`;
+};
+
+const breadcrumbItems = [] as Array<{
+  href: string;
+  label: string;
+  isCurrent: boolean;
+}>;
+
+const accumulatedSegments: string[] = [];
+
+visibleSegments.forEach((segment, index) => {
+  accumulatedSegments.push(segment);
+
+  let label = translationMap[segment] ?? decodeURIComponent(segment);
+
+  if (
+    index > 0 &&
+    visibleSegments[index - 1] === "posts" &&
+    isNumeric(segment)
+  ) {
+    label = tr("pagination.pageOnly", { page: Number(segment) });
+  }
+
+  if (
+    index > 0 &&
+    visibleSegments[index - 1] === "tags" &&
+    isNumeric(segment)
+  ) {
+    label = tr("pagination.pageOnly", { page: Number(segment) });
+  }
+
+  breadcrumbItems.push({
+    href: buildHref(accumulatedSegments),
+    label,
+    isCurrent: index + 1 === visibleSegments.length,
+  });
+});
 ---
 
 <nav class="mx-auto mt-8 mb-1 w-full max-w-app px-4" aria-label="breadcrumb">
@@ -28,25 +87,21 @@ if (breadcrumbList[0] === "tags" && !isNaN(Number(breadcrumbList[2]))) {
     class="font-light [&>li]:inline [&>li:not(:last-child)>a]:hover:opacity-100"
   >
     <li>
-      <a href="/" class="opacity-80">Home</a>
+      <a href={buildHref([])} class="opacity-80">{tr("nav.home")}</a>
       <span aria-hidden="true" class="opacity-80">&raquo;</span>
     </li>
     {
-      breadcrumbList.map((breadcrumb, index) =>
-        index + 1 === breadcrumbList.length ? (
+      breadcrumbItems.map(item =>
+        item.isCurrent ? (
           <li>
-            <span
-              class:list={["capitalize opacity-75", { lowercase: index > 0 }]}
-              aria-current="page"
-            >
-              {/* make the last part lowercase in Home > Tags > some-tag */}
-              {decodeURIComponent(breadcrumb)}
+            <span class="capitalize opacity-75" aria-current="page">
+              {item.label}
             </span>
           </li>
         ) : (
           <li>
-            <a href={`/${breadcrumb}/`} class="capitalize opacity-70">
-              {breadcrumb}
+            <a href={item.href} class="capitalize opacity-70">
+              {item.label}
             </a>
             <span aria-hidden="true">&raquo;</span>
           </li>

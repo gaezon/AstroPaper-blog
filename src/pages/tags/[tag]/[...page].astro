@@ -10,6 +10,7 @@ import Pagination from "@/components/Pagination.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
 import getPostsByTag from "@/utils/getPostsByTag";
 import { SITE } from "@/config";
+import { t } from "@/i18n/utils";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const posts = await getCollection("blog");
@@ -29,19 +30,20 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 const params = Astro.params;
 const { tag } = params;
 const { page, tagName } = Astro.props;
+const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
+const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
 ---
 
-<Layout
-  title={`Tag: ${tagName} | ${SITE.title}`}
-  description={`探索Gaazeon博客中关于「${tagName}」的所有技术文章和教程，深入了解${tagName}相关的编程知识、开发技巧和实践经验。`}
->
+<Layout title={`${pageTitle} | ${SITE.title}`} description={pageDescription}>
   <Header />
   <Main
-    pageTitle={[`Tag:`, `${tagName}`]}
+    pageTitle={[`${t(Astro, "tags.title")}:`, `${tagName}`]}
     titleTransition={tag}
-    pageDesc={`All the articles with the tag "${tagName}".`}
+    pageDesc={pageDescription}
   >
-    <h1 slot="title" transition:name={tag}>{`Tag:${tag}`}</h1>
+    <h1 slot="title" transition:name={tag}>
+      {`${t(Astro, "tags.title")}:${tag}`}
+    </h1>
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>

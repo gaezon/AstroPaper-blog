@@ -7,6 +7,7 @@ import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
 import { SITE } from "@/config";
+import { t } from "@/i18n/utils";
 
 // Redirect to 404 page if `showArchives` config is false
 if (!SITE.showArchives) {
@@ -14,6 +15,8 @@ if (!SITE.showArchives) {
 }
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
+const pageTitle = t(Astro, "archives.title");
+const pageDescription = t(Astro, "archives.description");
 
 const months = [
   "January",
@@ -31,12 +34,9 @@ const months = [
 ];
 ---
 
-<Layout
-  title={`Archives | ${SITE.title}`}
-  description="浏览Gaazeon博客的文章归档，按年份和月份分类查看所有技术文章、教程和开发心得，轻松找到您感兴趣的内容。"
->
+<Layout title={`${pageTitle} | ${SITE.title}`} description={pageDescription}>
   <Header />
-  <Main pageTitle="Archives" pageDesc="All the articles I've archived.">
+  <Main pageTitle={pageTitle} pageDesc={pageDescription}>
     {
       Object.entries(
         getPostsByGroupCondition(posts, post =>

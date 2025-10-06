@@ -6,6 +6,12 @@ import "@/styles/global.css";
 import MermaidClient from "@/components/MermaidClient.astro";
 import GoogleAdsense from "@/components/GoogleAdsense.astro";
 import CookieConsentBanner from "@/components/CookieConsentBanner.astro";
+import {
+  getCurrentLocale,
+  getLangTag,
+  getTextDirection,
+  t,
+} from "@/i18n/utils";
 
 export interface Props {
   title?: string;
@@ -30,6 +36,15 @@ const {
   modDatetime,
   scrollSmooth = false,
 } = Astro.props;
+
+// 国际化相关变量
+const currentLocale = getCurrentLocale(Astro);
+const langTag = getLangTag(Astro);
+const textDirection = getTextDirection(Astro);
+
+// 如果没有提供描述，尝试从翻译中获取默认描述
+const finalDescription =
+  description === SITE.desc ? t(Astro, "site.description") : description;
 
 const socialImageURL = new URL(ogImage ?? "/og.png", Astro.url.origin).href;
 
@@ -56,8 +71,8 @@ const siteHostname = new URL(SITE.website).hostname;
 
 <!doctype html>
 <html
-  dir={SITE.dir}
-  lang=`${SITE.lang ?? "en"}`
+  dir={textDirection}
+  lang={langTag}
   class={`${scrollSmooth && "scroll-smooth"}`}
 >
   <head>
@@ -67,18 +82,28 @@ const siteHostname = new URL(SITE.website).hostname;
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- hreflang 标签用于 SEO -->
+    <link rel="alternate" hreflang={currentLocale} href={canonicalURL} />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={canonicalURL.replace(`/${currentLocale}`, "").replace(/\/$/, "") ||
+        "/"}
+    />
+
     <!-- General Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
-    <meta name="description" content={description} />
+    <meta name="description" content={finalDescription} />
     <meta name="author" content={author} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={finalDescription} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={socialImageURL} />
+    <meta property="og:locale" content={langTag.replace("-", "_")} />
 
     <!-- Article Published/Modified time -->
     {
@@ -102,7 +127,7 @@ const siteHostname = new URL(SITE.website).hostname;
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
+    <meta property="twitter:description" content={finalDescription} />
     <meta property="twitter:image" content={socialImageURL} />
 
     <!-- Google JSON-LD Structured data -->
@@ -117,8 +142,11 @@ const siteHostname = new URL(SITE.website).hostname;
     <link
       rel="alternate"
       type="application/rss+xml"
-      title={SITE.title}
-      href={new URL("rss.xml", Astro.site)}
+      title={t(Astro, "site.title")}
+      href={new URL(
+        `rss${currentLocale !== "zh-CN" ? "." + currentLocale : ""}.xml`,
+        Astro.site
+      )}
     />
 
     <meta name="theme-color" content="" />
