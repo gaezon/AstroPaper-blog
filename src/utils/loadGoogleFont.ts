@@ -2,6 +2,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import zlib from "node:zlib";
 
+type FontConfig = {
+  name: string;
+  font: string;
+  weight: number;
+  style: string;
+};
+
 /**
  * Converts a WOFF (Web Open Font Format) font to TTF (TrueType Font) format.
  *
@@ -104,7 +111,7 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
   return out;
 }
 
-const PREFER_LOCAL_FONTS =
+const USE_LOCAL_FONTS_FIRST =
   process.env.OG_ALLOW_LOCAL_FONTS === "true" ||
   process.env.NODE_ENV !== "production";
 const ALLOW_LOCAL_FALLBACK = process.env.OG_DISABLE_LOCAL_FALLBACK !== "true";
@@ -114,7 +121,7 @@ async function tryLoadLocalFont(
   weight: number,
   force = false
 ): Promise<ArrayBuffer | null> {
-  if (!force && !PREFER_LOCAL_FONTS) return null;
+  if (!force && !USE_LOCAL_FONTS_FIRST) return null;
 
   try {
     const candidates: string[] = [];
@@ -187,7 +194,7 @@ async function loadGoogleFont(
     return await tryLoadLocalFont(font, weight, true);
   };
 
-  if (PREFER_LOCAL_FONTS) {
+  if (USE_LOCAL_FONTS_FIRST) {
     const eager = await tryLoadLocalFont(font, weight);
     if (eager) {
       return eager;
@@ -296,7 +303,7 @@ async function loadGoogleFonts(
 > {
   // 优先使用 IBM Plex Sans（英文/拉丁），并为中文提供 Noto Sans SC 作为补充
   // 注意：传入 Google Fonts 的 family 名称不包含 :wght@，权重由第二参数控制
-  const fontsConfig = [
+  const fontsConfig: FontConfig[] = [
     {
       name: "IBM Plex Sans",
       font: "IBM+Plex+Sans",
@@ -345,12 +352,29 @@ async function loadGoogleFonts(
       weight: number;
       style: string;
     }>;
+    if (fonts.length === 0) {
+      console.warn("No fonts loaded; falling back to minimal font set");
+      return await buildFallbackFonts(fontsConfig);
+    }
     return fonts;
   } catch {
     // 忽略详细错误输出，避免控制台噪音
     // 在失败情况下，提供最小的字体数组
-    return [];
+    return await buildFallbackFonts(fontsConfig);
   }
+}
+
+async function buildFallbackFonts(
+  configs: FontConfig[]
+): Promise<Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>> {
+  return Promise.all(
+    configs.map(async ({ name, weight, style }) => ({
+      name,
+      data: await getFallbackFont(),
+      weight,
+      style,
+    }))
+  );
 }
 
 export default loadGoogleFonts;

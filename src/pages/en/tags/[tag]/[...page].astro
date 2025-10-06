@@ -1,6 +1,6 @@
 ---
-import { getCollection } from "astro:content";
-import type { GetStaticPathsOptions } from "astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import type { GetStaticPathsOptions, InferGetStaticPropsType } from "astro";
 import Main from "@/layouts/Main.astro";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
@@ -28,11 +28,10 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 }
 
 const { tag } = Astro.params;
-const { page, tagName } = Astro.props as {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  page: any;
-  tagName: string;
+type PageProps = InferGetStaticPropsType<typeof getStaticPaths> & {
+  page: { data: CollectionEntry<"blog-en">[]; [key: string]: unknown };
 };
+const { page, tagName } = Astro.props as PageProps;
 const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
 const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
 ---
@@ -48,10 +47,7 @@ const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
       {`${t(Astro, "tags.title")}:${tagName}`}
     </h1>
     <ul>
-      {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        page.data.map((data: any) => <Card {...data} />)
-      }
+      {page.data.map(entry => <Card {...entry} />)}
     </ul>
   </Main>
 
