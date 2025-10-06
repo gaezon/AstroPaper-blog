@@ -126,7 +126,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       ?.dataset?.layout;
     if (indexLayout) {
       const currentPath = window.location.pathname;
-      const backUrl = currentPath.endsWith("/") ? currentPath : `${currentPath}/`;
+      const backUrl = currentPath.endsWith("/")
+        ? currentPath
+        : `${currentPath}/`;
       sessionStorage.setItem("backUrl", backUrl);
     }
   });

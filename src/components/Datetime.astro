@@ -24,8 +24,9 @@ const {
 const publishedDate = new Date(pubDatetime);
 const modifiedDate = modDatetime ? new Date(modDatetime) : undefined;
 
-const isModified =
-  !!(modifiedDate && modifiedDate.getTime() > publishedDate.getTime());
+const isModified = !!(
+  modifiedDate && modifiedDate.getTime() > publishedDate.getTime()
+);
 
 const activeDate = isModified && modifiedDate ? modifiedDate : publishedDate;
 

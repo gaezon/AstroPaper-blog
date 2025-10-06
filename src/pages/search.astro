@@ -13,10 +13,7 @@ const pageDescription = t(Astro, "search.metaDescription");
 const layoutTitle = `${pageTitle} | ${SITE.title}`;
 ---
 
-<Layout
-  title={layoutTitle}
-  description={pageDescription}
->
+<Layout title={layoutTitle} description={pageDescription}>
   <Header />
   <Main pageTitle={pageTitle} pageDesc={t(Astro, "search.placeholder")}>
     <div id="pagefind-search" transition:persist data-backurl={backUrl}></div>

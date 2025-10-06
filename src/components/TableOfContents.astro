@@ -8,7 +8,8 @@ export interface Props {
 
 const { class: className = "" } = Astro.props;
 
-const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 ---
 
 <!-- 目录导航容器（桌面端粘性侧栏） -->
@@ -29,7 +30,9 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
   <div
     class="mb-4 flex items-center justify-between border-b border-border/70 pb-3"
   >
-    <h3 class="text-base font-semibold tracking-wide text-foreground">{tr("ui.tableOfContents")}</h3>
+    <h3 class="text-base font-semibold tracking-wide text-foreground">
+      {tr("ui.tableOfContents")}
+    </h3>
     <!-- 桌面端折叠按钮（仅 >=xl 显示） -->
     <button
       id="toc-collapse"

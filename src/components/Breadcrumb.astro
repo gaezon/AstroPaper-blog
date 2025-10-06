@@ -7,10 +7,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 
 // Remove trailing slash and split pathname
 const currentUrlPath = Astro.url.pathname.replace(/\/+$/, "");
-const rawSegments = currentUrlPath
-  .split("/")
-  .slice(1)
-  .filter(Boolean);
+const rawSegments = currentUrlPath.split("/").slice(1).filter(Boolean);
 
 // Remove locale prefix segment if present (e.g. "en")
 const supportedLocales = new Set(["zh-CN", "en"]);
@@ -61,11 +58,19 @@ visibleSegments.forEach((segment, index) => {
 
   let label = translationMap[segment] ?? decodeURIComponent(segment);
 
-  if (index > 0 && visibleSegments[index - 1] === "posts" && isNumeric(segment)) {
+  if (
+    index > 0 &&
+    visibleSegments[index - 1] === "posts" &&
+    isNumeric(segment)
+  ) {
     label = tr("pagination.pageOnly", { page: Number(segment) });
   }
 
-  if (index > 0 && visibleSegments[index - 1] === "tags" && isNumeric(segment)) {
+  if (
+    index > 0 &&
+    visibleSegments[index - 1] === "tags" &&
+    isNumeric(segment)
+  ) {
     label = tr("pagination.pageOnly", { page: Number(segment) });
   }
 

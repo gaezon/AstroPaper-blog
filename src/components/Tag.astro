@@ -11,7 +11,7 @@ export interface Props {
 
 const { tag, tagName, size = "sm" } = Astro.props;
 const locale = getCurrentLocale(Astro);
-const hrefPrefix = locale === DEFAULT_LOCALE ? '' : `/${locale}`;
+const hrefPrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
 const localizedHref = `${hrefPrefix}/tags/${tag}/`;
 ---
 

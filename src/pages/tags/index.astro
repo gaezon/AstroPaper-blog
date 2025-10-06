@@ -16,10 +16,7 @@ const pageTitle = t(Astro, "tags.title");
 const pageDescription = t(Astro, "tags.description");
 ---
 
-<Layout
-  title={`${pageTitle} | ${SITE.title}`}
-  description={pageDescription}
->
+<Layout title={`${pageTitle} | ${SITE.title}`} description={pageDescription}>
   <Header />
   <Main pageTitle={pageTitle} pageDesc={t(Astro, "tags.allTags")}>
     <ul>

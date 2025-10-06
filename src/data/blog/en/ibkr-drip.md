@@ -46,11 +46,11 @@ So the fee wasn’t zero — it was **$0.000031381**. Tiny, but enough to expose
 
 Based on IBKR docs[^2], these are the key rules:
 
-| Scenario                        | Commission formula                     | Notes                                                                 | Display rounding            |
-| --------------------------------| --------------------------------------- | --------------------------------------------------------------------- | --------------------------- |
-| Manual whole/mixed share order  | `max(1% × trade value, $0.35 / $1)`     | If the order contains ≥1 whole share; tiered min $0.35, fixed min $1 | Per‑order rounded to $0.01  |
-| Manual pure fractional order    | `max(1% × trade value, $0.01)`          | All fractional shares → min $0.01                                    | Same as above               |
-| DRIP (auto reinvest)            | `min(1% × trade value, $0.35 / $1)`     | Preferential to ensure it won’t exceed whole‑share minimums           | Often $0.00; day‑end adjust |
+| Scenario                       | Commission formula                  | Notes                                                                | Display rounding            |
+| ------------------------------ | ----------------------------------- | -------------------------------------------------------------------- | --------------------------- |
+| Manual whole/mixed share order | `max(1% × trade value, $0.35 / $1)` | If the order contains ≥1 whole share; tiered min $0.35, fixed min $1 | Per‑order rounded to $0.01  |
+| Manual pure fractional order   | `max(1% × trade value, $0.01)`      | All fractional shares → min $0.01                                    | Same as above               |
+| DRIP (auto reinvest)           | `min(1% × trade value, $0.35 / $1)` | Preferential to ensure it won’t exceed whole‑share minimums          | Often $0.00; day‑end adjust |
 
 With the $NVDA example:
 

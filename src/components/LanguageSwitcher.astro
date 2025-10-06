@@ -1,5 +1,10 @@
 ---
-import { getCurrentLocale, getLocaleSwitchUrl, getAvailableLocales, t } from "@/i18n/utils";
+import {
+  getCurrentLocale,
+  getLocaleSwitchUrl,
+  getAvailableLocales,
+  t,
+} from "@/i18n/utils";
 
 interface Props {
   class?: string;
@@ -12,7 +17,8 @@ const { class: className = "", variant = "dropdown", override } = Astro.props;
 const currentLocale = getCurrentLocale(Astro);
 const availableLocales = getAvailableLocales();
 const currentLocaleInfo = availableLocales.find(l => l.code === currentLocale);
-const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 
 // 获取语言代码的简短显示
 const getShortLabel = (code: string) => {
@@ -20,139 +26,148 @@ const getShortLabel = (code: string) => {
 };
 ---
 
-{variant === "dropdown" ? (
-  <div class={`language-switcher-dropdown ${className}`}>
-    <button
-      type="button"
-      class="lang-dropdown-btn focus-outline"
-      aria-label={tr("language.selectLanguage")}
-      aria-expanded="false"
-      data-dropdown-toggle
-    >
-      <svg
-        class="globe-icon"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
+{
+  variant === "dropdown" ? (
+    <div class={`language-switcher-dropdown ${className}`}>
+      <button
+        type="button"
+        class="lang-dropdown-btn focus-outline"
+        aria-label={tr("language.selectLanguage")}
+        aria-expanded="false"
+        data-dropdown-toggle
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width={2}
-          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-        />
-      </svg>
-      <span class="current-lang">{currentLocaleInfo?.profile.label || currentLocaleInfo?.name}</span>
-      <svg
-        class="chevron-icon"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width={2}
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
+        <svg
+          class="globe-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+          />
+        </svg>
+        <span class="current-lang">
+          {currentLocaleInfo?.profile.label || currentLocaleInfo?.name}
+        </span>
+        <svg
+          class="chevron-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
 
-    <div class="lang-dropdown-menu" role="menu">
+      <div class="lang-dropdown-menu" role="menu">
+        {availableLocales.map(locale => {
+          const targetHref =
+            override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
+          return (
+            <a
+              href={targetHref}
+              data-base-href={targetHref}
+              class={`lang-dropdown-item ${locale.code === currentLocale ? "active" : ""}`}
+              lang={locale.profile.langTag}
+              hreflang={locale.code}
+              role="menuitem"
+              data-astro-reload
+            >
+              <span class="lang-name">{locale.name}</span>
+              {locale.code === currentLocale && (
+                <svg
+                  class="check-icon"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  ) : variant === "compact" ? (
+    <div class={`language-switcher-compact ${className}`}>
+      <div class="lang-compact-wrapper">
+        <svg
+          class="globe-icon-compact"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+          />
+        </svg>
+        {availableLocales.map((locale, index) => {
+          const targetHref =
+            override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
+          return (
+            <>
+              <a
+                href={targetHref}
+                data-base-href={targetHref}
+                class={`lang-compact-btn ${locale.code === currentLocale ? "active" : ""}`}
+                lang={locale.profile.langTag}
+                hreflang={locale.code}
+                aria-label={locale.name}
+                title={locale.name}
+                data-astro-reload
+              >
+                {getShortLabel(locale.code)}
+              </a>
+              {index < availableLocales.length - 1 && (
+                <span class="lang-separator">/</span>
+              )}
+            </>
+          );
+        })}
+      </div>
+    </div>
+  ) : (
+    <div class={`language-switcher-toggle ${className}`}>
       {availableLocales.map(locale => {
-        const targetHref = override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
+        const targetHref =
+          override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
         return (
           <a
             href={targetHref}
             data-base-href={targetHref}
-            class={`lang-dropdown-item ${locale.code === currentLocale ? "active" : ""}`}
+            class={`lang-toggle-btn ${locale.code === currentLocale ? "active" : ""}`}
             lang={locale.profile.langTag}
             hreflang={locale.code}
-            role="menuitem"
+            aria-label={locale.name}
+            title={locale.name}
             data-astro-reload
           >
-            <span class="lang-name">{locale.name}</span>
-            {locale.code === currentLocale && (
-              <svg
-                class="check-icon"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            )}
+            {locale.profile.label || locale.name}
           </a>
         );
       })}
     </div>
-  </div>
-) : variant === "compact" ? (
-  <div class={`language-switcher-compact ${className}`}>
-    <div class="lang-compact-wrapper">
-      <svg
-        class="globe-icon-compact"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width={2}
-          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-        />
-      </svg>
-      {availableLocales.map((locale, index) => {
-        const targetHref = override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
-        return (
-          <>
-            <a
-              href={targetHref}
-              data-base-href={targetHref}
-              class={`lang-compact-btn ${locale.code === currentLocale ? "active" : ""}`}
-              lang={locale.profile.langTag}
-              hreflang={locale.code}
-              aria-label={locale.name}
-              title={locale.name}
-              data-astro-reload
-            >
-              {getShortLabel(locale.code)}
-            </a>
-            {index < availableLocales.length - 1 && <span class="lang-separator">/</span>}
-          </>
-        );
-      })}
-    </div>
-  </div>
-) : (
-  <div class={`language-switcher-toggle ${className}`}>
-    {availableLocales.map(locale => {
-      const targetHref = override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
-      return (
-        <a
-          href={targetHref}
-          data-base-href={targetHref}
-          class={`lang-toggle-btn ${locale.code === currentLocale ? "active" : ""}`}
-          lang={locale.profile.langTag}
-          hreflang={locale.code}
-          aria-label={locale.name}
-          title={locale.name}
-          data-astro-reload
-        >
-          {locale.profile.label || locale.name}
-        </a>
-      );
-    })}
-  </div>
-)}
+  )
+}
 
 <style>
   /* ========== 下拉菜单样式 - Liquid Glass 设计 ========== */
@@ -166,24 +181,24 @@ const getShortLabel = (code: string) => {
     align-items: center;
     gap: 0.625rem;
     padding: 0.5rem 0.875rem;
-    
+
     /* Liquid Glass 样式 */
     background: hsl(var(--background) / 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--border) / 0.5);
     border-radius: 0.625rem;
-    
+
     font-size: 0.875rem;
     font-weight: 500;
     color: hsl(var(--foreground) / 0.85);
     cursor: pointer;
-    
-    box-shadow: 
+
+    box-shadow:
       0 1px 2px hsl(var(--foreground) / 0.04),
       0 2px 8px hsl(var(--foreground) / 0.06),
       inset 0 1px 0 hsl(var(--background) / 0.5);
-    
+
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 120px;
   }
@@ -193,7 +208,7 @@ const getShortLabel = (code: string) => {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-color: hsl(var(--accent) / 0.6);
-    box-shadow: 
+    box-shadow:
       0 2px 4px hsl(var(--foreground) / 0.06),
       0 8px 16px hsl(var(--foreground) / 0.1),
       inset 0 1px 0 hsl(var(--background) / 0.7);
@@ -241,20 +256,20 @@ const getShortLabel = (code: string) => {
     z-index: 50;
     min-width: 100%;
     padding: 0.5rem;
-    
+
     /* Liquid Glass 菜单 */
     background: hsl(var(--background) / 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid hsl(var(--border) / 0.6);
     border-radius: 0.75rem;
-    
-    box-shadow: 
+
+    box-shadow:
       0 4px 12px hsl(var(--foreground) / 0.08),
       0 12px 32px hsl(var(--foreground) / 0.12),
       0 0 0 1px hsl(var(--background) / 0.1),
       inset 0 1px 0 hsl(var(--background) / 0.8);
-    
+
     opacity: 0;
     visibility: hidden;
     transform: translateY(-0.5rem) scale(0.95);
@@ -284,15 +299,17 @@ const getShortLabel = (code: string) => {
   }
 
   .lang-dropdown-item::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
     width: 0;
-    background: linear-gradient(90deg, 
-      hsl(var(--accent) / 0.15) 0%, 
-      hsl(var(--accent) / 0.05) 100%);
+    background: linear-gradient(
+      90deg,
+      hsl(var(--accent) / 0.15) 0%,
+      hsl(var(--accent) / 0.05) 100%
+    );
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -312,7 +329,7 @@ const getShortLabel = (code: string) => {
     backdrop-filter: blur(12px);
     color: hsl(var(--accent-foreground));
     font-weight: 600;
-    box-shadow: 
+    box-shadow:
       0 2px 8px hsl(var(--accent) / 0.25),
       0 0 16px hsl(var(--accent) / 0.15),
       inset 0 1px 0 hsl(var(--accent-foreground) / 0.15);
@@ -354,20 +371,20 @@ const getShortLabel = (code: string) => {
     justify-content: center;
     gap: 0.625rem;
     padding: 0.625rem 1rem;
-    
+
     /* Liquid Glass 核心样式 */
     background: hsl(var(--background) / 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--border) / 0.5);
     border-radius: 0.75rem;
-    
+
     /* 多层阴影营造深度感 */
-    box-shadow: 
+    box-shadow:
       0 1px 2px hsl(var(--foreground) / 0.04),
       0 4px 12px hsl(var(--foreground) / 0.06),
       inset 0 1px 0 hsl(var(--background) / 0.8);
-    
+
     font-size: 0.875rem;
     width: 100%;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -378,13 +395,13 @@ const getShortLabel = (code: string) => {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-color: hsl(var(--border) / 0.7);
-    
+
     /* 悬停时增强阴影 */
-    box-shadow: 
+    box-shadow:
       0 2px 4px hsl(var(--foreground) / 0.06),
       0 8px 24px hsl(var(--foreground) / 0.1),
       inset 0 1px 0 hsl(var(--background) / 0.9);
-    
+
     transform: translateY(-2px);
   }
 
@@ -431,26 +448,28 @@ const getShortLabel = (code: string) => {
     font-weight: 600;
     background: hsl(var(--accent) / 0.9);
     backdrop-filter: blur(8px);
-    
+
     /* 激活状态的发光效果 */
-    box-shadow: 
+    box-shadow:
       0 2px 8px hsl(var(--accent) / 0.3),
       0 0 20px hsl(var(--accent) / 0.15),
       inset 0 1px 0 hsl(var(--accent-foreground) / 0.2);
-    
+
     text-shadow: 0 0 12px hsl(var(--accent-foreground) / 0.2);
   }
 
   .lang-compact-btn.active::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: -3px;
     border-radius: 0.625rem;
     border: 1.5px solid hsl(var(--accent) / 0.3);
-    background: linear-gradient(135deg, 
-      hsl(var(--accent) / 0.1) 0%, 
-      transparent 50%, 
-      hsl(var(--accent) / 0.05) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--accent) / 0.1) 0%,
+      transparent 50%,
+      hsl(var(--accent) / 0.05) 100%
+    );
     pointer-events: none;
     animation: pulse-glow 2s ease-in-out infinite;
   }
@@ -473,7 +492,7 @@ const getShortLabel = (code: string) => {
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--border) / 0.5);
     border-radius: 0.625rem;
-    box-shadow: 
+    box-shadow:
       0 1px 2px hsl(var(--foreground) / 0.04),
       0 2px 8px hsl(var(--foreground) / 0.06);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -484,7 +503,7 @@ const getShortLabel = (code: string) => {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-color: hsl(var(--border) / 0.7);
-    box-shadow: 
+    box-shadow:
       0 2px 4px hsl(var(--foreground) / 0.06),
       0 4px 12px hsl(var(--foreground) / 0.08);
   }
@@ -512,7 +531,7 @@ const getShortLabel = (code: string) => {
     backdrop-filter: blur(8px);
     color: hsl(var(--accent-foreground));
     font-weight: 600;
-    box-shadow: 
+    box-shadow:
       0 2px 8px hsl(var(--accent) / 0.3),
       0 0 16px hsl(var(--accent) / 0.15),
       inset 0 1px 0 hsl(var(--accent-foreground) / 0.2);
@@ -554,18 +573,18 @@ const getShortLabel = (code: string) => {
       max-width: 100%;
       gap: 0.75rem;
       border-radius: 1rem;
-      
+
       /* 增强移动端 Liquid Glass 效果 */
       background: linear-gradient(
-        135deg, 
-        hsl(var(--background) / 0.75) 0%, 
+        135deg,
+        hsl(var(--background) / 0.75) 0%,
         hsl(var(--background) / 0.65) 100%
       );
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1.5px solid hsl(var(--border) / 0.4);
-      
-      box-shadow: 
+
+      box-shadow:
         0 2px 4px hsl(var(--foreground) / 0.06),
         0 8px 24px hsl(var(--foreground) / 0.08),
         inset 0 1px 0 hsl(var(--background) / 0.9),
@@ -576,13 +595,13 @@ const getShortLabel = (code: string) => {
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-color: hsl(var(--border) / 0.6);
-      
-      box-shadow: 
+
+      box-shadow:
         0 4px 8px hsl(var(--foreground) / 0.08),
         0 12px 32px hsl(var(--foreground) / 0.12),
         inset 0 1px 0 hsl(var(--background)),
         inset 0 -1px 0 hsl(var(--foreground) / 0.03);
-      
+
       transform: translateY(-3px);
     }
 
@@ -595,7 +614,7 @@ const getShortLabel = (code: string) => {
     }
 
     .lang-compact-btn.active {
-      box-shadow: 
+      box-shadow:
         0 3px 12px hsl(var(--accent) / 0.35),
         0 0 24px hsl(var(--accent) / 0.2),
         inset 0 1px 0 hsl(var(--accent-foreground) / 0.25);
@@ -650,7 +669,8 @@ const getShortLabel = (code: string) => {
   }
 
   @keyframes pulse-glow {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.3;
       transform: scale(1);
     }
@@ -668,67 +688,74 @@ const getShortLabel = (code: string) => {
 <script>
   function initLanguageSwitcher() {
     function syncQueryParams() {
-      if (typeof window === 'undefined') return;
+      if (typeof window === "undefined") return;
       const search = window.location.search;
       const hash = window.location.hash;
       if (!search && !hash) return;
 
-      const selector = '.language-switcher-dropdown a[data-base-href], .language-switcher-compact a[data-base-href], .language-switcher-toggle a[data-base-href]';
+      const selector =
+        ".language-switcher-dropdown a[data-base-href], .language-switcher-compact a[data-base-href], .language-switcher-toggle a[data-base-href]";
       document.querySelectorAll(selector).forEach(link => {
         const anchor = link as HTMLAnchorElement;
-        const baseHref = anchor.getAttribute('data-base-href');
-        if (!baseHref || baseHref.startsWith('http') || baseHref.startsWith('mailto:')) {
+        const baseHref = anchor.getAttribute("data-base-href");
+        if (
+          !baseHref ||
+          baseHref.startsWith("http") ||
+          baseHref.startsWith("mailto:")
+        ) {
           return;
         }
 
-        const sanitized = baseHref.replace(/[?#].*$/, '');
-        anchor.setAttribute('href', `${sanitized}${search}${hash}`);
+        const sanitized = baseHref.replace(/[?#].*$/, "");
+        anchor.setAttribute("href", `${sanitized}${search}${hash}`);
       });
     }
 
     // 处理下拉菜单
-    const dropdowns = document.querySelectorAll('.language-switcher-dropdown');
+    const dropdowns = document.querySelectorAll(".language-switcher-dropdown");
 
     dropdowns.forEach(dropdown => {
-      const button = dropdown.querySelector('[data-dropdown-toggle]');
+      const button = dropdown.querySelector("[data-dropdown-toggle]");
       if (!button) return;
 
-      button.addEventListener('click', (e) => {
+      button.addEventListener("click", e => {
         e.stopPropagation();
-        const isOpen = dropdown.getAttribute('data-open') === 'true';
-        
+        const isOpen = dropdown.getAttribute("data-open") === "true";
+
         // 关闭所有其他下拉菜单
-        dropdowns.forEach(d => d.setAttribute('data-open', 'false'));
-        
+        dropdowns.forEach(d => d.setAttribute("data-open", "false"));
+
         // 切换当前下拉菜单
-        dropdown.setAttribute('data-open', (!isOpen).toString());
-        button.setAttribute('aria-expanded', (!isOpen).toString());
+        dropdown.setAttribute("data-open", (!isOpen).toString());
+        button.setAttribute("aria-expanded", (!isOpen).toString());
       });
     });
 
     // 点击外部关闭下拉菜单
-    document.addEventListener('click', () => {
+    document.addEventListener("click", () => {
       dropdowns.forEach(dropdown => {
-        dropdown.setAttribute('data-open', 'false');
-        const button = dropdown.querySelector('[data-dropdown-toggle]');
+        dropdown.setAttribute("data-open", "false");
+        const button = dropdown.querySelector("[data-dropdown-toggle]");
         if (button) {
-          button.setAttribute('aria-expanded', 'false');
+          button.setAttribute("aria-expanded", "false");
         }
       });
     });
 
     // 键盘导航支持
     dropdowns.forEach(dropdown => {
-      const button = dropdown.querySelector('[data-dropdown-toggle]') as HTMLElement;
-      const menu = dropdown.querySelector('.lang-dropdown-menu');
-      
+      const button = dropdown.querySelector(
+        "[data-dropdown-toggle]"
+      ) as HTMLElement;
+      const menu = dropdown.querySelector(".lang-dropdown-menu");
+
       if (!button || !menu) return;
 
-      button.addEventListener('keydown', (e) => {
+      button.addEventListener("keydown", e => {
         const event = e as KeyboardEvent;
-        if (event.key === 'Escape') {
-          dropdown.setAttribute('data-open', 'false');
-          button.setAttribute('aria-expanded', 'false');
+        if (event.key === "Escape") {
+          dropdown.setAttribute("data-open", "false");
+          button.setAttribute("aria-expanded", "false");
           button.focus();
         }
       });
@@ -741,5 +768,5 @@ const getShortLabel = (code: string) => {
   initLanguageSwitcher();
 
   // View Transitions API 支持
-  document.addEventListener('astro:after-swap', initLanguageSwitcher);
+  document.addEventListener("astro:after-swap", initLanguageSwitcher);
 </script>

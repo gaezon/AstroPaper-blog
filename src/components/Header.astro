@@ -32,28 +32,40 @@ const normalizeSegments = (segments: string[]) => {
   return segments[0] === currentLocale ? segments.slice(1) : segments;
 };
 
-const normalizedCurrentPath = normalizeSegments(currentPath.split("/").filter(p => p.trim()));
+const normalizedCurrentPath = normalizeSegments(
+  currentPath.split("/").filter(p => p.trim())
+);
 
 const isActive = (path: string) => {
-  const targetSegments = normalizeSegments(path.split("/").filter(p => p.trim()));
+  const targetSegments = normalizeSegments(
+    path.split("/").filter(p => p.trim())
+  );
   const currentFirst = normalizedCurrentPath[0];
   const targetFirst = targetSegments[0];
 
   const normalizedCurrent = `/${normalizedCurrentPath.join("/")}` || "/";
   const normalizedTarget = `/${targetSegments.join("/")}` || "/";
 
-  return normalizedCurrent === normalizedTarget || (!!currentFirst && currentFirst === targetFirst);
+  return (
+    normalizedCurrent === normalizedTarget ||
+    (!!currentFirst && currentFirst === targetFirst)
+  );
 };
 
 // 构建本地化的URL
 const localeUrl = (path: string) => {
   const fullPath = `${localePrefix}${path}`;
   // 确保根路径返回 "/"，其他路径以 "/" 结尾
-  return fullPath === "/" ? "/" : fullPath.endsWith("/") ? fullPath : `${fullPath}/`;
+  return fullPath === "/"
+    ? "/"
+    : fullPath.endsWith("/")
+      ? fullPath
+      : `${fullPath}/`;
 };
 
 // 获取翻译函数
-const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 ---
 
 <header>
@@ -73,7 +85,11 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
       class="relative flex w-full items-center justify-between bg-background p-4 sm:py-4"
     >
       <div class="flex items-center">
-        <a href={localeUrl("/")} class="flex items-center" aria-label={tr("nav.home")}>
+        <a
+          href={localeUrl("/")}
+          class="flex items-center"
+          aria-label={tr("nav.home")}
+        >
           <DummyLogo class="h-auto w-[45px] sm:w-[50px]" />
         </a>
       </div>
@@ -101,17 +117,26 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
           ]}
         >
           <li class="col-span-2">
-            <a href={localeUrl("/posts")} class:list={{ "active-nav": isActive("/posts") }}>
+            <a
+              href={localeUrl("/posts")}
+              class:list={{ "active-nav": isActive("/posts") }}
+            >
               {tr("nav.blog")}
             </a>
           </li>
           <li class="col-span-2">
-            <a href={localeUrl("/tags")} class:list={{ "active-nav": isActive("/tags") }}>
+            <a
+              href={localeUrl("/tags")}
+              class:list={{ "active-nav": isActive("/tags") }}
+            >
               {tr("nav.tags")}
             </a>
           </li>
           <li class="col-span-2">
-            <a href={localeUrl("/about")} class:list={{ "active-nav": isActive("/about") }}>
+            <a
+              href={localeUrl("/about")}
+              class:list={{ "active-nav": isActive("/about") }}
+            >
               {tr("nav.about")}
             </a>
           </li>
@@ -190,7 +215,11 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
         </div>
         <!-- 移动端语言切换器（完整标签显示） -->
         <div class="lang-switcher-mobile hidden">
-          <LanguageSwitcher variant="dropdown" override={switchOverride} class="mobile-dropdown" />
+          <LanguageSwitcher
+            variant="dropdown"
+            override={switchOverride}
+            class="mobile-dropdown"
+          />
         </div>
       </nav>
     </div>

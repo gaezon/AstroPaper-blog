@@ -59,4 +59,4 @@ Thank you for visiting, and I hope you find the content here valuable for your o
 
 ---
 
-*This post marks the beginning of my blogging journey. Stay tuned for more technical content and insights!*
+_This post marks the beginning of my blogging journey. Stay tuned for more technical content and insights!_

@@ -74,7 +74,7 @@ Two things held me back before:
 - The learning curve
 - No Chinese localization
 
-As of May 2024, Raycast still doesn't ship official Chinese UI. After actually using it, the learning curve was milder than I feared (certainly easier than Alfred). 
+As of May 2024, Raycast still doesn't ship official Chinese UI. After actually using it, the learning curve was milder than I feared (certainly easier than Alfred).
 
 Hapigo does have some China‑specific conveniences (e.g. currency conversions triggered by colloquial keywords). In Raycast you may need a few extra keystrokes. For me, the extension ecosystem easily outweighs those small niceties.
 

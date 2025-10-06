@@ -25,7 +25,10 @@ const currentLocale = getCurrentLocale(Astro);
   description={t(Astro, "site.description")}
 >
   <Header />
-  <Main pageTitle={t(Astro, "nav.blog")} pageDesc={t(Astro, "index.recentPosts")}>
+  <Main
+    pageTitle={t(Astro, "nav.blog")}
+    pageDesc={t(Astro, "index.recentPosts")}
+  >
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>

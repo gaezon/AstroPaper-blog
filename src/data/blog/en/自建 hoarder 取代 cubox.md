@@ -16,6 +16,7 @@ description: "Run the open‑source Hoarder clipper with Docker to replace Cubox
 locale: en
 originalTitle: 自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题
 ---
+
 ## Table of contents
 
 ## Why leave Cubox

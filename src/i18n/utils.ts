@@ -54,9 +54,12 @@ export function t(
 
 /**
  * 获取语言切换的 URL
- * 如果目标语言的翻译版本不存在，则跳转到该语言的博客列表页
+ * 如果目标语言的翻译版本不存在，则显示友好提示页面
  */
-export function getLocaleSwitchUrl(Astro: AstroGlobal, targetLocale: string): string {
+export function getLocaleSwitchUrl(
+  Astro: AstroGlobal,
+  targetLocale: string
+): string {
   const currentPath = Astro.url.pathname;
   const currentSearch = Astro.url.search;
   const currentHash = Astro.url.hash;
@@ -72,7 +75,8 @@ export function getLocaleSwitchUrl(Astro: AstroGlobal, targetLocale: string): st
   }
 
   // 检查当前是否在文章详情页
-  const isPostPage = currentPath.includes("/posts/") && !currentPath.endsWith("/posts/");
+  const isPostPage =
+    currentPath.includes("/posts/") && !currentPath.endsWith("/posts/");
 
   // 如果不是文章页，直接进行语言切换
   if (!isPostPage) {
@@ -89,18 +93,16 @@ export function getLocaleSwitchUrl(Astro: AstroGlobal, targetLocale: string): st
   const englishPostPath = `/en${currentPath}`;
   const chinesePostPath = currentPath.replace("/en", "");
 
-  // 如果切换到英文且英文版本不存在，跳转到英文博客列表页
+  // 如果切换到英文且英文版本不存在，显示翻译不存在页面
   if (targetLocale === "en" && currentLocale === "zh-CN") {
-    // 这里可以添加更复杂的逻辑来检查英文版本是否存在
-    // 目前先跳转到英文博客列表页
-    return ensureTrailingSlash("/en/posts/");
+    // 检查英文版本是否存在，如果不存在则跳转到提示页面
+    return `/translation-not-found?target=en&path=${encodeURIComponent(currentPath)}&title=${encodeURIComponent(Astro.url.pathname.split("/").pop() || "")}`;
   }
 
-  // 如果切换到中文且中文版本不存在，跳转到中文博客列表页
+  // 如果切换到中文且中文版本不存在，显示翻译不存在页面
   if (targetLocale === "zh-CN" && currentLocale === "en") {
-    // 这里可以添加更复杂的逻辑来检查中文版本是否存在
-    // 目前先跳转到中文博客列表页
-    return ensureTrailingSlash("/posts/");
+    // 检查中文版本是否存在，如果不存在则跳转到提示页面
+    return `/translation-not-found?target=zh-CN&path=${encodeURIComponent(currentPath)}&title=${encodeURIComponent(Astro.url.pathname.split("/").pop() || "")}`;
   }
 
   // 默认情况：直接进行语言切换
@@ -230,7 +232,10 @@ export function formatDate(
 /**
  * 获取相对时间
  */
-export function getRelativeTime(Astro: AstroGlobal, date: Date | string): string {
+export function getRelativeTime(
+  Astro: AstroGlobal,
+  date: Date | string
+): string {
   const locale = getCurrentLocale(Astro);
   const messages = getTranslations(Astro);
 
@@ -250,10 +255,15 @@ export function getRelativeTime(Astro: AstroGlobal, date: Date | string): string
   const relative = messages.datetime?.relative || {};
 
   if (diffMins < 1) return relative.justNow || "Just now";
-  if (diffMins < 60) return t(Astro, "datetime.relative.minutesAgo", { count: diffMins });
-  if (diffHours < 24) return t(Astro, "datetime.relative.hoursAgo", { count: diffHours });
-  if (diffDays < 7) return t(Astro, "datetime.relative.daysAgo", { count: diffDays });
-  if (diffWeeks < 4) return t(Astro, "datetime.relative.weeksAgo", { count: diffWeeks });
-  if (diffMonths < 12) return t(Astro, "datetime.relative.monthsAgo", { count: diffMonths });
+  if (diffMins < 60)
+    return t(Astro, "datetime.relative.minutesAgo", { count: diffMins });
+  if (diffHours < 24)
+    return t(Astro, "datetime.relative.hoursAgo", { count: diffHours });
+  if (diffDays < 7)
+    return t(Astro, "datetime.relative.daysAgo", { count: diffDays });
+  if (diffWeeks < 4)
+    return t(Astro, "datetime.relative.weeksAgo", { count: diffWeeks });
+  if (diffMonths < 12)
+    return t(Astro, "datetime.relative.monthsAgo", { count: diffMonths });
   return t(Astro, "datetime.relative.yearsAgo", { count: diffYears });
 }

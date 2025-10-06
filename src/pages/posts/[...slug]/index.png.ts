@@ -29,14 +29,15 @@ export const GET: APIRoute = async ({ props, params }) => {
   }
 
   try {
-    let entry: CollectionEntry<"blog"> | undefined =
-      props as CollectionEntry<"blog"> | undefined;
+    let entry: CollectionEntry<"blog"> | undefined = props as
+      | CollectionEntry<"blog">
+      | undefined;
 
     // If props not provided (e.g., dev SSR for non-prelisted path), resolve by slug
     if (!entry) {
       const slugStr = Array.isArray(params?.slug)
         ? (params!.slug as string[]).join("/")
-        : (params?.slug as string) ?? "";
+        : ((params?.slug as string) ?? "");
 
       const posts = await getCollection("blog");
       entry = posts.find(p => {
@@ -53,6 +54,9 @@ export const GET: APIRoute = async ({ props, params }) => {
     return new Response(png, { headers: { "Content-Type": "image/png" } });
   } catch (e) {
     console.error("OG image route error:", e);
-    return new Response(null, { status: 500, statusText: "OG generation error" });
+    return new Response(null, {
+      status: 500,
+      statusText: "OG generation error",
+    });
   }
 };

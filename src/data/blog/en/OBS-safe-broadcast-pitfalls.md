@@ -13,6 +13,7 @@ description: "Tried to build a 20‑second ‘safe broadcast’ delay in OBS but
 locale: en
 originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
 ---
+
 ## Table of contents
 
 ## Background: why ‘safe broadcast’ is required
@@ -95,11 +96,11 @@ If you don’t have a hardware delay box, architecture can still save you:
 
 The core idea: **the upstream delay box** handles buffering and emergency actions; **the broadcast box** just listens and forwards.
 
-1) **Delay / upstream box**
+1. **Delay / upstream box**
    - Use **OBS’s Broadcast Delay**, vMix, or a dedicated delay unit on this box.
    - Buffer ~20 seconds, and map hotkeys for `DUMP` (drop frames) / `MUTE` (silence) in emergencies.
 
-2) **Main broadcast box (your primary OBS)**
+2. **Main broadcast box (your primary OBS)**
    - **Listen** to the delayed stream via **RTMP or SRT**.
    - **Do not** use any delay filters here.
    - Push to platforms as usual.
@@ -142,7 +143,6 @@ Then enable **Stream Delay** in `Settings → Advanced` and set **20 s**[^4].
 ![OBS-Intranet-RTMP-latency](https://img.gaazeon.com/2025/06/OBS-Intranet-RTMP-latency.avif)
 
 Click **Start Streaming**. The delayed picture will appear in the broadcast box media source.
-
 
 ---
 
@@ -199,7 +199,6 @@ graph TD
     B4 --> C
 ```
 
-
 ---
 
 ## FAQ
@@ -207,7 +206,6 @@ graph TD
 **Q: Can the OBS‑NDI plugin achieve the same effect?**
 
 A: No. NDI is built for real‑time, low‑latency transport. Using it for long LAN delays is the wrong tool for the job.
-
 
 ---
 

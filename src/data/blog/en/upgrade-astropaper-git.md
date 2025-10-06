@@ -31,19 +31,19 @@ If you customized these, resolve conflicts with care when updating:
 
 > Only do this if you’re comfortable resolving conflicts.
 
-1) Add the upstream remote:
+1. Add the upstream remote:
 
 ```sh
 git remote add astro-paper https://github.com/satnaing/astro-paper.git
 ```
 
-2) Work on a dedicated branch:
+2. Work on a dedicated branch:
 
 ```sh
 git checkout -b build/update-astro-paper
 ```
 
-3) Pull upstream changes:
+3. Pull upstream changes:
 
 ```sh
 git pull astro-paper main
@@ -55,14 +55,14 @@ If you see `refusing to merge unrelated histories`:
 git pull astro-paper main --allow-unrelated-histories
 ```
 
-4) Resolve conflicts and test locally:
+4. Resolve conflicts and test locally:
 
 ```sh
 npm run build
 npm run preview
 ```
 
-5) Merge the branch after verification.
+5. Merge the branch after verification.
 
 ## Notes
 

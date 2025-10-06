@@ -34,17 +34,16 @@ const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
 const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
 ---
 
-<Layout
-  title={`${pageTitle} | ${SITE.title}`}
-  description={pageDescription}
->
+<Layout title={`${pageTitle} | ${SITE.title}`} description={pageDescription}>
   <Header />
   <Main
     pageTitle={[`${t(Astro, "tags.title")}:`, `${tagName}`]}
     titleTransition={tag}
     pageDesc={pageDescription}
   >
-    <h1 slot="title" transition:name={tag}>{`${t(Astro, "tags.title")}:${tag}`}</h1>
+    <h1 slot="title" transition:name={tag}>
+      {`${t(Astro, "tags.title")}:${tag}`}
+    </h1>
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>

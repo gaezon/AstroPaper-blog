@@ -118,7 +118,9 @@ export default async post => {
     overflow: "hidden",
     // Prefer IBM Plex Sans; fallback to CJK-capable Noto for Chinese
     fontFamily:
-      locale === "zh-CN" ? "IBM Plex Sans, Noto Sans SC" : "IBM Plex Sans, Noto Sans",
+      locale === "zh-CN"
+        ? "IBM Plex Sans, Noto Sans SC"
+        : "IBM Plex Sans, Noto Sans",
   };
 
   return satori(

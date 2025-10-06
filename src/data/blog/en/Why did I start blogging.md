@@ -21,4 +21,5 @@ This blog is my way of recording my own experience of the present. If I’m luck
 ### footnote
 
 [^1]: Cantonese public‑radio series “One‑Minute Reading” (hosted by Li Yi) — episode 36.
+
 [^2]: Paul A. Cohen, “History in Three Keys: The Boxers as Event, Experience, and Myth”.

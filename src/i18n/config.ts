@@ -12,7 +12,8 @@ const localeProfiles: Record<string, LocaleProfile> = {
     isDefault: true,
     label: "中文",
     font: {
-      family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+      family:
+        "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
       weights: ["300", "400", "500", "600", "700"],
     },
   },
@@ -23,7 +24,8 @@ const localeProfiles: Record<string, LocaleProfile> = {
     direction: "ltr",
     label: "English",
     font: {
-      family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+      family:
+        "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
       weights: ["300", "400", "500", "600", "700"],
     },
   },
@@ -41,7 +43,8 @@ export const I18N_CONFIG: I18nConfig = {
 } as const;
 
 // 常用的辅助函数
-export const SUPPORTED_LOCALES = I18N_CONFIG.supportedLocales as readonly string[];
+export const SUPPORTED_LOCALES =
+  I18N_CONFIG.supportedLocales as readonly string[];
 export const DEFAULT_LOCALE = I18N_CONFIG.defaultLocale;
 export const LOCALE_PROFILES = I18N_CONFIG.localeProfiles;
 
@@ -51,7 +54,9 @@ export function getLocaleProfile(locale: string): LocaleProfile {
 }
 
 // 检查是否为支持的语言
-export function isSupportedLocale(locale: string): locale is keyof typeof LOCALE_PROFILES {
+export function isSupportedLocale(
+  locale: string
+): locale is keyof typeof LOCALE_PROFILES {
   return locale in LOCALE_PROFILES;
 }
 

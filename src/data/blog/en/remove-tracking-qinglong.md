@@ -28,7 +28,7 @@ A solution was mentioned in a GitHub issue, but without concrete steps. This pos
 
 ## docker‑compose.yml changes
 
-1) Create a `remove-tracking.sh` next to your `docker-compose.yml`:
+1. Create a `remove-tracking.sh` next to your `docker-compose.yml`:
 
 ```sh
 #!/bin/sh
@@ -52,7 +52,7 @@ else
 fi
 ```
 
-2) Update your docker‑compose service with a custom `entrypoint`:
+2. Update your docker‑compose service with a custom `entrypoint`:
 
 ```yml
 version: "3"

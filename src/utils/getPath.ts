@@ -27,13 +27,14 @@ export function getPath(
   filePath: string | undefined,
   includeBase = true
 ) {
-  const segments = filePath
-    ?.replace(BLOG_PATH, "")
-    .split("/")
-    .filter(path => path !== "") // remove empty string in the segments ["", "other-path"] <- empty string will be removed
-    .filter(path => !path.startsWith("_")) // exclude directories start with underscore "_"
-    .slice(0, -1) // remove the last segment (file name) since it's unnecessary
-    .map(segment => slugifyStr(segment)) ?? [];
+  const segments =
+    filePath
+      ?.replace(BLOG_PATH, "")
+      .split("/")
+      .filter(path => path !== "") // remove empty string in the segments ["", "other-path"] <- empty string will be removed
+      .filter(path => !path.startsWith("_")) // exclude directories start with underscore "_"
+      .slice(0, -1) // remove the last segment (file name) since it's unnecessary
+      .map(segment => slugifyStr(segment)) ?? [];
 
   const blogId = id.split("/");
   const slug = blogId.length > 0 ? blogId[blogId.length - 1] : "";

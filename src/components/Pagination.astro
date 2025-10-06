@@ -11,7 +11,8 @@ export interface Props {
 }
 
 const { page } = Astro.props;
-const tr = (key: string, params?: Record<string, string | number>) => t(Astro, key, params);
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 ---
 
 {
@@ -26,7 +27,10 @@ const tr = (key: string, params?: Record<string, string | number>) => t(Astro, k
         <IconArrowLeft class="inline-block rtl:rotate-180" />
         {tr("pagination.prev")}
       </LinkButton>
-      {tr("pagination.page", { current: page.currentPage, total: page.lastPage })}
+      {tr("pagination.page", {
+        current: page.currentPage,
+        total: page.lastPage,
+      })}
       <LinkButton
         disabled={!page.url.next}
         href={page.url.next as string}

@@ -37,7 +37,9 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
     const inflated =
       compLength === origLength
         ? rawTable
-        : zlib.inflateSync(rawTable, { finishFlush: zlib.constants.Z_SYNC_FLUSH });
+        : zlib.inflateSync(rawTable, {
+            finishFlush: zlib.constants.Z_SYNC_FLUSH,
+          });
 
     if (inflated.length !== origLength) {
       throw new Error(`WOFF inflate length mismatch for ${tag}`);
@@ -61,7 +63,7 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
     offset += 20;
   }
 
-return out;
+  return out;
 }
 
 const PREFER_LOCAL_FONTS =
@@ -253,10 +255,30 @@ async function loadGoogleFonts(
   // 优先使用 IBM Plex Sans（英文/拉丁），并为中文提供 Noto Sans SC 作为补充
   // 注意：传入 Google Fonts 的 family 名称不包含 :wght@，权重由第二参数控制
   const fontsConfig = [
-    { name: "IBM Plex Sans", font: "IBM+Plex+Sans", weight: 400, style: "normal" },
-    { name: "IBM Plex Sans", font: "IBM+Plex+Sans", weight: 700, style: "normal" },
-    { name: "Noto Sans SC", font: "Noto+Sans+SC", weight: 400, style: "normal" },
-    { name: "Noto Sans SC", font: "Noto+Sans+SC", weight: 700, style: "normal" },
+    {
+      name: "IBM Plex Sans",
+      font: "IBM+Plex+Sans",
+      weight: 400,
+      style: "normal",
+    },
+    {
+      name: "IBM Plex Sans",
+      font: "IBM+Plex+Sans",
+      weight: 700,
+      style: "normal",
+    },
+    {
+      name: "Noto Sans SC",
+      font: "Noto+Sans+SC",
+      weight: 400,
+      style: "normal",
+    },
+    {
+      name: "Noto Sans SC",
+      font: "Noto+Sans+SC",
+      weight: 700,
+      style: "normal",
+    },
     { name: "Noto Sans", font: "Noto+Sans", weight: 400, style: "normal" },
     { name: "Noto Sans", font: "Noto+Sans", weight: 700, style: "normal" },
   ];

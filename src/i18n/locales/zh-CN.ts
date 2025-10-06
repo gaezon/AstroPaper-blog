@@ -4,7 +4,8 @@ export default {
   // 网站基本信息
   site: {
     title: "Gaazeon 的博客",
-    description: "Gaazeon 的技术博客，专注分享软件开发、Web 前端技术、编程工具使用心得和开发经验。",
+    description:
+      "欢迎来到 Gaazeon 的技术博客！专注分享现代 Web 开发技术、前端框架、编程工具使用技巧和软件开发最佳实践。这里有不同数字技术的使用经验与心得，帮助开发者提升编程技能和开发效率。",
     author: "Gaazeon",
   },
 
@@ -64,7 +65,8 @@ export default {
   search: {
     title: "搜索",
     placeholder: "搜索文章...",
-    metaDescription: "在 Gaazeon 博客中搜索技术文章与教程，快速找到所需的编程知识、工具指南和开发经验。",
+    metaDescription:
+      "在 Gaazeon 博客中搜索技术文章与教程，快速找到所需的编程知识、工具指南和开发经验。",
     noResults: "没有找到相关文章",
     searchResults: "搜索结果",
     searching: "搜索中...",
@@ -75,7 +77,8 @@ export default {
   tags: {
     title: "标签",
     allTags: "所有标签",
-    description: "探索 Gaazeon 博客涵盖的所有主题，从 Web 开发到工具使用与效率提升。",
+    description:
+      "探索 Gaazeon 博客涵盖的所有主题，从 Web 开发到工具使用与效率提升。",
     postsWithTag: "包含此标签的文章",
     noTags: "暂无标签",
   },
@@ -96,6 +99,9 @@ export default {
     currentLanguage: "当前语言",
     selectLanguage: "选择语言",
     default: "(默认)",
+    translationNotFound: "翻译不存在",
+    translationNotFoundDescription: "「{{title}}」暂无{{targetLanguage}}版本。",
+    viewOtherPosts: "查看{{targetLanguage}}文章",
   },
 
   // 主题切换
@@ -144,6 +150,8 @@ export default {
     expandToc: "展开目录",
     collapseToc: "收起目录",
     collapse: "收起",
+    socialLinks: "社交链接：",
+    sharePostOn: "在以下平台分享这篇文章：",
     cookie: {
       consentText: "我们使用 Cookies 来改善体验。查看",
       accept: "接受",
@@ -155,11 +163,13 @@ export default {
       description: "选择您希望允许的 Cookie 类型：",
       essential: {
         title: "必要 Cookies",
-        description: "这些 Cookies 对于网站正常运行是必需的，包括主题设置和基本功能。",
+        description:
+          "这些 Cookies 对于网站正常运行是必需的，包括主题设置和基本功能。",
       },
       analytics: {
         title: "分析 Cookies",
-        description: "用于其他可能的分析工具。注：当前使用的 Umami 不需要此同意。",
+        description:
+          "用于其他可能的分析工具。注：当前使用的 Umami 不需要此同意。",
       },
       advertising: {
         title: "广告 Cookies",
@@ -190,7 +200,8 @@ export default {
   // SEO 相关
   seo: {
     defaultTitle: "Gaazeon 的博客",
-    defaultDescription: "Gaazeon 的技术博客，专注分享软件开发、Web 前端技术、编程工具使用心得和开发经验。",
+    defaultDescription:
+      "Gaazeon 的技术博客，专注分享软件开发、Web 前端技术、编程工具使用心得和开发经验。",
     keywords: "技术博客,前端开发,Web开发,编程,Astro,JavaScript,TypeScript",
   },
 

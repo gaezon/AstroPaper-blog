@@ -4,7 +4,8 @@ export default {
   // Site basic information
   site: {
     title: "Gaazeon's Blog",
-    description: "Gaazeon's technical blog, focusing on software development, web frontend technologies, programming tools, and development experiences.",
+    description:
+      "Gaazeon's technical blog, focusing on software development, web frontend technologies, programming tools, and development experiences.",
     author: "Gaazeon",
   },
 
@@ -64,7 +65,8 @@ export default {
   search: {
     title: "Search",
     placeholder: "Search posts...",
-    metaDescription: "Search Gaazeon's blog to quickly find technical articles, tutorials, and development insights.",
+    metaDescription:
+      "Search Gaazeon's blog to quickly find technical articles, tutorials, and development insights.",
     noResults: "No posts found",
     searchResults: "Search Results",
     searching: "Searching...",
@@ -75,7 +77,8 @@ export default {
   tags: {
     title: "Tags",
     allTags: "All Tags",
-    description: "Explore every topic covered on Gaazeon's blog, from web development to tooling and productivity.",
+    description:
+      "Explore every topic covered on Gaazeon's blog, from web development to tooling and productivity.",
     postsWithTag: "Posts with this tag",
     noTags: "No tags yet",
   },
@@ -96,6 +99,10 @@ export default {
     currentLanguage: "Current Language",
     selectLanguage: "Select Language",
     default: "(default)",
+    translationNotFound: "Translation Not Found",
+    translationNotFoundDescription:
+      '"{{title}}" is not yet available in {{targetLanguage}}.',
+    viewOtherPosts: "View {{targetLanguage}} Posts",
   },
 
   // Theme switching
@@ -144,6 +151,8 @@ export default {
     expandToc: "Expand Table of Contents",
     collapseToc: "Collapse Table of Contents",
     collapse: "Collapse",
+    socialLinks: "Social Links:",
+    sharePostOn: "Share this post on:",
     cookie: {
       consentText: "We use cookies to improve your experience. View our",
       accept: "Accept",
@@ -155,15 +164,18 @@ export default {
       description: "Select the types of cookies you want to allow:",
       essential: {
         title: "Essential Cookies",
-        description: "These cookies are necessary for the website to function, including theme settings and basic functionality.",
+        description:
+          "These cookies are necessary for the website to function, including theme settings and basic functionality.",
       },
       analytics: {
         title: "Analytics Cookies",
-        description: "Used for other potential analytics tools. Note: The currently used Umami does not require this consent.",
+        description:
+          "Used for other potential analytics tools. Note: The currently used Umami does not require this consent.",
       },
       advertising: {
         title: "Advertising Cookies",
-        description: "Used to display personalized ads and measure ad effectiveness.",
+        description:
+          "Used to display personalized ads and measure ad effectiveness.",
       },
     },
   },
@@ -190,8 +202,10 @@ export default {
   // SEO related
   seo: {
     defaultTitle: "Gaazeon's Blog",
-    defaultDescription: "Gaazeon's technical blog, focusing on software development, web frontend technologies, programming tools, and development experiences.",
-    keywords: "tech blog, frontend development, web development, programming, Astro, JavaScript, TypeScript",
+    defaultDescription:
+      "Gaazeon's technical blog, focusing on software development, web frontend technologies, programming tools, and development experiences.",
+    keywords:
+      "tech blog, frontend development, web development, programming, Astro, JavaScript, TypeScript",
   },
 
   // Error pages

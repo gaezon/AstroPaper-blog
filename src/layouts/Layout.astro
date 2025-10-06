@@ -6,7 +6,13 @@ import "@/styles/global.css";
 import MermaidClient from "@/components/MermaidClient.astro";
 import GoogleAdsense from "@/components/GoogleAdsense.astro";
 import CookieConsentBanner from "@/components/CookieConsentBanner.astro";
-import { getCurrentLocale, getLangTag, getTextDirection, t, getTranslations } from "@/i18n/utils";
+import {
+  getCurrentLocale,
+  getLangTag,
+  getTextDirection,
+  t,
+  getTranslations,
+} from "@/i18n/utils";
 
 export interface Props {
   title?: string;
@@ -38,9 +44,8 @@ const langTag = getLangTag(Astro);
 const textDirection = getTextDirection(Astro);
 
 // 如果没有提供描述，尝试从翻译中获取默认描述
-const finalDescription = description === SITE.desc
-  ? t(Astro, "site.description")
-  : description;
+const finalDescription =
+  description === SITE.desc ? t(Astro, "site.description") : description;
 
 const socialImageURL = new URL(ogImage ?? "/og.png", Astro.url.origin).href;
 
@@ -80,7 +85,12 @@ const siteHostname = new URL(SITE.website).hostname;
 
     <!-- hreflang 标签用于 SEO -->
     <link rel="alternate" hreflang={currentLocale} href={canonicalURL} />
-    <link rel="alternate" hreflang="x-default" href={canonicalURL.replace(`/${currentLocale}`, "").replace(/\/$/, "") || "/"} />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={canonicalURL.replace(`/${currentLocale}`, "").replace(/\/$/, "") ||
+        "/"}
+    />
 
     <!-- General Meta Tags -->
     <title>{title}</title>
@@ -134,7 +144,10 @@ const siteHostname = new URL(SITE.website).hostname;
       rel="alternate"
       type="application/rss+xml"
       title={t(Astro, "site.title")}
-      href={new URL(`rss${currentLocale !== "zh-CN" ? "." + currentLocale : ""}.xml`, Astro.site)}
+      href={new URL(
+        `rss${currentLocale !== "zh-CN" ? "." + currentLocale : ""}.xml`,
+        Astro.site
+      )}
     />
 
     <meta name="theme-color" content="" />
