@@ -201,9 +201,9 @@ export default {
   seo: {
     defaultTitle: "Gaazeon's Blog",
     defaultDescription:
-      "Gaazeon's technical blog, focusing on software development, web frontend technologies, programming tools, and development experiences.",
+      "Gaazeon's technical blog, focusing on software development, web front-end technologies, programming tools, and development experiences.",
     keywords:
-      "tech blog, frontend development, web development, programming, Astro, JavaScript, TypeScript",
+      "tech blog, front-end development, web development, programming, Astro, JavaScript, TypeScript",
   },
 
   // Error pages
