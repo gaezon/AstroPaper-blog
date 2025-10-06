@@ -366,7 +366,9 @@ async function loadGoogleFonts(
 
 async function buildFallbackFonts(
   configs: FontConfig[]
-): Promise<Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>> {
+): Promise<
+  Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>
+> {
   return Promise.all(
     configs.map(async ({ name, weight, style }) => ({
       name,
