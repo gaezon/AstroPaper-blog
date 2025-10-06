@@ -32,8 +32,8 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
   if (signature !== "wOFF") return null;
 
   // Parse WOFF header fields
-  const flavor = buffer.readUInt32BE(4);        // Font format identifier
-  const numTables = buffer.readUInt16BE(12);    // Number of font tables
+  const flavor = buffer.readUInt32BE(4); // Font format identifier
+  const numTables = buffer.readUInt16BE(12); // Number of font tables
   const totalSfntSize = buffer.readUInt32BE(16); // Uncompressed font data size
 
   // Calculate table directory search parameters
@@ -52,24 +52,24 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
   out.writeUInt16BE(rangeShift, 10);
 
   // Initialize offsets for table directory and table data
-  let tableDirOffset = 12;      // Table directory starts after TTF header
+  let tableDirOffset = 12; // Table directory starts after TTF header
   let tableDataOffset = 12 + numTables * 16; // Table data follows directory
-  let offset = 44;              // First table record in WOFF
+  let offset = 44; // First table record in WOFF
 
   // Process each font table
   for (let i = 0; i < numTables; i++) {
     // Read table record fields
-    const tag = buffer.toString("ascii", offset, offset + 4);        // Table identifier
-    const srcOffset = buffer.readUInt32BE(offset + 4);              // Offset to compressed data
-    const compLength = buffer.readUInt32BE(offset + 8);             // Compressed data length
-    const origLength = buffer.readUInt32BE(offset + 12);            // Uncompressed data length
-    const checksum = buffer.readUInt32BE(offset + 16);              // Checksum of uncompressed data
+    const tag = buffer.toString("ascii", offset, offset + 4); // Table identifier
+    const srcOffset = buffer.readUInt32BE(offset + 4); // Offset to compressed data
+    const compLength = buffer.readUInt32BE(offset + 8); // Compressed data length
+    const origLength = buffer.readUInt32BE(offset + 12); // Uncompressed data length
+    const checksum = buffer.readUInt32BE(offset + 16); // Checksum of uncompressed data
 
     // Extract and decompress table data
     const rawTable = buffer.subarray(srcOffset, srcOffset + compLength);
     const inflated =
       compLength === origLength
-        ? rawTable  // No compression
+        ? rawTable // No compression
         : zlib.inflateSync(rawTable, {
             finishFlush: zlib.constants.Z_SYNC_FLUSH,
           });
