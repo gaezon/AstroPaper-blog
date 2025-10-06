@@ -181,11 +181,10 @@ async function loadGoogleFont(
   weight: number
 ): Promise<ArrayBuffer> {
   const tryLocalFallback = async () => {
-    if (ALLOW_LOCAL_FALLBACK) {
-      return await tryLoadLocalFont(font, weight, true);
-    } else {
+    if (!ALLOW_LOCAL_FALLBACK) {
       return null;
     }
+    return await tryLoadLocalFont(font, weight, true);
   };
 
   if (PREFER_LOCAL_FONTS) {
