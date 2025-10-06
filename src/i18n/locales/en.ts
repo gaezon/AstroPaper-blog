@@ -1,5 +1,3 @@
-import type { LocaleProfile } from "../types";
-
 export default {
   // Site basic information
   site: {

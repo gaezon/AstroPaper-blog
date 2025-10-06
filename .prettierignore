@@ -12,3 +12,6 @@
 !.prettierrc
 !eslint.config.js
 !README.md
+
+# Ignore minified files
+public/mermaid.min.js

@@ -27,11 +27,11 @@ export function t(
 ): string {
   const messages = getTranslations(Astro);
   const keys = key.split(".");
-  let value: any = messages;
+  let value: unknown = messages;
 
   for (const k of keys) {
     if (value && typeof value === "object" && k in value) {
-      value = value[k];
+      value = (value as Record<string, unknown>)[k];
     } else {
       // 如果找不到翻译，返回 key 本身
       return key;
@@ -233,7 +233,6 @@ export function getRelativeTime(
   Astro: AstroGlobal,
   date: Date | string
 ): string {
-  const locale = getCurrentLocale(Astro);
   const messages = getTranslations(Astro);
 
   if (typeof date === "string") {
@@ -249,9 +248,12 @@ export function getRelativeTime(
   const diffMonths = Math.floor(diffDays / 30);
   const diffYears = Math.floor(diffDays / 365);
 
-  const relative = messages.datetime?.relative || {};
+  const relative =
+    (messages.datetime as { relative?: Record<string, unknown> })?.relative ||
+    {};
 
-  if (diffMins < 1) return relative.justNow || "Just now";
+  if (diffMins < 1)
+    return (relative.justNow as string | undefined) || "Just now";
   if (diffMins < 60)
     return t(Astro, "datetime.relative.minutesAgo", { count: diffMins });
   if (diffHours < 24)

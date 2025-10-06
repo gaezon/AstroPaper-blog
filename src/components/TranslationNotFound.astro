@@ -1,5 +1,5 @@
 ---
-import { getCurrentLocale, t, getLocaleSwitchUrl } from "@/i18n/utils";
+import { t, getLocaleSwitchUrl } from "@/i18n/utils";
 import IconGlobe from "@/assets/icons/IconGlobe.svg";
 
 export interface Props {
@@ -8,16 +8,18 @@ export interface Props {
   currentPath: string;
 }
 
-const { targetLocale, currentPostTitle, currentPath } = Astro.props;
-const currentLocale = getCurrentLocale(Astro);
+const { targetLocale, currentPostTitle } = Astro.props;
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
+
+// Note: currentPath is passed but not currently used
+// It may be needed for future features
 
 // 获取目标语言信息
 const targetLocaleInfo = {
   en: { name: "English", lang: "en" },
   "zh-CN": { name: "简体中文", lang: "zh-CN" },
-}[targetLocale];
+}[targetLocale] ?? { name: targetLocale, lang: targetLocale };
 
 // 获取语言切换URL
 const switchUrl = getLocaleSwitchUrl(Astro, targetLocale);

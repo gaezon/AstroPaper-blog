@@ -1,5 +1,3 @@
-import type { LocaleProfile } from "../types";
-
 export default {
   // 网站基本信息
   site: {

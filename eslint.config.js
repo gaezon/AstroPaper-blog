@@ -22,6 +22,7 @@ export default [
       "scripts/**/*.ts",
       "src/utils/generateOgImages.ts",
       "src/utils/loadGoogleFont.ts",
+      "src/pages/**/*.png.ts",
     ],
     rules: {
       "no-console": "off",

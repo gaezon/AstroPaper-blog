@@ -1,10 +1,8 @@
-import type { z } from "astro:content";
-
 export interface LocaleProfile {
   /** 语言名称 */
   name: string;
   /** 翻译消息对象 */
-  messages: Record<string, any>;
+  messages: Record<string, unknown>;
   /** 语言标签 (ISO 639-1 + ISO 3166-1) */
   langTag: string;
   /** 文本方向: "ltr" | "rtl" */

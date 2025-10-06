@@ -6,10 +6,10 @@ import loadGoogleFonts from "../loadGoogleFont";
 // Font configuration for different locales
 const FONT_CONFIG = {
   "zh-CN": "IBM Plex Sans, Noto Sans SC",
-  default: "IBM Plex Sans, Noto Sans"
+  default: "IBM Plex Sans, Noto Sans",
 };
 
-const getFontFamily = (locale) => {
+const getFontFamily = locale => {
   return FONT_CONFIG[locale] || FONT_CONFIG.default;
 };
 

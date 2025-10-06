@@ -26,7 +26,7 @@ let currentPostTitle = postSlug; // Fallback to slug if post not found
 try {
   const posts = await getCollection(collectionName as "blog" | "blog-en");
   const post = posts.find(p => slugifyStr(p.data.title) === postSlug);
-  
+
   if (post) {
     currentPostTitle = post.data.title;
   }

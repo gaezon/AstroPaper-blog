@@ -47,7 +47,7 @@ function buildEnglishDraft(frontmatter: string, body: string) {
   const cnTitle = data.title ? String(data.title) : "";
   const cnDesc = data.description ? String(data.description) : "";
 
-  const english: Record<string, any> = {};
+  const english: Record<string, unknown> = {};
   english.author = data.author ?? "Gaazeon";
   english.pubDatetime = normalizeDate(data.pubDatetime) ?? new Date().toISOString();
   const mod = normalizeDate(data.modDatetime);

@@ -20,7 +20,7 @@ async function main() {
       author,
       locale,
     },
-  } as any;
+  };
 
   const svg = await postOgImage(fakePost);
   const png = svgToPng(svg);
