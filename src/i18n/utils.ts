@@ -90,19 +90,16 @@ export function getLocaleSwitchUrl(
   }
 
   // 对于文章页，检查目标语言的翻译是否存在
-  const englishPostPath = `/en${currentPath}`;
-  const chinesePostPath = currentPath.replace("/en", "");
-
   // 如果切换到英文且英文版本不存在，显示翻译不存在页面
   if (targetLocale === "en" && currentLocale === "zh-CN") {
-    // 检查英文版本是否存在，如果不存在则跳转到提示页面
-    return `/translation-not-found?target=en&path=${encodeURIComponent(currentPath)}&title=${encodeURIComponent(Astro.url.pathname.split("/").pop() || "")}`;
+    // 跳转到提示页面，标题将在页面中从文章数据提取
+    return `/translation-not-found?target=en&path=${encodeURIComponent(currentPath)}`;
   }
 
   // 如果切换到中文且中文版本不存在，显示翻译不存在页面
   if (targetLocale === "zh-CN" && currentLocale === "en") {
-    // 检查中文版本是否存在，如果不存在则跳转到提示页面
-    return `/translation-not-found?target=zh-CN&path=${encodeURIComponent(currentPath)}&title=${encodeURIComponent(Astro.url.pathname.split("/").pop() || "")}`;
+    // 跳转到提示页面，标题将在页面中从文章数据提取
+    return `/translation-not-found?target=zh-CN&path=${encodeURIComponent(currentPath)}`;
   }
 
   // 默认情况：直接进行语言切换

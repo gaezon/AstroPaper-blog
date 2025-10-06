@@ -3,6 +3,16 @@ import satori from "satori";
 import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
 
+// Font configuration for different locales
+const FONT_CONFIG = {
+  "zh-CN": "IBM Plex Sans, Noto Sans SC",
+  default: "IBM Plex Sans, Noto Sans"
+};
+
+const getFontFamily = (locale) => {
+  return FONT_CONFIG[locale] || FONT_CONFIG.default;
+};
+
 // const markup = html`<div
 //       style={{
 //         background: "#fefbfb",
@@ -116,11 +126,8 @@ export default async post => {
     lineHeight: 1.15,
     maxHeight: "84%",
     overflow: "hidden",
-    // Prefer IBM Plex Sans; fallback to CJK-capable Noto for Chinese
-    fontFamily:
-      locale === "zh-CN"
-        ? "IBM Plex Sans, Noto Sans SC"
-        : "IBM Plex Sans, Noto Sans",
+    // Use configured font family based on locale
+    fontFamily: getFontFamily(locale),
   };
 
   return satori(

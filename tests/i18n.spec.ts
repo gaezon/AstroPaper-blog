@@ -1,4 +1,4 @@
-import { test, expect } from 'playwright/test';
+import { test, expect } from '@playwright/test';
 
 test.describe('i18n regressions', () => {
   test('english blog nav item should stay highlighted', async ({ page }) => {

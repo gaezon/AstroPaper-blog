@@ -69,7 +69,11 @@ const getShortLabel = (code: string) => {
         </svg>
       </button>
 
+      <!-- Language switcher dropdown menu -->
       <div class="lang-dropdown-menu" role="menu">
+        <!-- Note: data-astro-reload is intentionally used to force full page reload.
+             This ensures proper event binding on mobile devices and prevents issues
+             with View Transitions not reinitializing JavaScript handlers after language switch. -->
         {availableLocales.map(locale => {
           const targetHref =
             override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
