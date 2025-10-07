@@ -1,13 +1,93 @@
 ---
 layout: ../layouts/AboutLayout.astro
-title: "About"
-description: "深入探索 Gaazeon 的技术世界。本页面详细介绍我的技术背景、专业领域以及创建此博客的初衷。我致力于分享有关软件开发、Web前端与后端技术、DevOps实践以及编程语言的深入见解和实践经验，旨在创建一个共同学习与成长的技术社区。欢迎通过RSS订阅或社交媒体关注，获取最新文章和动态。"
+title: "关于"
+description: "深入了解 Gaazeon 的技术背景和专业领域，获取详细的联系方式。本页面包含个人介绍、技术专长以及完整的联系信息，支持技术咨询、内容反馈和商务合作。"
 ---
 
-Welcome to my blog!
+# 👋 关于我
 
-I am passionate about sharing my knowledge and experiences in the field of software development. Here, you will find a collection of articles and tutorials on various topics related to programming, web development, and technology.
+欢迎来到 Gaazeon 的技术博客！我是一位热爱软件开发的技术爱好者，专注于现代 Web 开发技术和最佳实践。
 
-Feel free to explore the different sections of my blog and dive into the articles that interest you the most. If you have any questions or suggestions, please don't hesitate to reach out to me.
+## 🔧 技术专长
 
-Happy reading!
+- **前端开发**：JavaScript, TypeScript, React, Vue, Astro
+- **后端开发**：Node.js, Python, Go, 数据库设计
+- **Web 技术**：HTML5, CSS3, 响应式设计, 性能优化
+- **开发工具**：Git, Docker, CI/CD, 云服务
+- **其他兴趣**：开源贡献, 技术写作, 团队协作
+
+## 🎯 博客宗旨
+
+创建这个博客的目的是分享我在软件开发过程中的学习心得、实践经验和技术见解。我相信通过分享和交流，我们可以共同成长，推动技术的进步。
+
+## 📧 联系方式
+
+感谢您访问我的博客！如果您有任何问题、建议或想要与我交流，请随时联系我。
+
+### 📧 邮箱联系
+
+**主要邮箱**：[gaazeon@gaazeon.com]
+
+我通常会在 24-48 小时内回复邮件。请在邮件主题中简要说明您的问题类型，这样我可以更快地为您提供帮助。
+
+### 📝 常见联系原因
+
+#### 技术咨询
+- 文章中提到的技术问题
+- 代码实现相关疑问
+- 工具使用建议
+- 开源项目合作
+
+#### 内容反馈
+- 文章错误指正
+- 内容建议和改进
+- 新主题推荐
+- 翻译协助
+
+#### 商务合作
+- 技术文章投稿
+- 产品评测合作
+- 其他商务询问
+
+### ⏰ 响应时间
+- **邮件回复**：1-2 个工作日
+- **社交媒体**：通常当天回复
+- **紧急技术问题**：尽快回复
+
+### 📋 联系须知
+
+为了更好地为您提供帮助，请在联系时：
+
+1. **详细描述问题**：包括具体的错误信息、环境配置等
+2. **提供相关代码**：如果是代码问题，请提供相关代码片段
+3. **说明期望结果**：告诉我您希望实现什么效果
+4. **保持耐心**：我会尽力帮助您，但可能需要一些时间来研究问题
+
+### 🔒 隐私保护
+- 我承诺保护您的个人信息隐私
+- 不会将您的邮箱用于营销目的
+- 技术讨论内容可能会在获得同意后用于博客文章（匿名处理）
+
+### 📢 FAQ
+
+**Q: 可以转载您的文章吗？**
+A: 可以，但请注明出处并提供原文链接。商业用途请先联系我。
+
+**Q: 您提供付费技术咨询吗？**
+A: 目前主要提供免费的技术交流，复杂的商业项目咨询请邮件详谈。
+
+**Q: 如何订阅您的文章更新？**
+A: 您可以通过 RSS 订阅或关注我的社交媒体账号获取最新文章推送。
+
+---
+
+## 🔭 未来展望
+
+- **持续学习**：跟进技术发展趋势，探索新的技术领域
+- **深度分享**：提供更有深度和价值的技术内容
+- **社区建设**：与更多技术爱好者交流和合作
+- **开源贡献**：参与开源项目，回馈技术社区
+
+---
+
+感谢您的阅读！期待与您的技术交流。🚀

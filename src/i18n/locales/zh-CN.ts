@@ -15,6 +15,7 @@ export default {
     archives: "归档",
     search: "搜索",
     tags: "标签",
+    milestones: "里程碑",
   },
 
   // 首页
@@ -48,8 +49,14 @@ export default {
 
   // 关于页面
   about: {
-    title: "关于我",
+    title: "关于",
     description: "了解更多关于我的信息",
+  },
+
+  // 里程碑页面
+  milestones: {
+    title: "博客里程碑",
+    description: "记录博客发展过程中的重要里程碑",
   },
 
   // 归档页面

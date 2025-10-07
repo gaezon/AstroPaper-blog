@@ -15,6 +15,7 @@ export default {
     archives: "Archives",
     search: "Search",
     tags: "Tags",
+    milestones: "Milestones",
   },
 
   // Homepage
@@ -48,8 +49,14 @@ export default {
 
   // About page
   about: {
-    title: "About Me",
+    title: "About",
     description: "Learn more about me",
+  },
+
+  // Milestones page
+  milestones: {
+    title: "Blog Milestones",
+    description: "Record important milestones in the blog's development",
   },
 
   // Archives page
