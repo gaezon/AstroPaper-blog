@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
   return posts.map(post => ({
     // For catch-all [...slug], Astro expects a string param during build
-    params: { slug: getPath(post.id, post.filePath, false) },
+    params: { slug: getPath(post.id, post.filePath, false, post.data.slug) },
     props: post,
   }));
 }

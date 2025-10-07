@@ -7,9 +7,10 @@ draft: false
 tags:
   - blog
   - thinking
-description: "A short reflection on why I began writing online: closing the gap between reading and writing, and treating my present experiences as future ‘primary sources’."
+description: "A short reflection on why I began writing online: closing the gap between reading and writing, and treating my present experiences as future 'primary sources'."
 locale: en
 originalTitle: 我為什麼要寫博客
+slug: why-i-started-blogging
 ---
 
 When I finished my first year at university, I realized I had read more than twenty books but written almost nothing. I was happily consuming words, not producing them. In Li Yi's radio series “One‑Minute Reading” (episode 36)[^1], he said language ability grows from two habits only: reading and writing.

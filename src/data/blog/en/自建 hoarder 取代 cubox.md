@@ -15,6 +15,7 @@ tags:
 description: "Self-host the Hoarder web clipper with Docker to replace Cubox, covering privacy gains, lower cost, compose/.env configuration and real-world pros and cons."
 locale: en
 originalTitle: 自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题
+slug: self-host-hoarder-replace-cubox
 ---
 
 ## Table of contents

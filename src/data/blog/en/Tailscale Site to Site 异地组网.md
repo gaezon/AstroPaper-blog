@@ -12,6 +12,7 @@ tags:
 description: "Connect two OpenWrt routers with Tailscale site-to-site by opening UDP 41641, advertising subnets and adding static routes so both LANs reach each other."
 locale: en
 originalTitle: Tailscale Site to Site 点对点两台 OpenWrt 异地组网教程
+slug: tailscale-site-to-site-openwrt-p2p
 ---
 
 ## Table of contents
