@@ -115,6 +115,9 @@ export default async post => {
   const titleText = rawTitle
     // Replace various Unicode space characters (non-breaking, thin, hair, en, em, etc.) with a regular space for font compatibility
     .replace(/[\u00A0\u202F\u2009\u200A\u2002\u2003\u2005]/g, " ")
+    // IBM Plex Sans pre-2022 builds miss the non-breaking hyphen (U+2011), which renders as □.
+    // Force-convert it to the standard hyphen (U+2010) so OG text always shows a dash while fonts update.
+    .replace(/\u2011/g, "\u2010")
     // Remove Unicode Variation Selectors (U+FE0E: text style, U+FE0F: emoji style) to avoid font rendering issues
     .replace(/[\uFE0E\uFE0F]/g, "");
   const len = titleText.length;
