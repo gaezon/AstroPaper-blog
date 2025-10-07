@@ -111,6 +111,7 @@ All blog posts are stored in `src/data/blog` directory.
 
 Documentation can be read in two formats\_ _markdown_ & _blog post_.
 
+- i18n & Language Switcher Guide - [markdown](docs/i18n-language-switcher.md)
 - Configuration - [markdown](src/data/blog/how-to-configure-astropaper-theme.md) | [blog post](https://astro-paper.pages.dev/posts/how-to-configure-astropaper-theme/)
 - Add Posts - [markdown](src/data/blog/adding-new-post.md) | [blog post](https://astro-paper.pages.dev/posts/adding-new-posts-in-astropaper-theme/)
 - Customize Color Schemes - [markdown](src/data/blog/customizing-astropaper-theme-color-schemes.md) | [blog post](https://astro-paper.pages.dev/posts/customizing-astropaper-theme-color-schemes/)
