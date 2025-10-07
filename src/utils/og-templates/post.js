@@ -339,7 +339,7 @@ export default async post => {
       height: 630,
       embedFont: true,
       fonts: await loadGoogleFonts(
-        post.data.title + post.data.author + SITE.title + "by"
+        titleText + post.data.author + SITE.title + "by"
       ),
     }
   );
