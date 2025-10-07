@@ -2,8 +2,8 @@
 author: "Gaazeon"
 pubDatetime: 2025-01-01T00:00:00.000Z
 title: "Welcome to My Blog"
-featured: true
-draft: false
+featured: false
+draft: true
 tags:
   - blog
   - introduction

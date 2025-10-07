@@ -3,7 +3,7 @@ author: gaazeon
 pubDatetime: 2024-08-13T19:45:16.000+08:00
 title: "Upgrade the AstroPaper theme with Git (safe workflow)"
 featured: false
-draft: false
+draft: true
 tags:
   - git
   - astro
