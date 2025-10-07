@@ -8,11 +8,24 @@ import loadGoogleFonts from "../loadGoogleFont";
 // and make it easier to maintain font choices across the application.
 const FONT_CONFIG = {
   "zh-CN": "IBM Plex Sans, Noto Sans SC",
-  default: "IBM Plex Sans, Noto Sans",
+  en: "Noto Sans, IBM Plex Sans",
+  default: "Noto Sans, IBM Plex Sans",
 };
 
 const getFontFamily = locale => {
-  return FONT_CONFIG[locale] || FONT_CONFIG.default;
+  if (!locale) return FONT_CONFIG.default;
+  const rawLocale = locale.toString();
+  if (FONT_CONFIG[rawLocale]) {
+    return FONT_CONFIG[rawLocale];
+  }
+  const normalized = rawLocale.toLowerCase();
+  if (FONT_CONFIG[normalized]) {
+    return FONT_CONFIG[normalized];
+  }
+  if (normalized.startsWith("en")) {
+    return FONT_CONFIG.en;
+  }
+  return FONT_CONFIG.default;
 };
 
 // const markup = html`<div

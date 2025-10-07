@@ -21,6 +21,17 @@ test.describe("OG text normalization", () => {
     expect(svg).toContain("OBS\u2010live streaming pitfalls");
   });
 
+  test("does not render fallback squares for normalized hyphen", async () => {
+    const svg = await postOgImage({
+      data: {
+        ...baseData,
+        title: "OBS\u2011live streaming pitfalls",
+      },
+    });
+
+    expect(svg).not.toContain("□");
+  });
+
   test("strips variation selectors and preserves ASCII hyphen", async () => {
     const titleWithVariationSelector = "New\uFE0F Post - Update";
 

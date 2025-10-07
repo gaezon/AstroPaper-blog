@@ -112,8 +112,7 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
 }
 
 const USE_LOCAL_FONTS_FIRST =
-  process.env.OG_ALLOW_LOCAL_FONTS === "true" ||
-  process.env.NODE_ENV !== "production";
+  process.env.OG_ALLOW_LOCAL_FONTS !== "false";
 const ALLOW_LOCAL_FALLBACK = process.env.OG_DISABLE_LOCAL_FALLBACK !== "true";
 
 async function tryLoadLocalFont(
@@ -204,17 +203,17 @@ async function loadGoogleFont(
   const directSourceKey = `${font}:${weight}`;
   const directSources: Record<string, string> = {
     "IBM+Plex+Sans:400":
-      "https://fastly.jsdelivr.net/gh/google/fonts/ofl/ibmplexsans/IBMPlexSans-Regular.ttf",
+      "https://github.com/google/fonts/raw/main/ofl/ibmplexsans/IBMPlexSans-Regular.ttf",
     "IBM+Plex+Sans:700":
-      "https://fastly.jsdelivr.net/gh/google/fonts/ofl/ibmplexsans/IBMPlexSans-Bold.ttf",
+      "https://github.com/google/fonts/raw/main/ofl/ibmplexsans/IBMPlexSans-Bold.ttf",
     "Noto+Sans:400":
-      "https://fastly.jsdelivr.net/gh/google/fonts/ofl/notosans/NotoSans-Regular.ttf",
+      "https://github.com/google/fonts/raw/main/ofl/notosans/NotoSans-Regular.ttf",
     "Noto+Sans:700":
-      "https://fastly.jsdelivr.net/gh/google/fonts/ofl/notosans/NotoSans-Bold.ttf",
+      "https://github.com/google/fonts/raw/main/ofl/notosans/NotoSans-Bold.ttf",
     "Noto+Sans+SC:400":
-      "https://fastly.jsdelivr.net/gh/google/fonts/ofl/notosanssc/NotoSansSC-Regular.otf",
+      "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC-Regular.otf",
     "Noto+Sans+SC:700":
-      "https://fastly.jsdelivr.net/gh/google/fonts/ofl/notosanssc/NotoSansSC-Bold.otf",
+      "https://github.com/google/fonts/raw/main/ofl/notosanssc/NotoSansSC-Bold.otf",
   };
 
   const directUrl = directSources[directSourceKey];
