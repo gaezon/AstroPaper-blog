@@ -25,7 +25,7 @@ Spaces are substituted with square-bracket glyphs (see screenshot reference in t
 
 ## Hypothesis / Notes
 
-- Possibly related to a font fallback or character escaping issue in the OG generation pipeline (likely `scripts/og-preview.ts`).
+- Possibly related to a font fallback or character escaping issue in the OG generation pipeline (likely `src/utils/og-templates/post.js`).
 - Might stem from recent changes in the English localization path or font configuration.
 
 ## Suggested Next Steps
