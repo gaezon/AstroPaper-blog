@@ -20,12 +20,14 @@ const LOCALE_SEGMENT_MAP = SUPPORTED_LOCALES.reduce<Record<string, string>>(
  * @param id - id of the blog post (aka slug)
  * @param filePath - the blog post full file location
  * @param includeBase - whether to include `/posts` in return value
+ * @param customSlug - optional custom slug from frontmatter
  * @returns blog post path
  */
 export function getPath(
   id: string,
   filePath: string | undefined,
-  includeBase = true
+  includeBase = true,
+  customSlug?: string
 ) {
   const segments =
     filePath
@@ -37,7 +39,7 @@ export function getPath(
       .map(segment => slugifyStr(segment)) ?? [];
 
   const blogId = id.split("/");
-  const slug = blogId.length > 0 ? blogId[blogId.length - 1] : "";
+  const slug = customSlug || (blogId.length > 0 ? blogId[blogId.length - 1] : "");
 
   let normalizedSegments = [...segments];
   let localePrefix: string | undefined;

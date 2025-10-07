@@ -24,6 +24,7 @@ const blog = defineCollection({
       // 国际化相关字段
       locale: z.string().default("zh-CN").optional(),
       originalTitle: z.string().optional(), // 用于翻译文章引用原文标题
+      slug: z.string().optional(), // 自定义 slug，用于 SEO 友好的 URL
     }),
 });
 
@@ -47,6 +48,7 @@ const blogEn = defineCollection({
       // 国际化相关字段
       locale: z.string().default("en"),
       originalTitle: z.string().optional(), // 用于翻译文章引用中文原文标题
+      slug: z.string().optional(), // 自定义 slug，用于 SEO 友好的 URL
     }),
 });
 

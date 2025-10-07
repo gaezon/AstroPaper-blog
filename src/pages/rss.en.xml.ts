@@ -13,7 +13,7 @@ export async function GET() {
     description: SITE.desc,
     site: SITE.website,
     items: latestPosts.map(({ data, id, filePath }) => ({
-      link: getPath(id, filePath),
+      link: getPath(id, filePath, true, data.slug),
       title: data.title,
       description: data.description,
       pubDate: new Date(data.modDatetime ?? data.pubDatetime),
