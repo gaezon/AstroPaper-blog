@@ -39,7 +39,8 @@ export function getPath(
       .map(segment => slugifyStr(segment)) ?? [];
 
   const blogId = id.split("/");
-  const slug = customSlug || (blogId.length > 0 ? blogId[blogId.length - 1] : "");
+  const slug =
+    customSlug || (blogId.length > 0 ? blogId[blogId.length - 1] : "");
 
   let normalizedSegments = [...segments];
   let localePrefix: string | undefined;
