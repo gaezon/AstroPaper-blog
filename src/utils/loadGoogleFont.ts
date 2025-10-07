@@ -111,8 +111,7 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
   return out;
 }
 
-const USE_LOCAL_FONTS_FIRST =
-  process.env.OG_ALLOW_LOCAL_FONTS !== "false";
+const USE_LOCAL_FONTS_FIRST = process.env.OG_ALLOW_LOCAL_FONTS !== "false";
 const ALLOW_LOCAL_FALLBACK = process.env.OG_DISABLE_LOCAL_FALLBACK !== "true";
 
 async function tryLoadLocalFont(
