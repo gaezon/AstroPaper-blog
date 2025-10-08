@@ -31,10 +31,10 @@ export interface Props {
 }
 
 const {
-  title = currentLocale === "en" ? (SITE.titleEn || SITE.title) : SITE.title,
+  title = currentLocale === "en" ? SITE.titleEn || SITE.title : SITE.title,
   author = SITE.author,
   profile = SITE.profile,
-  description = currentLocale === "en" ? (SITE.descEn || SITE.desc) : SITE.desc,
+  description = currentLocale === "en" ? SITE.descEn || SITE.desc : SITE.desc,
   ogImage = SITE.ogImage,
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
   pubDatetime,
