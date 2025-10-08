@@ -146,10 +146,7 @@ const siteHostname = new URL(SITE.website).hostname;
 
         safeStorage.set(preferredLocale);
 
-        const nextPath =
-          preferredLocale === DEFAULT_LOCALE
-            ? path
-            : `/${preferredLocale}${path}`;
+        const nextPath = `/${preferredLocale}${path}`;
         const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
 
         if (
