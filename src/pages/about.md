@@ -1,13 +1,21 @@
 ---
 layout: ../layouts/AboutLayout.astro
-title: "About"
-description: "深入探索 Gaazeon 的技术世界。本页面详细介绍我的技术背景、专业领域以及创建此博客的初衷。我致力于分享有关软件开发、Web前端与后端技术、DevOps实践以及编程语言的深入见解和实践经验，旨在创建一个共同学习与成长的技术社区。欢迎通过RSS订阅或社交媒体关注，获取最新文章和动态。"
+title: "关于"
+description: "技术爱好者 Gaazeon 的个人介绍。非计算机专业出身，在中国居住，专注于网络技术、自建服务、自动化工具等技术实践与分享。"
 ---
 
-Welcome to my blog!
+# 👋 关于我
 
-I am passionate about sharing my knowledge and experiences in the field of software development. Here, you will find a collection of articles and tutorials on various topics related to programming, web development, and technology.
+我是 Gaazeon，一个不是科班出身的技术爱好者，现在住在中国。大学专业不是计算机，后来慢慢喜欢折腾各种工具，也喜欢把踩过的坑记录下来。
 
-Feel free to explore the different sections of my blog and dive into the articles that interest you the most. If you have any questions or suggestions, please don't hesitate to reach out to me.
+写博客有两个原因。一个是觉得自己读的多写得少，变成了「有入无出」的文字消费者，想通过写作来提高表达能力。另一个更宏大的想法是，想为历史留下自己的「经历」记录，让后人能通过这些文字了解这个时代的个人视角。
 
-Happy reading!
+我博客关注的大多是实用的技术，后续应该也会分享生活的记录。
+
+我现在主要在中国生活，中文是母语，英文能看懂技术文档。如果发现文章里有什么问题，欢迎告诉我。
+
+---
+
+有任何问题想交流可以邮件联系：gaazeon@gaazeon.com
+
+主要聊文章里提到的问题、类似的踩坑经验，或者你觉得有什么工具值得试试。不用太拘束，就像和朋友聊天一样就好。

@@ -15,6 +15,7 @@ export default {
     archives: "Archives",
     search: "Search",
     tags: "Tags",
+    milestones: "Milestones",
   },
 
   // Homepage
@@ -43,20 +44,22 @@ export default {
     draft: "Draft",
     featured: "Featured",
     listTitle: "All Posts",
-    listDescription: "Browse all technical articles and tutorials published on Gaazeon's blog.",
+    listDescription:
+      "Browse all technical articles and tutorials published on Gaazeon's blog.",
   },
 
   // About page
   about: {
-    title: "About Me",
+    title: "About",
     description: "Learn more about me",
   },
 
   // Milestones page
   milestones: {
     title: "Blog Milestones",
-    description: "Tracking important milestones in the blog's journey and development",
+    description: "Record important milestones in the blog's development",
   },
+
   // Archives page
   archives: {
     title: "Post Archives",
@@ -157,7 +160,8 @@ export default {
     socialLinks: "Connect with us:",
     sharePostOn: "Share this article on:",
     cookie: {
-      consentText: "We use cookies to enhance your browsing experience. Read our",
+      consentText:
+        "We use cookies to enhance your browsing experience. Read our",
       accept: "Accept",
       reject: "Reject",
       settings: "Cookie Settings",

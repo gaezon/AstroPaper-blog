@@ -13,20 +13,24 @@ description: "Comprehensive guide addressing audio crackling issues when impleme
 locale: en
 originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
 slug: obs-live-streaming-safe-broadcast-delay-pitfalls
----eon
+---
+
+eon
 pubDatetime: 2025-06-22T20:00:00.000+08:00
 title: "OBS live streaming pitfalls: why a 20‑second ‘safe broadcast’ delay blows up your audio — and a dual‑OBS solution"
 featured: false
 draft: false
 tags:
-  - OBS
-  - Live Streaming
-  - Safe Broadcast
-  - Delay
-description: "Shows why pushing OBS Video Delay to 20 seconds wrecks audio and how a dual-OBS RTMP/SRT workflow delivers a safe broadcast buffer without special hardware."
-locale: en
-originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
-slug: obs-live-streaming-safe-broadcast-delay-pitfalls
+
+- OBS
+- Live Streaming
+- Safe Broadcast
+- Delay
+  description: "Shows why pushing OBS Video Delay to 20 seconds wrecks audio and how a dual-OBS RTMP/SRT workflow delivers a safe broadcast buffer without special hardware."
+  locale: en
+  originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
+  slug: obs-live-streaming-safe-broadcast-delay-pitfalls
+
 ---
 
 ## Table of contents

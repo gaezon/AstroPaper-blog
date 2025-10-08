@@ -98,31 +98,39 @@
   function getMermaidConfig(theme) {
     const isDark = theme === "dark";
     const darkThemeConfig = {
-      background: "#0f172a",
-      primaryColor: "#1e293b",
-      secondaryColor: "#334155",
-      primaryTextColor: "#ffffff",
-      secondaryTextColor: "#f1f5f9",
-      primaryBorderColor: "#60a5fa",
-      lineColor: "#60a5fa",
-      clusterBkg: "#334155",
-      titleColor: "#ffffff",
+      background: "transparent",
+      primaryColor: "#2d3548",
+      secondaryColor: "#343f60",
+      primaryTextColor: "#eaedf3",
+      secondaryTextColor: "#eaedf3",
+      primaryBorderColor: "#ff6b01",
+      lineColor: "#ff6b01",
+      clusterBkg: "#343f60",
+      titleColor: "#eaedf3",
+      tertiaryColor: "#2d3548",
+      noteBkgColor: "#ff8534",
+      noteTextColor: "#ffffff",
     };
     const lightThemeConfig = {
-      background: "#ffffff",
-      primaryColor: "#f5fafc",
-      secondaryColor: "#ffffff",
+      background: "transparent",
+      primaryColor: "#e6f4fb",
+      secondaryColor: "#f0f7fb",
       primaryTextColor: "#282728",
-      secondaryTextColor: "#475569",
-      primaryBorderColor: "#7aa4c7",
-      lineColor: "#7aa4c7",
+      secondaryTextColor: "#282728",
+      primaryBorderColor: "#006cac",
+      lineColor: "#006cac",
+      clusterBkg: "#f5fafc",
+      titleColor: "#282728",
+      tertiaryColor: "#ffffff",
+      noteBkgColor: "#0088cc",
+      noteTextColor: "#ffffff",
     };
 
     return {
       startOnLoad: false,
       securityLevel: "strict",
       htmlLabels: false,
-      theme: isDark ? "dark" : "base",
+      theme: "base",
       themeVariables: {
         darkMode: isDark,
         fontFamily:
