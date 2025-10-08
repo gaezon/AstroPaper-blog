@@ -13,6 +13,11 @@ import {
   t,
 } from "@/i18n/utils";
 
+// 国际化相关变量
+const currentLocale = getCurrentLocale(Astro);
+const langTag = getLangTag(Astro);
+const textDirection = getTextDirection(Astro);
+
 export interface Props {
   title?: string;
   author?: string;
@@ -26,10 +31,10 @@ export interface Props {
 }
 
 const {
-  title = SITE.title,
+  title = currentLocale === "en" ? (SITE.titleEn || SITE.title) : SITE.title,
   author = SITE.author,
   profile = SITE.profile,
-  description = SITE.desc,
+  description = currentLocale === "en" ? (SITE.descEn || SITE.desc) : SITE.desc,
   ogImage = SITE.ogImage,
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
   pubDatetime,
@@ -37,14 +42,8 @@ const {
   scrollSmooth = false,
 } = Astro.props;
 
-// 国际化相关变量
-const currentLocale = getCurrentLocale(Astro);
-const langTag = getLangTag(Astro);
-const textDirection = getTextDirection(Astro);
-
-// 如果没有提供描述，尝试从翻译中获取默认描述
-const finalDescription =
-  description === SITE.desc ? t(Astro, "site.description") : description;
+// 最终描述使用已经处理过的 description 变量
+const finalDescription = description;
 
 const socialImageURL = new URL(ogImage ?? "/og.png", Astro.url.origin).href;
 
