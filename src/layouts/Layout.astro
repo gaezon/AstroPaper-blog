@@ -126,7 +126,8 @@ const siteHostname = new URL(SITE.website).hostname;
           const languages = Array.isArray(navigator.languages)
             ? navigator.languages
             : [];
-          const fallbacks = languages.length > 0 ? languages : [navigator.language];
+          const fallbacks =
+            languages.length > 0 ? languages : [navigator.language];
 
           for (const lang of fallbacks) {
             const resolved = resolveLocale(lang);
@@ -138,18 +139,25 @@ const siteHostname = new URL(SITE.website).hostname;
 
         const storedLocale = safeStorage.get();
         const preferredLocale =
-          (storedLocale && resolveLocale(storedLocale)) || detectLocaleFromNavigator();
+          (storedLocale && resolveLocale(storedLocale)) ||
+          detectLocaleFromNavigator();
 
         if (!preferredLocale || preferredLocale === DEFAULT_LOCALE) return;
 
         safeStorage.set(preferredLocale);
 
-        const nextPath = preferredLocale === DEFAULT_LOCALE
-          ? path
-          : `/${preferredLocale}${path === "/" ? "/" : path}`;
+        const nextPath =
+          preferredLocale === DEFAULT_LOCALE
+            ? path
+            : `/${preferredLocale}${path === "/" ? "/" : path}`;
         const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
 
-        if (nextUrl !== window.location.pathname + window.location.search + window.location.hash) {
+        if (
+          nextUrl !==
+          window.location.pathname +
+            window.location.search +
+            window.location.hash
+        ) {
           window.location.replace(nextUrl);
         }
       })();
