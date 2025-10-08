@@ -138,8 +138,10 @@ const siteHostname = new URL(SITE.website).hostname;
         }
 
         const storedLocale = safeStorage.get();
-        const resolvedStoredLocale = storedLocale && resolveLocale(storedLocale);
-        const preferredLocale = resolvedStoredLocale || detectLocaleFromNavigator();
+        const resolvedStoredLocale =
+          storedLocale && resolveLocale(storedLocale);
+        const preferredLocale =
+          resolvedStoredLocale || detectLocaleFromNavigator();
 
         if (!preferredLocale || preferredLocale === DEFAULT_LOCALE) return;
 
