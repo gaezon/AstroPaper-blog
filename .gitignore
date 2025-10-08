@@ -37,3 +37,4 @@ public/pagefind
 debug-*.ts
 test-*.ts
 tmp/
+.vercel

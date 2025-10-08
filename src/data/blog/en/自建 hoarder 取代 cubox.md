@@ -1,56 +1,6 @@
 ---
 author: gaazeon
-pu## Why I Decided to Leave Cubox
-
-> In today's information-saturated digital age, many digital hCreate a `.env` file yourself (compose won## Areas Where Hoarder Could Improve
-
-### Proprietary Storage Format
-
-Hoarder stores all local data in `.db` database files with a proprietary format that can't be opened with other software applications, as shown below:
-
-![dbformat-of-Hoarder](https://img.gaazeon.com/2024/06/202406081735585.avif)
-
-I would prefer if Hoarder could use more universal formats, such as saving snapshots as standard `HTML` files or even capturing screenshots as `PNG` images for maximum data portability and accessibility.
-
-### Some Websites Cannot Be Captured
-
-Hoarder appears to use a Chrome browser simulation to mimic human access when storing webpage snapshots. This approach creates an issue: certain blogs that use Cloudflare's human verification service will block Hoarder's automated access. For example, attempting to capture [Sukka's blog](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/) results in the following:
-
-![cf-block-Hoarder-eg](https://img.gaazeon.com/2024/06/202406081735587.avif)
-
-## References
-
-1. [Hoarder on GitHub](https://github.com/hoarder-app/hoarder)
-2. [NasDaddy — How to Install and Use Hoarder on Your NAS for One-Stop Information Management](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8)d restart the stack whenever you change values:
-
-```plaintext
-HOARDER_VERSION=release
-NEXTAUTH_SECRET=xxxx # Generate a random string
-MEILI_MASTER_KEY=xxxx # Generate a random string
-NEXTAUTH_URL=http://localhost:3000 # Your local Hoarder URL or reverse-proxy URL
-
-## Optional configurations below
-OPENAI_BASE_URL=https://xxx.com/v1 # OpenAI official endpoint or third-party compatible API endpoint
-OPENAI_API_KEY=sk-xxxxx # Your OpenAI API key
-INFERENCE_LANG=chinese
-INFERENCE_TEXT_MODEL=qwen2-72b-instruct # Model used for auto-tagging; I'm using the latest qwen2-72b-instruct open-source model, which works exceptionally well
-```
-
-## Key Advantages of Hoarder
-
-### AI-Powered Intelligent Auto-Tagging
-
-For digital hoarders like me who primarily use this for archiving, this feature is incredibly valuable. I don't need to think about which tags to assign each time, yet my saved webpages still get organized and categorized automatically for easier future retrieval.ble web clipping service. I had been using Cubox as my primary digital archiving tool for quite some time. However, several persistent issues led me to explore self-hosting the open-source Hoarder as a replacement.
-
-- **Privacy Concerns**: The mainland Chinese version of Cubox implements content censorship. I discovered that some articles I had saved couldn't be shared due to "force majeure" restrictions. This experience made me realize that keeping a local copy on my own NAS provides greater peace of mind and data sovereignty.
-
-  ![censorship of Cubox](https://img.gaazeon.com/2024/06/202406081735586.avif)
-
-- **Pricing Considerations**: Cubox's free tier is limited to just 200 saved items, while the VIP subscription costs ¥198 annually. For users who don't own a NAS, this pricing might be reasonable. However, for someone like me who already has NAS infrastructure, self-hosting is significantly more cost-effective in the long run. In these economically challenging times, every yuan saved counts.
-
-  ![price-of-cubox](https://img.gaazeon.com/2024/06/202406081735584.avif)
-
-- **Feature Bloat**: Initially, Cubox was a clean, focused clipping product with straightforward functionality. Over time, however, it continuously added features I simply don't need. The AI interpretation and highlighting features are redundant for my workflow—I already use Readwise as my primary reading tool. For me, Cubox essentially serves as a "digital hoarder's archive" for local webpage storage, protecting against the risk of content disappearing online. The "read later" and AI interpretation features feel unnecessarily complex for my use case. Following the principle of "entities should not be multiplied without necessity" (Occam's Razor), I've long wanted to switch away from Cubox.24-06-08T17:21:00.000+08:00
+pubDatetime: 2024-06-08T17:21:00.000+08:00
 modDatetime: 2024-06-08T17:21:00.000+08:00
 title: "Self‑Host Hoarder to Replace Cubox: Enhanced Privacy, Data Control and Cost Savings"
 featured: false
