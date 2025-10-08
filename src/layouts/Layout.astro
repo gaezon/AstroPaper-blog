@@ -77,6 +77,83 @@ const siteHostname = new URL(SITE.website).hostname;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <script is:inline>
+      (function () {
+        if (typeof window === "undefined") return;
+
+        const DEFAULT_LOCALE = "zh-CN";
+        const FALLBACK_LOCALE = "en";
+        const SUPPORTED_LOCALES = [DEFAULT_LOCALE, "en"];
+        const STORAGE_KEY = "preferred-locale";
+
+        const path = window.location.pathname || "/";
+
+        const hasLocalePrefix = SUPPORTED_LOCALES.some(locale => {
+          if (locale === DEFAULT_LOCALE) return false;
+          return path === `/${locale}` || path.startsWith(`/${locale}/`);
+        });
+
+        if (hasLocalePrefix) return;
+
+        if (path !== "/") return;
+
+        const safeStorage = {
+          get() {
+            try {
+              return window.localStorage.getItem(STORAGE_KEY);
+            } catch {
+              return null;
+            }
+          },
+          set(value) {
+            try {
+              window.localStorage.setItem(STORAGE_KEY, value);
+            } catch {
+              /* noop */
+            }
+          },
+        };
+
+        function resolveLocale(candidate) {
+          if (!candidate) return null;
+          const normalized = candidate.toLowerCase();
+          if (normalized.startsWith("zh")) return DEFAULT_LOCALE;
+          if (normalized.startsWith("en")) return "en";
+          return null;
+        }
+
+        function detectLocaleFromNavigator() {
+          const languages = Array.isArray(navigator.languages)
+            ? navigator.languages
+            : [];
+          const fallbacks = languages.length > 0 ? languages : [navigator.language];
+
+          for (const lang of fallbacks) {
+            const resolved = resolveLocale(lang);
+            if (resolved) return resolved;
+          }
+
+          return FALLBACK_LOCALE;
+        }
+
+        const storedLocale = safeStorage.get();
+        const preferredLocale =
+          (storedLocale && resolveLocale(storedLocale)) || detectLocaleFromNavigator();
+
+        if (!preferredLocale || preferredLocale === DEFAULT_LOCALE) return;
+
+        safeStorage.set(preferredLocale);
+
+        const nextPath = preferredLocale === DEFAULT_LOCALE
+          ? path
+          : `/${preferredLocale}${path === "/" ? "/" : path}`;
+        const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
+
+        if (nextUrl !== window.location.pathname + window.location.search + window.location.hash) {
+          window.location.replace(nextUrl);
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
