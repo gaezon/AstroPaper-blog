@@ -98,28 +98,32 @@
   function getMermaidConfig(theme) {
     const isDark = theme === "dark";
     const darkThemeConfig = {
-      background: "#212737",
-      primaryColor: "#343f60",
-      secondaryColor: "#2d3548",
+      background: "transparent",
+      primaryColor: "#2d3548",
+      secondaryColor: "#343f60",
       primaryTextColor: "#eaedf3",
-      secondaryTextColor: "#c8cdd7",
+      secondaryTextColor: "#eaedf3",
       primaryBorderColor: "#ff6b01",
       lineColor: "#ff6b01",
       clusterBkg: "#343f60",
       titleColor: "#eaedf3",
       tertiaryColor: "#2d3548",
+      noteBkgColor: "#ff8534",
+      noteTextColor: "#ffffff",
     };
     const lightThemeConfig = {
-      background: "#fdfdfd",
+      background: "transparent",
       primaryColor: "#e6f4fb",
-      secondaryColor: "#f5fafc",
+      secondaryColor: "#f0f7fb",
       primaryTextColor: "#282728",
-      secondaryTextColor: "#4a4a4a",
+      secondaryTextColor: "#282728",
       primaryBorderColor: "#006cac",
       lineColor: "#006cac",
       clusterBkg: "#f5fafc",
       titleColor: "#282728",
       tertiaryColor: "#ffffff",
+      noteBkgColor: "#0088cc",
+      noteTextColor: "#ffffff",
     };
 
     return {

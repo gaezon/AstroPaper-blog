@@ -16,15 +16,12 @@ description: "折腾博客这些年的心路历程，经过这些折腾，博客
 timeline
     title 博客技术栈演变
     2023 : Hexo + GitHub Pages
-         : 最简单的静态博客
-    2024-01 : 迁移到 Astro
-            : 转战 Vercel
-    2024-06 : 引入 TypeScript
-            : TailwindCSS 重构样式
-    2024-12 : 添加暗色主题
-            : Mermaid 图表支持
-    2025-10 : 实现国际化
-            : 中英文双语系统
+         : 最朴素的静态博客
+    2024 : 迁移到 Astro
+         : TypeScript + TailwindCSS
+         : 暗色主题 + Mermaid
+    2025 : 实现国际化
+         : 中英文双语系统
 ```
 
 ---

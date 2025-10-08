@@ -17,14 +17,11 @@ timeline
     title Blog Tech Stack Evolution
     2023 : Hexo + GitHub Pages
          : The simplest static blog
-    2024-01 : Migrated to Astro
-            : Moved to Vercel
-    2024-06 : Introduced TypeScript
-            : Refactored styles with TailwindCSS
-    2024-12 : Added dark theme
-            : Mermaid diagram support
-    2025-10 : Implemented i18n
-            : Bilingual Chinese/English system
+    2024 : Migrated to Astro
+         : TypeScript + TailwindCSS
+         : Dark theme + Mermaid
+    2025 : Implemented i18n
+         : Bilingual system
 ```
 
 ---
