@@ -149,7 +149,7 @@ const siteHostname = new URL(SITE.website).hostname;
         const nextPath =
           preferredLocale === DEFAULT_LOCALE
             ? path
-            : `/${preferredLocale}${path === "/" ? "/" : path}`;
+            : `/${preferredLocale}${path}`;
         const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
 
         if (
