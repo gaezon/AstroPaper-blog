@@ -98,31 +98,35 @@
   function getMermaidConfig(theme) {
     const isDark = theme === "dark";
     const darkThemeConfig = {
-      background: "#0f172a",
-      primaryColor: "#1e293b",
-      secondaryColor: "#334155",
-      primaryTextColor: "#ffffff",
-      secondaryTextColor: "#f1f5f9",
-      primaryBorderColor: "#60a5fa",
-      lineColor: "#60a5fa",
-      clusterBkg: "#334155",
-      titleColor: "#ffffff",
+      background: "#212737",
+      primaryColor: "#343f60",
+      secondaryColor: "#2d3548",
+      primaryTextColor: "#eaedf3",
+      secondaryTextColor: "#c8cdd7",
+      primaryBorderColor: "#ff6b01",
+      lineColor: "#ff6b01",
+      clusterBkg: "#343f60",
+      titleColor: "#eaedf3",
+      tertiaryColor: "#2d3548",
     };
     const lightThemeConfig = {
-      background: "#ffffff",
-      primaryColor: "#f5fafc",
-      secondaryColor: "#ffffff",
+      background: "#fdfdfd",
+      primaryColor: "#e6f4fb",
+      secondaryColor: "#f5fafc",
       primaryTextColor: "#282728",
-      secondaryTextColor: "#475569",
-      primaryBorderColor: "#7aa4c7",
-      lineColor: "#7aa4c7",
+      secondaryTextColor: "#4a4a4a",
+      primaryBorderColor: "#006cac",
+      lineColor: "#006cac",
+      clusterBkg: "#f5fafc",
+      titleColor: "#282728",
+      tertiaryColor: "#ffffff",
     };
 
     return {
       startOnLoad: false,
       securityLevel: "strict",
       htmlLabels: false,
-      theme: isDark ? "dark" : "base",
+      theme: "base",
       themeVariables: {
         darkMode: isDark,
         fontFamily:
