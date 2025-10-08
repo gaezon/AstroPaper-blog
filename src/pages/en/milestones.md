@@ -139,4 +139,4 @@ And all open source contributors - you make independent blogging meaningful.
 
 ---
 
-*This blog will keep going, documenting every stage of technical growth.* ✨
+_This blog will keep going, documenting every stage of technical growth._ ✨

@@ -44,7 +44,8 @@ export default {
     draft: "Draft",
     featured: "Featured",
     listTitle: "All Posts",
-    listDescription: "Browse all technical articles and tutorials published on Gaazeon's blog.",
+    listDescription:
+      "Browse all technical articles and tutorials published on Gaazeon's blog.",
   },
 
   // About page
@@ -159,7 +160,8 @@ export default {
     socialLinks: "Connect with us:",
     sharePostOn: "Share this article on:",
     cookie: {
-      consentText: "We use cookies to enhance your browsing experience. Read our",
+      consentText:
+        "We use cookies to enhance your browsing experience. Read our",
       accept: "Accept",
       reject: "Reject",
       settings: "Cookie Settings",
