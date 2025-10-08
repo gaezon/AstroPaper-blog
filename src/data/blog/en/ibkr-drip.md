@@ -2,6 +2,21 @@
 author: gaazeon
 pubDatetime: 2025-06-20T20:00:00.000+08:00
 modDatetime: 2025-06-20T20:00:00.000+08:00
+title: "Is IBKR's DRIP Really Commission-Free? Understanding Fractional Fee Calculations in Interactive Brokers"
+featured: false
+draft: false
+tags:
+  - US Stocks
+  - IBKR
+  - Investing
+  - Dividends
+  - DRIP
+description: "Deep dive into the truth behind IBKR Interactive Brokers' 'zero commission' dividend reinvestment plan (DRIP). Using a real 0.0003 share NVDA transaction as a case study, this article analyzes actual commission calculation rules, backend accounting systems, and fractional share handling mechanisms. Reveals the true costs of US stock DRIP investing and important considerations for investors."
+locale: en
+originalTitle: IBKR 股息再投资 (DRIP) 是零佣金吗？美股盈透证券佣金小数点后的收费规则
+---on
+pubDatetime: 2025-06-20T20:00:00.000+08:00
+modDatetime: 2025-06-20T20:00:00.000+08:00
 title: "Is IBKR’s DRIP really zero‑commission? The truth behind the rounding"
 featured: false
 draft: false

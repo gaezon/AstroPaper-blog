@@ -3,7 +3,7 @@ export default {
   site: {
     title: "Gaazeon's Blog",
     description:
-      "Gaazeon's technical blog, focusing on software development, web frontend technologies, programming tools, and development experiences.",
+      "Welcome to Gaazeon's Tech Blog! Dive into modern web development, frontend frameworks, programming tools, and software development best practices. Discover practical insights and tips to enhance your coding skills and boost productivity.",
     author: "Gaazeon",
   },
 
@@ -43,7 +43,7 @@ export default {
     draft: "Draft",
     featured: "Featured",
     listTitle: "All Posts",
-    listDescription: "Browse every article published on Gaazeon's blog.",
+    listDescription: "Browse all technical articles and tutorials published on Gaazeon's blog.",
   },
 
   // About page
@@ -52,6 +52,11 @@ export default {
     description: "Learn more about me",
   },
 
+  // Milestones page
+  milestones: {
+    title: "Blog Milestones",
+    description: "Tracking important milestones in the blog's journey and development",
+  },
   // Archives page
   archives: {
     title: "Post Archives",
@@ -64,7 +69,7 @@ export default {
     title: "Search",
     placeholder: "Search posts...",
     metaDescription:
-      "Search Gaazeon's blog to quickly find technical articles, tutorials, and development insights.",
+      "Search Gaazeon's blog for technical articles, tutorials, programming guides, and development insights. Quickly find the knowledge and tools you need.",
     noResults: "No posts found",
     searchResults: "Search Results",
     searching: "Searching...",
@@ -76,7 +81,7 @@ export default {
     title: "Tags",
     allTags: "All Tags",
     description:
-      "Explore every topic covered on Gaazeon's blog, from web development to tooling and productivity.",
+      "Explore all topics covered on Gaazeon's blog, from web development and frontend frameworks to productivity tools and efficiency tips.",
     postsWithTag: "Posts with this tag",
     noTags: "No tags yet",
   },
@@ -97,7 +102,7 @@ export default {
     currentLanguage: "Current Language",
     selectLanguage: "Select Language",
     default: "(default)",
-    translationNotFound: "Translation Not Found",
+    translationNotFound: "Translation Not Available",
     translationNotFoundDescription:
       '"{{title}}" is not yet available in {{targetLanguage}}.',
     viewOtherPosts: "View {{targetLanguage}} Posts",
@@ -106,9 +111,9 @@ export default {
   // Theme switching
   theme: {
     toggle: "Toggle Theme",
-    light: "Light Theme",
-    dark: "Dark Theme",
-    system: "System",
+    light: "Light Mode",
+    dark: "Dark Mode",
+    system: "System Default",
   },
 
   // Footer
@@ -149,31 +154,31 @@ export default {
     expandToc: "Expand Table of Contents",
     collapseToc: "Collapse Table of Contents",
     collapse: "Collapse",
-    socialLinks: "Social Links:",
-    sharePostOn: "Share this post on:",
+    socialLinks: "Connect with us:",
+    sharePostOn: "Share this article on:",
     cookie: {
-      consentText: "We use cookies to improve your experience. View our",
+      consentText: "We use cookies to enhance your browsing experience. Read our",
       accept: "Accept",
       reject: "Reject",
       settings: "Cookie Settings",
       saveSettings: "Save Settings",
       cancel: "Cancel",
       title: "Cookie Settings",
-      description: "Select the types of cookies you want to allow:",
+      description: "Choose which types of cookies you'd like to allow:",
       essential: {
         title: "Essential Cookies",
         description:
-          "These cookies are necessary for the website to function, including theme settings and basic functionality.",
+          "These cookies are required for the website to function properly, including theme preferences and core features.",
       },
       analytics: {
         title: "Analytics Cookies",
         description:
-          "Used for other potential analytics tools. Note: The currently used Umami does not require this consent.",
+          "Used for potential analytics tools. Note: Our current Umami analytics does not require cookie consent.",
       },
       advertising: {
         title: "Advertising Cookies",
         description:
-          "Used to display personalized ads and measure ad effectiveness.",
+          "Used to deliver personalized advertisements and measure campaign performance.",
       },
     },
   },
@@ -184,7 +189,7 @@ export default {
       short: "YYYY-MM-DD",
       long: "MMMM DD, YYYY",
       time: "HH:mm",
-      full: "MMMM DD, YYYY [at] HH:mm",
+      full: "MMMM DD, YYYY at HH:mm",
     },
     relative: {
       justNow: "Just now",
@@ -201,9 +206,9 @@ export default {
   seo: {
     defaultTitle: "Gaazeon's Blog",
     defaultDescription:
-      "Gaazeon's technical blog, focusing on software development, web front-end technologies, programming tools, and development experiences.",
+      "Gaazeon's Tech Blog - Expert insights on software development, web frontend technologies, programming tools, and best practices for modern developers.",
     keywords:
-      "tech blog, front-end development, web development, programming, Astro, JavaScript, TypeScript",
+      "tech blog, frontend development, web development, programming, software engineering, Astro, JavaScript, TypeScript, developer tools",
   },
 
   // Error pages
@@ -211,11 +216,11 @@ export default {
     notFound: {
       title: "Page Not Found",
       description: "Sorry, the page you're looking for doesn't exist.",
-      backHome: "Back to Home",
+      backHome: "Return to Home",
     },
     serverError: {
       title: "Server Error",
-      description: "Sorry, something went wrong on the server.",
+      description: "Oops! Something went wrong on our end.",
       tryAgain: "Try Again",
     },
   },

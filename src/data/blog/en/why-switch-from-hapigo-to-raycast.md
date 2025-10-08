@@ -1,7 +1,7 @@
 ---
 author: gaazeon
 pubDatetime: 2024-05-23T09:30:37.000+08:00
-title: "Why I moved on from Hapigo after two years: stalled updates and why Raycast is a better replacement"
+title: "Why I Switched from Hapigo to Raycast After Two Years: Stalled Development and Superior Alternatives"
 featured: false
 draft: false
 tags:
@@ -9,74 +9,78 @@ tags:
   - Raycast
   - GPT AI
   - macOS Launcher
-description: "Explains why Hapigo's slow updates pushed me to Raycast, comparing GPT AI features, extensions and workflow changes plus migration notes for macOS users."
+description: "In-depth analysis of why I abandoned Hapigo after two years of use in favor of the more powerful Raycast. Detailed comparison of features, examination of Hapigo's stalled development, and Raycast's thriving plugin ecosystem. Includes real-world usage experiences, feature comparisons, and migration recommendations for Mac productivity tool users."
 locale: en
-originalTitle: 为什么放弃已经使用两年多的 Hapigo：官方更新停滞与 Raycast 的强大替代
+originalTitle: 为什么放弃已经使用两年多的 Hapigo:官方更新停滞与 Raycast 的强大替代
 ---
 
-## Why leave Hapigo after two years?
+## Why I Left Hapigo After Two Years of Loyal Use
 
-### Stalled updates are the real blocker
+### Development Has Completely Stalled
 
-As of May 22, 2024, the last public Hapigo release shown on the official site is v2.12.0 (Dec 28, 2023) — roughly half a year without updates. In a fast‑moving LLM era, that gap hurt. Several long‑requested features never landed either: custom AI model support for Hapigo GPT AI, better screenshot tools, and more.
+As of May 22, 2024, when I'm writing this article, it's been nearly six months since Hapigo's last update—version v2.12.0 released on December 28, 2023, according to the [official Hapigo website](https://www.hapigo.com/). In this rapidly evolving LLM era, six months without any updates is concerning. Many features I've long requested remain unimplemented, such as adding custom AI model support for Hapigo GPT AI and enhanced screenshot capabilities.
 
-### LobeChat replaced Hapigo's GPT AI for me
+### LobeChat Replaced Hapigo's GPT AI Functionality
 
-I initially subscribed to Hapigo largely for its GPT AI feature (introduced in mid‑2023). I paid ¥69 for a year (then saw a later ¥59 promo elsewhere…). Early on it even allowed GPT‑4 access, which was later removed due to API cost; the Pro tier effectively stuck with GPT‑3.5‑turbo. That was acceptable for a while, but the landscape moved on.
+I originally subscribed to Hapigo primarily for its GPT AI feature launched mid-2023. I paid ¥69 for an annual subscription (and subscribed on day one of the feature launch, only to feel betrayed when a ¥59 promotional price appeared on Sspai later). Initially, subscribers could even access GPT-4 for free, but the official team later removed this option due to the high cost of GPT-4 API calls. Pro subscribers were limited to GPT-3.5-turbo, though at the time, ¥69 per year for GPT-3.5-turbo still felt like excellent value.
 
-While models improved rapidly, Hapigo stayed still: no custom model button, no support for local/Chinese providers. Over the last six months I migrated all my day‑to‑day chat to a self‑hosted stack (one‑api + LobeChat). It's cheaper, under my control, and keeps data off third‑party servers.
+However, as OpenAI continued releasing more powerful models while Hapigo remained stagnant without updates, paid users were stuck with GPT-3.5-turbo. There was no integration with domestic Chinese large language models, not even a simple custom model configuration button.
 
-Once I no longer relied on Hapigo for chat, switching launchers became easy. Raycast has a steeper initial learning curve, but its lively extension ecosystem opened a lot of new doors for me.
+Over the past six months, I gradually migrated all my chat services from Hapigo's GPT AI to my self-hosted one-api + LobeChat setup. I used Hapigo's services less and less. During this period, I came to realize that self-hosting a chatbot is the optimal solution—no need to route through third-party servers, and data security is significantly enhanced.
 
-![My historical Hapigo usage](https://img.gaazeon.com/2024%2F05%2F202405222325673.avif)
-I used to be a heavy Hapigo user.
+Without the constraint of the ChatBot dependency, I decisively abandoned Hapigo and switched to Raycast, which has a steeper learning curve but a far more active plugin community. This opened up a whole new world of possibilities.
 
-## Most Hapigo features are replaceable — and often better — in Raycast
+![Personal Hapigo usage statistics](https://img.gaazeon.com/2024%2F05%2F202405222325673.avif)
+I was previously a heavy Hapigo power user.
 
-Besides global/Everything‑style search, these are the Hapigo features I used most. Raycast has equivalents for all of them, often with stronger UX.
+## Most Hapigo Features Can Be Perfectly Replaced—Often With Better Alternatives
 
-### 1) Aliases & quick web jumps ⇋ Quicklinks
+When using a launcher, one of my most frequently used features is the Everything-style search functionality. Setting that aside, here are the Hapigo features I used most regularly, all of which have equivalent or superior alternatives in Raycast.
 
-Both launchers let you type a short alias + space + {query}. The difference: Hapigo makes you set icons manually; Raycast reads the site favicon automatically. Even common Chinese sites show the right icon out of the box.
+### 1. Aliases & Quick Web Navigation ⇋ Quicklinks
 
-![Raycast Quicklinks example](https://img.gaazeon.com/2024/05/202405230923546.avif)
+The functionality in both applications is virtually identical: type a short alias followed by a space and {query} to trigger the search. The key difference is that in Hapigo, after adding a webpage URL, you must manually add an icon. In Raycast, the system automatically reads the URL's favicon and generates the icon. For example, when setting up a search for the popular Chinese e-commerce site "Smzdm" (什么值得买), Raycast automatically fetches the icon, whereas Hapigo requires manual icon upload.
 
-Raycast also ships a curated Quicklink library and, more importantly, a Store full of extensions. For example, instead of a bare Perplexity quicklink, the official Perplexity extension exposes richer features (like a "Use Copilot" toggle).
+![Raycast QuickLinks example](https://img.gaazeon.com/2024/05/202405230923546.avif)
 
-![Perplexity extension in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325800.avif)
+Additionally, Raycast provides a pre-configured Library that allows direct addition of commonly used services, making setup even more convenient. Services can also be created as plugins. For instance, when adding Perplexity service, it's better to install the official Perplexity plugin from the Raycast Store, which offers more comprehensive functionality, such as an additional "Use Copilot" parameter option shown in the image.
 
-### 2) Snippets & Clipboard History
+![Perplexity plugin example in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325800.avif)
 
-Raycast's Snippets are significantly more capable. Hapigo only covers the basics (categories + trigger keywords).
+### 2. Clipboard & Snippets ⇋ Snippet & Clipboard History
 
-![Basic snippet in Hapigo](https://img.gaazeon.com/2024%2F05%2F202405222325764.avif)
+Raycast's built-in Snippet functionality is far more powerful than Hapigo's. Hapigo's Snippets only offer basic categorization and trigger keywords.
 
-In Raycast you get "Dynamic Placeholders" — cursor placement, auto‑insert current time, UUID generation, etc. If you do lots of templated replies or routine notes, this is a big deal.
+![Basic snippet functionality in Hapigo](https://img.gaazeon.com/2024%2F05%2F202405222325764.avif)
 
-![Snippet in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325780.avif)
+In contrast, Raycast's Snippets feature robust customization capabilities through what they call "Dynamic Placeholders." These allow you to customize cursor position, automatically replace current time, auto-generate UUIDs, and more—making them ideal for customer service representatives and other workflow-intensive users.
 
-## The extension ecosystem is the real differentiator
+![Raycast's advanced snippet features](https://img.gaazeon.com/2024%2F05%2F202405222325780.avif)
 
-This is the reason I wish I'd switched earlier. Compared to Hapigo's closed approach, Raycast's Store feels like the gap between Apple Silicon Macs and early Windows on ARM.
+## The Rich Plugin Ecosystem: Raycast's True Competitive Advantage
 
-For example: Obsidian, CleanShot X, Warp Terminal — many popular apps already have solid Raycast extensions. They wire into everyday tasks in a way that saves steps. In Obsidian, I can create today's daily note directly from the launcher.
+Raycast's extensive plugin ecosystem is its real competitive edge and the reason I felt I should have switched much earlier.
 
-![Using 'riji' alias to open Obsidian in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325702.avif)
+Compared to Hapigo's closed ecosystem, the difference between Raycast and Hapigo's plugin ecosystems is like comparing Apple Silicon Macs to Windows on ARM—night and day.
 
-Typing my `riji` alias opens today's Obsidian journal. One step, done.
+For example, after switching to Raycast, I discovered that many popular third-party applications I regularly use—including Obsidian, CleanShot X, Warp Terminal, and numerous others—already have developer-created Raycast plugins. These plugins' integration with Raycast dramatically enhances the user experience. For instance, in Obsidian, I can now create a new daily journal entry by simply typing a shortcut in the launcher. Previously, achieving the same result required at least three separate steps; now with Raycast, it's accomplished in one seamless action.
 
-There are many more: I use the open‑source [Easydict](https://github.com/tisfeng/Easydict) plus the official [Raycast extension](https://github.com/raycast/extensions/blob/1eb9ef9d103488453a7bfa4bae630d8adaa1e3da/extensions/easydict/README.md) to replace Hapigo's translator — with the option to plug in affordable local models instead of GPT‑4.
+![Using the 'riji' alias in Raycast to invoke Obsidian](https://img.gaazeon.com/2024%2F05%2F202405222325702.avif)
 
-## Caveats: Raycast isn't perfect
+Simply typing my preset `riji` alias directly opens today's journal in Obsidian—incredibly powerful. I really wish I had discovered this sooner.
 
-Two things held me back before:
+There are many other excellent plugins. For example, I use the open-source [Easydict](https://github.com/tisfeng/Easydict) combined with Raycast's [extensions/easydict](https://github.com/raycast/extensions/blob/1eb9ef9d103488453a7bfa4bae630d8adaa1e3da/extensions/easydict/README.md) plugin to replace Hapigo's translation feature. This setup allows me to use more affordable domestic models instead of the relatively expensive GPT-4 for translation—absolutely fantastic.
+
+## Additional Notes: Raycast's Limitations
+
+The two main factors that previously prevented me from using Raycast were:
 
 - The learning curve
-- No Chinese localization
+- Lack of Chinese localization
 
-As of May 2024, Raycast still doesn't ship official Chinese UI. After actually using it, the learning curve was milder than I feared (certainly easier than Alfred).
+As of May 2024, Raycast still doesn't offer official Chinese localization. However, after actually diving in and using it, I found the difficulty was far less daunting than I had anticipated—certainly easier to master than Alfred. ~~Perhaps Raycast hasn't prioritized the Chinese market in their development roadmap.~~
 
-Hapigo does have some China‑specific conveniences (e.g. currency conversions triggered by colloquial keywords). In Raycast you may need a few extra keystrokes. For me, the extension ecosystem easily outweighs those small niceties.
+Admittedly, Hapigo does have some optimizations tailored to Chinese user habits. For example, in the currency conversion feature, you can simply type "xx 刀" (using the colloquial term "刀" for dollars) to trigger USD exchange rate calculations. Raycast lacks this kind of localized optimization. However, for users, the Raycast currency conversion feature only requires a few extra keystrokes and symbols. Compared to Raycast's incredibly rich ecosystem, these small conveniences in Hapigo aren't enough to retain a long-time user like myself.
 
-![Currency conversion in Hapigo](https://img.gaazeon.com/2024%2F05%2F202405222325726.avif)
-![Currency conversion in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325818.avif)
+![Currency conversion feature in Hapigo](https://img.gaazeon.com/2024%2F05%2F202405222325726.avif)
+![Currency conversion feature in Raycast](https://img.gaazeon.com/2024%2F05%2F202405222325818.avif)
