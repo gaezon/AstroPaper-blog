@@ -2,7 +2,7 @@
 author: Gaazeon
 pubDatetime: 2025-04-10T15:32:00+08:00
 modDatetime: 2025-04-10T15:38:00+08:00
-title: "Cline + Notion MCP: add Notion database rows by talking to your AI (subscription DB example)"
+title: "Cline + Notion MCP: Add Database Records Using Natural Language — Managing Personal Subscriptions with AI"
 featured: false
 draft: false
 tags:
@@ -10,30 +10,43 @@ tags:
   - MCP
   - Automation
   - LLM
-description: "Show Cline working with Notion MCP to add subscription database rows from natural language, with setup steps, required permissions and prompt examples."
+description: "Comprehensive tutorial on leveraging Cline with Notion MCP and OpenRouter's quasar-alpha model to automatically add subscription records to Notion databases using natural language commands. Includes SVG icon integration for enhanced visual appeal, covering complete setup, authorization, and implementation workflows."
 locale: en
 originalTitle: Cline + Notion MCP 用自然语言为 Notion 数据库增加记录 —— 以管理个人订阅服务 notion 数据库为例
 ---
 
 ## Table of contents
 
-## Why this is useful
+## Introduction
 
-I manage my subscriptions in a Notion database. Adding rows by hand is tedious and error‑prone. With **Notion MCP** + **Cline** + an **LLM**, I can just describe what I want and let the tools do the rest. It can even fetch an SVG brand logo and set it as the page icon automatically.
+I've been using Notion as my subscription service management tool for quite some time. However, manually adding and maintaining subscription records has always been tedious and error-prone, making it easy to overlook important renewals.
 
-## Setup
+With **Notion MCP**, combined with **Cline** and large language models (LLM), I can now use natural language conversations to quickly add subscription records to my Notion database. This not only dramatically improves efficiency but also enables advanced automation capabilities.
 
-### 1) Install Cline
+For example, I can automatically add records to my pre-configured personal subscription table while simultaneously searching the web for brand SVG logos and automatically adding them to the Notion entries—all through simple conversation.
 
-Install the Cline extension (e.g., in Cursor) and configure a model. I used OpenRouter’s `openrouter/quasar-alpha` in my tests, but any capable model works.
+## Prerequisites and Setup
 
-### 2) Install the Notion MCP
+### 1. Install Cline
 
-MCP (Model Context Protocol) is a plugin framework for tool access via natural language. **Notion MCP** (Apr‑2025) exposes Notion operations. The easiest way:
+Cline is a powerful command-line assistant that supports multiple models and tool integrations. For this tutorial, I'm using the Cline plugin installed in Cursor, configured with OpenRouter's `openrouter/quasar-alpha` model.
 
-> In Cline, tell the model: “Install the Notion MCP plugin for me.”
+### 2. Install Notion MCP
 
-Cline will generate the steps, install and register the server for you. If you prefer manual steps, you can scaffold and build a server with:
+MCP (Model Context Protocol) is a plugin framework that enables you to call various APIs through natural language. **Notion MCP** is an April 2025 plugin specifically designed for Notion operations.
+
+**The simplest installation method is:**
+
+Simply have a conversation with the LLM in Cline and tell it:
+
+> Help me install the Notion MCP plugin
+
+Cline will automatically invoke the model to complete the MCP installation, configuration, and registration—no manual commands required. The entire process is highly intelligent and convenient.
+
+**Alternatively, if you prefer manual installation, follow these example steps:**
+
+- Navigate to the MCP plugin directory (e.g., `/Users/your-username/Documents/Cline/MCP`)
+- Run the following commands:
 
 ```bash
 npx @modelcontextprotocol/create-server notion-mcp-server
@@ -42,43 +55,97 @@ pnpm install
 pnpm build
 ```
 
-Then point Cline to the server path and configure your Notion token.
+- Add the MCP server path to Cline's configuration file and configure your Notion access credentials.
 
-### 3) Create a Notion integration and grant access
+### 3. Create and Authorize a Notion Integration
 
-1. In [Notion](https://www.notion.so/) → Settings & members → Developers → New integration.
-2. Name it (e.g., “Subscription automation”), select workspace, grant required capabilities and copy the internal token.
-3. Put this token in Cline’s environment.
-4. On your subscription DB page, Share → invite the integration.
-5. Copy the 32‑char database ID from the page URL.
+1. Log into [Notion](https://www.notion.so/), click your profile picture in the bottom left, and navigate to **Settings & Members**.
+2. Select "Integrations" → "Developer Tools" → "New Integration".
+3. Enter a name (e.g., "Automated Subscription Management"), select your workspace, check the required permissions, and generate an **internal integration token**.
+4. Click "Show" to copy this token string and configure it in Cline's environment variables.
 
-![Notion integration token and permissions](https://img.gaazeon.com/2025/04/notion-integration-token-and-permissions.avif)
+![Notion integration token and permissions configuration](https://img.gaazeon.com/2025/04/notion-integration-token-and-permissions.avif)
+_Figure: Notion integration token location and permission selection_
 
-## Add a subscription row by talking
+5. Open your subscription management database page, click "Share" in the top right corner, and authorize the integration you just created to access it.
+6. Copy the 32-character ID from the database page link—this is your database ID for subsequent operations.
 
-In Cline, simply say:
+Example link format:
 
-> Add a row to my Notion Subscription DB: name “Google Cloud”, tag “VPS”, due date 2025‑07‑10, note “91 days · $300”.
+```txt
+https://www.notion.so/your-workspace/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?v=yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+```
 
-The model will plan the steps and call **Notion MCP** to create the row. No JSON crafting needed.
+`xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` is your database ID.
 
-![Cline generating Notion API calls](https://img.gaazeon.com/2025/04/cline-llm-generate-notion-api-request.avif)
+## Real-World Example: Adding Subscription Records to Your Notion Database
 
-### Make it robust
+In actual use, **you don't need to prepare any parameters or write code**—simply have a natural conversation with the LLM in Cline to express your needs.
 
-If the first attempt fails (bad field names, wrong types), clarify the schema in natural language or paste a screenshot of your Notion DB. A multimodal model will map your fields correctly and retry with a valid request.
+For example, you can tell the LLM:
 
-### Auto‑attach an SVG brand icon
+> Help me add a record to my Notion subscription database: I've added a VPS subscription, name is Google Cloud, tag is VPS, expiration date is July 10, 2025, note: 91 days for $300.
 
-Ask:
+The LLM will automatically understand your intent, invoke Notion MCP, and complete the addition of this subscription record for you.
 
-> Find an SVG brand logo for Google Cloud and set it as the page icon we just created.
+![Cline automatically generating Notion API request through natural language](https://img.gaazeon.com/2025/04/cline-llm-generate-notion-api-request.avif)
+_Figure: Cline recognizing natural language and automatically constructing Notion API requests_
 
-The model can call **Exa Search MCP** to find an SVG on Wikipedia/official sites, then call **Notion MCP** again to set the page icon.
+The entire process requires no JSON or command-line knowledge—just simple, efficient natural language conversation.
 
-![Add Google Cloud SVG icon in Notion](https://img.gaazeon.com/2025/04/notion-google-cloud-svg-icon-tutorial.avif)
+### Common Issues and Solutions
 
-If you don’t like the result, ask for another logo. The model will search again and replace it.
+In real-world usage, if your conversation prompts are too rough or insufficiently detailed, you might encounter API errors or formatting issues on the first attempt. However, the solution is simply to communicate your requirements more clearly to the LLM using natural language.
+
+If you find the LLM **didn't understand your format** or the added content doesn't meet expectations, it's usually because the model's understanding of your description was insufficient.
+
+**In such cases, you can try:**
+
+- **Switch to a multimodal model** that supports image and text comprehension
+- Send a screenshot or example format of your Notion database directly to the LLM
+- This way, the LLM will automatically understand your format and requirements, generating more accurate content
+
+Once the model understands your format, it can automatically complete all operations without you worrying about technical details.
+
+### Example: Automatically Adding SVG Brand Icons to Subscription Entries
+
+After adding a subscription record, if you want further optimization, you don't need to write any code or commands. Simply continue your conversation with the LLM:
+
+> Help me add a Google Cloud brand SVG icon to the subscription I just created
+
+At this point, the LLM will automatically invoke **Exa Search's MCP** to search the internet for the most appropriate SVG icon link, checking sources like Wikipedia, official brand websites, and icon libraries.
+
+After finding a suitable icon, the LLM will invoke **Notion MCP** again to automatically set this SVG icon as the page icon for your subscription entry.
+
+![Tutorial screenshot: Adding SVG icon to Google Cloud in Notion](https://img.gaazeon.com/2025/04/notion-google-cloud-svg-icon-tutorial.avif)
+_Figure: Using Cline to add a Google Cloud SVG icon to a Notion entry_
+
+If you're not satisfied with the icon, you can simply tell it:
+
+> Find a better-looking Google Cloud logo
+
+The LLM will use Exa MCP to search again and replace it with a new icon.
+
+The entire process is completely natural language-driven interaction. Behind the scenes, multiple MCPs are working in coordination, but you don't need to worry about technical details—just communicate your needs to the LLM in Chinese or English.
+
+![Notion subscription database with brand icons](https://img.gaazeon.com/2025/04/notion-subscription-database-with-brand-logo.avif)
+_Figure: Brand logo effect displayed in the Notion database after automated subscription record addition. The Google Cloud record shown was added using MCP calls_
+
+## Summary
+
+Through Cline + Notion MCP combined with powerful multimodal LLMs, you can easily achieve:
+
+- Automated batch management of Notion databases
+- Precise control over field content
+- Automatic addition of brand icons to entries
+
+This workflow dramatically reduces manual data entry time while improving data consistency and visual appeal.
+
+## References
+
+1. [Notion API Capabilities](https://developers.notion.com/reference/capabilities)
+2. [Cline Project on GitHub](https://github.com/cline/cline)
+3. [OpenRouter Platform](https://openrouter.ai/)
 
 ## Summary
 

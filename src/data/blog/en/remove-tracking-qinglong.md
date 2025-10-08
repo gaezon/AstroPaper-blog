@@ -2,14 +2,14 @@
 author: gaazeon
 pubDatetime: 2024-09-15T10:06:57.000+08:00
 modDatetime: 2024-09-15T10:06:57.000+08:00
-title: "Remove sentry.io tracking code from Qinglong (via docker‑compose + startup script)"
+title: "Remove Sentry.io Tracking from Qinglong Panel via Docker Compose Configuration"
 featured: false
 draft: false
 tags:
   - docker-compose
   - Qinglong
   - Privacy
-description: "Shows how to strip Qinglong's sentry.io tracking by overriding the Docker entrypoint with a small script, stopping outbound telemetry without breaking updates."
+description: "Comprehensive tutorial on removing Sentry.io tracking JavaScript code from Qinglong Panel by modifying docker-compose configuration and custom scripts. Resolves the issue of AdGuardHome frequently blocking the o1098464.ingest.sentry.io domain, improving system efficiency and privacy protection."
 locale: en
 originalTitle: 修改 docker-compose 配置移除青龙面板 sentry.io 跟踪 js 代码
 ---

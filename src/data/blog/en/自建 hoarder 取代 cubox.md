@@ -2,7 +2,7 @@
 author: gaazeon
 pubDatetime: 2024-06-08T17:21:00.000+08:00
 modDatetime: 2024-06-08T17:21:00.000+08:00
-title: "Self‑host Hoarder to replace Cubox: privacy, control and lower cost"
+title: "Self‑Host Hoarder to Replace Cubox: Enhanced Privacy, Data Control and Cost Savings"
 featured: false
 draft: false
 tags:
@@ -12,7 +12,7 @@ tags:
   - NAS
   - Digital hoarding
   - Self‑host
-description: "Self-host the Hoarder web clipper with Docker to replace Cubox, covering privacy gains, lower cost, compose/.env configuration and real-world pros and cons."
+description: "Comprehensive guide to self-hosting the open-source Hoarder web clipper using Docker as a privacy-focused, cost-effective alternative to Cubox. Includes complete installation steps, data migration, AI auto-tagging setup, and real-world usage comparison."
 locale: en
 originalTitle: 自建 Hoarder 剪藏服务取代 Cubox：解决隐私与成本问题
 slug: self-host-hoarder-replace-cubox
@@ -34,9 +34,11 @@ slug: self-host-hoarder-replace-cubox
 
 - **No need for extra fluff**: Cubox kept adding features (AI summaries, etc.) that I don’t need. I use Readwise for reading; I want a reliable “cold storage” for web pages.
 
-## Install Hoarder (Docker)
+## Self-Hosting Installation Guide
 
-Hoarder is open‑source: [GitHub](https://github.com/hoarder-app/hoarder). Below is a compose example I use:
+> Hoarder is an open-source project available on [GitHub](https://github.com/hoarder-app/hoarder). For detailed installation instructions on Linux machines or Synology systems, consult the official documentation or follow the comprehensive tutorial from [NasDaddy](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8).
+
+I highly recommend using Docker for installation. Here's a reference Docker Compose YAML configuration:
 
 ```yaml
 version: "3.8"

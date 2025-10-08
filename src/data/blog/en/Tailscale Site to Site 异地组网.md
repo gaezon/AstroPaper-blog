@@ -1,19 +1,31 @@
 ---
-author: Gaazeon
+author: gaazeon
 pubDatetime: 2024-03-25T09:33:00+08:00
 modDatetime: 2024-05-05T17:15:00+08:00
-title: "Tailscale site‑to‑site: connect two OpenWrt routers across locations (P2P)"
+title: "Tailscale Site-to-Site Networking: Connect Two OpenWrt Routers Across Locations (Point-to-Point)"
 featured: false
 draft: false
 tags:
   - tailscale
   - Networking
   - OpenWrt
-description: "Connect two OpenWrt routers with Tailscale site-to-site by opening UDP 41641, advertising subnets and adding static routes so both LANs reach each other."
+description: "Comprehensive tutorial on implementing site-to-site networking between two OpenWrt soft routers using Tailscale. Explores Tailscale's working principles and provides detailed configuration guidance for creating a stable, secure cross-location network environment. Written for users who want to establish network connections between devices at different physical locations."
 locale: en
 originalTitle: Tailscale Site to Site 点对点两台 OpenWrt 异地组网教程
 slug: tailscale-site-to-site-openwrt-p2p
 ---
+
+## Introduction
+
+I have two OpenWrt routers deployed simultaneously—one at home and one at my university campus. I needed to establish mutual network connectivity so that client devices under each router's subnet could access each other without requiring individual Tailscale client installations. After trying various online tutorials that didn't work correctly, I wrote this comprehensive guide.
+
+## Implementation Details
+
+I'll skip the basic "installing Tailscale on OpenWrt" procedures here, as these are well-documented elsewhere.
+
+However, to achieve true P2P direct connections: **you must open UDP port `41641` in your firewall on both sides**.
+
+Additionally, you need to enable **subnet routes** for both OpenWrt nodes in the Tailscale admin console.
 
 ## Table of contents
 
