@@ -9,8 +9,8 @@ export async function GET() {
   const latestPosts = getSortedPosts(posts).slice(0, 10);
 
   return rss({
-    title: `${SITE.title} (English)`,
-    description: SITE.desc,
+    title: `${SITE.titleEn || SITE.title} (English)`,
+    description: SITE.descEn || SITE.desc,
     site: SITE.website,
     items: latestPosts.map(({ data, id, filePath }) => ({
       link: getPath(id, filePath, true, data.slug),

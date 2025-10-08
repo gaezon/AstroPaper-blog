@@ -2,8 +2,10 @@ export interface Site {
   website: string;
   author: string;
   desc: string;
+  descEn?: string; // 英文网站描述
   profile?: string;
   title: string;
+  titleEn?: string; // 英文网站标题
   ogImage?: string;
   lightAndDarkMode: boolean;
   postPerIndex: number;
