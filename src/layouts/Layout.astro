@@ -138,13 +138,15 @@ const siteHostname = new URL(SITE.website).hostname;
         }
 
         const storedLocale = safeStorage.get();
-        const preferredLocale =
-          (storedLocale && resolveLocale(storedLocale)) ||
-          detectLocaleFromNavigator();
+        const resolvedStoredLocale = storedLocale && resolveLocale(storedLocale);
+        const preferredLocale = resolvedStoredLocale || detectLocaleFromNavigator();
 
         if (!preferredLocale || preferredLocale === DEFAULT_LOCALE) return;
 
-        safeStorage.set(preferredLocale);
+        // Only store the locale if it was loaded from storage (i.e., user-set), not if detected from browser
+        if (resolvedStoredLocale) {
+          safeStorage.set(preferredLocale);
+        }
 
         const nextPath = `/${preferredLocale}${path}`;
         const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
