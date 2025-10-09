@@ -13,7 +13,7 @@ originalTitle: 我為什麼要寫博客
 slug: why-i-started-blogging
 ---
 
-When I finished my first year at university, I realized I had read more than twenty books but written almost nothing. I was happily consuming words, not producing them. In Li Yi's RTHK's "One Minute Reading" program (episode 36)[^1], he said language ability grows from two habits only: reading and writing.
+When I finished my first year at university, I realized I had read more than twenty books but written almost nothing. I had become a passive consumer rather than an active creator—always taking in, rarely putting out. In Li Yi's RTHK's "One Minute Reading" program (episode 36)[^1], he said language ability grows from two habits only: reading and writing.
 
 Beyond improving my writing skills, I have a more ambitious reason: I want to preserve my lived experiences for history. After reading historian Paul A. Cohen's "History in Three Keys"[^2], the chapter that resonated most deeply wasn't the mythology section, but "The Boxers as Experience." Cohen highlights a crucial insight: people living through events don't know how things will unfold—they act without the clarity of hindsight. Our present is messy, nuanced, and inherently personal, and every individual's understanding is necessarily partial and incomplete.
 
