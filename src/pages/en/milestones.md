@@ -57,9 +57,10 @@ With the basic framework in place, I started adding features I wanted:
 - **Dark mode**: Essential for night owls, and the transition is smooth
 - **OG image generation**: Pretty preview cards when sharing on social media - OCD satisfied
 - **Mermaid support**: Drawing flowcharts in technical articles is too common
+- **Comment system**: Integrated Twikoo comment service in April 2024, readers can finally interact with me
 - **RSS feed**: Old-school but practical, for readers who truly care
 
-This period was mainly about tweaking details to make the blog more comfortable to use.
+This period was mainly about tweaking details to make the blog more comfortable to use. The addition of the comment system was a significant milestone - the blog was no longer just one-way broadcasting.
 
 ### 🌏 **October 2025 - Going International**
 
@@ -97,6 +98,7 @@ After all this tinkering, here's what the blog has become:
 - 🚀 CDN acceleration, fast access globally
 - 💾 Static generation, zero server load
 - 🎯 No ads, no tracking, pure reading experience
+- 💬 Reader interaction, Twikoo comment system makes communication convenient
 
 ---
 
@@ -120,9 +122,9 @@ Functionality is sufficient now, not planning any major changes. Next focus will
 
 - Writing more high-quality content
 - Optimizing reading experience details
-- Maybe add a comment system, but still hesitating
+- Comment system is already stable, considering minor adjustments based on reader feedback
 
-Technology serves content - there's a point where you should stop tinkering.
+Technology serves content - there's a point where you should stop tinkering. With the comment system, the blog feels more like a real community now.
 
 ---
 
