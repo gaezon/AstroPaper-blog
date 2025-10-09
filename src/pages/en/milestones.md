@@ -136,6 +136,7 @@ Standing on the shoulders of giants:
 - **[AstroPaper](https://github.com/satnaing/astro-paper)**: Sat Naing's theme saved me countless hours
 - **[TailwindCSS](https://tailwindcss.com/)**: Classes can get long, but it really works
 - **[Pagefind](https://pagefind.app/)**: CloudCannon team's work, the best static search solution
+- **[Twikoo](https://twikoo.js.org/)**: A simple comment system developed by imaegoo that brought community atmosphere to the blog
 
 And all open source contributors - you make independent blogging meaningful.
 

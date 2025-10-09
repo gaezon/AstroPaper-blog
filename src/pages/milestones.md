@@ -136,6 +136,7 @@ GitHub Pages 免费托管，虽然国内访问慢点，但对新手友好。
 - **[AstroPaper](https://github.com/satnaing/astro-paper)**：Sat Naing 的主题省了我无数时间
 - **[TailwindCSS](https://tailwindcss.com/)**：类名确实长，但真的好用
 - **[Pagefind](https://pagefind.app/)**：CloudCannon 团队的工作，最好的静态搜索方案
+- **[Twikoo](https://twikoo.js.org/)**：imaegoo 开发的简洁评论系统，让博客有了社区氛围
 
 还有所有开源贡献者，你们让独立博客依然有意义。
 
