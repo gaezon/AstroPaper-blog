@@ -21,6 +21,6 @@ This is precisely why individual records matter profoundly. This blog serves as 
 
 ### footnote
 
-[^1]: RTHK's "One Minute Reading" program (hosted by Li Yi) — episode 36.
+[^1]: [RTHK's "One Minute Reading" program (hosted by Li Yi) — episode 36](https://app7.rthk.hk/elearning/1minreading/index.php?pid=1&p=23#36) [link is dead] ([Internet Archive backup](https://web.archive.org/web/20241006090239/https://app7.rthk.hk/elearning/1minreading/index.php?pid=1&p=23#36))
 
 [^2]: Paul A. Cohen, “History in Three Keys: The Boxers as Event, Experience, and Myth”.
