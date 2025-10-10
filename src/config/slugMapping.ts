@@ -5,7 +5,7 @@
  * for the Twikoo comment system to ensure comment synchronization
  * across language versions.
  *
- * Format: "english-slug": "Chinese-Slug"
+ * Format: "english-slug": "chinese-slug"
  *
  * Usage:
  * - When creating a new bilingual post, add the mapping here
@@ -14,15 +14,15 @@
  *
  * Example:
  * {
- *   "why-i-started-blogging": "Why-did-I-start-blogging",
- *   "another-english-post": "Another-Chinese-Post"
+ *   "why-i-started-blogging": "why-did-i-start-blogging",
+ *   "another-english-post": "another-chinese-post"
  * }
  */
 
 export const slugMapping: Record<string, string> = {
-  "why-i-started-blogging": "Why-did-I-start-blogging",
+  "why-i-started-blogging": "why-did-i-start-blogging",
   // Add more mappings here as new bilingual posts are created
-  // Format: "english-slug": "Chinese-Slug"
+  // Format: "english-slug": "chinese-slug"
 };
 
 /**

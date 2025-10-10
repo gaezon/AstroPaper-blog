@@ -14,12 +14,12 @@ const langTag = getLangTag(Astro);
 const getCommentId = () => {
   if (!post) return null;
 
-  // 如果有 originalTitle，使用它作为统一标识符（中英文文章都有相同的 originalTitle）
+  // If originalTitle exists, use it as unified identifier (both Chinese and English articles share same originalTitle)
   if (post.data.originalTitle) {
     return post.data.originalTitle;
   }
 
-  // 回退到使用 title（中文文章）或从 id 提取 slug
+  // Fallback to using title (for Chinese posts) or extract slug from id
   return post.data.title || post.id;
 };
 
@@ -62,7 +62,6 @@ const chineseSlugForPath = getChineseSlugForPath();
             lang: langTag,
           };
 
-          // 如果有统一的评论 ID，则使用它
           // If there is a unified comment ID, use it
           if (commentId) {
             twikooConfig.id = commentId;
