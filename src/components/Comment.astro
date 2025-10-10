@@ -28,7 +28,7 @@ const commentId = getCommentId();
 
 <div id="tcomment"></div>
 
-<script define:vars={{ langTag, commentId }}>
+<script define:vars={{ langTag, commentId, post }}>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");
@@ -48,9 +48,30 @@ const commentId = getCommentId();
           // 如果有统一的评论 ID，则使用它
           if (commentId) {
             twikooConfig.id = commentId;
-            // 使用统一的 path，确保中英文页面使用相同的路径标识
-            // 使用 originalTitle 作为路径，确保唯一性和一致性
-            twikooConfig.path = `/comments/${commentId}/`;
+
+            // 兼容过往评论：优先使用原始路径，确保既有的评论能够正常显示
+            // 对于有 originalTitle 的文章，使用中文页面的原始路径作为主路径
+            if (post && post.data.originalTitle) {
+              // 对于英文文章，需要使用对应的中文文章的 slug
+              // 对于中文文章，直接使用自己的 slug
+              let chineseSlug;
+              if (post.data.locale === 'en') {
+                // 英文文章：从中文 slug 映射（需要根据实际情况调整）
+                // 这里我们使用已知的中文 slug
+                const slugMapping = {
+                  'why-i-started-blogging': 'Why-did-I-start-blogging'
+                  // 可以添加更多映射
+                };
+                chineseSlug = slugMapping[post.data.slug] || post.data.slug;
+              } else {
+                // 中文文章：直接使用自己的 slug
+                chineseSlug = post.data.slug || post.id;
+              }
+              twikooConfig.path = `/posts/${chineseSlug}/`;
+            } else {
+              // 回退到使用统一的评论路径
+              twikooConfig.path = `/comments/${commentId}/`;
+            }
           }
 
 
