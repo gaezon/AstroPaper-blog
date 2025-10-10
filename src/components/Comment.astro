@@ -1,6 +1,7 @@
 ---
 import { getLangTag } from "@/i18n/utils";
 import type { CollectionEntry } from "astro:content";
+import { getChineseSlug } from "@/config/slugMapping";
 
 interface Props {
   post?: CollectionEntry<"blog" | "blog-en">;
@@ -59,15 +60,9 @@ const commentId = getCommentId();
                 post.data.locale === "en"
               ) {
                 // English posts: Convert English slug to Chinese slug format
-                // This mapping should be maintained as new posts are added
-                // TODO: Consider moving this mapping to a central configuration file
-                const slugMapping = {
-                  "why-i-started-blogging": "Why-did-I-start-blogging",
-                  // Add more mappings here as new bilingual posts are created
-                  // Format: "english-slug": "Chinese-Slug"
-                };
+                // Use centralized slug mapping configuration for better maintainability
                 chineseSlug =
-                  slugMapping[post.data.slug] || post.data.slug || post.id;
+                  getChineseSlug(post.data.slug) || post.data.slug || post.id;
               } else {
                 // Chinese posts: use their own slug directly
                 chineseSlug = post.data.slug || post.id;
