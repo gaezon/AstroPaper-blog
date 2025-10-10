@@ -1,7 +1,7 @@
 ---
 import { getLangTag } from "@/i18n/utils";
 import type { CollectionEntry } from "astro:content";
-import { getChineseSlug } from "@/config/slugMapping";
+import { getBestChineseSlugForPath } from "@/config/slugMapping";
 
 interface Props {
   post?: CollectionEntry<"blog" | "blog-en">;
@@ -30,9 +30,9 @@ const getChineseSlugForPath = () => {
   if (!post) return null;
 
   if (typeof post.data.locale === "string" && post.data.locale === "en") {
-    // English posts: Map to the corresponding Chinese slug
+    // English posts: Resolve the best Chinese slug for comment path
     return post.data.slug
-      ? getChineseSlug(post.data.slug) || post.data.slug || post.id
+      ? getBestChineseSlugForPath(post.data.slug, post.id)
       : post.id;
   } else {
     // Chinese posts: use their own slug directly

@@ -56,3 +56,29 @@ export function getBilingualMappings(): Array<{
     chineseSlug,
   }));
 }
+
+/**
+ * Helper function to resolve the best Chinese slug for comment path construction
+ * This function provides better readability by replacing complex ternary operators
+ * @param englishSlug The English post slug
+ * @param fallbackSlug The fallback slug (usually the post id or original slug)
+ * @returns The best available Chinese slug or fallback slug
+ */
+export function getBestChineseSlugForPath(
+  englishSlug: string,
+  fallbackSlug: string
+): string {
+  // Try to get mapped Chinese slug first
+  const mappedChineseSlug = getChineseSlug(englishSlug);
+  if (mappedChineseSlug) {
+    return mappedChineseSlug;
+  }
+
+  // Fall back to the original English slug if no mapping exists
+  if (englishSlug) {
+    return englishSlug;
+  }
+
+  // Final fallback to ensure we always return a valid slug
+  return fallbackSlug;
+}
