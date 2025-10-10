@@ -1,12 +1,34 @@
 ---
 import { getLangTag } from "@/i18n/utils";
+import type { CollectionEntry } from "astro:content";
 
+interface Props {
+  post?: CollectionEntry<"blog" | "blog-en">;
+}
+
+const { post } = Astro.props;
 const langTag = getLangTag(Astro);
+
+// 生成统一的评论 ID：优先使用 originalTitle，其次是 title
+const getCommentId = () => {
+  if (!post) return null;
+
+  // 如果有 originalTitle，使用它作为统一标识符（中英文文章都有相同的 originalTitle）
+  if (post.data.originalTitle) {
+    return post.data.originalTitle;
+  }
+
+  // 回退到使用 title（中文文章）或从 id 提取 slug
+  return post.data.title || post.id;
+};
+
+const commentId = getCommentId();
+
 ---
 
 <div id="tcomment"></div>
 
-<script define:vars={{ langTag }}>
+<script define:vars={{ langTag, commentId }}>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");
@@ -16,14 +38,23 @@ const langTag = getLangTag(Astro);
           "https://cdn.staticfile.org/twikoo/1.6.39/twikoo.all.min.js";
         script.async = true;
         script.onload = () => {
+          // 构建 Twikoo 配置
+          const twikooConfig = {
+            envId: 'https://comment.gaazeon.com/',
+            el: '#tcomment',
+            lang: langTag,
+          };
+
+          // 如果有统一的评论 ID，则使用它
+          if (commentId) {
+            twikooConfig.id = commentId;
+            // 不设置 path，让 Twikoo 完全依赖 id 来识别评论
+            // twikooConfig.path = location.pathname;
+          }
+
+
           const initScript = document.createElement("script");
-          initScript.innerHTML = `
-            twikoo.init({
-                envId: 'https://comment.gaazeon.com/',
-                el: '#tcomment',
-                lang: '${langTag}',
-            });
-        `;
+          initScript.innerHTML = "twikoo.init(" + JSON.stringify(twikooConfig) + ");";
           document.body.appendChild(initScript);
         };
         document.body.appendChild(script);
