@@ -48,8 +48,9 @@ const commentId = getCommentId();
           // 如果有统一的评论 ID，则使用它
           if (commentId) {
             twikooConfig.id = commentId;
-            // 不设置 path，让 Twikoo 完全依赖 id 来识别评论
-            // twikooConfig.path = location.pathname;
+            // 使用统一的 path，确保中英文页面使用相同的路径标识
+            // 使用 originalTitle 作为路径，确保唯一性和一致性
+            twikooConfig.path = `/comments/${commentId}/`;
           }
 
 
