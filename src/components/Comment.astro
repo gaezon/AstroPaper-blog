@@ -48,7 +48,7 @@ const commentId = getCommentId();
           if (commentId) {
             twikooConfig.id = commentId;
 
-            // Backward compatibility for old comments:优先使用原始路径，确保既有的评论能够正常显示
+            // 向后兼容旧评论：优先使用原始路径，确保既有的评论能够正常显示
             // For posts with originalTitle, use the original Chinese post's path as the main path
             if (post && post.data.originalTitle) {
               // For English posts, map to the corresponding Chinese slug
