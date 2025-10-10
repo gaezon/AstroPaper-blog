@@ -66,7 +66,8 @@ const commentId = getCommentId();
                   // Add more mappings here as new bilingual posts are created
                   // Format: "english-slug": "Chinese-Slug"
                 };
-                chineseSlug = slugMapping[post.data.slug];
+                chineseSlug =
+                  slugMapping[post.data.slug] || post.data.slug || post.id;
               } else {
                 // Chinese posts: use their own slug directly
                 chineseSlug = post.data.slug || post.id;
