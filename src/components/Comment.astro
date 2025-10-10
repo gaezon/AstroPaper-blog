@@ -24,11 +24,26 @@ const getCommentId = () => {
 };
 
 const commentId = getCommentId();
+
+// 预计算中文 slug，用于客户端
+const getChineseSlugForPath = () => {
+  if (!post) return null;
+
+  if (typeof post.data.locale === "string" && post.data.locale === "en") {
+    // English posts: Map to the corresponding Chinese slug
+    return post.data.slug ? getChineseSlug(post.data.slug) || post.data.slug || post.id : post.id;
+  } else {
+    // Chinese posts: use their own slug directly
+    return post.data.slug || post.id;
+  }
+};
+
+const chineseSlugForPath = getChineseSlugForPath();
 ---
 
 <div id="tcomment"></div>
 
-<script define:vars={{ langTag, commentId, post }}>
+<script define:vars={{ langTag, commentId, post, chineseSlugForPath }}>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");
@@ -51,25 +66,8 @@ const commentId = getCommentId();
 
             // 向后兼容旧评论：优先使用原始路径，确保既有的评论能够正常显示
             // For posts with originalTitle, use the original Chinese post's path as the main path
-            if (post && post.data.originalTitle) {
-              // For English posts, map to the corresponding Chinese slug
-              // For Chinese posts, use their own slug
-              let chineseSlug;
-              if (
-                typeof post.data.locale === "string" &&
-                post.data.locale === "en"
-              ) {
-                // English posts: Convert English slug to Chinese slug format
-                // Use centralized slug mapping configuration for better maintainability
-                chineseSlug =
-                  getChineseSlug(post.data.slug) || post.data.slug || post.id;
-              } else {
-                // Chinese posts: use their own slug directly
-                chineseSlug = post.data.slug || post.id;
-              }
-              if (chineseSlug) {
-                twikooConfig.path = `/posts/${chineseSlug}/`;
-              }
+            if (post && post.data.originalTitle && chineseSlugForPath) {
+              twikooConfig.path = `/posts/${chineseSlugForPath}/`;
             } else {
               // Fallback to a unified comment path for new posts without originalTitle
               twikooConfig.path = `/comments/${commentId}/`;
