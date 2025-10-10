@@ -23,7 +23,6 @@ const getCommentId = () => {
 };
 
 const commentId = getCommentId();
-
 ---
 
 <div id="tcomment"></div>
@@ -40,8 +39,8 @@ const commentId = getCommentId();
         script.onload = () => {
           // 构建 Twikoo 配置
           const twikooConfig = {
-            envId: 'https://comment.gaazeon.com/',
-            el: '#tcomment',
+            envId: "https://comment.gaazeon.com/",
+            el: "#tcomment",
             lang: langTag,
           };
 
@@ -55,11 +54,11 @@ const commentId = getCommentId();
               // 对于英文文章，需要使用对应的中文文章的 slug
               // 对于中文文章，直接使用自己的 slug
               let chineseSlug;
-              if (post.data.locale === 'en') {
+              if (post.data.locale === "en") {
                 // 英文文章：从中文 slug 映射（需要根据实际情况调整）
                 // 这里我们使用已知的中文 slug
                 const slugMapping = {
-                  'why-i-started-blogging': 'Why-did-I-start-blogging'
+                  "why-i-started-blogging": "Why-did-I-start-blogging",
                   // 可以添加更多映射
                 };
                 chineseSlug = slugMapping[post.data.slug] || post.data.slug;
@@ -74,9 +73,9 @@ const commentId = getCommentId();
             }
           }
 
-
           const initScript = document.createElement("script");
-          initScript.innerHTML = "twikoo.init(" + JSON.stringify(twikooConfig) + ");";
+          initScript.innerHTML =
+            "twikoo.init(" + JSON.stringify(twikooConfig) + ");";
           document.body.appendChild(initScript);
         };
         document.body.appendChild(script);
