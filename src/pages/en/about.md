@@ -6,7 +6,7 @@ description: "Personal introduction of tech enthusiast Gaazeon. Non-CS backgroun
 
 # 👋 About Me
 
-I'm Gaazeon, a tech enthusiast who didn't study computer science. I live in China and gradually developed an interest in technology later on. I like tinkering with various tools and documenting problems I encounter.
+I'm Gaazeon, a tech enthusiast from a non-computer science background, currently living in China. My college major wasn't computer science, but I gradually developed a passion for tinkering with various tools and documenting problems I encounter.
 
 There are two reasons why I started blogging. One is that I felt I was reading a lot but writing very little, becoming just a passive consumer rather than a contributor. I wanted to improve my writing skills through practice. The other, more ambitious reason is to leave behind a record of my personal experiences, hoping that future generations might understand this era through individual perspectives like mine.
 
