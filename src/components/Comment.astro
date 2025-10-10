@@ -48,32 +48,34 @@ const commentId = getCommentId();
           if (commentId) {
             twikooConfig.id = commentId;
 
-            // 兼容过往评论：优先使用原始路径，确保既有的评论能够正常显示
-            // 对于有 originalTitle 的文章，使用中文页面的原始路径作为主路径
+            // Backward compatibility for old comments:优先使用原始路径，确保既有的评论能够正常显示
+            // For posts with originalTitle, use the original Chinese post's path as the main path
             if (post && post.data.originalTitle) {
-              // 对于英文文章，需要使用对应的中文文章的 slug
-              // 对于中文文章，直接使用自己的 slug
+              // For English posts, map to the corresponding Chinese slug
+              // For Chinese posts, use their own slug
               let chineseSlug;
               if (
                 typeof post.data.locale === "string" &&
                 post.data.locale === "en"
               ) {
-                // 英文文章：从中文 slug 映射（需要根据实际情况调整）
-                // 这里我们使用已知的中文 slug
+                // English posts: Convert English slug to Chinese slug format
+                // This mapping should be maintained as new posts are added
+                // TODO: Consider moving this mapping to a central configuration file
                 const slugMapping = {
                   "why-i-started-blogging": "Why-did-I-start-blogging",
-                  // 可以添加更多映射
+                  // Add more mappings here as new bilingual posts are created
+                  // Format: "english-slug": "Chinese-Slug"
                 };
                 chineseSlug = slugMapping[post.data.slug];
               } else {
-                // 中文文章：直接使用自己的 slug
+                // Chinese posts: use their own slug directly
                 chineseSlug = post.data.slug || post.id;
               }
               if (chineseSlug) {
                 twikooConfig.path = `/posts/${chineseSlug}/`;
               }
             } else {
-              // 回退到使用统一的评论路径
+              // Fallback to a unified comment path for new posts without originalTitle
               twikooConfig.path = `/comments/${commentId}/`;
             }
           }
