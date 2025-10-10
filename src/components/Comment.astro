@@ -64,12 +64,14 @@ const commentId = getCommentId();
                   "why-i-started-blogging": "Why-did-I-start-blogging",
                   // 可以添加更多映射
                 };
-                chineseSlug = slugMapping[post.data.slug] || post.data.slug;
+                chineseSlug = slugMapping[post.data.slug];
               } else {
                 // 中文文章：直接使用自己的 slug
                 chineseSlug = post.data.slug || post.id;
               }
-              twikooConfig.path = `/posts/${chineseSlug}/`;
+              if (chineseSlug) {
+                twikooConfig.path = `/posts/${chineseSlug}/`;
+              }
             } else {
               // 回退到使用统一的评论路径
               twikooConfig.path = `/comments/${commentId}/`;
