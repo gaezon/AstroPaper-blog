@@ -54,7 +54,10 @@ const commentId = getCommentId();
               // 对于英文文章，需要使用对应的中文文章的 slug
               // 对于中文文章，直接使用自己的 slug
               let chineseSlug;
-              if (post.data.locale === "en") {
+              if (
+                typeof post.data.locale === "string" &&
+                post.data.locale === "en"
+              ) {
                 // 英文文章：从中文 slug 映射（需要根据实际情况调整）
                 // 这里我们使用已知的中文 slug
                 const slugMapping = {
