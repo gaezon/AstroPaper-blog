@@ -31,7 +31,9 @@ const getChineseSlugForPath = () => {
 
   if (typeof post.data.locale === "string" && post.data.locale === "en") {
     // English posts: Map to the corresponding Chinese slug
-    return post.data.slug ? getChineseSlug(post.data.slug) || post.data.slug || post.id : post.id;
+    return post.data.slug
+      ? getChineseSlug(post.data.slug) || post.data.slug || post.id
+      : post.id;
   } else {
     // Chinese posts: use their own slug directly
     return post.data.slug || post.id;
