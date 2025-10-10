@@ -3,6 +3,7 @@ author: gaazeon
 pubDatetime: 2021-10-03T00:00:00.000+08:00
 modDatetime:
 title: 我為什麼要寫博客
+originalTitle: 我為什麼要寫博客
 slug: Why-did-I-start-blogging
 featured: false
 draft: false
