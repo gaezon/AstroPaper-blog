@@ -10,7 +10,7 @@ interface Props {
 const { post } = Astro.props;
 const langTag = getLangTag(Astro);
 
-// 生成统一的评论 ID：优先使用 originalTitle，其次是 title
+// Generate a unified comment ID: prefer originalTitle, then title
 const getCommentId = () => {
   if (!post) return null;
 
