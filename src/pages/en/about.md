@@ -12,7 +12,7 @@ There are two reasons why I started blogging. One is that I felt I was reading a
 
 My blog mostly focuses on practical technologies, and I will probably also share life records in the future.
 
-I live in China, Chinese is my native language, and I can read English technical documentation. If you find any issues in my articles, please let me know.
+Chinese is my native language, and I can read English technical documentation. If you find any issues in my articles, please let me know.
 
 ---
 
