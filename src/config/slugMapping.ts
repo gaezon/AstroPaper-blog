@@ -21,6 +21,15 @@
 
 export const slugMapping: Record<string, string> = {
   "why-i-started-blogging": "why-did-i-start-blogging",
+  "remove-tracking-qinglong": "remove-tracking-qinglong",
+  "why-switch-from-hapigo-to-raycast": "why-switch-from-hapigo-to-raycast",
+  "ibkr-drip": "is-ibkr-drip-really-commission-free",
+  "obs-live-streaming-safe-broadcast-delay-pitfalls":
+    "OBS-safe-broadcast-pitfalls",
+  "tailscale-site-to-site-openwrt-p2p": "tailscale-site-to-site-connect",
+  "upgrade-astropaper-git": "upgrade-astropaper-git",
+  "cline-notion-mcp-gcp": "cline-notion-mcp-gcp",
+  "self-host-hoarder-replace-cubox": "hoarder-app-replace-cubox",
   // Add more mappings here as new bilingual posts are created
   // Format: "english-slug": "chinese-slug"
 };
