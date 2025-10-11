@@ -4,11 +4,12 @@
   "version": "5.5.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "pnpm tsx scripts/copy-mermaid.ts && astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
+    "build": "pnpm tsx scripts/copy-mermaid.ts && pnpm run generate:bilingual-mapping && astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
     "og:preview": "tsx scripts/og-preview.ts",
     "preview": "astro preview",
     "sync": "astro sync",
     "i18n:scaffold-en": "tsx scripts/create-english-drafts.ts",
+    "generate:bilingual-mapping": "node scripts/auto-discover-bilingual.js",
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
