@@ -9,7 +9,7 @@
     "preview": "astro preview",
     "sync": "astro sync",
     "i18n:scaffold-en": "tsx scripts/create-english-drafts.ts",
-    "generate:bilingual-mapping": "node scripts/auto-discover-bilingual.js",
+    "generate:bilingual-mapping": "pnpm tsx scripts/auto-discover-bilingual.ts",
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",

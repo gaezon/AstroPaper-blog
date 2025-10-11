@@ -1,12 +1,12 @@
 /**
  * 自动生成的双语文章映射表
- * 生成时间: 2025-10-11T07:41:08.421Z
+ * 生成时间: 2025-10-11T09:20:40.356Z
  *
  * 此文件由脚本自动生成，请勿手动编辑！
  * 如需重新生成，请运行: pnpm run generate:bilingual-mapping
  */
 
-export const dynamicSlugMapping = {
+export const dynamicSlugMapping: Record<string, string> = {
   "obs-live-streaming-safe-broadcast-delay-pitfalls": "OBS-safe-broadcast-pitfalls",
   "tailscale-site-to-site-openwrt-p2p": "tailscale-site-to-site-connect",
   "why-i-started-blogging": "Why-did-I-start-blogging",
@@ -17,7 +17,13 @@ export const dynamicSlugMapping = {
   "why-switch-from-hapigo-to-raycast": "why-switch-from-hapigo-to-raycast"
 };
 
-export const unifiedCommentPaths = {
+export const unifiedCommentPaths: Record<string, {
+  zhPath: string;
+  enPath: string;
+  unifiedCommentPath: string;
+  confidence: number;
+  matchType: string;
+}> = {
   "OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案": {
     "zhPath": "/posts/OBS-safe-broadcast-pitfalls/",
     "enPath": "/en/posts/obs-live-streaming-safe-broadcast-delay-pitfalls/",
@@ -77,7 +83,16 @@ export const unifiedCommentPaths = {
 };
 
 export const mappingMetadata = {
-  generatedAt: '2025-10-11T07:41:08.422Z',
-  totalMatches: 8,
-  matchTypes: ["originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","similarity"]
+  "generatedAt": "2025-10-11T09:20:40.356Z",
+  "totalMatches": 8,
+  "matchTypes": [
+    "originalTitle",
+    "originalTitle",
+    "originalTitle",
+    "originalTitle",
+    "originalTitle",
+    "originalTitle",
+    "originalTitle",
+    "similarity"
+  ]
 };

@@ -8,16 +8,68 @@
  * 生成动态映射关系供评论系统使用。
  */
 
-import { readFileSync, readdirSync, existsSync } from 'fs';
+import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+
+// 类型定义
+interface ArticleFrontmatter {
+  author?: string;
+  pubDatetime: Date;
+  modDatetime?: Date | null;
+  title: string;
+  featured?: boolean;
+  draft?: boolean;
+  tags: string[];
+  description?: string;
+  canonicalURL?: string;
+  hideEditPost?: boolean;
+  timezone?: string;
+  locale?: string;
+  originalTitle?: string;
+  slug?: string;
+}
+
+interface Article {
+  file: string;
+  path: string;
+  slug: string;
+  title: string;
+  originalTitle?: string;
+  locale: string;
+}
+
+interface ArticleMatch {
+  zh: Article;
+  en: Article;
+  confidence: number;
+  matchType: 'originalTitle' | 'similarity';
+}
+
+interface DynamicMappingResult {
+  mapping: Record<string, string>;
+  unifiedPaths: Record<string, UnifiedPathInfo>;
+}
+
+interface UnifiedPathInfo {
+  zhPath: string;
+  enPath: string;
+  unifiedCommentPath: string;
+  confidence: number;
+  matchType: string;
+}
+
+interface MappingMetadata {
+  generatedAt: string;
+  totalMatches: number;
+  matchTypes: string[];
+}
 
 // 检查是否为 CI 环境或非交互式环境
 const isCI = process.env.CI || process.env.NODE_ENV === 'production';
 
-const log = (message) => {
+const log = (message: string): void => {
   if (!isCI && typeof process !== 'undefined' && process.stdout) {
-    // eslint-disable-next-line no-console
     console.log(message);
   }
 };
@@ -31,18 +83,18 @@ const BLOG_EN_PATH = join(BLOG_PATH, 'en');
 /**
  * 从 Markdown 文件中提取 frontmatter
  */
-function extractFrontmatter(filePath) {
+function extractFrontmatter(filePath: string): Partial<ArticleFrontmatter> {
   try {
     const content = readFileSync(filePath, 'utf-8');
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
     if (!frontmatterMatch) return {};
 
     const frontmatter = frontmatterMatch[1];
-    const result = {};
+    const result: Record<string, string | string[] | undefined> = {};
 
     // 简单解析 YAML frontmatter
     const lines = frontmatter.split('\n');
-    let currentKey = null;
+    let currentKey: string | null = null;
     let inArray = false;
 
     for (const line of lines) {
@@ -67,11 +119,12 @@ function extractFrontmatter(filePath) {
           result[currentKey] = [];
           inArray = true;
         }
-        result[currentKey].push(trimmed.substring(2).replace(/^["']|["']$/g, ''));
+        const currentArray = result[currentKey] as string[];
+        currentArray.push(trimmed.substring(2).replace(/^["']|["']$/g, ''));
       }
     }
 
-    return result;
+    return result as Partial<ArticleFrontmatter>;
   } catch {
     // Silent error handling for CI environments
     return {};
@@ -81,8 +134,8 @@ function extractFrontmatter(filePath) {
 /**
  * 获取文章列表及其元数据
  */
-function getArticles() {
-  const articles = { zh: [], en: [] };
+function getArticles(): { zh: Article[]; en: Article[] } {
+  const articles: { zh: Article[]; en: Article[] } = { zh: [], en: [] };
 
   // 获取中文文章
   if (existsSync(BLOG_PATH)) {
@@ -131,7 +184,7 @@ function getArticles() {
 /**
  * 计算字符串相似度（基于编辑距离）
  */
-function similarity(str1, str2) {
+function similarity(str1: string, str2: string): number {
   const s1 = str1.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, '');
   const s2 = str2.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, '');
 
@@ -147,8 +200,8 @@ function similarity(str1, str2) {
 /**
  * 计算编辑距离
  */
-function levenshteinDistance(str1, str2) {
-  const matrix = [];
+function levenshteinDistance(str1: string, str2: string): number {
+  const matrix: number[][] = [];
 
   for (let i = 0; i <= str2.length; i++) {
     matrix[i] = [i];
@@ -178,14 +231,14 @@ function levenshteinDistance(str1, str2) {
 /**
  * 基于 originalTitle 匹配文章
  */
-function matchByOriginalTitle(zhArticles, enArticles) {
-  const matches = [];
-  const matchedEn = new Set();
+function matchByOriginalTitle(zhArticles: Article[], enArticles: Article[]): ArticleMatch[] {
+  const matches: ArticleMatch[] = [];
+  const matchedEnFiles = new Set<string>();
 
   for (const zh of zhArticles) {
     if (zh.originalTitle) {
       const matchingEn = enArticles.find(en =>
-        en.originalTitle === zh.originalTitle && !matchedEn.has(en.file)
+        en.originalTitle === zh.originalTitle && !matchedEnFiles.has(en.file)
       );
 
       if (matchingEn) {
@@ -195,7 +248,7 @@ function matchByOriginalTitle(zhArticles, enArticles) {
           confidence: 1.0,
           matchType: 'originalTitle'
         });
-        matchedEn.add(matchingEn.file);
+        matchedEnFiles.add(matchingEn.file);
       }
     }
   }
@@ -206,17 +259,17 @@ function matchByOriginalTitle(zhArticles, enArticles) {
 /**
  * 基于文件名相似度匹配文章
  */
-function matchBySimilarity(zhArticles, unmatchedEn) {
-  const matches = [];
-  const matchedEn = new Set();
+function matchBySimilarity(zhArticles: Article[], unmatchedEn: Article[]): ArticleMatch[] {
+  const matches: ArticleMatch[] = [];
+  const matchedEnFiles = new Set<string>();
 
   for (const zh of zhArticles) {
-    let bestMatch = null;
+    let bestMatch: Article | null = null;
     let bestScore = 0;
 
     for (const en of unmatchedEn) {
       // 跳过已经匹配的文章
-      if (matchedEn.has(en.file)) continue;
+      if (matchedEnFiles.has(en.file)) continue;
 
       // 计算多种相似度分数
       const slugSimilarity = similarity(zh.slug, en.slug);
@@ -238,7 +291,7 @@ function matchBySimilarity(zhArticles, unmatchedEn) {
         confidence: bestScore,
         matchType: 'similarity'
       });
-      matchedEn.add(bestMatch.file);
+      matchedEnFiles.add(bestMatch.file);
     }
   }
 
@@ -248,9 +301,9 @@ function matchBySimilarity(zhArticles, unmatchedEn) {
 /**
  * 生成动态映射表
  */
-function generateDynamicMapping(matches) {
-  const mapping = {};
-  const unifiedPaths = {};
+function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
+  const mapping: Record<string, string> = {};
+  const unifiedPaths: Record<string, UnifiedPathInfo> = {};
 
   for (const match of matches) {
     const { zh, en, confidence, matchType } = match;
@@ -276,47 +329,51 @@ function generateDynamicMapping(matches) {
 /**
  * 保存结果到文件
  */
-function saveResults(results) {
+function saveResults(results: DynamicMappingResult): void {
   const outputPath = join(PROJECT_ROOT, 'src', 'utils', 'generated');
 
   // 确保目录存在
-  import('fs').then(({ mkdirSync }) => {
-    try {
-      mkdirSync(outputPath, { recursive: true });
-    } catch {
-      // 目录可能已存在
-    }
-  });
+  try {
+    mkdirSync(outputPath, { recursive: true });
+  } catch {
+    // 目录可能已存在
+  }
 
   // 保存动态映射
+  const metadata: MappingMetadata = {
+    generatedAt: new Date().toISOString(),
+    totalMatches: Object.keys(results.unifiedPaths).length,
+    matchTypes: Object.values(results.unifiedPaths).map(p => p.matchType)
+  };
+
   const mappingContent = `/**
  * 自动生成的双语文章映射表
- * 生成时间: ${new Date().toISOString()}
+ * 生成时间: ${metadata.generatedAt}
  *
  * 此文件由脚本自动生成，请勿手动编辑！
  * 如需重新生成，请运行: pnpm run generate:bilingual-mapping
  */
 
-export const dynamicSlugMapping = ${JSON.stringify(results.mapping, null, 2)};
+export const dynamicSlugMapping: Record<string, string> = ${JSON.stringify(results.mapping, null, 2)};
 
-export const unifiedCommentPaths = ${JSON.stringify(results.unifiedPaths, null, 2)};
+export const unifiedCommentPaths: Record<string, {
+  zhPath: string;
+  enPath: string;
+  unifiedCommentPath: string;
+  confidence: number;
+  matchType: string;
+}> = ${JSON.stringify(results.unifiedPaths, null, 2)};
 
-export const mappingMetadata = {
-  generatedAt: '${new Date().toISOString()}',
-  totalMatches: ${Object.keys(results.unifiedPaths).length},
-  matchTypes: ${JSON.stringify(Object.values(results.unifiedPaths).map(p => p.matchType))}
-};
+export const mappingMetadata = ${JSON.stringify(metadata, null, 2)};
 `;
 
-  import('fs').then(({ writeFileSync }) => {
-    writeFileSync(join(outputPath, 'bilingualMapping.ts'), mappingContent);
-  });
+  writeFileSync(join(outputPath, 'bilingualMapping.ts'), mappingContent);
 }
 
 /**
  * 主函数
  */
-function main() {
+function main(): void {
   log('🔍 开始自动发现双语文章配对...');
 
   const articles = getArticles();
@@ -345,7 +402,7 @@ function main() {
   log('\n📊 匹配报告:');
   log(`总共匹配 ${allMatches.length} 对文章`);
 
-  const confidenceDistribution = {};
+  const confidenceDistribution: Record<number, number> = {};
   for (const match of allMatches) {
     const range = Math.floor(match.confidence * 10) / 10;
     confidenceDistribution[range] = (confidenceDistribution[range] || 0) + 1;
@@ -353,7 +410,7 @@ function main() {
 
   log('置信度分布:');
   Object.entries(confidenceDistribution)
-    .sort(([a], [b]) => b - a)
+    .sort(([a], [b]) => Number(b) - Number(a))
     .forEach(([range, count]) => {
       log(`  ${range}: ${count} 对`);
     });
