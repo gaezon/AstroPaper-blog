@@ -1,7 +1,6 @@
 ---
 import { getLangTag } from "@/i18n/utils";
 import type { CollectionEntry } from "astro:content";
-import { getBestChineseSlugForPath } from "@/config/slugMapping";
 
 interface Props {
   post?: CollectionEntry<"blog" | "blog-en">;
@@ -25,27 +24,35 @@ const getCommentId = () => {
 
 const commentId = getCommentId();
 
-// Precompute Chinese slug for client use
-const getChineseSlugForPath = () => {
+// Generate a unified comment path based on originalTitle for automatic mapping
+const getCommentPath = () => {
   if (!post) return null;
 
-  if (typeof post.data.locale === "string" && post.data.locale === "en") {
-    // English posts: Resolve the best Chinese slug for comment path
-    return post.data.slug
-      ? getBestChineseSlugForPath(post.data.slug, post.id)
-      : post.id;
-  } else {
-    // Chinese posts: use their own slug directly
-    return post.data.slug || post.id;
+  // If originalTitle exists, use it to create a unified path for both language versions
+  if (post.data.originalTitle) {
+    // Create a URL-friendly slug from originalTitle
+    const unifiedSlug = post.data.originalTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return `/comments/${unifiedSlug}/`;
   }
+
+  // Fallback to a default path for posts without originalTitle
+  const fallbackId = post.data.title || post.id;
+  const fallbackSlug = fallbackId
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `/comments/${fallbackSlug}/`;
 };
 
-const chineseSlugForPath = getChineseSlugForPath();
+const commentPath = getCommentPath();
 ---
 
 <div id="tcomment"></div>
 
-<script define:vars={{ langTag, commentId, post, chineseSlugForPath }}>
+<script define:vars={{ langTag, commentId, commentPath }}>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");
@@ -63,17 +70,10 @@ const chineseSlugForPath = getChineseSlugForPath();
           };
 
           // If there is a unified comment ID, use it
-          if (commentId) {
+          if (commentId && commentPath) {
             twikooConfig.id = commentId;
-
-            // Backward compatibility for old comments: Prefer the original path to ensure existing comments are displayed correctly
-            // For posts with originalTitle, use the original Chinese post's path as the main path
-            if (post && post.data.originalTitle && chineseSlugForPath) {
-              twikooConfig.path = `/posts/${chineseSlugForPath}/`;
-            } else {
-              // Fallback to a unified comment path for new posts without originalTitle
-              twikooConfig.path = `/comments/${commentId}/`;
-            }
+            // Use the unified comment path for both language versions
+            twikooConfig.path = commentPath;
           }
 
           const initScript = document.createElement("script");

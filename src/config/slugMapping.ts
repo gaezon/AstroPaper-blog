@@ -1,22 +1,14 @@
 /**
- * Bilingual post slug mapping configuration
+ * @deprecated This file is kept for backward compatibility only.
  *
- * This file maintains the mapping between English and Chinese post slugs
- * for the Twikoo comment system to ensure comment synchronization
- * across language versions.
+ * The Comment.astro component now uses originalTitle-based automatic mapping
+ * instead of manual slug mapping. This approach eliminates the need for
+ * manual maintenance of slug mappings.
  *
- * Format: "english-slug": "chinese-slug"
+ * New bilingual posts should ensure both language versions have the same
+ * originalTitle field in their frontmatter.
  *
- * Usage:
- * - When creating a new bilingual post, add the mapping here
- * - English slug should match the slug in src/data/blog/en/
- * - Chinese slug should match the slug in src/data/blog/
- *
- * Example:
- * {
- *   "why-i-started-blogging": "why-did-i-start-blogging",
- *   "another-english-post": "another-chinese-post"
- * }
+ * For migration details, see the improved Comment.astro implementation.
  */
 
 export const slugMapping: Record<string, string> = {

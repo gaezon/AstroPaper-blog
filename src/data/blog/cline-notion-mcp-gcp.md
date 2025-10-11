@@ -9,6 +9,7 @@ tags:
   - MCP
   - 自动化
   - LLM
+originalTitle: Cline + Notion MCP 用自然语言为 Notion 数据库增加记录 —— 以管理个人订阅服务 notion 数据库为例
 ---
 
 ## Table of contents
