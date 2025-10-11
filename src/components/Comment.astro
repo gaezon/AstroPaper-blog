@@ -3,13 +3,16 @@ import { getLangTag } from "@/i18n/utils";
 import type { CollectionEntry } from "astro:content";
 
 // 尝试导入动态生成的映射（阶段二功能）
-let unifiedPaths: Record<string, {
-  zhPath: string;
-  enPath: string;
-  unifiedCommentPath: string;
-  confidence: number;
-  matchType: string;
-}> | null = null;
+let unifiedPaths: Record<
+  string,
+  {
+    zhPath: string;
+    enPath: string;
+    unifiedCommentPath: string;
+    confidence: number;
+    matchType: string;
+  }
+> | null = null;
 
 try {
   const mappingModule = await import("@/utils/generated/bilingualMapping.js");
