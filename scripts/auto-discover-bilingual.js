@@ -12,6 +12,16 @@ import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+// 检查是否为 CI 环境或非交互式环境
+const isCI = process.env.CI || process.env.NODE_ENV === 'production';
+
+const log = (message) => {
+  if (!isCI && typeof process !== 'undefined' && process.stdout) {
+    // eslint-disable-next-line no-console
+    console.log(message);
+  }
+};
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..');
@@ -62,8 +72,8 @@ function extractFrontmatter(filePath) {
     }
 
     return result;
-  } catch (error) {
-    console.warn(`Error reading frontmatter from ${filePath}:`, error.message);
+  } catch {
+    // Silent error handling for CI environments
     return {};
   }
 }
@@ -273,7 +283,7 @@ function saveResults(results) {
   import('fs').then(({ mkdirSync }) => {
     try {
       mkdirSync(outputPath, { recursive: true });
-    } catch (e) {
+    } catch {
       // 目录可能已存在
     }
   });
@@ -307,23 +317,23 @@ export const mappingMetadata = {
  * 主函数
  */
 function main() {
-  console.log('🔍 开始自动发现双语文章配对...');
+  log('🔍 开始自动发现双语文章配对...');
 
   const articles = getArticles();
-  console.log(`📚 发现 ${articles.zh.length} 篇中文文章，${articles.en.length} 篇英文文章`);
+  log(`📚 发现 ${articles.zh.length} 篇中文文章，${articles.en.length} 篇英文文章`);
 
   // 第一步：基于 originalTitle 匹配
   const originalTitleMatches = matchByOriginalTitle(articles.zh, articles.en);
-  console.log(`✅ 通过 originalTitle 匹配 ${originalTitleMatches.length} 对文章`);
+  log(`✅ 通过 originalTitle 匹配 ${originalTitleMatches.length} 对文章`);
 
   // 找出未匹配的英文文章
   const matchedEnFiles = new Set(originalTitleMatches.map(m => m.en.file));
   const unmatchedEn = articles.en.filter(en => !matchedEnFiles.has(en.file));
-  console.log(`🔍 剩余 ${unmatchedEn.length} 篇英文文章待匹配`);
+  log(`🔍 剩余 ${unmatchedEn.length} 篇英文文章待匹配`);
 
   // 第二步：基于相似度匹配
   const similarityMatches = matchBySimilarity(articles.zh, unmatchedEn);
-  console.log(`🎯 通过相似度匹配 ${similarityMatches.length} 对文章`);
+  log(`🎯 通过相似度匹配 ${similarityMatches.length} 对文章`);
 
   const allMatches = [...originalTitleMatches, ...similarityMatches];
 
@@ -332,8 +342,8 @@ function main() {
   saveResults(results);
 
   // 输出报告
-  console.log('\n📊 匹配报告:');
-  console.log(`总共匹配 ${allMatches.length} 对文章`);
+  log('\n📊 匹配报告:');
+  log(`总共匹配 ${allMatches.length} 对文章`);
 
   const confidenceDistribution = {};
   for (const match of allMatches) {
@@ -341,24 +351,24 @@ function main() {
     confidenceDistribution[range] = (confidenceDistribution[range] || 0) + 1;
   }
 
-  console.log('置信度分布:');
+  log('置信度分布:');
   Object.entries(confidenceDistribution)
     .sort(([a], [b]) => b - a)
     .forEach(([range, count]) => {
-      console.log(`  ${range}: ${count} 对`);
+      log(`  ${range}: ${count} 对`);
     });
 
   // 输出低置信度匹配供人工检查
   const lowConfidenceMatches = allMatches.filter(m => m.confidence < 0.8);
   if (lowConfidenceMatches.length > 0) {
-    console.log('\n⚠️  低置信度匹配（需要人工检查）:');
+    log('\n⚠️  低置信度匹配（需要人工检查）:');
     lowConfidenceMatches.forEach(match => {
-      console.log(`  ${match.zh.slug} <-> ${match.en.slug} (${match.confidence.toFixed(2)})`);
+      log(`  ${match.zh.slug} <-> ${match.en.slug} (${match.confidence.toFixed(2)})`);
     });
   }
 
-  console.log('\n✨ 动态映射生成完成！');
-  console.log('📁 输出文件: src/utils/generated/bilingualMapping.ts');
+  log('\n✨ 动态映射生成完成！');
+  log('📁 输出文件: src/utils/generated/bilingualMapping.ts');
 }
 
 // 运行主函数
