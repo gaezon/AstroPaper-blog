@@ -1,32 +1,43 @@
 ---
 import TocClient from "./TocClient.astro";
+import { extractTocFromContent } from "@/utils/extractToc";
 import { t } from "@/i18n/utils";
 
 export interface Props {
   class?: string;
+  content?: string;
 }
 
-const { class: className = "" } = Astro.props;
+const { class: className = "", content = "" } = Astro.props;
 
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
+
+// 服务端检测内容中是否有标题
+const hasHeadings = content ?
+  extractTocFromContent(content).length > 0 :
+  true; // 如果没有提供content，默认显示（向后兼容）
 ---
 
-<!-- 目录导航容器（桌面端粘性侧栏） -->
-<nav
-  id="toc-sidebar"
-  class:list={[
-    "fixed top-1/2 z-40 hidden -translate-y-1/2 xl:block",
-    // 尽可能靠近视口左侧：xl 起 1rem 间距；超宽屏继续贴近左侧
-    "xl:left-2 2xl:left-4",
-    "max-h-[calc(100vh-8rem)] w-60 overflow-y-auto transition-all duration-200",
-    "rounded-xl border border-border/60 bg-background/80 p-5 shadow-xl shadow-foreground/10 backdrop-blur-lg",
-    "hover:bg-background/85 hover:shadow-2xl hover:shadow-foreground/15",
-    className,
-  ]}
-  aria-label={tr("ui.tableOfContents")}
-  role="navigation"
->
+{hasHeadings && (
+  <!-- 目录导航容器（桌面端粘性侧栏） -->
+  <nav
+    id="toc-sidebar"
+    class:list={[
+      "fixed top-1/2 z-40 hidden -translate-y-1/2",
+      // 移除 xl:block，改为 JavaScript 控制显示
+      // "xl:block",
+      // 尽可能靠近视口左侧：xl 起 1rem 间距；超宽屏继续贴近左侧
+      "xl:left-2 2xl:left-4",
+      "max-h-[calc(100vh-8rem)] w-60 overflow-y-auto transition-all duration-200",
+      "rounded-xl border border-border/60 bg-background/80 p-5 shadow-xl shadow-foreground/10 backdrop-blur-lg",
+      "hover:bg-background/85 hover:shadow-2xl hover:shadow-foreground/15",
+      className,
+    ]}
+    aria-label={tr("ui.tableOfContents")}
+    role="navigation"
+    style="display: none;" // 初始隐藏，由 JavaScript 控制
+  >
   <div
     class="mb-4 flex items-center justify-between border-b border-border/70 pb-3"
   >
@@ -68,9 +79,11 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     </div>
   </div>
 </nav>
+)}
 
-<!-- 移动端切换按钮（独立于桌面端容器） -->
-<button
+{hasHeadings && (
+  <!-- 移动端切换按钮（独立于桌面端容器） -->
+  <button
   id="toc-toggle"
   class="fixed right-5 bottom-24 z-50 rounded-full bg-accent/90 p-3.5 text-background shadow-lg transition-all duration-200 hover:scale-105 hover:bg-accent hover:shadow-xl active:scale-95 sm:bottom-8 xl:hidden"
   style="display: none;"
@@ -85,9 +98,11 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       clip-rule="evenodd"></path>
   </svg>
 </button>
+)}
 
-<!-- 桌面端展开按钮：当目录被收起时显示（仅 >=xl 显示） -->
-<button
+{hasHeadings && (
+  <!-- 桌面端展开按钮：当目录被收起时显示（仅 >=xl 显示） -->
+  <button
   id="toc-open-desktop"
   class:list={[
     "fixed top-1/2 z-40 hidden h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full xl:flex",
@@ -125,9 +140,11 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     </div>
   </div>
 </button>
+)}
 
-<!-- 移动端覆盖层 -->
-<div
+{hasHeadings && (
+  <!-- 移动端覆盖层 -->
+  <div
   id="toc-overlay"
   class="pointer-events-none fixed inset-0 z-30 bg-background/85 opacity-0 backdrop-blur-md transition-opacity duration-200 xl:hidden"
   role="dialog"
@@ -170,6 +187,6 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     </nav>
   </div>
 </div>
+)}
 
-<!-- 引入客户端交互组件 -->
-<TocClient />
+{hasHeadings && <TocClient />}
