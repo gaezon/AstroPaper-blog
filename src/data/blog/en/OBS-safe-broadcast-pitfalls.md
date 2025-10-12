@@ -114,11 +114,11 @@ If you don't have a hardware delay box, architecture can still save you:
 
 The core idea: **the upstream delay box** handles buffering and emergency actions; **the broadcast box** just listens and forwards.
 
-1) **Delay / upstream box**
+1. **Delay / upstream box**
    - Use **OBS's Broadcast Delay**, vMix, or a dedicated delay unit on this box.
    - Buffer ~20 seconds, and map hotkeys for `DUMP` (drop frames) / `MUTE` (silence) in emergencies.
 
-2) **Main broadcast box (your primary OBS)**
+2. **Main broadcast box (your primary OBS)**
    - **Listen** to the delayed stream via **RTMP or SRT**.
    - **Do not** use any delay filters here.
    - Push to platforms as usual.
@@ -161,7 +161,6 @@ This is the most compatible approach.
 ![OBS-Intranet-RTMP-latency](https://img.gaazeon.com/2025/06/OBS-Intranet-RTMP-latency.avif)
 
 点击「**开始推流**」，延时画面就会稳稳地出现在播出机的媒体源里。
-
 
 ---
 
@@ -217,7 +216,6 @@ graph TD
     A3 --> B2
     B4 --> C
 ```
-
 
 ---
 
