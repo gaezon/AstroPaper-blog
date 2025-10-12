@@ -15,7 +15,7 @@ let unifiedPaths: Record<
 > | null = null;
 
 try {
-  const mappingModule = await import("@/utils/generated/bilingualMapping.js");
+  const mappingModule = await import("@/utils/generated/bilingualMapping.ts");
   unifiedPaths = mappingModule.unifiedCommentPaths;
 } catch {
   // 如果动态映射不存在，回退到 originalTitle 方式（阶段一）
