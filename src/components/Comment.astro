@@ -52,19 +52,23 @@ const getCommentId = () => {
 
 const commentId = getCommentId();
 
-// Generate a unified comment path with automatic mapping
+// Generate a comment path with automatic mapping
+// Prefer historical canonical paths (zh/en) for backward compatibility
 const getCommentPath = () => {
   if (!post) return null;
 
-  // 阶段二：使用动态生成的统一评论路径
+  // 阶段二：使用动态生成的映射，优先返回历史存在的页面路径（兼容旧评论）
   if (unifiedPaths && post.data.originalTitle) {
     const unifiedInfo = unifiedPaths[post.data.originalTitle];
-    if (unifiedInfo && unifiedInfo.unifiedCommentPath) {
-      return unifiedInfo.unifiedCommentPath;
+    if (unifiedInfo) {
+      // 兼容策略：优先中文路径（多数旧评论沉淀在中文），否则英文路径
+      if (unifiedInfo.zhPath) return unifiedInfo.zhPath;
+      if (unifiedInfo.enPath) return unifiedInfo.enPath;
+      if (unifiedInfo.unifiedCommentPath) return unifiedInfo.unifiedCommentPath;
     }
   }
 
-  // 阶段一：基于 originalTitle 生成路径
+  // 阶段一：基于 originalTitle 生成统一路径（无动态映射时）
   if (post.data.originalTitle) {
     // Create a URL-friendly slug from originalTitle
     const unifiedSlug = post.data.originalTitle
