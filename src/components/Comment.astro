@@ -1,12 +1,98 @@
 ---
 import { getLangTag } from "@/i18n/utils";
+import type { CollectionEntry } from "astro:content";
 
+// 尝试导入动态生成的映射（阶段二功能）
+let unifiedPaths: Record<
+  string,
+  {
+    zhPath: string;
+    enPath: string;
+    unifiedCommentPath: string;
+    confidence: number;
+    matchType: string;
+  }
+> | null = null;
+
+try {
+  const mappingModule = await import("@/utils/generated/bilingualMapping.ts");
+  unifiedPaths = mappingModule.unifiedCommentPaths;
+} catch {
+  // 如果动态映射不存在，回退到 originalTitle 方式（阶段一）
+  // Silent fallback for CI environments
+}
+
+interface Props {
+  post?: CollectionEntry<"blog" | "blog-en">;
+}
+
+const { post } = Astro.props;
 const langTag = getLangTag(Astro);
+
+// Generate a unified comment ID with fallback hierarchy
+const getCommentId = () => {
+  if (!post) return null;
+
+  // 阶段二：优先使用动态映射中的统一路径
+  if (unifiedPaths && post.data.originalTitle) {
+    const unifiedPath = unifiedPaths[post.data.originalTitle];
+    if (unifiedPath) {
+      return post.data.originalTitle;
+    }
+  }
+
+  // 阶段一：使用 originalTitle 作为统一标识符
+  if (post.data.originalTitle) {
+    return post.data.originalTitle;
+  }
+
+  // 兜底：使用标题或文件 ID
+  return post.data.title || post.id;
+};
+
+const commentId = getCommentId();
+
+// Generate a comment path with automatic mapping
+// Prefer historical canonical paths (zh/en) for backward compatibility
+const getCommentPath = () => {
+  if (!post) return null;
+
+  // 阶段二：使用动态生成的映射，优先返回历史存在的页面路径（兼容旧评论）
+  if (unifiedPaths && post.data.originalTitle) {
+    const unifiedInfo = unifiedPaths[post.data.originalTitle];
+    if (unifiedInfo) {
+      // 兼容策略：优先中文路径（多数旧评论沉淀在中文），否则英文路径
+      if (unifiedInfo.zhPath) return unifiedInfo.zhPath;
+      if (unifiedInfo.enPath) return unifiedInfo.enPath;
+      if (unifiedInfo.unifiedCommentPath) return unifiedInfo.unifiedCommentPath;
+    }
+  }
+
+  // 阶段一：基于 originalTitle 生成统一路径（无动态映射时）
+  if (post.data.originalTitle) {
+    // Create a URL-friendly slug from originalTitle
+    const unifiedSlug = post.data.originalTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return `/comments/${unifiedSlug}/`;
+  }
+
+  // 兜底：生成默认路径
+  const fallbackId = post.data.title || post.id;
+  const fallbackSlug = fallbackId
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `/comments/${fallbackSlug}/`;
+};
+
+const commentPath = getCommentPath();
 ---
 
 <div id="tcomment"></div>
 
-<script define:vars={{ langTag }}>
+<script define:vars={{ langTag, commentId, commentPath }}>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");
@@ -16,14 +102,23 @@ const langTag = getLangTag(Astro);
           "https://cdn.staticfile.org/twikoo/1.6.39/twikoo.all.min.js";
         script.async = true;
         script.onload = () => {
+          // Build Twikoo configuration
+          const twikooConfig = {
+            envId: "https://comment.gaazeon.com/",
+            el: "#tcomment",
+            lang: langTag,
+          };
+
+          // If there is a unified comment ID, use it
+          if (commentId && commentPath) {
+            twikooConfig.id = commentId;
+            // Use the unified comment path for both language versions
+            twikooConfig.path = commentPath;
+          }
+
           const initScript = document.createElement("script");
-          initScript.innerHTML = `
-            twikoo.init({
-                envId: 'https://comment.gaazeon.com/',
-                el: '#tcomment',
-                lang: '${langTag}',
-            });
-        `;
+          initScript.innerHTML =
+            "twikoo.init(" + JSON.stringify(twikooConfig) + ");";
           document.body.appendChild(initScript);
         };
         document.body.appendChild(script);

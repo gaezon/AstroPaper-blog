@@ -11,6 +11,7 @@ tags:
   - GPT AI
   - MacOS 启动器
 description: 深入分析为什么放弃使用两年多的 macOS 启动器 Hapigo，转向功能更强大的 Raycast。详细对比两者的功能差异，剖析 Hapigo 官方更新停滞的问题，以及 Raycast 丰富插件生态的优势。包含实际使用体验、功能对比和迁移建议，为 Mac 用户选择合适的效率工具提供参考。
+originalTitle: 为什么放弃已经使用两年多的 Hapigo：官方更新停滞与 Raycast 的强大替代
 ---
 
 ## 前言：为什么放弃已经使用两年多的 Hapigo

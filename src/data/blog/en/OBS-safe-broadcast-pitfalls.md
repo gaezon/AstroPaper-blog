@@ -15,37 +15,36 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 slug: obs-live-streaming-safe-broadcast-delay-pitfalls
 ---
 
-eon
-pubDatetime: 2025-06-22T20:00:00.000+08:00
-title: "OBS live streaming pitfalls: why a 20‑second ‘safe broadcast’ delay blows up your audio — and a dual‑OBS solution"
-featured: false
-draft: false
-tags:
-
-- OBS
-- Live Streaming
-- Safe Broadcast
-- Delay
-  description: "Shows why pushing OBS Video Delay to 20 seconds wrecks audio and how a dual-OBS RTMP/SRT workflow delivers a safe broadcast buffer without special hardware."
-  locale: en
-  originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
-  slug: obs-live-streaming-safe-broadcast-delay-pitfalls
-
----
-
 ## Table of contents
 
-## Background: why ‘safe broadcast’ is required
+- [Background: why 'safe broadcast' is required](#background-why-safe-broadcast-is-required)
+- [A costly failure: the 20-second test](#a-costly-failure-the-20-second-test)
+- [First attempt: assuming a filter could do it all](#first-attempt-assuming-a-filter-could-do-it-all)
+- [How I tried to delay the audio](#how-i-tried-to-delay-the-audio)
+- [Root cause: where the distortion comes from](#root-cause-where-the-distortion-comes-from)
+- [Lesson learned: fix the layer, not the knob](#lesson-learned-fix-the-layer-not-the-knob)
+- [Engineering takeaways](#engineering-takeaways)
+- [A pragmatic dual-OBS 'safe broadcast' architecture](#a-pragmatic-dual-obs-safe-broadcast-architecture)
+- [Concrete setup](#concrete-setup)
+- [Minimal OBS-only setup: no plugins, make OBS the server](#minimal-obs-only-setup-no-plugins-make-obs-the-server)
+- [Option 1: RTMP — Media Source + listen=1](#option-1-rtmp--media-source--listen1)
+- [Option 2: SRT — built into OBS 25+, lower latency](#option-2-srt---built-into-obs-25-lower-latency)
+- [FAQ](#faq)
+- [High-risk words (examples)](#high-risk-words-examples)
+- [High-risk visuals](#high-risk-visuals)
+- [Footnotes](#footnotes)
+
+## Background: why 'safe broadcast' is required
 
 On Chinese platforms like Douyin, Kuaishou and Taobao Live, streams are reviewed by both AI and human moderators. A single slip can get a room suspended instantly. To mitigate risk, most teams keep a delay of at least **20 seconds** so operators have time to `DUMP/MUTE`. Top esports broadcasts sometimes go as high as 2 minutes. Viewers may complain about latency, but for businesses, giving the last‑mile moderator enough time to react is far more important than shaving a few seconds off the delay.
 
-## A costly failure: the 20‑second test
+## A costly failure: the 20-second test
 
-I didn’t have a dedicated delay unit, but still wanted a 20‑second delay in OBS. How hard could it be?
+I didn't have a dedicated delay unit, but still wanted a 20‑second delay in OBS. How hard could it be?
 
 ### First attempt: assuming a filter could do it all
 
-The plan was to use OBS’s built‑in `Video Delay (Async)` filter:
+The plan was to use OBS's built‑in `Video Delay (Async)` filter:
 
 ```text
 Filter → Video Delay (Async)
@@ -60,7 +59,7 @@ Important: the Video Delay (Async) filter delays video frames only. Audio is sti
 
 ### How I tried to delay the audio
 
-Here’s what I tried:
+Here's what I tried:
 
 1. In **Mixer → Advanced Audio Properties**, set the **Sync Offset** of all outbound audio sources to `20000 ms` to match the video delay.
 2. In Audio Monitoring, enable **Monitor and Output** so local monitoring stays real‑time while the outbound stream is 20 seconds late (matching video).
@@ -71,25 +70,25 @@ Here’s what I tried:
 
 ### Root cause: where the distortion comes from
 
-This puzzled me, so I combed through GitHub issues and the OBS forum. Here’s what I found:
+This puzzled me, so I combed through GitHub issues and the OBS forum. Here's what I found:
 
-**1) Video Delay (Async) is not designed for ‘safe broadcast’**[^1] — its real purpose is correcting lip‑sync differences on the order of 100–200 ms. It was never designed for tens‑of‑seconds broadcast delay — even if you can type a big number in the UI.
+**1) Video Delay (Async) is not designed for 'safe broadcast'**[^1] — its real purpose is correcting lip‑sync differences on the order of 100–200 ms. It was never designed for tens‑of‑seconds broadcast delay — even if you can type a big number in the UI.
 
-**2) OBS audio buffering has a hard cap at ~960 ms**[^2] — in OBS’s code, the maximum audio buffering (`max buffering`) is effectively limited to about `960 ms`. No matter what you type in the filter, audio won’t delay beyond ~1 second.
+**2) OBS audio buffering has a hard cap at ~960 ms**[^2] — in OBS's code, the maximum audio buffering (`max buffering`) is effectively limited to about `960 ms`. No matter what you type in the filter, audio won't delay beyond ~1 second.
 
-**3) Mixers/filters can’t ‘fill’ a 20‑second gap** — After noticing video was behind, I tried forcing `20000 ms` in **Advanced Audio Properties → Sync Offset** and delaying monitoring on the mic channel. Still failed, for two reasons:
+**3) Mixers/filters can't 'fill' a 20‑second gap** — After noticing video was behind, I tried forcing `20000 ms` in **Advanced Audio Properties → Sync Offset** and delaying monitoring on the mic channel. Still failed, for two reasons:
 
 - **The 960 ms ceiling still applies** — Sync Offset relies on the same buffer and gets clipped.
-- **Mixers don’t rewrite timestamps** — even if monitoring sounds “in sync”, RTMP packets keep original timestamps. The server still sees “audio early, video late” and starts resampling/dropping.
+- **Mixers don't rewrite timestamps** — even if monitoring sounds "in sync", RTMP packets keep original timestamps. The server still sees "audio early, video late" and starts resampling/dropping.
 
-In short, _what you hear locally is not what the audience hears_. Mixer sliders and ‘sync offset’ filters are for sub‑second lip‑sync tweaks — not 20‑second broadcast delays.
+In short, _what you hear locally is not what the audience hears_. Mixer sliders and 'sync offset' filters are for sub‑second lip‑sync tweaks — not 20‑second broadcast delays.
 
 With `20000 ms` set:
 
 - **Video** really was 20 seconds late.
 - **Audio** ignored the offset due to the 960 ms cap and remained close to real time.
 
-That ~20‑second timestamp gap forced the RTMP server (YouTube/Bilibili) to “fix” sync by aggressive resampling/dropping on the audio track — the source of the crackling.
+That ~20‑second timestamp gap forced the RTMP server (YouTube/Bilibili) to "fix" sync by aggressive resampling/dropping on the audio track — the source of the crackling.
 
 I validated this repeatedly on YouTube: **once Video Delay exceeds ~10 seconds, crackling/distortion almost always appears for viewers.**
 
@@ -102,11 +101,11 @@ My mistake was treating **render‑layer knobs** as if they were **transport‑l
 ### Engineering takeaways
 
 1. **Layering matters** — a small UI slider can hide a very different abstraction underneath. Delay belongs to the transport layer; forcing it in the render layer yields a fragile illusion.
-2. **End‑to‑end view** — local monitoring “feels fine” is not the same as CDN ingest being logically in sync. Always inspect the final output stream.
+2. **End‑to‑end view** — local monitoring "feels fine" is not the same as CDN ingest being logically in sync. Always inspect the final output stream.
 
-## A pragmatic dual‑OBS ‘safe broadcast’ architecture
+## A pragmatic dual‑OBS 'safe broadcast' architecture
 
-If you don’t have a hardware delay box, architecture can still save you:
+If you don't have a hardware delay box, architecture can still save you:
 
 - **Technique**: keep the delay upstream and monitor locally; your broadcast box consumes an already‑delayed stream.
 - **Operations**: bind `DUMP/MUTE` to a Stream Deck (or similar) to give operators a 5–10‑second reaction window.
@@ -116,7 +115,7 @@ If you don’t have a hardware delay box, architecture can still save you:
 The core idea: **the upstream delay box** handles buffering and emergency actions; **the broadcast box** just listens and forwards.
 
 1. **Delay / upstream box**
-   - Use **OBS’s Broadcast Delay**, vMix, or a dedicated delay unit on this box.
+   - Use **OBS's Broadcast Delay**, vMix, or a dedicated delay unit on this box.
    - Buffer ~20 seconds, and map hotkeys for `DUMP` (drop frames) / `MUTE` (silence) in emergencies.
 
 2. **Main broadcast box (your primary OBS)**
@@ -134,34 +133,34 @@ This is the most compatible approach.
 
 ##### RTMP receiver (broadcast OBS)
 
-1. Add a new **Media Source** to the scene.
-2. **Uncheck** “Local File”.
-3. Set **Input** to:
+1. Add a new "**Media Source**" to your scene.
+2. **Uncheck** "Local File".
+3. Enter the following in the "**Input**" field:
 
    ```text
    rtmp://0.0.0.0:1935/live/app
    ```
 
-4. In **FFmpeg Options**, set the key parameter:
+4. In the "**FFmpeg Options**", enter a key parameter:
 
    ```text
    listen=1
    ```
 
-   After this, your broadcast box is listening on port 1935 for the upstream delay box.
+   After this step, your broadcast machine will be "listening" on port 1935, waiting for the streaming machine to connect.
 
 ##### RTMP sender (delay OBS)
 
 1. Open `Settings` → `Stream`.
-2. Service: **Custom**.
-3. Server: `rtmp://<broadcast-box IP>:1935/live/app`.
-4. Stream key: leave empty or arbitrary.
+2. Select "**Custom**" for service.
+3. Enter server address `rtmp://<broadcast-machine-IP>:1935/live/app`.
+4. Stream key can be left blank or filled arbitrarily.
 
-Then enable **Stream Delay** in `Settings → Advanced` and set **20 s**[^4].
+Then in OBS Settings → Advanced → Stream Delay, enable delay and set it to 20 seconds[^4]
 
 ![OBS-Intranet-RTMP-latency](https://img.gaazeon.com/2025/06/OBS-Intranet-RTMP-latency.avif)
 
-Click **Start Streaming**. The delayed picture will appear in the broadcast box media source.
+Click "**Start Streaming**", and the delayed feed will appear steadily in your broadcast machine's media source.
 
 ---
 
@@ -192,19 +191,19 @@ Diagram (dual‑OBS over RTMP)
 ```mermaid
 graph TD
     subgraph A ["Real-time Machine"]
-        A1["OBS Studio<br/>Capture live feed"]
-        A2["Settings → Advanced → Stream Delay<br/>(20 seconds)"]
-        A3["Stream config<br/>rtmp://delay-box-ip:1935/live/app"]
+        A1["OBS Studio<br/>Capture Live Scene"]
+        A2["Settings-Advanced-Stream Delay<br/>Enable 20s Delay"]
+        A3["Stream Config<br/>rtmp://delay-machine-IP:1935/live/app"]
         A1 --> A2
         A2 --> A3
     end
 
     subgraph B ["Delay Machine"]
-        B1["OBS Studio<br/>Control desk"]
-        B2["Media Source<br/>listen to RTMP (listen=1)"]
-        B3["Mute/Dump<br/>emergency controls"]
-        B4["Push output<br/>to platforms"]
-        B5["Firewall<br/>open 1935"]
+        B1["OBS Studio<br/>Broadcast Console"]
+        B2["Media Source Config<br/>Listen RTMP Internal Stream<br/>listen=1"]
+        B3["Mute/Dump<br/>Emergency Control"]
+        B4["Stream Output<br/>Major Streaming Platforms"]
+        B5["Firewall Settings<br/>Open Port 1935"]
 
         B1 --> B2
         B1 --> B3
@@ -212,7 +211,7 @@ graph TD
         B2 -.-> B5
     end
 
-    C["Final platforms<br/>YouTube/Bilibili"]
+    C["Final Streaming Platform<br/>YouTube/Bilibili/etc"]
 
     A3 --> B2
     B4 --> C
@@ -230,13 +229,13 @@ A: No. NDI is built for real‑time, low‑latency transport. Using it for long 
 
 ### Extra notes
 
-#### High‑risk words (examples)
+#### High-risk words (examples)
 
 - Names/titles of state leaders
 - Sensitive political events/slogans
 - Minority languages (e.g., Tibetan) — current ASR often misclassifies and flags them
 
-#### High‑risk visuals
+#### High-risk visuals
 
 - Foreign nationals on camera
 - Minors on camera
@@ -246,12 +245,12 @@ Touching any of the above can get a live room suspended instantly. Hence **safe 
 
 ## Footnotes
 
-[^1]: [Render Delay Filter — official docs](https://obsproject.com/kb/render-delay-filter)
+[^1]: [Render Delay Filter | Official Documentation](https://obsproject.com/kb/render-delay-filter)
 
-[^2]: [MAX_BUFFERING_TICKS — audio sync/offset limit discussion (~960 ms)](https://obsproject.com/forum/threads/max_buffering_ticks-artificial-limit-to-audio-sync_offset.54867/)
+[^2]: [MAX_BUFFERING_TICKS — Artificial Limit to Audio Sync Offset? | OBS 960 ms Audio Buffer Cap Discussion](https://obsproject.com/forum/threads/max_buffering_ticks-artificial-limit-to-audio-sync_offset.54867/)
 
-[^3]: [OBS forum: media source + RTMP `listen=1` to make OBS act as a server](https://obsproject.com/forum/threads/help-with-media-source-and-rtmp.56959/)
+[^3]: [OBS Forum Discussion "help with media source and rtmp" - Setting `listen=1` in media source makes OBS act as RTMP server](https://obsproject.com/forum/threads/help-with-media-source-and-rtmp.56959/)
 
-[^4]: [OBS forum: adding a timed delay (enable Broadcast/Stream Delay)](https://obsproject.com/forum/threads/adding-a-timed-delay-to-my-stream.2483/)
+[^4]: [OBS Forum Post "Adding a timed delay to my stream" - How to enable Broadcast/Stream Delay in Settings → Broadcast/Advanced](https://obsproject.com/forum/threads/adding-a-timed-delay-to-my-stream.2483/)
 
-[^5]: [OBS KB: SRT Protocol Streaming Guide (mode=listener / mode=caller)](https://obsproject.com/kb/srt-protocol-streaming-guide)
+[^5]: [OBS Official Knowledge Base "SRT Protocol Streaming Guide" - Usage and meaning of `mode=listener` / `mode=caller` parameters in URLs](https://obsproject.com/kb/srt-protocol-streaming-guide)

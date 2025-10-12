@@ -8,6 +8,7 @@ tags:
   - tailscale
   - 网络
   - OpenWrt
+originalTitle: Tailscale Site to Site 点对点两台 OpenWrt 异地组网教程
 ---
 
 ## Table of contents
