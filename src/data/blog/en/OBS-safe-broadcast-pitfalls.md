@@ -133,34 +133,34 @@ This is the most compatible approach.
 
 ##### RTMP receiver (broadcast OBS)
 
-1. 在场景中添加一个新的「**媒体源**」。
-2. **取消勾选**「本地文件」。
-3. 在「**输入**」框中填入：
+1. Add a new "**Media Source**" to your scene.
+2. **Uncheck** "Local File".
+3. Enter the following in the "**Input**" field:
 
    ```text
    rtmp://0.0.0.0:1935/live/app
    ```
 
-4. 在「**FFmpeg 选项**」中，填入一个关键参数：
+4. In the "**FFmpeg Options**", enter a key parameter:
 
    ```text
    listen=1
    ```
 
-   做完这一步，你的播出机就已经在 1935 端口「竖起耳朵」，等待推流机「上门」。
+   After this step, your broadcast machine will be "listening" on port 1935, waiting for the streaming machine to connect.
 
-##### RTMP 发送端 (延时机 OBS)
+##### RTMP sender (delay OBS)
 
-1. 打开 `设置` → `推流`。
-2. 服务选「**自定义**」。
-3. 服务器地址填写 `rtmp://<播出机 IP>:1935/live/app`。
-4. 串流密钥无需填写或随意填写。
+1. Open `Settings` → `Stream`.
+2. Select "**Custom**" for service.
+3. Enter server address `rtmp://<broadcast-machine-IP>:1935/live/app`.
+4. Stream key can be left blank or filled arbitrarily.
 
-接着在 OBS 设置-高级-直播延时，启动延迟，这里设置为 20 秒[^4]
+Then in OBS Settings → Advanced → Stream Delay, enable delay and set it to 20 seconds[^4]
 
 ![OBS-Intranet-RTMP-latency](https://img.gaazeon.com/2025/06/OBS-Intranet-RTMP-latency.avif)
 
-点击「**开始推流**」，延时画面就会稳稳地出现在播出机的媒体源里。
+Click "**Start Streaming**", and the delayed feed will appear steadily in your broadcast machine's media source.
 
 ---
 
@@ -190,20 +190,20 @@ Diagram (dual‑OBS over RTMP)
 
 ```mermaid
 graph TD
-    subgraph A ["实时机 Real-time Machine"]
-        A1["OBS Studio<br/>捕捉现场画面"]
-        A2["设置-高级-直播延时<br/>启动20秒延迟"]
-        A3["推流配置<br/>rtmp://延时机IP:1935/live/app"]
+    subgraph A ["Real-time Machine"]
+        A1["OBS Studio<br/>Capture Live Scene"]
+        A2["Settings-Advanced-Stream Delay<br/>Enable 20s Delay"]
+        A3["Stream Config<br/>rtmp://delay-machine-IP:1935/live/app"]
         A1 --> A2
         A2 --> A3
     end
 
-    subgraph B ["延时机 Delay Machine"]
-        B1["OBS Studio<br/>导播操作台"]
-        B2["媒体源配置<br/>监听RTMP内网流<br/>listen=1"]
-        B3["Mute/Dump<br/>紧急控制"]
-        B4["推流输出<br/>各大直播平台"]
-        B5["防火墙设置<br/>开放1935端口"]
+    subgraph B ["Delay Machine"]
+        B1["OBS Studio<br/>Broadcast Console"]
+        B2["Media Source Config<br/>Listen RTMP Internal Stream<br/>listen=1"]
+        B3["Mute/Dump<br/>Emergency Control"]
+        B4["Stream Output<br/>Major Streaming Platforms"]
+        B5["Firewall Settings<br/>Open Port 1935"]
 
         B1 --> B2
         B1 --> B3
@@ -211,7 +211,7 @@ graph TD
         B2 -.-> B5
     end
 
-    C["最终直播平台<br/>YouTube/Bilibili等"]
+    C["Final Streaming Platform<br/>YouTube/Bilibili/etc"]
 
     A3 --> B2
     B4 --> C
@@ -245,12 +245,12 @@ Touching any of the above can get a live room suspended instantly. Hence **safe 
 
 ## Footnotes
 
-[^1]: [Render Delay Filter | 渲染延迟滤镜官方说明](https://obsproject.com/kb/render-delay-filter)
+[^1]: [Render Delay Filter | Official Documentation](https://obsproject.com/kb/render-delay-filter)
 
-[^2]: [MAX_BUFFERING_TICKS — Artificial Limit to Audio Sync Offset? | OBS 960 ms 音频缓冲上限讨论](https://obsproject.com/forum/threads/max_buffering_ticks-artificial-limit-to-audio-sync_offset.54867/)
+[^2]: [MAX_BUFFERING_TICKS — Artificial Limit to Audio Sync Offset? | OBS 960 ms Audio Buffer Cap Discussion](https://obsproject.com/forum/threads/max_buffering_ticks-artificial-limit-to-audio-sync_offset.54867/)
 
-[^3]: [OBS Forum 讨论 "help with media source and rtmp" 指出 `media source` 中设置 `listen=1` 可使 OBS 充当 RTMP 服务器](https://obsproject.com/forum/threads/help-with-media-source-and-rtmp.56959/)
+[^3]: [OBS Forum Discussion "help with media source and rtmp" - Setting `listen=1` in media source makes OBS act as RTMP server](https://obsproject.com/forum/threads/help-with-media-source-and-rtmp.56959/)
 
-[^4]: [OBS 论坛帖子 "Adding a timed delay to my stream" 说明在 Settings → Broadcast/Advanced 中可直接启用 Broadcast/Stream Delay](https://obsproject.com/forum/threads/adding-a-timed-delay-to-my-stream.2483/)
+[^4]: [OBS Forum Post "Adding a timed delay to my stream" - How to enable Broadcast/Stream Delay in Settings → Broadcast/Advanced](https://obsproject.com/forum/threads/adding-a-timed-delay-to-my-stream.2483/)
 
-[^5]: [OBS 官方知识库《SRT Protocol Streaming Guide》阐述在 URL 中使用 `mode=listener` / `mode=caller` 等参数的写法与含义](https://obsproject.com/kb/srt-protocol-streaming-guide)
+[^5]: [OBS Official Knowledge Base "SRT Protocol Streaming Guide" - Usage and meaning of `mode=listener` / `mode=caller` parameters in URLs](https://obsproject.com/kb/srt-protocol-streaming-guide)
