@@ -20,12 +20,13 @@ const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 
 // 服务端检测内容中是否有标题
+// 优先使用 headings prop，如果没有则从 content 中提取
 const hasHeadings =
   headings && headings.length > 0
     ? true
     : content
       ? extractTocFromContent(content).length > 0
-      : true; // 如果没有提供content，默认显示（向后兼容）
+      : false; // 如果没有提供标题信息，默认不显示 TOC
 ---
 
 {
