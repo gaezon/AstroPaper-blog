@@ -90,7 +90,9 @@ const getShortLabel = (code: string) => {
               role="menuitem"
               data-astro-reload
             >
-              <span class="lang-name">{locale.name}</span>
+              <span class="lang-name" title={locale.name}>
+                {locale.name}
+              </span>
               {locale.code === currentLocale && (
                 <svg
                   class="check-icon"
@@ -355,8 +357,12 @@ const getShortLabel = (code: string) => {
 
   .lang-name {
     flex: 1;
+    min-width: 0;
     position: relative;
     z-index: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .check-icon {
