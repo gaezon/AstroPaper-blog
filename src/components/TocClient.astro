@@ -52,9 +52,16 @@
       return;
     }
 
-    // 确保显示（避免上一次初始化失败时被隐藏）
-    if (tocContainer) tocContainer.style.display = "";
-    if (tocToggle) tocToggle.style.display = "";
+    // 有目录时立即显示，避免闪现
+    if (tocContainer) {
+      tocContainer.style.display = "";
+      // 添加 xl:block 类以在大屏幕显示
+      tocContainer.classList.add("xl:block");
+    }
+    if (tocToggle) {
+      tocToggle.style.display = "";
+      tocToggle.classList.add("xl:hidden");
+    }
     if (tocOpenDesktop) tocOpenDesktop.style.display = "none";
 
     // 清空已有内容避免重复渲染
@@ -428,6 +435,7 @@
     // 初始：目录可见，打开按钮隐藏
     openBtn.style.display = "none";
     aside.style.display = "";
+    aside.classList.add("xl:block");
     aside.setAttribute("aria-hidden", "false");
 
     const hideAside = () => {
@@ -443,6 +451,7 @@
     };
     const showAside = () => {
       aside.style.display = "";
+      aside.classList.add("xl:block");
       aside.style.opacity = "";
       aside.style.pointerEvents = "";
       aside.style.transform = "";

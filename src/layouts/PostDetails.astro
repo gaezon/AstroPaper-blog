@@ -43,7 +43,7 @@ const {
   hideEditPost,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 let ogImageUrl: string | undefined;
 
@@ -121,7 +121,7 @@ try {
   <Header switchOverride={switchOverride} />
   <BackButton />
   <!-- 目录组件放在main外部，作为独立的导航辅助元素 -->
-  <TableOfContents />
+  <TableOfContents headings={headings} />
 
   <main
     id="main-content"
