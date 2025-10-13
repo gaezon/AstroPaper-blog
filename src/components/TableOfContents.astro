@@ -2,19 +2,30 @@
 import TocClient from "./TocClient.astro";
 import { extractTocFromContent } from "@/utils/extractToc";
 import { t } from "@/i18n/utils";
+import type { MarkdownHeading } from "astro";
 
 export interface Props {
   class?: string;
   content?: string;
+  headings?: MarkdownHeading[];
 }
 
-const { class: className = "", content = "" } = Astro.props;
+const {
+  class: className = "",
+  content = "",
+  headings = [],
+} = Astro.props as Props;
 
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 
 // 服务端检测内容中是否有标题
-const hasHeadings = content ? extractTocFromContent(content).length > 0 : true; // 如果没有提供content，默认显示（向后兼容）
+const hasHeadings =
+  headings && headings.length > 0
+    ? true
+    : content
+      ? extractTocFromContent(content).length > 0
+      : true; // 如果没有提供content，默认显示（向后兼容）
 ---
 
 {
