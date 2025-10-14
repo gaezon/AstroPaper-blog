@@ -1,1 +1,0 @@
-const hello = {name:"world",greeting:"hello"};const world={greet:"hello",name:"world"}
