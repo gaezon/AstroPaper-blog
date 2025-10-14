@@ -8,9 +8,15 @@
  * 生成动态映射关系供评论系统使用。
  */
 
-import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {
+  readFileSync,
+  readdirSync,
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+} from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
 // 类型定义
 interface ArticleFrontmatter {
@@ -43,7 +49,7 @@ interface ArticleMatch {
   zh: Article;
   en: Article;
   confidence: number;
-  matchType: 'originalTitle' | 'similarity';
+  matchType: "originalTitle" | "similarity";
 }
 
 interface DynamicMappingResult {
@@ -66,26 +72,26 @@ interface MappingMetadata {
 }
 
 // 检查是否为 CI 环境或非交互式环境
-const isCI = process.env.CI || process.env.NODE_ENV === 'production';
+const isCI = process.env.CI || process.env.NODE_ENV === "production";
 
 const log = (message: string): void => {
-  if (!isCI && typeof process !== 'undefined' && process.stdout) {
+  if (!isCI && typeof process !== "undefined" && process.stdout) {
     console.log(message);
   }
 };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const PROJECT_ROOT = join(__dirname, '..');
-const BLOG_PATH = join(PROJECT_ROOT, 'src', 'data', 'blog');
-const BLOG_EN_PATH = join(BLOG_PATH, 'en');
+const PROJECT_ROOT = join(__dirname, "..");
+const BLOG_PATH = join(PROJECT_ROOT, "src", "data", "blog");
+const BLOG_EN_PATH = join(BLOG_PATH, "en");
 
 /**
  * 从 Markdown 文件中提取 frontmatter
  */
 function extractFrontmatter(filePath: string): Partial<ArticleFrontmatter> {
   try {
-    const content = readFileSync(filePath, 'utf-8');
+    const content = readFileSync(filePath, "utf-8");
     const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
     if (!frontmatterMatch) return {};
 
@@ -93,34 +99,36 @@ function extractFrontmatter(filePath: string): Partial<ArticleFrontmatter> {
     const result: Record<string, string | string[] | undefined> = {};
 
     // 简单解析 YAML frontmatter
-    const lines = frontmatter.split('\n');
+    const lines = frontmatter.split("\n");
     let currentKey: string | null = null;
     let inArray = false;
 
     for (const line of lines) {
       const trimmed = line.trim();
 
-      if (trimmed.startsWith('#') || !trimmed) continue;
+      if (trimmed.startsWith("#") || !trimmed) continue;
 
       const arrayMatch = trimmed.match(/^(\w+):\s*\[(.*)\]$/);
       if (arrayMatch) {
-        result[arrayMatch[1]] = arrayMatch[2].split(',').map(item => item.trim().replace(/['"]/g, ''));
+        result[arrayMatch[1]] = arrayMatch[2]
+          .split(",")
+          .map(item => item.trim().replace(/['"]/g, ""));
         continue;
       }
 
       const keyValueMatch = trimmed.match(/^(\w+):\s*(.*)$/);
       if (keyValueMatch) {
         currentKey = keyValueMatch[1];
-        const value = keyValueMatch[2].replace(/^["']|["']$/g, '');
+        const value = keyValueMatch[2].replace(/^["']|["']$/g, "");
         result[currentKey] = value;
         inArray = false;
-      } else if (currentKey && trimmed.startsWith('- ')) {
+      } else if (currentKey && trimmed.startsWith("- ")) {
         if (!inArray) {
           result[currentKey] = [];
           inArray = true;
         }
         const currentArray = result[currentKey] as string[];
-        currentArray.push(trimmed.substring(2).replace(/^["']|["']$/g, ''));
+        currentArray.push(trimmed.substring(2).replace(/^["']|["']$/g, ""));
       }
     }
 
@@ -140,9 +148,9 @@ function getArticles(): { zh: Article[]; en: Article[] } {
   // 获取中文文章
   if (existsSync(BLOG_PATH)) {
     const files = readdirSync(BLOG_PATH, { withFileTypes: true })
-      .filter(dirent => dirent.isFile() && dirent.name.endsWith('.md'))
-      .filter(dirent => dirent.name !== '_TEMPLATE.md')
-      .filter(dirent => !dirent.name.startsWith('_'));
+      .filter(dirent => dirent.isFile() && dirent.name.endsWith(".md"))
+      .filter(dirent => dirent.name !== "_TEMPLATE.md")
+      .filter(dirent => !dirent.name.startsWith("_"));
 
     for (const dirent of files) {
       const filePath = join(BLOG_PATH, dirent.name);
@@ -150,10 +158,10 @@ function getArticles(): { zh: Article[]; en: Article[] } {
       articles.zh.push({
         file: dirent.name,
         path: filePath,
-        slug: frontmatter.slug || dirent.name.replace('.md', ''),
-        title: frontmatter.title || '',
+        slug: frontmatter.slug || dirent.name.replace(".md", ""),
+        title: frontmatter.title || "",
         originalTitle: frontmatter.originalTitle,
-        locale: frontmatter.locale || 'zh-CN'
+        locale: frontmatter.locale || "zh-CN",
       });
     }
   }
@@ -161,8 +169,8 @@ function getArticles(): { zh: Article[]; en: Article[] } {
   // 获取英文文章
   if (existsSync(BLOG_EN_PATH)) {
     const files = readdirSync(BLOG_EN_PATH, { withFileTypes: true })
-      .filter(dirent => dirent.isFile() && dirent.name.endsWith('.md'))
-      .filter(dirent => !dirent.name.startsWith('_'));
+      .filter(dirent => dirent.isFile() && dirent.name.endsWith(".md"))
+      .filter(dirent => !dirent.name.startsWith("_"));
 
     for (const dirent of files) {
       const filePath = join(BLOG_EN_PATH, dirent.name);
@@ -170,10 +178,10 @@ function getArticles(): { zh: Article[]; en: Article[] } {
       articles.en.push({
         file: dirent.name,
         path: filePath,
-        slug: frontmatter.slug || dirent.name.replace('.md', ''),
-        title: frontmatter.title || '',
+        slug: frontmatter.slug || dirent.name.replace(".md", ""),
+        title: frontmatter.title || "",
         originalTitle: frontmatter.originalTitle,
-        locale: frontmatter.locale || 'en'
+        locale: frontmatter.locale || "en",
       });
     }
   }
@@ -185,8 +193,8 @@ function getArticles(): { zh: Article[]; en: Article[] } {
  * 计算字符串相似度（基于编辑距离）
  */
 function similarity(str1: string, str2: string): number {
-  const s1 = str1.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, '');
-  const s2 = str2.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, '');
+  const s1 = str1.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, "");
+  const s2 = str2.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, "");
 
   const longer = s1.length > s2.length ? s1 : s2;
   const shorter = s1.length > s2.length ? s2 : s1;
@@ -231,14 +239,18 @@ function levenshteinDistance(str1: string, str2: string): number {
 /**
  * 基于 originalTitle 匹配文章
  */
-function matchByOriginalTitle(zhArticles: Article[], enArticles: Article[]): ArticleMatch[] {
+function matchByOriginalTitle(
+  zhArticles: Article[],
+  enArticles: Article[]
+): ArticleMatch[] {
   const matches: ArticleMatch[] = [];
   const matchedEnFiles = new Set<string>();
 
   for (const zh of zhArticles) {
     if (zh.originalTitle) {
-      const matchingEn = enArticles.find(en =>
-        en.originalTitle === zh.originalTitle && !matchedEnFiles.has(en.file)
+      const matchingEn = enArticles.find(
+        en =>
+          en.originalTitle === zh.originalTitle && !matchedEnFiles.has(en.file)
       );
 
       if (matchingEn) {
@@ -246,7 +258,7 @@ function matchByOriginalTitle(zhArticles: Article[], enArticles: Article[]): Art
           zh,
           en: matchingEn,
           confidence: 1.0,
-          matchType: 'originalTitle'
+          matchType: "originalTitle",
         });
         matchedEnFiles.add(matchingEn.file);
       }
@@ -259,7 +271,10 @@ function matchByOriginalTitle(zhArticles: Article[], enArticles: Article[]): Art
 /**
  * 基于文件名相似度匹配文章
  */
-function matchBySimilarity(zhArticles: Article[], unmatchedEn: Article[]): ArticleMatch[] {
+function matchBySimilarity(
+  zhArticles: Article[],
+  unmatchedEn: Article[]
+): ArticleMatch[] {
   const matches: ArticleMatch[] = [];
   const matchedEnFiles = new Set<string>();
 
@@ -273,12 +288,14 @@ function matchBySimilarity(zhArticles: Article[], unmatchedEn: Article[]): Artic
 
       // 计算多种相似度分数
       const slugSimilarity = similarity(zh.slug, en.slug);
-      const titleSimilarity = zh.title && en.title ? similarity(zh.title, en.title) : 0;
+      const titleSimilarity =
+        zh.title && en.title ? similarity(zh.title, en.title) : 0;
 
       // 综合评分，slug 相似度权重更高
       const combinedScore = slugSimilarity * 0.7 + titleSimilarity * 0.3;
 
-      if (combinedScore > bestScore && combinedScore > 0.6) { // 设定阈值
+      if (combinedScore > bestScore && combinedScore > 0.6) {
+        // 设定阈值
         bestScore = combinedScore;
         bestMatch = en;
       }
@@ -289,7 +306,7 @@ function matchBySimilarity(zhArticles: Article[], unmatchedEn: Article[]): Artic
         zh,
         en: bestMatch,
         confidence: bestScore,
-        matchType: 'similarity'
+        matchType: "similarity",
       });
       matchedEnFiles.add(bestMatch.file);
     }
@@ -319,7 +336,7 @@ function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
       enPath: `/en/posts/${en.slug}/`,
       unifiedCommentPath: unifiedPath,
       confidence,
-      matchType
+      matchType,
     };
   }
 
@@ -330,7 +347,7 @@ function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
  * 保存结果到文件
  */
 function saveResults(results: DynamicMappingResult): void {
-  const outputPath = join(PROJECT_ROOT, 'src', 'utils', 'generated');
+  const outputPath = join(PROJECT_ROOT, "src", "utils", "generated");
 
   // 确保目录存在
   try {
@@ -343,7 +360,7 @@ function saveResults(results: DynamicMappingResult): void {
   const metadata: MappingMetadata = {
     generatedAt: new Date().toISOString(),
     totalMatches: Object.keys(results.unifiedPaths).length,
-    matchTypes: Object.values(results.unifiedPaths).map(p => p.matchType)
+    matchTypes: Object.values(results.unifiedPaths).map(p => p.matchType),
   };
 
   const mappingContent = `/**
@@ -367,17 +384,19 @@ export const unifiedCommentPaths: Record<string, {
 export const mappingMetadata = ${JSON.stringify(metadata, null, 2)};
 `;
 
-  writeFileSync(join(outputPath, 'bilingualMapping.ts'), mappingContent);
+  writeFileSync(join(outputPath, "bilingualMapping.ts"), mappingContent);
 }
 
 /**
  * 主函数
  */
 function main(): void {
-  log('🔍 开始自动发现双语文章配对...');
+  log("🔍 开始自动发现双语文章配对...");
 
   const articles = getArticles();
-  log(`📚 发现 ${articles.zh.length} 篇中文文章，${articles.en.length} 篇英文文章`);
+  log(
+    `📚 发现 ${articles.zh.length} 篇中文文章，${articles.en.length} 篇英文文章`
+  );
 
   // 第一步：基于 originalTitle 匹配
   const originalTitleMatches = matchByOriginalTitle(articles.zh, articles.en);
@@ -399,7 +418,7 @@ function main(): void {
   saveResults(results);
 
   // 输出报告
-  log('\n📊 匹配报告:');
+  log("\n📊 匹配报告:");
   log(`总共匹配 ${allMatches.length} 对文章`);
 
   const confidenceDistribution: Record<number, number> = {};
@@ -408,7 +427,7 @@ function main(): void {
     confidenceDistribution[range] = (confidenceDistribution[range] || 0) + 1;
   }
 
-  log('置信度分布:');
+  log("置信度分布:");
   Object.entries(confidenceDistribution)
     .sort(([a], [b]) => Number(b) - Number(a))
     .forEach(([range, count]) => {
@@ -418,14 +437,16 @@ function main(): void {
   // 输出低置信度匹配供人工检查
   const lowConfidenceMatches = allMatches.filter(m => m.confidence < 0.8);
   if (lowConfidenceMatches.length > 0) {
-    log('\n⚠️  低置信度匹配（需要人工检查）:');
+    log("\n⚠️  低置信度匹配（需要人工检查）:");
     lowConfidenceMatches.forEach(match => {
-      log(`  ${match.zh.slug} <-> ${match.en.slug} (${match.confidence.toFixed(2)})`);
+      log(
+        `  ${match.zh.slug} <-> ${match.en.slug} (${match.confidence.toFixed(2)})`
+      );
     });
   }
 
-  log('\n✨ 动态映射生成完成！');
-  log('📁 输出文件: src/utils/generated/bilingualMapping.ts');
+  log("\n✨ 动态映射生成完成！");
+  log("📁 输出文件: src/utils/generated/bilingualMapping.ts");
 }
 
 // 运行主函数

@@ -9,7 +9,8 @@ function svgToPng(svg: string): Uint8Array {
 }
 
 async function main() {
-  const [titleArg, localeArg = "zh-CN", authorArg = "Gaazeon"] = process.argv.slice(2);
+  const [titleArg, localeArg = "zh-CN", authorArg = "Gaazeon"] =
+    process.argv.slice(2);
   const title = titleArg ?? "Preview: IBM Plex Sans 渲染测试";
   const locale = localeArg;
   const author = authorArg;
@@ -36,4 +37,3 @@ main().catch(err => {
   console.error(err);
   process.exit(1);
 });
-

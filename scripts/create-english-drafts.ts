@@ -1,6 +1,12 @@
 #!/usr/bin/env tsx
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { join, relative } from "node:path";
 import YAML from "yaml";
 
@@ -42,14 +48,15 @@ function toArray(value: unknown): string[] {
 }
 
 function buildEnglishDraft(frontmatter: string, body: string) {
-  const data = frontmatter ? YAML.parse(frontmatter) ?? {} : {};
+  const data = frontmatter ? (YAML.parse(frontmatter) ?? {}) : {};
 
   const cnTitle = data.title ? String(data.title) : "";
   const cnDesc = data.description ? String(data.description) : "";
 
   const english: Record<string, unknown> = {};
   english.author = data.author ?? "Gaazeon";
-  english.pubDatetime = normalizeDate(data.pubDatetime) ?? new Date().toISOString();
+  english.pubDatetime =
+    normalizeDate(data.pubDatetime) ?? new Date().toISOString();
   const mod = normalizeDate(data.modDatetime);
   if (mod) english.modDatetime = mod;
   english.title = `TODO: Translate — ${cnTitle}`;
@@ -59,7 +66,8 @@ function buildEnglishDraft(frontmatter: string, body: string) {
   if (data.ogImage) english.ogImage = data.ogImage;
   english.description = `TODO: Translate — ${cnDesc}`;
   if (data.canonicalURL) english.canonicalURL = data.canonicalURL;
-  if (typeof data.hideEditPost !== "undefined") english.hideEditPost = data.hideEditPost;
+  if (typeof data.hideEditPost !== "undefined")
+    english.hideEditPost = data.hideEditPost;
   if (data.timezone) english.timezone = data.timezone;
   english.locale = "en";
   english.originalTitle = cnTitle;
@@ -106,7 +114,9 @@ function main() {
     }
   }
 
-  console.log(created > 0 ? `\n✅ ${created} draft(s) created.` : "No drafts needed.");
+  console.log(
+    created > 0 ? `\n✅ ${created} draft(s) created.` : "No drafts needed."
+  );
 }
 
 main();

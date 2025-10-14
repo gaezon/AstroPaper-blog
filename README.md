@@ -158,6 +158,15 @@ pnpm install
 pnpm run dev
 ```
 
+## 🪝 Git Hooks & Automatic Formatting
+
+This project uses Husky and lint-staged to run Prettier on staged files before every commit.
+
+1. After cloning or pulling new changes, run `pnpm install` (or rerun it) so Husky can install the Git hooks.
+2. If you previously had a different hooks path configured, sync it with `git config core.hooksPath .husky`.
+3. Once installed, staging supported file types (TS/JS/MD/CSS/Astro/YAML/JSON) will trigger Prettier automatically during `git commit`. You can preview the same behaviour locally with `npx lint-staged`.
+4. Binary assets and other non-target files are ignored by the configuration, so the workflow stays fast and unobtrusive.
+
 As an alternative approach, if you have Docker installed, you can use Docker to run this project locally. Here's how:
 
 ```bash

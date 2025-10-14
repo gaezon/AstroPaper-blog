@@ -10,11 +10,11 @@
 
 ## 快速使用
 
-| 变体 | 推荐场景 | 代码片段 |
-| --- | --- | --- |
+| 变体       | 推荐场景                | 代码片段                                                            |
+| ---------- | ----------------------- | ------------------------------------------------------------------- |
 | `dropdown` | 桌面导航、语言 > 2 种时 | `<LanguageSwitcher variant="dropdown" override={switchOverride} />` |
-| `compact` | 空间有限的导航按钮 | `<LanguageSwitcher variant="compact" />` |
-| `toggle` | 双语或侧边栏局部切换 | `<LanguageSwitcher variant="toggle" />` |
+| `compact`  | 空间有限的导航按钮      | `<LanguageSwitcher variant="compact" />`                            |
+| `toggle`   | 双语或侧边栏局部切换    | `<LanguageSwitcher variant="toggle" />`                             |
 
 常用参数：
 
