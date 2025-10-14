@@ -13,20 +13,23 @@ const posts = await getCollection("blog-en", ({ data }) => !data.draft);
 const pageTitle = t(Astro, "archives.title");
 const pageDescription = t(Astro, "archives.description");
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+// Get translated month names
+const monthKeys = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
 ];
+
+const months = monthKeys.map(key => t(Astro, `datetime.months.${key}`));
 ---
 
 <Layout title={`${pageTitle} | ${SITE.title}`} description={pageDescription}>
