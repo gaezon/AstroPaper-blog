@@ -1,1 +1,4 @@
-const hello = {name: "world",greeting:"hello"}
+const hello = {
+name: "world",
+greeting:"hello"
+    }
