@@ -5,11 +5,13 @@
 ## 功能特性
 
 ### 阶段一：基于 originalTitle 的自动映射
+
 - 通过 `originalTitle` 字段建立中英文文章关联
 - 零配置，无需手动维护映射表
 - 向后兼容现有文章
 
 ### 阶段二：构建时智能发现
+
 - 自动扫描和分析双语文章
 - 基于文件名和标题相似度智能匹配
 - 生成动态映射表，提供匹配置信度
@@ -19,10 +21,11 @@
 ### 新建双语文章
 
 1. **中文文章**（`src/data/blog/`）：
+
    ```yaml
    ---
    title: "中文文章标题"
-   originalTitle: "中文文章标题"  # 重要：用于双语关联
+   originalTitle: "中文文章标题" # 重要：用于双语关联
    ---
    ```
 
@@ -30,7 +33,7 @@
    ```yaml
    ---
    title: "English Article Title"
-   originalTitle: "中文文章标题"  # 与中文文章保持一致
+   originalTitle: "中文文章标题" # 与中文文章保持一致
    ---
    ```
 
@@ -115,11 +118,13 @@ return `/comments/${slugify(title || id)}/`;
 ### 故障排除
 
 #### 匹配失败
+
 - 检查 `originalTitle` 字段是否一致
 - 验证文件名是否包含特殊字符
 - 运行 `pnpm run generate:bilingual-mapping` 查看详细报告
 
 #### 低置信度匹配
+
 - 检查文章 slug 和标题是否合理对应
 - 可能需要手动调整 `originalTitle`
 - 考虑文件重命名以提高相似度
@@ -163,11 +168,13 @@ if (combinedScore > bestScore && combinedScore > 0.6) {
 ## 未来计划
 
 ### 阶段三：Content Collections 引用关系
+
 - 利用 Astro v5 Content Layer API
 - 在 schema 级别建立引用关系
 - 提供类型安全的映射机制
 
 ### 高级功能
+
 - 支持多语言（不仅是中英文）
 - 智能内容相似度分析
 - 自动 `originalTitle` 建议
