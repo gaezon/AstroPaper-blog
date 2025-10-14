@@ -63,7 +63,7 @@
     "typescript-eslint": "^8.36.0"
   },
   "lint-staged": {
-    "*": "prettier --write"
+    "*.{js,ts,jsx,tsx,json,md,css,astro,yaml,yml}": "prettier --write"
   },
   "postinstall": "playwright install --with-deps chromium"
 }
