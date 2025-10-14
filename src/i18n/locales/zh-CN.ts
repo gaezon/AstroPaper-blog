@@ -3,7 +3,7 @@ export default {
   site: {
     title: "Gaazeon 的博客",
     description:
-      "欢迎来到 Gaazeon 的技术博客！专注分享现代 Web 开发技术、前端框架、编程工具使用技巧和软件开发最佳实践。这里有不同数字技术的使用经验与心得，帮助开发者提升编程技能和开发效率。",
+      "欢迎来到 Gaazeon 的技术博客！专注分享现代 Web 开发技术、前端框架、编程工具使用技巧和软件开发最佳实践。这里有各类数字技术的实践经验与心得体会，帮助开发者提升编程技能和开发效率。",
     author: "Gaazeon",
   },
 
@@ -93,7 +93,7 @@ export default {
     previous: "上一页",
     prev: "上一页",
     next: "下一页",
-    page: "第 {{current}} 页，共 {{total}} 页",
+    page: "第 {{current}}/{{total}} 页",
     pageOnly: "第 {{page}} 页",
     goTo: "跳转到",
   },
@@ -105,7 +105,8 @@ export default {
     selectLanguage: "选择语言",
     default: "(默认)",
     translationNotFound: "翻译不存在",
-    translationNotFoundDescription: "「{{title}}」暂无{{targetLanguage}}版本。",
+    translationNotFoundDescription:
+      "「{{title}}」还没有{{targetLanguage}}版本。",
     viewOtherPosts: "查看{{targetLanguage}}文章",
   },
 
@@ -155,8 +156,8 @@ export default {
     expandToc: "展开目录",
     collapseToc: "收起目录",
     collapse: "收起",
-    socialLinks: "社交链接：",
-    sharePostOn: "在以下平台分享这篇文章：",
+    socialLinks: "关注我：",
+    sharePostOn: "分享至：",
     cookie: {
       consentText: "我们使用 Cookies 来改善体验。查看",
       accept: "接受",

@@ -4,11 +4,15 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import { SITE } from "@/config";
+import { t } from "@/i18n/utils";
+
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 ---
 
 <Layout
-  title={`404 Not Found | ${SITE.title}`}
-  description="非常抱歉，您访问的页面不存在。这可能是因为页面链接已更改或删除。请返回 Gaazeon 博客的首页，浏览最新的文章。"
+  title={`404 ${tr("error.notFound.title")} | ${SITE.title}`}
+  description={tr("error.notFound.description")}
 >
   <Header />
 
@@ -19,12 +23,12 @@ import { SITE } from "@/config";
     <div class="mb-14 flex flex-col items-center justify-center">
       <h1 class="text-9xl font-bold text-accent">404</h1>
       <span aria-hidden="true">¯\_(ツ)_/¯</span>
-      <p class="mt-4 text-2xl sm:text-3xl">Page Not Found</p>
+      <p class="mt-4 text-2xl sm:text-3xl">{tr("error.notFound.title")}</p>
       <LinkButton
         href="/"
         class="my-6 text-lg underline decoration-dashed underline-offset-8"
       >
-        Go back home
+        {tr("error.notFound.backHome")}
       </LinkButton>
     </div>
   </main>

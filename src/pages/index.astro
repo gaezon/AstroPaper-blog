@@ -24,10 +24,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 ---
 
-<Layout
-  title={SITE.title}
-  description="欢迎来到 Gaazeon 的技术博客！专注分享现代 Web 开发技术、前端框架、编程工具使用技巧和软件开发最佳实践。这里有不同数字技术的使用经验与心得，帮助开发者提升编程技能和开发效率。"
->
+<Layout title={SITE.title} description={tr("site.description")}>
   <Header />
   <main id="main-content" data-layout="index">
     <section id="hero" class="pt-8 pb-6">
@@ -51,7 +48,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
             class="scale-125 stroke-accent stroke-3 rtl:-rotate-90"
             aria-hidden="true"
           />
-          <span class="sr-only">RSS Feed</span>
+          <span class="sr-only">{tr("ui.rss")}</span>
         </a>
       </div>
 
