@@ -8,7 +8,7 @@ tags:
   - git
   - astro
   - astropaper
-description: "Complete guide to safely updating your AstroPaper blog theme to the latest version using Git. Covers critical pre-upgrade considerations, step-by-step procedures, merge conflict resolution strategies, and comprehensive post-upgrade testing protocols. Learn best practices for maintaining up-to-date project dependencies and templates while ensuring your blog retains the latest features and security patches."
+description: "Guide to safely upgrading AstroPaper theme using Git. Learn pre-upgrade checks, merge conflict resolution, and post-upgrade testing for maintaining your blog."
 locale: en
 originalTitle: 使用 git 升级更新 Astropaper theme 主题
 ---

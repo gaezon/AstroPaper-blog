@@ -9,7 +9,7 @@ tags:
   - tailscale
   - Networking
   - OpenWrt
-description: "Comprehensive tutorial on implementing site-to-site networking between two OpenWrt soft routers using Tailscale. Explores Tailscale's working principles and provides detailed configuration guidance for creating a stable, secure cross-location network environment. Written for users who want to establish network connections between devices at different physical locations."
+description: "Connect OpenWrt routers across locations with Tailscale. Setup subnet routing, firewall rules, and P2P networking for secure cross-site communication."
 locale: en
 originalTitle: Tailscale Site to Site 点对点两台 OpenWrt 异地组网教程
 slug: tailscale-site-to-site-openwrt-p2p

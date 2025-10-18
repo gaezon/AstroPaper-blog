@@ -9,7 +9,7 @@ tags:
   - Live Streaming
   - Safe Broadcast
   - Delay
-description: "Comprehensive guide addressing audio crackling issues when implementing safe broadcast delays in OBS. Analyzes technical pitfalls of OBS render delay filters and provides a professional dual-machine RTMP/SRT architecture solution that requires no specialized delay hardware or OBS plugins. Includes detailed configuration steps and optimization recommendations for building a stable, zero-cost professional safe broadcast system."
+description: "Fix OBS audio crackling with broadcast delays. Learn why render filters fail and build dual-OBS architecture for stable, zero-cost safe broadcasts."
 locale: en
 originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS 「安全播出」 解决方案
 slug: obs-live-streaming-safe-broadcast-delay-pitfalls

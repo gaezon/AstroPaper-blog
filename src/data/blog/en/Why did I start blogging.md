@@ -7,7 +7,7 @@ draft: false
 tags:
   - blog
   - thinking
-description: "A personal reflection on starting a blog: bridging the gap between consuming and creating content, and documenting lived experiences as historical records for future generations."
+description: "Personal reflection on starting a blog: moving from content consumption to creation, and documenting experiences as historical records for future generations."
 locale: en
 originalTitle: 我為什麼要寫博客
 slug: why-i-started-blogging
