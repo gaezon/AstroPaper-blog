@@ -227,7 +227,10 @@ const tr = (key: string, params?: Record<string, string | number>) =>
   <Hr />
 </header>
 
-<script define:vars={{ menuLabel: tr("ui.menu"), closeLabel: tr("ui.close") }}>
+<script
+  is:inline
+  define:vars={{ menuLabel: tr("ui.menu"), closeLabel: tr("ui.close") }}
+>
   function toggleNav() {
     const menuBtn = document.querySelector("#menu-btn");
     const menuItems = document.querySelector("#menu-items");

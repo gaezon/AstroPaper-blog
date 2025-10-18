@@ -92,7 +92,7 @@ const commentPath = getCommentPath();
 
 <div id="tcomment"></div>
 
-<script define:vars={{ langTag, commentId, commentPath }}>
+<script is:inline define:vars={{ langTag, commentId, commentPath }}>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");

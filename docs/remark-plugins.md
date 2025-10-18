@@ -14,7 +14,6 @@
 - **主配置**: `src/config/remark.ts` - 插件配置常量和工具函数
 - **类型定义**: `remark-collapse.d.ts` - remark-collapse 插件的 TypeScript 类型定义
 - **样式文件**: `src/styles/components/toc-collapse.css` - TOC 折叠组件样式
-- **国际化脚本**: `public/toc-i18n.js` - 多语言支持的客户端脚本
 - **Astro 配置**: `astro.config.ts` - 插件在 Astro 中的集成配置
 
 ## remark-toc 配置
@@ -79,22 +78,26 @@ export const collapseConfigs = {
 
 ```typescript
 export const universalCollapseConfig = {
-  test: /目录|Table of contents|目录/i,
-  summary: "展开/收起目录",
+  test: /目录|目錄|table of contents|contents/i,
+  summary: heading => {
+    const text = heading.toLowerCase();
+    if (/table\s+of\s+contents|contents/.test(text)) {
+      return "Toggle TOC";
+    }
+    if (/目录|目錄/.test(heading)) {
+      return "展开/收起目录";
+    }
+    return "Toggle TOC";
+  },
   open: false,
   class: "toc-collapse",
-  attributes: {
-    "data-multilingual": "true",
-    "data-zh-title": "展开/收起目录",
-    "data-en-title": "Toggle TOC",
-  },
 };
 ```
 
 ### 功能特性
 
 - **多语言支持**: 自动识别中英文目录标题
-- **动态文本**: 根据当前页面语言动态更新显示文本
+- **构建期文本生成**: 根据标题内容在构建阶段生成对应语言的折叠摘要
 - **可配置性**: 支持自定义样式和行为
 - **无障碍性**: 支持键盘导航和屏幕阅读器
 
@@ -135,24 +138,16 @@ html[data-theme="dark"] {
 
 ## 国际化实现
 
-### 客户端脚本
+### 构建期自动判定语言
 
-`public/toc-i18n.js` 提供以下功能：
+`universalCollapseConfig.summary` 定义为函数，会在构建阶段根据目录标题（如 "目录"、"Table of Contents"、"Contents" 等）返回对应语言的提示文案，从而生成无闪烁的最终 HTML。
 
-1. **语言检测**: 根据 URL 路径自动检测当前语言
-2. **动态更新**: 根据语言设置更新折叠组件文本
-3. **URL 监听**: 监听页面导航和语言切换
-4. **CSS 类管理**: 自动设置 `data-lang` 属性
+### 样式配合
 
-### 使用方式
+- 统一使用 `.toc-collapse` 类控制外观。
+- 语言专属的配色可通过额外类（如 `.toc-collapse-zh`、`.toc-collapse-en`）在需要时定制。
 
-```javascript
-// 手动更新（通常不需要，脚本会自动处理）
-window.TocI18n.updateTocCollapseText();
-
-// 获取当前语言
-const currentLang = window.TocI18n.getCurrentLanguage();
-```
+通过在 Markdown 转换阶段完成语言判断，客户端无需额外脚本即可获得正确的折叠摘要文案。
 
 ## 工具函数
 
@@ -217,12 +212,12 @@ function getI18nCollapseConfig(): RemarkCollapseOptions;
 1. **目录没有折叠效果**
    - 检查 Markdown 中是否包含目录标题
    - 确认 CSS 样式是否正确加载
-   - 验证 JavaScript 脚本是否执行
+   - 验证 remark-collapse 插件是否在构建链中启用
 
 2. **多语言切换不工作**
    - 检查 URL 路径格式
-   - 确认 `toc-i18n.js` 是否加载
-   - 验证 HTML 属性是否正确设置
+   - 确认目录标题是否命中 `summary` 函数中的匹配规则
+   - 必要时在 `summary` 函数中补充新的语言分支
 
 3. **样式显示异常**
    - 检查 CSS 变量是否定义

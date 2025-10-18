@@ -131,9 +131,9 @@ return `/comments/${slugify(title || id)}/`;
 
 ### 向后兼容
 
-- 保留原有的 `slugMapping.ts` 文件（已弃用）
-- 支持渐进式迁移，现有功能不受影响
-- 新旧两套映射系统并存
+- 旧的 `slugMapping.ts` 已移除，不再需要手动维护映射
+- 现有文章通过 `originalTitle` 与构建期的动态映射自动兼容
+- 如需修复历史文章的关联，请统一 `originalTitle` 字段后重新生成映射
 
 ## 开发者指南
 
@@ -165,16 +165,10 @@ if (combinedScore > bestScore && combinedScore > 0.6) {
 - **运行时**：无额外性能开销
 - **存储**：动态映射文件约 2-3KB
 
-## 未来计划
+## 版本历史
 
-### 阶段三：Content Collections 引用关系
+### 2025-01-10
 
-- 利用 Astro v5 Content Layer API
-- 在 schema 级别建立引用关系
-- 提供类型安全的映射机制
-
-### 高级功能
-
-- 支持多语言（不仅是中英文）
-- 智能内容相似度分析
-- 自动 `originalTitle` 建议
+- 移除历史遗留的 `slugMapping.ts`，不再依赖手工维护的 slug 对应表
+- 采用 `originalTitle` + 构建期 `auto-discover-bilingual` 输出的映射作为唯一来源
+- 更新 Comment 组件逻辑及相关文档，确保新老文章自动兼容

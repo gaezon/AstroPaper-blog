@@ -9,7 +9,7 @@ export interface RemarkCollapseOptions {
    * Summary text for the collapsible section
    * @default "Toggle"
    */
-  summary?: string;
+  summary?: string | ((heading: string) => string);
 
   /**
    * Whether the collapsible section should be open by default
@@ -58,15 +58,19 @@ export const collapseConfigs = {
  * 通用 collapse 配置，支持多种语言模式
  */
 export const universalCollapseConfig: RemarkCollapseOptions = {
-  test: /目录|Table of contents|目录/i, // 支持中英文目录标题
-  summary: "展开/收起目录", // 默认中文摘要
+  test: /目录|目錄|table of contents|contents/i, // 支持中英文目录标题
+  summary: heading => {
+    const text = heading.toLowerCase();
+    if (/table\s+of\s+contents|contents/.test(text)) {
+      return "Toggle TOC";
+    }
+    if (/目录|目錄/.test(heading)) {
+      return "展开/收起目录";
+    }
+    return "Toggle TOC";
+  },
   open: false,
   class: "toc-collapse",
-  attributes: {
-    "data-multilingual": "true",
-    "data-zh-title": "展开/收起目录",
-    "data-en-title": "Toggle TOC",
-  },
 };
 
 /**
@@ -112,8 +116,12 @@ export function validateCollapseConfig(config: RemarkCollapseOptions): void {
     throw new Error("remark-collapse: test should be string or RegExp");
   }
 
-  if (config.summary && typeof config.summary !== "string") {
-    throw new Error("remark-collapse: summary should be string");
+  if (
+    config.summary &&
+    typeof config.summary !== "string" &&
+    typeof config.summary !== "function"
+  ) {
+    throw new Error("remark-collapse: summary should be string or function");
   }
 
   if (config.open !== undefined && typeof config.open !== "boolean") {

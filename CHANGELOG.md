@@ -13,6 +13,14 @@ All notable changes to this project will be documented in this file. See [standa
 - update syntax highlighting transformer styles (#558)
 - typo in astro-paper-v5 blog post (#556)
 
+### Refactor
+
+- remove legacy slugMapping fallback in favor of generated bilingual mapping
+
+### Docs
+
+- document slugMapping removal and originalTitle-based workflow
+
 ## v5.4.3 (2025-06-21)
 
 ### Fix

@@ -38,21 +38,8 @@
   font-size: 0.8em;
 }
 
-.toc-collapse[open] > summary::before {
+.toc-collapse details[open] > summary::before {
   transform: rotate(90deg);
-}
-
-/* 多语言支持 */
-.toc-collapse[data-multilingual="true"] summary::after {
-  content: attr(data-zh-title);
-  margin-left: auto;
-  font-weight: 400;
-  font-size: 0.9em;
-  opacity: 0.8;
-}
-
-html[data-lang="en"] .toc-collapse[data-multilingual="true"] summary::after {
-  content: attr(data-en-title);
 }
 
 /* 语言特定样式 */

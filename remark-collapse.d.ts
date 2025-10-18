@@ -10,7 +10,7 @@ declare module 'remark-collapse' {
      * Summary text for the collapsible section
      * @default "Toggle"
      */
-    summary?: string;
+    summary?: string | ((heading: string) => string);
 
     /**
      * Whether the collapsible section should be open by default
