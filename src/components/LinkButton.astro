@@ -24,7 +24,7 @@ const {
       id={id}
       class:list={["group inline-block", className]}
       title={title}
-      aria-disabled={disabled}
+      aria-disabled={disabled ? "true" : "false"}
     >
       <slot />
     </span>
