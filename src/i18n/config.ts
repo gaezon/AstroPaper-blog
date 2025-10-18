@@ -2,7 +2,7 @@ import type { I18nConfig, LocaleProfile } from "./types";
 import zhCNMessages from "./locales/zh-CN";
 import enMessages from "./locales/en";
 
-// 定义各语言的配置
+// Define configuration for each supported locale
 const localeProfiles: Record<string, LocaleProfile> = {
   "zh-CN": {
     name: "简体中文",
@@ -31,7 +31,7 @@ const localeProfiles: Record<string, LocaleProfile> = {
   },
 };
 
-// 导出 i18n 配置
+// Export i18n configuration
 export const I18N_CONFIG: I18nConfig = {
   supportedLocales: ["zh-CN", "en"],
   defaultLocale: "zh-CN",
@@ -42,35 +42,35 @@ export const I18N_CONFIG: I18nConfig = {
   },
 } as const;
 
-// 常用的辅助函数
+// Common helper constants
 export const SUPPORTED_LOCALES =
   I18N_CONFIG.supportedLocales as readonly string[];
 export const DEFAULT_LOCALE = I18N_CONFIG.defaultLocale;
 export const LOCALE_PROFILES = I18N_CONFIG.localeProfiles;
 
-// 获取语言配置
+// Get locale profile
 export function getLocaleProfile(locale: string): LocaleProfile {
   return LOCALE_PROFILES[locale] || LOCALE_PROFILES[DEFAULT_LOCALE];
 }
 
-// 检查是否为支持的语言
+// Check if the locale is supported
 export function isSupportedLocale(
   locale: string
 ): locale is keyof typeof LOCALE_PROFILES {
   return locale in LOCALE_PROFILES;
 }
 
-// 获取默认语言
+// Get the default locale
 export function getDefaultLocale(): string {
   return DEFAULT_LOCALE;
 }
 
-// 获取所有支持的语言
+// Get all supported locales
 export function getSupportedLocales(): readonly string[] {
   return SUPPORTED_LOCALES;
 }
 
-// 获取语言名称
+// Get the display name for a locale
 export function getLocaleName(locale: string): string {
   return I18N_CONFIG.localesToNames[locale] || locale;
 }

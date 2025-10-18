@@ -2,7 +2,7 @@
 import { getLangTag } from "@/i18n/utils";
 import type { CollectionEntry } from "astro:content";
 
-// 尝试导入动态生成的映射（阶段二功能）
+// Try to import dynamically generated mapping (Phase II)
 let unifiedPaths: Record<
   string,
   {
@@ -18,7 +18,7 @@ try {
   const mappingModule = await import("@/utils/generated/bilingualMapping.ts");
   unifiedPaths = mappingModule.unifiedCommentPaths;
 } catch {
-  // 如果动态映射不存在，回退到 originalTitle 方式（阶段一）
+  // If dynamic mapping doesn't exist, fall back to originalTitle method (Phase I)
   // Silent fallback for CI environments
 }
 
@@ -33,7 +33,7 @@ const langTag = getLangTag(Astro);
 const getCommentId = () => {
   if (!post) return null;
 
-  // 阶段二：优先使用动态映射中的统一路径
+  // Phase II: Prefer unified path from the dynamic mapping
   if (unifiedPaths && post.data.originalTitle) {
     const unifiedPath = unifiedPaths[post.data.originalTitle];
     if (unifiedPath) {
@@ -41,12 +41,12 @@ const getCommentId = () => {
     }
   }
 
-  // 阶段一：使用 originalTitle 作为统一标识符
+  // Phase I: Use originalTitle as the unified identifier
   if (post.data.originalTitle) {
     return post.data.originalTitle;
   }
 
-  // 兜底：使用标题或文件 ID
+  // Fallback: Use title or file ID
   return post.data.title || post.id;
 };
 
@@ -57,18 +57,18 @@ const commentId = getCommentId();
 const getCommentPath = () => {
   if (!post) return null;
 
-  // 阶段二：使用动态生成的映射，优先返回历史存在的页面路径（兼容旧评论）
+  // Phase II: Use dynamically generated mapping; prefer historical page paths (compatible with old comments)
   if (unifiedPaths && post.data.originalTitle) {
     const unifiedInfo = unifiedPaths[post.data.originalTitle];
     if (unifiedInfo) {
-      // 兼容策略：优先中文路径（多数旧评论沉淀在中文），否则英文路径
+      // Compatibility strategy: prefer Chinese path (most existing comments), otherwise English path
       if (unifiedInfo.zhPath) return unifiedInfo.zhPath;
       if (unifiedInfo.enPath) return unifiedInfo.enPath;
       if (unifiedInfo.unifiedCommentPath) return unifiedInfo.unifiedCommentPath;
     }
   }
 
-  // 阶段一：基于 originalTitle 生成统一路径（无动态映射时）
+  // Phase I: Generate a unified path based on originalTitle (when no dynamic mapping)
   if (post.data.originalTitle) {
     // Create a URL-friendly slug from originalTitle
     const unifiedSlug = post.data.originalTitle
@@ -78,7 +78,7 @@ const getCommentPath = () => {
     return `/comments/${unifiedSlug}/`;
   }
 
-  // 兜底：生成默认路径
+  // Fallback: Generate a default path
   const fallbackId = post.data.title || post.id;
   const fallbackSlug = fallbackId
     .toLowerCase()

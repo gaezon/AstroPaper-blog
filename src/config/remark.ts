@@ -30,7 +30,7 @@ export interface RemarkCollapseOptions {
 }
 
 /**
- * 国际化支持的 remark-collapse 配置
+ * Remark-collapse config with i18n support
  */
 export const collapseConfigs = {
   zh: {
@@ -55,10 +55,10 @@ export const collapseConfigs = {
 };
 
 /**
- * 通用 collapse 配置，支持多种语言模式
+ * Universal collapse config supporting multiple locales
  */
 export const universalCollapseConfig: RemarkCollapseOptions = {
-  test: /目录|目錄|table of contents|contents/i, // 支持中英文目录标题
+  test: /目录|目錄|table of contents|contents/i, // Support both Chinese and English TOC headings
   summary: heading => {
     const text = heading.toLowerCase();
     if (/table\s+of\s+contents|contents/.test(text)) {
@@ -74,7 +74,7 @@ export const universalCollapseConfig: RemarkCollapseOptions = {
 };
 
 /**
- * 根据当前语言获取 collapse 配置
+ * Get collapse config by current locale
  */
 export function getCollapseConfig(
   locale: string = "zh-CN"
@@ -95,14 +95,14 @@ export function getCollapseConfig(
 }
 
 /**
- * 获取支持国际化的通用配置
+ * Get universal config with i18n
  */
 export function getI18nCollapseConfig(): RemarkCollapseOptions {
   return universalCollapseConfig;
 }
 
 /**
- * 默认的 remark-toc 配置
+ * Default remark-toc config
  */
 export const tocConfig = {
   heading: "contents|目录|table of contents",
@@ -113,7 +113,7 @@ export const tocConfig = {
 };
 
 /**
- * 验证 remark-collapse 配置选项
+ * Validate remark-collapse config options
  * @throws Error if configuration is invalid
  */
 export function validateCollapseConfig(config: RemarkCollapseOptions): void {
@@ -149,7 +149,7 @@ export function validateCollapseConfig(config: RemarkCollapseOptions): void {
 }
 
 /**
- * 合并默认配置和用户配置
+ * Merge default config and user config
  */
 export function mergeCollapseConfig(
   userConfig: Partial<RemarkCollapseOptions>,
@@ -164,7 +164,7 @@ export function mergeCollapseConfig(
     },
   };
 
-  // 验证合并后的配置
+  // Validate merged config
   validateCollapseConfig(mergedConfig);
 
   return mergedConfig;

@@ -3,7 +3,7 @@
 ---
 
 <script is:inline>
-  // 单例与状态
+  // Singleton and state
   let mermaidInstance = null;
   const mermaidDiagrams = new Map(); // Map<HTMLElement, string>
   const renderedElements = new Set(); // Set<HTMLElement>
@@ -26,7 +26,7 @@
     }
   }
 
-  // 加载 Mermaid 并启用懒加载渲染
+  // Load Mermaid and enable lazy rendering
   async function setupMermaid() {
     if (mermaidInstance) return;
 
@@ -42,14 +42,14 @@
       initializeMermaid(initialTheme);
       setupIntersectionObserver();
 
-      // 监听站内主题切换事件
+      // Listen for in-site theme toggle
       document.addEventListener("theme-changed", e => {
         const nextTheme =
           e && e.detail && e.detail.theme ? e.detail.theme : getInitialTheme();
         handleThemeChange(nextTheme);
       });
 
-      // 监听系统主题变化（补充处理）
+      // Listen for system theme changes (supplementary handling)
       if (window.matchMedia) {
         const media = window.matchMedia("(prefers-color-scheme: dark)");
         if (media && typeof media.addEventListener === "function") {
@@ -181,18 +181,18 @@
       }, options);
     }
 
-    // 开始观测（包含后来新增的图表容器）
+    // Start observing (including later-added diagram containers)
     for (const [element] of mermaidDiagrams.entries()) {
       intersectionObserver.observe(element);
     }
   }
 
   function handleThemeChange(theme) {
-    // 去抖：避免短时间多次重绘
+    // Debounce: avoid rapid re-renders
     if (themeDebounceTimer) window.clearTimeout(themeDebounceTimer);
     themeDebounceTimer = window.setTimeout(() => {
       initializeMermaid(theme);
-      // 只重绘已渲染过的图表，其余保持懒加载策略
+      // Re-render only diagrams already rendered; keep others lazy
       for (const element of renderedElements.values()) {
         const code = mermaidDiagrams.get(element);
         if (code) renderDiagram(element, code);
@@ -268,7 +268,7 @@
     }
   }
 
-  // 初始化
+  // Initialize
   document.addEventListener("DOMContentLoaded", () => {
     if (isAlreadyInitialized()) return;
     collectDiagrams();
@@ -278,17 +278,17 @@
     }
   });
 
-  // 处理客户端路由与局部页面替换
+  // Handle client-side routing and partial page replacements
   function handleAstroPageLoad() {
     collectDiagrams();
     if (mermaidDiagrams.size > 0) {
-      setupMermaid(); // 幂等：不会重复初始化，但会观测新加入的图表
+      setupMermaid(); // Idempotent: no duplicate init; observes newly added diagrams
     }
   }
   document.addEventListener("astro:page-load", handleAstroPageLoad);
   document.addEventListener("astro:after-swap", handleAstroPageLoad);
   if (document.readyState !== "loading") {
-    // 若脚本注入时文档已解析完成，立即执行一次以避免错过 DOMContentLoaded
+    // If injected after DOM is parsed, run once to avoid missing DOMContentLoaded
     handleAstroPageLoad();
   }
 </script>

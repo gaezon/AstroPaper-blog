@@ -1,9 +1,9 @@
 /**
- * 自动生成的双语文章映射表
- * 生成时间: 2025-10-18T10:01:21.245Z
+ * Auto-generated bilingual post mapping
+ * Generated at: 2025-10-18T10:01:21.245Z
  *
- * 此文件由脚本自动生成，请勿手动编辑！
- * 如需重新生成，请运行: pnpm run generate:bilingual-mapping
+ * This file is auto-generated. Do not edit manually!
+ * To regenerate, run: pnpm run generate:bilingual-mapping
  */
 
 export const dynamicSlugMapping: Record<string, string> = {

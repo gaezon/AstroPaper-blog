@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * 自动发现中英文博客文章配对
+ * Auto-discover bilingual (zh/en) blog post pairs
  *
- * 这个脚本会扫描 src/data/blog/ 目录下的中英文文章，
- * 基于文件名模式相似度自动识别双语文章配对，
- * 生成动态映射关系供评论系统使用。
+ * This script scans posts under src/data/blog/ and src/data/blog/en,
+ * auto-identifies bilingual pairs based on filename/pattern similarity,
+ * and generates dynamic mappings for the comment system.
  */
 
 import {
@@ -18,7 +18,7 @@ import {
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-// 类型定义
+// Type definitions
 interface ArticleFrontmatter {
   author?: string;
   pubDatetime: Date;
@@ -71,7 +71,7 @@ interface MappingMetadata {
   matchTypes: string[];
 }
 
-// 检查是否为 CI 环境或非交互式环境
+// Detect CI environment or non-interactive context
 const isCI = process.env.CI || process.env.NODE_ENV === "production";
 
 const log = (message: string): void => {
@@ -87,7 +87,7 @@ const BLOG_PATH = join(PROJECT_ROOT, "src", "data", "blog");
 const BLOG_EN_PATH = join(BLOG_PATH, "en");
 
 /**
- * 从 Markdown 文件中提取 frontmatter
+ * Extract frontmatter from a Markdown file
  */
 function extractFrontmatter(filePath: string): Partial<ArticleFrontmatter> {
   try {
@@ -98,7 +98,7 @@ function extractFrontmatter(filePath: string): Partial<ArticleFrontmatter> {
     const frontmatter = frontmatterMatch[1];
     const result: Record<string, string | string[] | undefined> = {};
 
-    // 简单解析 YAML frontmatter
+    // Simple YAML frontmatter parsing
     const lines = frontmatter.split("\n");
     let currentKey: string | null = null;
     let inArray = false;
@@ -140,12 +140,12 @@ function extractFrontmatter(filePath: string): Partial<ArticleFrontmatter> {
 }
 
 /**
- * 获取文章列表及其元数据
+ * Get articles and their metadata
  */
 function getArticles(): { zh: Article[]; en: Article[] } {
   const articles: { zh: Article[]; en: Article[] } = { zh: [], en: [] };
 
-  // 获取中文文章
+  // Get Chinese posts
   if (existsSync(BLOG_PATH)) {
     const files = readdirSync(BLOG_PATH, { withFileTypes: true })
       .filter(dirent => dirent.isFile() && dirent.name.endsWith(".md"))
@@ -166,7 +166,7 @@ function getArticles(): { zh: Article[]; en: Article[] } {
     }
   }
 
-  // 获取英文文章
+  // Get English posts
   if (existsSync(BLOG_EN_PATH)) {
     const files = readdirSync(BLOG_EN_PATH, { withFileTypes: true })
       .filter(dirent => dirent.isFile() && dirent.name.endsWith(".md"))
@@ -190,7 +190,7 @@ function getArticles(): { zh: Article[]; en: Article[] } {
 }
 
 /**
- * 计算字符串相似度（基于编辑距离）
+ * Compute string similarity (based on edit distance)
  */
 function similarity(str1: string, str2: string): number {
   const s1 = str1.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, "");
@@ -206,7 +206,7 @@ function similarity(str1: string, str2: string): number {
 }
 
 /**
- * 计算编辑距离
+ * Compute Levenshtein edit distance
  */
 function levenshteinDistance(str1: string, str2: string): number {
   const matrix: number[][] = [];
@@ -237,7 +237,7 @@ function levenshteinDistance(str1: string, str2: string): number {
 }
 
 /**
- * 基于 originalTitle 匹配文章
+ * Match posts by originalTitle
  */
 function matchByOriginalTitle(
   zhArticles: Article[],
@@ -283,19 +283,19 @@ function matchBySimilarity(
     let bestScore = 0;
 
     for (const en of unmatchedEn) {
-      // 跳过已经匹配的文章
+      // Skip already matched posts
       if (matchedEnFiles.has(en.file)) continue;
 
-      // 计算多种相似度分数
+      // Compute multiple similarity scores
       const slugSimilarity = similarity(zh.slug, en.slug);
       const titleSimilarity =
         zh.title && en.title ? similarity(zh.title, en.title) : 0;
 
-      // 综合评分，slug 相似度权重更高
+      // Composite score: slug similarity has higher weight
       const combinedScore = slugSimilarity * 0.7 + titleSimilarity * 0.3;
 
       if (combinedScore > bestScore && combinedScore > 0.6) {
-        // 设定阈值
+        // Apply threshold
         bestScore = combinedScore;
         bestMatch = en;
       }
@@ -316,7 +316,7 @@ function matchBySimilarity(
 }
 
 /**
- * 生成动态映射表
+ * Generate the dynamic mapping table
  */
 function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
   const mapping: Record<string, string> = {};
@@ -325,11 +325,11 @@ function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
   for (const match of matches) {
     const { zh, en, confidence, matchType } = match;
 
-    // 使用中文 slug 作为标识符，或者生成统一的标识符
+    // Use the Chinese slug as identifier, or generate a unified identifier
     const unifiedId = zh.originalTitle || zh.slug;
     const unifiedPath = `/comments/${zh.slug}/`;
 
-    // 存储映射关系
+    // Store mapping relations
     mapping[en.slug] = zh.slug;
     unifiedPaths[unifiedId] = {
       zhPath: `/posts/${zh.slug}/`,
@@ -344,19 +344,19 @@ function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
 }
 
 /**
- * 保存结果到文件
+ * Save results to file
  */
 function saveResults(results: DynamicMappingResult): void {
   const outputPath = join(PROJECT_ROOT, "src", "utils", "generated");
 
-  // 确保目录存在
+  // Ensure output directory exists
   try {
     mkdirSync(outputPath, { recursive: true });
   } catch {
-    // 目录可能已存在
+    // Directory may already exist
   }
 
-  // 保存动态映射
+  // Save dynamic mapping
   const metadata: MappingMetadata = {
     generatedAt: new Date().toISOString(),
     totalMatches: Object.keys(results.unifiedPaths).length,
@@ -388,7 +388,7 @@ export const mappingMetadata = ${JSON.stringify(metadata, null, 2)};
 }
 
 /**
- * 主函数
+ * Main function
  */
 function main(): void {
   log("🔍 开始自动发现双语文章配对...");
@@ -398,26 +398,26 @@ function main(): void {
     `📚 发现 ${articles.zh.length} 篇中文文章，${articles.en.length} 篇英文文章`
   );
 
-  // 第一步：基于 originalTitle 匹配
+  // Step 1: match by originalTitle
   const originalTitleMatches = matchByOriginalTitle(articles.zh, articles.en);
   log(`✅ 通过 originalTitle 匹配 ${originalTitleMatches.length} 对文章`);
 
-  // 找出未匹配的英文文章
+  // Find unmatched English posts
   const matchedEnFiles = new Set(originalTitleMatches.map(m => m.en.file));
   const unmatchedEn = articles.en.filter(en => !matchedEnFiles.has(en.file));
   log(`🔍 剩余 ${unmatchedEn.length} 篇英文文章待匹配`);
 
-  // 第二步：基于相似度匹配
+  // Step 2: match by similarity
   const similarityMatches = matchBySimilarity(articles.zh, unmatchedEn);
   log(`🎯 通过相似度匹配 ${similarityMatches.length} 对文章`);
 
   const allMatches = [...originalTitleMatches, ...similarityMatches];
 
-  // 生成动态映射
+  // Generate dynamic mapping
   const results = generateDynamicMapping(allMatches);
   saveResults(results);
 
-  // 输出报告
+  // Output report
   log("\n📊 匹配报告:");
   log(`总共匹配 ${allMatches.length} 对文章`);
 
@@ -434,7 +434,7 @@ function main(): void {
       log(`  ${range}: ${count} 对`);
     });
 
-  // 输出低置信度匹配供人工检查
+  // Output low-confidence matches for manual review
   const lowConfidenceMatches = allMatches.filter(m => m.confidence < 0.8);
   if (lowConfidenceMatches.length > 0) {
     log("\n⚠️  低置信度匹配（需要人工检查）:");
@@ -449,5 +449,5 @@ function main(): void {
   log("📁 输出文件: src/utils/generated/bilingualMapping.ts");
 }
 
-// 运行主函数
+// Run main
 main();

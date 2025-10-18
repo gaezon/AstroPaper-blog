@@ -7,12 +7,12 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// SEO最佳实践: Meta description 应该在 150-160 字符之间
+// SEO best practice: Meta description should be 150-160 characters
 const MIN_LENGTH = 120;
 const MAX_LENGTH = 160;
 const OPTIMAL_LENGTH = 155;
 
-// 类型定义
+// Type definitions
 interface ValidationIssue {
   file: string;
   issue: string;
@@ -30,7 +30,7 @@ interface Colors {
   bold: string;
 }
 
-// 颜色输出
+// Color output
 const colors: Colors = {
   red: "\x1b[31m",
   green: "\x1b[32m",
@@ -57,7 +57,7 @@ function checkMarkdownFiles(): boolean {
   const issues: ValidationIssue[] = [];
   const allFiles: string[] = [];
 
-  // 收集所有博客文章
+  // Collect all blog posts
   function collectBlogFiles(dir: string): void {
     const files = fs.readdirSync(dir);
     for (const file of files) {
@@ -164,7 +164,7 @@ function checkMarkdownFiles(): boolean {
     }
   }
 
-  // 汇总报告
+  // Summary report
   console.log(colorize("📊 汇总报告", "bold"));
   console.log(colorize("=".repeat(50), "blue"));
   console.log(`${colorize("总文件数:", "blue")} ${totalFiles}`);
@@ -199,7 +199,7 @@ function checkMarkdownFiles(): boolean {
   return issues.length === 0;
 }
 
-// 检查 Astro 页面配置
+// Check Astro page configuration
 function checkAstroPages(): void {
   const configPath = path.join(__dirname, "../src/config.ts");
 
@@ -229,7 +229,7 @@ function checkAstroPages(): void {
   }
 }
 
-// 主函数
+// Main function
 function main(): void {
   console.log(colorize("🚀 开始验证 Meta Descriptions...", "bold"));
   console.log("");

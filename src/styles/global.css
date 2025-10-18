@@ -12,7 +12,7 @@ html[data-theme="light"] {
   --muted: #e6e6e6;
   --border: #ece9e9;
 
-  /* 折叠组件专用的主题变量 */
+  /* Theme variables for the collapse component */
   --theme-bg: #ffffff;
   --theme-bg-secondary: #f8f9fa;
   --theme-bg-hover: #f1f3f4;
@@ -30,7 +30,7 @@ html[data-theme="dark"] {
   --muted: #343f60;
   --border: #ab4b08;
 
-  /* 折叠组件专用的主题变量 */
+  /* Theme variables for the collapse component */
   --theme-bg: #1a1f2e;
   --theme-bg-secondary: #212737;
   --theme-bg-hover: #2d3748;
@@ -57,7 +57,7 @@ html[data-theme="dark"] {
   }
   html {
     @apply overflow-y-scroll scroll-smooth;
-    /* 全局滚动偏移，为粘性头部和目录留出空间 */
+    /* Global scroll padding to leave space for sticky header and TOC */
     scroll-padding-top: 7rem;
   }
   body {
@@ -86,12 +86,12 @@ html[data-theme="dark"] {
 }
 
 /* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */
-/* 增强锚点滚动体验，避免被粘性头部和目录遮挡 */
+/* Improve anchor scrolling to avoid being covered by sticky header and TOC */
 :target {
   scroll-margin-block: 8rem 1rem;
 }
 
-/* 为所有标题元素添加滚动偏移，确保跳转时有足够的可视空间 */
+/* Add scroll offset for all headings to ensure sufficient viewport space on jump */
 h1,
 h2,
 h3,
@@ -101,15 +101,15 @@ h6 {
   scroll-margin-top: 7.5rem;
 }
 
-/* 目录相关样式增强 */
+/* TOC-related style enhancements */
 #table-of-contents,
 #toc-sidebar {
-  /* 确保在较小屏幕上也有良好的可读性 */
+  /* Ensure good readability on smaller screens */
   font-size: 0.875rem;
   line-height: 1.5;
 }
 
-/* 目录链接的焦点状态增强 */
+/* Enhance focus styles for TOC links */
 #table-of-contents a:focus-visible,
 #toc-sidebar a:focus-visible,
 #toc-nav-mobile a:focus-visible {
@@ -118,7 +118,7 @@ h6 {
   border-radius: 0.375rem;
 }
 
-/* 目录活跃状态的左侧指示器 */
+/* Left indicator for active TOC links */
 #table-of-contents a.active,
 #toc-sidebar a.active,
 #toc-nav-mobile a.active {

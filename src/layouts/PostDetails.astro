@@ -90,7 +90,7 @@ const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
 const nextPost =
   currentPostIndex !== allPosts.length ? allPosts[currentPostIndex + 1] : null;
 
-// ===== 语言切换：文章互链覆盖（在前端模板前预先计算） =====
+// ===== Language switch: cross-link overrides (precomputed before template) =====
 const currentLocale = getCurrentLocale(Astro);
 const switchOverride: Record<string, string | undefined> = {};
 try {
@@ -120,7 +120,7 @@ try {
 <Layout {...layoutProps}>
   <Header switchOverride={switchOverride} />
   <BackButton />
-  <!-- 目录组件放在main外部，作为独立的导航辅助元素 -->
+  <!-- TOC component outside <main>, as a standalone navigation aid -->
   <TableOfContents headings={headings} />
 
   <main
@@ -131,10 +131,10 @@ try {
     ]}
     data-pagefind-body
   >
-    <!-- 文章内容容器：为左侧目录在桌面端预留空间，并与 Go back 对齐（px-2） -->
+    <!-- Article content container: reserve space for left TOC on desktop; align with Go back (px-2) -->
     <div class="flex w-full justify-center">
       <div class="mx-auto w-full max-w-app px-2">
-        <!-- 文章标题区域，增加上边距以避免与Go back按钮重叠 -->
+        <!-- Article title area: add top margin to avoid overlapping the Go back button -->
         <div class="mt-6 mb-4">
           <h1
             id="article-title"
@@ -208,8 +208,8 @@ try {
             )
           }
         </div>
-      </div><!-- 关闭article-container div -->
-    </div><!-- 关闭flex容器 div -->
+      </div><!-- Close article-container div -->
+    </div><!-- Close flex container div -->
   </main>
   <Footer />
 </Layout>

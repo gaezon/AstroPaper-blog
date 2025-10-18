@@ -2,7 +2,7 @@ export type TagInfo = { enSlug: string; enName: string };
 
 // Canonical: Chinese tag -> English slug + display name
 export const TAG_MAP: Record<string, TagInfo> = {
-  // 示例映射，按需扩充
+  // Example mappings; extend as needed
   美股: { enSlug: "us-stocks", enName: "US Stocks" },
   股息再投资: {
     enSlug: "dividend-reinvestment",

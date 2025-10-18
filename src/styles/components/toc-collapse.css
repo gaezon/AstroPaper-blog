@@ -1,4 +1,4 @@
-/* TOC 折叠样式 */
+/* TOC collapse styles */
 .toc-collapse {
   margin: 1.5rem 0;
   border: 1px solid var(--theme-border);
@@ -27,9 +27,9 @@
   background: var(--theme-bg-hover);
 }
 
-/* 保留浏览器默认的 summary 指示符，以提升屏幕阅读器播报准确性 */
+/* Keep the browser's default summary indicator to improve screen reader accuracy */
 
-/* 语言特定样式 */
+/* Locale-specific styles */
 .toc-collapse-zh {
   border-color: var(--theme-accent-blue);
 }
@@ -46,7 +46,7 @@
   color: var(--theme-accent-green);
 }
 
-/* TOC 内容样式 */
+/* TOC content styles */
 .toc-collapse ul {
   margin: 1rem 0 0 0;
   padding-left: 1.5rem;
@@ -70,7 +70,7 @@
   text-decoration: underline;
 }
 
-/* 嵌套层级样式 */
+/* Nested level styles */
 .toc-collapse ul ul {
   margin-top: 0.5rem;
   padding-left: 1rem;
@@ -86,7 +86,7 @@
   opacity: 0.85;
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 768px) {
   .toc-collapse {
     margin: 1rem 0;
@@ -105,7 +105,7 @@
   }
 }
 
-/* 深色主题适配 */
+/* Dark theme adaptation */
 html[data-theme="dark"] .toc-collapse {
   border-color: var(--theme-border);
   background: var(--theme-bg-secondary);
@@ -115,7 +115,7 @@ html[data-theme="dark"] .toc-collapse summary:hover {
   background: var(--theme-bg);
 }
 
-/* 动画效果 */
+/* Animation */
 .toc-collapse {
   animation: fadeIn 0.3s ease-in-out;
 }

@@ -2,14 +2,14 @@ import type { AstroGlobal } from "astro";
 import { I18N_CONFIG, getLocaleProfile } from "./config";
 
 /**
- * 获取当前页面的语言
+ * Get the current page locale
  */
 export function getCurrentLocale(Astro: AstroGlobal): string {
   return Astro.currentLocale || I18N_CONFIG.defaultLocale;
 }
 
 /**
- * 获取当前语言的翻译消息
+ * Get translations for the current locale
  */
 export function getTranslations(Astro: AstroGlobal) {
   const locale = getCurrentLocale(Astro);
@@ -18,7 +18,7 @@ export function getTranslations(Astro: AstroGlobal) {
 }
 
 /**
- * 获取翻译文本
+ * Get a translated string
  */
 export function t(
   Astro: AstroGlobal,
@@ -33,7 +33,7 @@ export function t(
     if (value && typeof value === "object" && k in value) {
       value = (value as Record<string, unknown>)[k];
     } else {
-      // 如果找不到翻译，返回 key 本身
+      // If translation is not found, return the key itself
       return key;
     }
   }
@@ -42,7 +42,7 @@ export function t(
     return key;
   }
 
-  // 参数替换
+  // Parameter substitution
   if (params) {
     return value.replace(/\{\{(\w+)\}\}/g, (match, param) => {
       return String(params[param] || match);
@@ -53,8 +53,8 @@ export function t(
 }
 
 /**
- * 获取语言切换的 URL
- * 如果目标语言的翻译版本不存在，则显示友好提示页面
+ * Get the URL for switching locales
+ * If the target translation does not exist, show a friendly notice page
  */
 export function getLocaleSwitchUrl(
   Astro: AstroGlobal,
@@ -65,7 +65,7 @@ export function getLocaleSwitchUrl(
   const currentHash = Astro.url.hash;
   const currentLocale = getCurrentLocale(Astro);
 
-  // 如果已经是目标语言，返回当前 URL
+  // If already at the target locale, return current URL
   if (currentLocale === targetLocale) {
     return appendUrlParts(
       ensureTrailingSlash(currentPath),
@@ -74,11 +74,11 @@ export function getLocaleSwitchUrl(
     );
   }
 
-  // 检查当前是否在文章详情页
+  // Check whether we are on a post detail page
   const isPostPage =
     currentPath.includes("/posts/") && !currentPath.endsWith("/posts/");
 
-  // 如果不是文章页，直接进行语言切换
+  // If not a post page, switch language directly
   if (!isPostPage) {
     return getLocaleSwitchUrlForPath(
       currentPath,
@@ -89,20 +89,20 @@ export function getLocaleSwitchUrl(
     );
   }
 
-  // 对于文章页，检查目标语言的翻译是否存在
-  // 如果切换到英文且英文版本不存在，显示翻译不存在页面
+  // For post pages, check whether a target translation exists
+  // If switching to English and it does not exist, show a notice page
   if (targetLocale === "en" && currentLocale === "zh-CN") {
-    // 跳转到提示页面，标题将在页面中从文章数据提取
+    // Redirect to the notice page; title will be extracted from post data
     return `/translation-not-found?target=en&path=${encodeURIComponent(currentPath)}`;
   }
 
-  // 如果切换到中文且中文版本不存在，显示翻译不存在页面
+  // If switching to Chinese and the Chinese version doesn't exist, show the notice page
   if (targetLocale === "zh-CN" && currentLocale === "en") {
-    // 跳转到提示页面，标题将在页面中从文章数据提取
+    // Redirect to the notice page; title will be extracted from post data
     return `/translation-not-found?target=zh-CN&path=${encodeURIComponent(currentPath)}`;
   }
 
-  // 默认情况：直接进行语言切换
+  // Default: switch language directly
   return getLocaleSwitchUrlForPath(
     currentPath,
     currentLocale,
@@ -113,7 +113,7 @@ export function getLocaleSwitchUrl(
 }
 
 /**
- * 获取指定路径的语言切换 URL
+ * Get locale switch URL for a specific path
  */
 function getLocaleSwitchUrlForPath(
   currentPath: string,
@@ -122,16 +122,16 @@ function getLocaleSwitchUrlForPath(
   search = "",
   hash = ""
 ): string {
-  // 构建新的路径
+  // Build the new path
   let newPath = currentPath;
 
-  // 如果当前是默认语言（中文），需要移除前缀并添加目标语言前缀
+  // If current is the default (Chinese), remove prefix and add target prefix
   if (currentLocale === I18N_CONFIG.defaultLocale) {
     if (targetLocale !== I18N_CONFIG.defaultLocale) {
       newPath = `/${targetLocale}${currentPath}`;
     }
   } else {
-    // 如果当前是非默认语言，需要移除当前前缀并添加目标前缀
+    // If current is a non-default locale, remove its prefix and add the target prefix
     if (targetLocale === I18N_CONFIG.defaultLocale) {
       newPath = currentPath.replace(`/${currentLocale}`, "");
       if (newPath === "") newPath = "/";
@@ -143,7 +143,7 @@ function getLocaleSwitchUrlForPath(
   return appendUrlParts(ensureTrailingSlash(newPath), search, hash);
 }
 
-// 辅助函数：确保 URL 以 / 结尾
+// Helper: ensure the URL ends with /
 function ensureTrailingSlash(path: string): string {
   if (path === "/") return "/";
   return path.endsWith("/") ? path : `${path}/`;
@@ -154,7 +154,7 @@ function appendUrlParts(path: string, search: string, hash: string): string {
 }
 
 /**
- * 获取所有可用的语言列表
+ * Get all available locales
  */
 export function getAvailableLocales() {
   return I18N_CONFIG.supportedLocales.map(locale => ({
@@ -166,7 +166,7 @@ export function getAvailableLocales() {
 }
 
 /**
- * 获取页面的语言标签
+ * Get the page language tag
  */
 export function getLangTag(Astro: AstroGlobal): string {
   const locale = getCurrentLocale(Astro);
@@ -175,7 +175,7 @@ export function getLangTag(Astro: AstroGlobal): string {
 }
 
 /**
- * 获取页面的文本方向
+ * Get the page text direction
  */
 export function getTextDirection(Astro: AstroGlobal): "ltr" | "rtl" {
   const locale = getCurrentLocale(Astro);
@@ -184,7 +184,7 @@ export function getTextDirection(Astro: AstroGlobal): "ltr" | "rtl" {
 }
 
 /**
- * 格式化日期
+ * Format date
  */
 export function formatDate(
   Astro: AstroGlobal,
@@ -227,7 +227,7 @@ export function formatDate(
 }
 
 /**
- * 获取相对时间
+ * Get relative time
  */
 export function getRelativeTime(
   Astro: AstroGlobal,

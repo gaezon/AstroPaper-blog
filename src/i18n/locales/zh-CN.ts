@@ -1,5 +1,5 @@
 export default {
-  // 网站基本信息
+  // Site meta
   site: {
     title: "Gaazeon 的博客",
     description:
@@ -7,7 +7,7 @@ export default {
     author: "Gaazeon",
   },
 
-  // 导航相关
+  // Navigation
   nav: {
     home: "首页",
     about: "关于",
@@ -18,7 +18,7 @@ export default {
     milestones: "里程碑",
   },
 
-  // 首页
+  // Home
   index: {
     title: "最新文章",
     featuredPosts: "精选文章",
@@ -28,7 +28,7 @@ export default {
     noPosts: "暂无文章",
   },
 
-  // 文章相关
+  // Post
   post: {
     publishedOn: "发布于",
     updatedOn: "更新于",
@@ -47,26 +47,26 @@ export default {
     listDescription: "浏览 Gaazeon 博客发布的全部技术文章与教程。",
   },
 
-  // 关于页面
+  // About page
   about: {
     title: "关于",
     description: "了解更多关于我的信息",
   },
 
-  // 里程碑页面
+  // Milestones page
   milestones: {
     title: "博客里程碑",
     description: "记录博客发展过程中的重要里程碑",
   },
 
-  // 归档页面
+  // Archives page
   archives: {
     title: "文章归档",
     description: "所有文章按时间归档",
     noPosts: "暂无归档文章",
   },
 
-  // 搜索相关
+  // Search
   search: {
     title: "搜索",
     placeholder: "搜索文章...",
@@ -78,7 +78,7 @@ export default {
     clearSearch: "清除搜索",
   },
 
-  // 标签相关
+  // Tags
   tags: {
     title: "标签",
     allTags: "所有标签",
@@ -88,7 +88,7 @@ export default {
     noTags: "暂无标签",
   },
 
-  // 分页相关
+  // Pagination
   pagination: {
     previous: "上一页",
     prev: "上一页",
@@ -98,7 +98,7 @@ export default {
     goTo: "跳转到",
   },
 
-  // 语言切换
+  // Language switcher
   language: {
     switch: "切换语言",
     currentLanguage: "当前语言",
@@ -110,7 +110,7 @@ export default {
     viewOtherPosts: "查看{{targetLanguage}}文章",
   },
 
-  // 主题切换
+  // Theme switcher
   theme: {
     toggle: "切换主题",
     light: "浅色主题",
@@ -118,13 +118,13 @@ export default {
     system: "跟随系统",
   },
 
-  // 页脚
+  // Footer
   footer: {
     copyright: "© {{year}} {{author}}. 保留所有权利。",
     poweredBy: "基于 {{framework}} 构建",
   },
 
-  // 通用 UI 文案
+  // Generic UI copy
   ui: {
     loading: "加载中...",
     error: "出错了",
@@ -184,7 +184,7 @@ export default {
     },
   },
 
-  // 时间和日期
+  // Date and time
   datetime: {
     formats: {
       short: "YYYY-MM-DD",
@@ -217,7 +217,7 @@ export default {
     },
   },
 
-  // SEO 相关
+  // SEO related
   seo: {
     defaultTitle: "Gaazeon 的博客",
     defaultDescription:
@@ -225,7 +225,7 @@ export default {
     keywords: "技术博客,前端开发,Web开发,编程,Astro,JavaScript,TypeScript",
   },
 
-  // 错误页面
+  // Error pages
   error: {
     notFound: {
       title: "页面未找到",

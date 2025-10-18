@@ -21,14 +21,14 @@ const blog = defineCollection({
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),
       timezone: z.string().optional(),
-      // 国际化相关字段
+      // I18n-related fields
       locale: z.string().default("zh-CN").optional(),
-      originalTitle: z.string().optional(), // 用于翻译文章引用原文标题
-      slug: z.string().optional(), // 自定义 slug，用于 SEO 友好的 URL
+      originalTitle: z.string().optional(), // For translated articles: cite original title
+      slug: z.string().optional(), // Custom slug for SEO-friendly URL
     }),
 });
 
-// 英文博客集合
+// English blog collection
 const blogEn = defineCollection({
   loader: glob({ pattern: "**/[^_]*.md", base: `./${BLOG_PATH}/en` }),
   schema: ({ image }) =>
@@ -45,14 +45,14 @@ const blogEn = defineCollection({
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),
       timezone: z.string().optional(),
-      // 国际化相关字段
+      // I18n-related fields
       locale: z.string().default("en"),
-      originalTitle: z.string().optional(), // 用于翻译文章引用中文原文标题
-      slug: z.string().optional(), // 自定义 slug，用于 SEO 友好的 URL
+      originalTitle: z.string().optional(), // For translations referencing a Chinese original title
+      slug: z.string().optional(), // Custom slug for SEO-friendly URL
     }),
 });
 
 export const collections = {
   blog,
-  "blog-en": blogEn, // 英文博客集合
+  "blog-en": blogEn, // English blog collection
 };

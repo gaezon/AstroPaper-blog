@@ -1,31 +1,31 @@
 export interface LocaleProfile {
-  /** 语言名称 */
+  /** Locale display name */
   name: string;
-  /** 翻译消息对象 */
+  /** Translation messages object */
   messages: Record<string, unknown>;
-  /** 语言标签 (ISO 639-1 + ISO 3166-1) */
+  /** Language tag (ISO 639-1 + ISO 3166-1) */
   langTag: string;
-  /** 文本方向: "ltr" | "rtl" */
+  /** Text direction: "ltr" | "rtl" */
   direction: "ltr" | "rtl";
-  /** 字体配置 */
+  /** Font configuration */
   font?: {
     family: string;
     weights?: string[];
   };
-  /** 是否为默认语言 */
+  /** Is default locale */
   isDefault?: boolean;
-  /** 语言切换器中显示的标签 */
+  /** Label shown in language switcher */
   label?: string;
 }
 
 export interface I18nConfig {
-  /** 支持的语言列表 */
+  /** Supported locales */
   supportedLocales: readonly string[];
-  /** 默认语言 */
+  /** Default locale */
   defaultLocale: string;
-  /** 语言配置映射 */
+  /** Locale profile mapping */
   localeProfiles: Record<string, LocaleProfile>;
-  /** 语言到名称的映射 */
+  /** Locale-to-name mapping */
   localesToNames: Record<string, string>;
 }
 
@@ -48,8 +48,8 @@ export interface BlogPostSchema {
   canonicalURL?: string;
   hideEditPost?: boolean;
   timezone?: string;
-  /** 语言标识 */
+  /** Locale identifier */
   locale?: string;
-  /** 原始文章标题（用于翻译文章的引用） */
+  /** Original post title (for translated article reference) */
   originalTitle?: string;
 }

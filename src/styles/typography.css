@@ -118,10 +118,10 @@
   }
 }
 
-/* ===== 目录组件样式 ===== */
+/* ===== TOC component styles ===== */
 #table-of-contents,
 #toc-sidebar {
-  /* 确保目录在滚动时保持可见 */
+  /* Ensure the TOC remains visible while scrolling */
   scrollbar-width: thin;
   scrollbar-color: var(--color-muted) transparent;
 }
@@ -147,12 +147,12 @@
   background-color: var(--color-accent);
 }
 
-/* 目录链接样式 - 保持 liquid glass 效果 */
+/* TOC link styles - keep the liquid glass effect */
 #toc-nav a,
 #toc-nav-mobile a {
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* 平衡可读性与玻璃效果：使用 65% 不透明度 */
+  /* Balance readability and glass effect: use 65% opacity */
   color: hsl(var(--foreground) / 0.65) !important;
   backdrop-filter: blur(1px);
 }
@@ -161,7 +161,7 @@
 #toc-nav-mobile a:hover {
   transform: translateX(2px);
   color: hsl(var(--foreground) / 0.85) !important;
-  /* 悬停时增强玻璃效果 */
+  /* Enhance the glass effect on hover */
   backdrop-filter: blur(2px);
   text-shadow: 0 0 8px hsl(var(--foreground) / 0.1);
 }
@@ -170,12 +170,12 @@
 #toc-nav-mobile a.active {
   font-weight: 500;
   color: hsl(var(--accent)) !important;
-  /* 选中时的玻璃光泽效果 */
+  /* Glass sheen when active */
   backdrop-filter: blur(3px);
   text-shadow: 0 0 12px hsl(var(--accent) / 0.3);
 }
 
-/* 移动端目录样式优化 */
+/* Mobile TOC style optimizations */
 @media (max-width: 1279px) {
   #toc-overlay {
     backdrop-filter: blur(8px);
@@ -186,20 +186,20 @@
   }
 }
 
-/* 确保目录不遮挡主要内容 */
+/* Ensure the TOC doesn't cover the main content */
 @media (min-width: 1280px) {
   #main-content {
     margin-right: 0;
   }
 
-  /* 当目录存在时，为主内容添加右边距 */
+  /* When TOC exists, add right margin to main content */
   body:has(#table-of-contents:not([style*="display: none"])) #main-content,
   body:has(#toc-sidebar:not([style*="display: none"])) #main-content {
     margin-right: 20rem; /* 16rem (w-64) + 4rem padding */
   }
 }
 
-/* 目录动画效果 */
+/* TOC animations */
 #toc-nav ul,
 #toc-nav-mobile ul {
   animation: fadeInUp 0.3s ease-out;
@@ -216,7 +216,7 @@
   }
 }
 
-/* 目录项层级缩进 */
+/* TOC item indentation */
 #toc-nav ul ul,
 #toc-nav-mobile ul ul {
   margin-left: 1rem;
@@ -224,7 +224,7 @@
   padding-left: 0.5rem;
 }
 
-/* 目录按钮样式 */
+/* TOC button styles */
 #toc-toggle {
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -239,9 +239,9 @@
   transform: scale(0.95);
 }
 
-/* 桌面端打开目录按钮的高级动画效果 */
+/* Advanced animation for desktop TOC open button */
 #toc-open-desktop {
-  /* 呼吸动画 */
+  /* Breathing animation */
   animation: toc-breathe 3s ease-in-out infinite;
 }
 
@@ -249,14 +249,14 @@
   animation-play-state: paused;
 }
 
-/* 线条展开动画 */
+/* Line expansion animation */
 #toc-open-desktop .w-3,
 #toc-open-desktop .w-4,
 #toc-open-desktop .w-5 {
   transform-origin: left center;
 }
 
-/* 呼吸效果关键帧 */
+/* Keyframes for breathing effect */
 @keyframes toc-breathe {
   0%,
   100% {
@@ -269,7 +269,7 @@
   }
 }
 
-/* 按钮内部线条的微动画 */
+/* Subtle line animation inside the button */
 @keyframes line-pulse {
   0%,
   100% {

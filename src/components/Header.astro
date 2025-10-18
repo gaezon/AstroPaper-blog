@@ -19,7 +19,7 @@ interface HeaderProps {
 const { pathname } = Astro.url;
 const { switchOverride } = Astro.props as HeaderProps;
 
-// 国际化相关变量
+// I18n variables
 const currentLocale = getCurrentLocale(Astro);
 const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
 
@@ -52,10 +52,10 @@ const isActive = (path: string) => {
   );
 };
 
-// 构建本地化的URL
+// Build localized URL
 const localeUrl = (path: string) => {
   const fullPath = `${localePrefix}${path}`;
-  // 确保根路径返回 "/"，其他路径以 "/" 结尾
+  // Ensure root returns "/", and other paths end with "/"
   return fullPath === "/"
     ? "/"
     : fullPath.endsWith("/")
@@ -63,7 +63,7 @@ const localeUrl = (path: string) => {
       : `${fullPath}/`;
 };
 
-// 获取翻译函数
+// Get translation function
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 ---
@@ -209,11 +209,11 @@ const tr = (key: string, params?: Record<string, string | number>) =>
             )
           }
         </ul>
-        <!-- 语言切换器 - 桌面端和移动端 -->
+        <!-- Language switcher - desktop and mobile -->
         <div class="lang-switcher-container hidden sm:flex">
           <LanguageSwitcher variant="dropdown" override={switchOverride} />
         </div>
-        <!-- 移动端语言切换器（完整标签显示） -->
+        <!-- Mobile language switcher (show full label) -->
         <div class="lang-switcher-mobile hidden">
           <LanguageSwitcher
             variant="dropdown"
@@ -262,7 +262,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 </script>
 
 <style>
-  /* 桌面端语言切换器 */
+  /* Desktop language switcher */
   .lang-switcher-container {
     display: none;
   }
@@ -275,7 +275,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     }
   }
 
-  /* 移动端语言切换器独立区域 */
+  /* Mobile language switcher area */
   .lang-switcher-mobile {
     display: none;
   }
@@ -293,12 +293,12 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       display: none;
     }
 
-    /* 移动端下拉菜单优化 - 显示完整语言名称 */
+    /* Mobile dropdown optimization - show full language name */
     .lang-switcher-mobile :global(.lang-dropdown-btn .current-lang) {
       display: inline !important;
     }
 
-    /* 移动端下拉菜单全宽显示 */
+    /* Mobile dropdown full-width */
     .lang-switcher-mobile :global(.language-switcher-dropdown) {
       width: 100%;
     }

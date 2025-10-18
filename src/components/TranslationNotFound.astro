@@ -15,13 +15,13 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 // Note: currentPath is passed but not currently used
 // It may be needed for future features
 
-// 获取目标语言信息
+// Get target language info
 const targetLocaleInfo = {
   en: { name: "English", lang: "en" },
   "zh-CN": { name: "简体中文", lang: "zh-CN" },
 }[targetLocale] ?? { name: targetLocale, lang: targetLocale };
 
-// 获取语言切换URL
+// Get language switch URL
 const switchUrl = getLocaleSwitchUrl(Astro, targetLocale);
 ---
 

@@ -230,7 +230,7 @@ async function loadGoogleFont(
     }
   }
 
-  // 如果本地加载失败，尝试从Google加载
+  // If local loading fails, try Google
   try {
     // Try legacy CSS API first to obtain TrueType
     const legacyAPI = `https://fonts.googleapis.com/css?family=${font}:${weight}&text=${encodeURIComponent(text)}`;
@@ -279,7 +279,7 @@ async function loadGoogleFont(
 
     return res.arrayBuffer();
   } catch (e) {
-    // 静默失败并回退到最小字体，避免控制台噪音
+    // Fail silently and fall back to a minimal font to avoid console noise
     console.error("Error loading Google Font:", e);
     const local = await tryLocalFallback();
     if (local) return local;
@@ -287,10 +287,10 @@ async function loadGoogleFont(
   }
 }
 
-// 提供最小有效的字体数据
+// Provide minimal valid font data
 async function getFallbackFont(): Promise<ArrayBuffer> {
-  // 创建一个小的但有效的字体数据
-  // 这里我们创建一个简单的1x1像素的空字体，足够让OG图像生成过程继续
+  // Create a tiny yet valid font data
+  // Here we create a simple 1x1 pixel empty font, enough to keep OG image generation going
   return new ArrayBuffer(4);
 }
 
@@ -299,8 +299,8 @@ async function loadGoogleFonts(
 ): Promise<
   Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>
 > {
-  // 优先使用 IBM Plex Sans（英文/拉丁），并为中文提供 Noto Sans SC 作为补充
-  // 注意：传入 Google Fonts 的 family 名称不包含 :wght@，权重由第二参数控制
+  // Prefer IBM Plex Sans (Latin) and add Noto Sans SC for Chinese
+  // Note: the Google Fonts family name excludes :wght@; control weight via the second parameter
   const fontsConfig: FontConfig[] = [
     {
       name: "IBM Plex Sans",
@@ -330,13 +330,13 @@ async function loadGoogleFonts(
     { name: "Noto Sans", font: "Noto+Sans", weight: 700, style: "normal" },
   ];
 
-  // 尝试加载字体；如果某个字体不可用则跳过它，避免注册无效字体导致渲染报错
+  // Try loading fonts; skip any unavailable to avoid registering invalid fonts that cause render errors
   try {
     const entries = await Promise.all(
       fontsConfig.map(async ({ name, font, weight, style }) => {
         try {
           const data = await loadGoogleFont(font, text, weight);
-          // 简单校验：太小的 buffer 视为无效字体，直接跳过
+          // Simple validation: very small buffers are treated as invalid and skipped
           if (!(data && data.byteLength && data.byteLength > 1024)) return null;
           return { name, data, weight, style } as const;
         } catch {
@@ -356,8 +356,8 @@ async function loadGoogleFonts(
     }
     return fonts;
   } catch {
-    // 忽略详细错误输出，避免控制台噪音
-    // 在失败情况下，提供最小的字体数组
+    // Suppress verbose errors to avoid console noise
+    // On failure, provide a minimal font set
     return await buildFallbackFonts(fontsConfig);
   }
 }

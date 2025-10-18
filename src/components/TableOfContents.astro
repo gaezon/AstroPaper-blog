@@ -19,8 +19,8 @@ const {
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 
-// 服务端检测内容中是否有标题
-// 如果没有提供标题信息，默认不显示 TOC
+// Server-side: detect whether the content has headings
+// If heading info is not provided, do not show TOC by default
 const hasHeadings =
   (headings && headings.length > 0) ||
   (content && extractTocFromContent(content).length > 0);
@@ -29,14 +29,14 @@ const hasHeadings =
 {
   hasHeadings ? (
     <Fragment>
-      {/* 目录导航容器（桌面端粘性侧栏） */}
+      {/* TOC navigation container (sticky sidebar on desktop) */}
       <nav
         id="toc-sidebar"
         class:list={[
           "fixed top-1/2 z-40 hidden -translate-y-1/2",
-          // 移除 xl:block，改为 JavaScript 控制显示
+          // Remove xl:block; control visibility via JavaScript
           // "xl:block",
-          // 尽可能靠近视口左侧：xl 起 1rem 间距；超宽屏继续贴近左侧
+          // Place near the left edge: 1rem margin from xl; keep near on ultra-wide
           "xl:left-2 2xl:left-4",
           "max-h-[calc(100vh-8rem)] w-60 overflow-y-auto transition-all duration-200",
           "rounded-xl border border-border/60 bg-background/80 p-5 shadow-xl shadow-foreground/10 backdrop-blur-lg",
@@ -51,7 +51,7 @@ const hasHeadings =
           <h3 class="text-base font-semibold tracking-wide text-foreground">
             {tr("ui.tableOfContents")}
           </h3>
-          {/* 桌面端折叠按钮（仅 >=xl 显示） */}
+          {/* Desktop collapse button (shown only on >=xl) */}
           <button
             id="toc-collapse"
             class="hidden items-center gap-1.5 rounded-md border border-border/60 px-3 py-1.5 text-xs font-medium text-muted transition-all duration-200 hover:border-border hover:bg-muted/50 hover:text-foreground xl:inline-flex"
@@ -76,9 +76,9 @@ const hasHeadings =
           </button>
         </div>
 
-        {/* 目录列表容器，由客户端JavaScript填充 */}
+        {/* TOC list container, filled by client-side JavaScript */}
         <div id="toc-nav" class="space-y-1.5" role="list">
-          {/* 加载占位符 */}
+          {/* Loading placeholder */}
           <div id="toc-loading" class="space-y-3">
             <div class="h-4 animate-pulse rounded-md bg-muted/40" />
             <div class="h-4 w-4/5 animate-pulse rounded-md bg-muted/40" />
@@ -88,7 +88,7 @@ const hasHeadings =
         </div>
       </nav>
 
-      {/* 移动端切换按钮（独立于桌面端容器） */}
+      {/* Mobile toggle button (separate from desktop container) */}
       <button
         id="toc-toggle"
         class="fixed right-5 bottom-24 z-50 rounded-full bg-accent/90 p-3.5 text-background shadow-lg transition-all duration-200 hover:scale-105 hover:bg-accent hover:shadow-xl active:scale-95 sm:bottom-8 xl:hidden"
@@ -106,7 +106,7 @@ const hasHeadings =
         </svg>
       </button>
 
-      {/* 桌面端展开按钮：当目录被收起时显示（仅 >=xl 显示） */}
+      {/* Desktop expand button: shown when TOC is collapsed (>=xl only) */}
       <button
         id="toc-open-desktop"
         class:list={[
@@ -120,21 +120,21 @@ const hasHeadings =
         aria-expanded="false"
         type="button"
       >
-        {/* 抽象的目录展开图标：三条动态线条 */}
+        {/* Abstract expand icon: three animated lines */}
         <div class="relative flex h-6 w-6 flex-col items-center justify-center gap-1">
-          {/* 第一条线：短 */}
+          {/* Line 1: short */}
           <div class="h-0.5 w-3 rounded-full bg-background transition-all duration-300 group-hover:w-4 group-hover:translate-x-0.5" />
-          {/* 第二条线：中 */}
+          {/* Line 2: medium */}
           <div class="h-0.5 w-4 rounded-full bg-background transition-all duration-300 group-hover:w-5" />
-          {/* 第三条线：长 */}
+          {/* Line 3: long */}
           <div class="h-0.5 w-5 rounded-full bg-background transition-all duration-300 group-hover:w-6 group-hover:-translate-x-0.5" />
 
-          {/* 微妙的光晕效果 */}
+          {/* Subtle glow effect */}
           <div class="absolute inset-0 rounded-full bg-background/20 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
         </div>
       </button>
 
-      {/* 移动端覆盖层 */}
+      {/* Mobile overlay */}
       <div
         id="toc-overlay"
         class="pointer-events-none fixed inset-0 z-30 bg-background/85 opacity-0 backdrop-blur-md transition-opacity duration-200 xl:hidden"
@@ -171,7 +171,7 @@ const hasHeadings =
             role="navigation"
             aria-label={tr("ui.tableOfContents")}
           >
-            {/* 移动端目录内容，由客户端JavaScript填充 */}
+            {/* Mobile TOC content, filled by client-side JavaScript */}
           </nav>
         </div>
       </div>

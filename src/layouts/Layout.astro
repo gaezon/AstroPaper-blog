@@ -13,7 +13,7 @@ import {
   t,
 } from "@/i18n/utils";
 
-// 国际化相关变量
+// I18n variables
 const currentLocale = getCurrentLocale(Astro);
 const langTag = getLangTag(Astro);
 const textDirection = getTextDirection(Astro);
@@ -42,12 +42,12 @@ const {
   scrollSmooth = false,
 } = Astro.props;
 
-// 最终描述使用已经处理过的 description 变量
+// Use the processed 'description' as finalDescription
 const finalDescription = description;
 
 const socialImageURL = new URL(ogImage ?? "/og.png", Astro.url.origin).href;
 
-// 注意：保留变量示例时请避免未使用的赋值以通过 ESLint
+// Note: When keeping variable examples, avoid unused assignments to satisfy ESLint
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -64,7 +64,7 @@ const structuredData = {
     },
   ],
 };
-// 仅用于限制 Umami 统计域名（避免本地与预览域名）
+// Restrict Umami tracking to specific domains (avoid local/preview)
 const siteHostname = new URL(SITE.website).hostname;
 ---
 
@@ -167,7 +167,7 @@ const siteHostname = new URL(SITE.website).hostname;
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- hreflang 标签用于 SEO -->
+    <!-- hreflang tags for SEO -->
     <link rel="alternate" hreflang={currentLocale} href={canonicalURL} />
     <link
       rel="alternate"
@@ -259,7 +259,7 @@ const siteHostname = new URL(SITE.website).hostname;
 
     {
       import.meta.env.PROD && (
-        // Umami Analytics（仅生产环境 & 限定域名）
+        // Umami Analytics (production only & domain-restricted)
         <script
           is:inline
           defer

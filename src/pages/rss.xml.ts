@@ -6,7 +6,7 @@ import { SITE } from "@/config";
 
 export async function GET() {
   const posts = await getCollection("blog");
-  // 只获取最新的10篇文章
+  // Only fetch the latest 10 posts
   const latestPosts = getSortedPosts(posts).slice(0, 10);
 
   return rss({

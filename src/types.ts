@@ -2,10 +2,10 @@ export interface Site {
   website: string;
   author: string;
   desc: string;
-  descEn?: string; // 英文网站描述
+  descEn?: string; // English site description
   profile?: string;
   title: string;
-  titleEn?: string; // 英文网站标题
+  titleEn?: string; // English site title
   ogImage?: string;
   lightAndDarkMode: boolean;
   postPerIndex: number;
@@ -23,7 +23,7 @@ export interface Site {
   timezone: string;
   adsenseID?: string;
   /**
-   * 文档书写方向，默认为 ltr，可选值 'ltr' | 'rtl' | 'auto'
+   * Document writing direction; default 'ltr'. Options: 'ltr' | 'rtl' | 'auto'
    */
   dir?: string;
 }

@@ -20,7 +20,7 @@ const currentLocaleInfo = availableLocales.find(l => l.code === currentLocale);
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 
-// 获取语言代码的简短显示
+// Get short display label for language code
 const getShortLabel = (code: string) => {
   return code === "zh-CN" ? "中" : "EN";
 };
@@ -181,7 +181,7 @@ const getShortLabel = (code: string) => {
 }
 
 <style>
-  /* ========== 下拉菜单样式 - Liquid Glass 设计 ========== */
+  /* ========== Dropdown styles - Liquid Glass design ========== */
   .language-switcher-dropdown {
     position: relative;
     display: inline-block;
@@ -193,7 +193,7 @@ const getShortLabel = (code: string) => {
     gap: 0.625rem;
     padding: 0.5rem 0.875rem;
 
-    /* Liquid Glass 样式 */
+    /* Liquid Glass style */
     background: hsl(var(--background) / 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -268,7 +268,7 @@ const getShortLabel = (code: string) => {
     min-width: 100%;
     padding: 0.5rem;
 
-    /* Liquid Glass 菜单 */
+    /* Liquid Glass menu */
     background: hsl(var(--background) / 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -374,7 +374,7 @@ const getShortLabel = (code: string) => {
     z-index: 1;
   }
 
-  /* ========== 紧凑样式 - Liquid Glass 设计 ========== */
+  /* ========== Compact styles - Liquid Glass design ========== */
   .language-switcher-compact {
     display: inline-flex;
     width: 100%;
@@ -387,14 +387,14 @@ const getShortLabel = (code: string) => {
     gap: 0.625rem;
     padding: 0.625rem 1rem;
 
-    /* Liquid Glass 核心样式 */
+    /* Liquid Glass core styles */
     background: hsl(var(--background) / 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--border) / 0.5);
     border-radius: 0.75rem;
 
-    /* 多层阴影营造深度感 */
+    /* Multi-layer shadows to create depth */
     box-shadow:
       0 1px 2px hsl(var(--foreground) / 0.04),
       0 4px 12px hsl(var(--foreground) / 0.06),
@@ -411,7 +411,7 @@ const getShortLabel = (code: string) => {
     -webkit-backdrop-filter: blur(16px);
     border-color: hsl(var(--border) / 0.7);
 
-    /* 悬停时增强阴影 */
+    /* Stronger shadow on hover */
     box-shadow:
       0 2px 4px hsl(var(--foreground) / 0.06),
       0 8px 24px hsl(var(--foreground) / 0.1),
@@ -464,7 +464,7 @@ const getShortLabel = (code: string) => {
     background: hsl(var(--accent) / 0.9);
     backdrop-filter: blur(8px);
 
-    /* 激活状态的发光效果 */
+    /* Glow when active */
     box-shadow:
       0 2px 8px hsl(var(--accent) / 0.3),
       0 0 20px hsl(var(--accent) / 0.15),
@@ -497,7 +497,7 @@ const getShortLabel = (code: string) => {
     opacity: 0.5;
   }
 
-  /* ========== 切换按钮样式 - Liquid Glass 设计 ========== */
+  /* ========== Toggle button styles - Liquid Glass design ========== */
   .language-switcher-toggle {
     display: inline-flex;
     gap: 0.375rem;
@@ -552,9 +552,9 @@ const getShortLabel = (code: string) => {
       inset 0 1px 0 hsl(var(--accent-foreground) / 0.2);
   }
 
-  /* ========== 响应式设计 ========== */
+  /* ========== Responsive design ========== */
   @media (max-width: 640px) {
-    /* 移动端下拉菜单优化 */
+    /* Mobile dropdown optimizations */
     .lang-dropdown-btn {
       min-width: 100%;
       padding: 0.875rem 1.25rem;
@@ -567,7 +567,7 @@ const getShortLabel = (code: string) => {
     }
 
     .lang-dropdown-btn .current-lang {
-      display: inline; /* 移动端显示完整语言名 */
+      display: inline; /* Show full language name on mobile */
     }
 
     .globe-icon {
@@ -575,7 +575,7 @@ const getShortLabel = (code: string) => {
       height: 1.25rem;
     }
 
-    /* 移动端紧凑模式 - 保留用于其他场景 */
+    /* Mobile compact mode - reserved for other scenarios */
     .language-switcher-compact {
       width: 100%;
       max-width: 100%;
@@ -589,7 +589,7 @@ const getShortLabel = (code: string) => {
       gap: 0.75rem;
       border-radius: 1rem;
 
-      /* 增强移动端 Liquid Glass 效果 */
+      /* Enhance Liquid Glass effect on mobile */
       background: linear-gradient(
         135deg,
         hsl(var(--background) / 0.75) 0%,
@@ -646,7 +646,7 @@ const getShortLabel = (code: string) => {
     }
   }
 
-  /* 超小屏幕优化 */
+  /* Extra small screen optimization */
   @media (max-width: 375px) {
     .lang-dropdown-btn {
       padding: 0.75rem 1rem;
@@ -671,7 +671,7 @@ const getShortLabel = (code: string) => {
     }
   }
 
-  /* ========== 动画效果 ========== */
+  /* ========== Animations ========== */
   @keyframes slideDown {
     from {
       opacity: 0;
@@ -755,7 +755,7 @@ const getShortLabel = (code: string) => {
       });
     }
 
-    // 处理下拉菜单
+    // Handle dropdown menus
     const dropdowns = document.querySelectorAll(".language-switcher-dropdown");
 
     dropdowns.forEach(dropdown => {
@@ -766,16 +766,16 @@ const getShortLabel = (code: string) => {
         e.stopPropagation();
         const isOpen = dropdown.getAttribute("data-open") === "true";
 
-        // 关闭所有其他下拉菜单
+        // Close all other dropdowns
         dropdowns.forEach(d => d.setAttribute("data-open", "false"));
 
-        // 切换当前下拉菜单
+        // Toggle the current dropdown
         dropdown.setAttribute("data-open", (!isOpen).toString());
         button.setAttribute("aria-expanded", (!isOpen).toString());
       });
     });
 
-    // 点击外部关闭下拉菜单
+    // Close dropdown when clicking outside
     document.addEventListener("click", () => {
       dropdowns.forEach(dropdown => {
         dropdown.setAttribute("data-open", "false");
@@ -786,7 +786,7 @@ const getShortLabel = (code: string) => {
       });
     });
 
-    // 键盘导航支持
+    // Keyboard navigation support
     dropdowns.forEach(dropdown => {
       const button = dropdown.querySelector(
         "[data-dropdown-toggle]"
@@ -809,9 +809,9 @@ const getShortLabel = (code: string) => {
     bindLocalePreference();
   }
 
-  // 初始化
+  // Initialize
   initLanguageSwitcher();
 
-  // View Transitions API 支持
+  // View Transitions API support
   document.addEventListener("astro:after-swap", initLanguageSwitcher);
 </script>

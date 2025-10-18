@@ -18,7 +18,7 @@ const posts = await getCollection("blog", ({ data }) => !data.draft);
 const pageTitle = t(Astro, "archives.title");
 const pageDescription = t(Astro, "archives.description");
 
-// 获取月份名称翻译
+// Get translated month names
 const monthKeys = [
   "january",
   "february",

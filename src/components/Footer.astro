@@ -11,12 +11,12 @@ export interface Props {
 
 const { noMarginTop = false } = Astro.props;
 
-// 国际化相关变量
+// I18n variables
 const currentLocale = getCurrentLocale(Astro);
 const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
 const localeUrl = (path: string) => {
   const fullPath = `${localePrefix}${path}`;
-  // 确保根路径返回 "/"，其他路径以 "/" 结尾
+  // Ensure root returns "/", and other paths end with "/"
   return fullPath === "/"
     ? "/"
     : fullPath.endsWith("/")

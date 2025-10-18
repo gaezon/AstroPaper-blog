@@ -1,18 +1,18 @@
 ---
-// 客户端交互组件，用于处理目录的滚动检测和移动端交互
+// Client-side component for TOC scroll detection and mobile interactions
 ---
 
 <script>
   import { extractTocFromDOM } from "@/utils/extractToc";
 
-  // 目录项类型定义
+  // TOC item type definition
   type TocItem = {
     id: string;
     title: string;
     children?: TocItem[];
   };
 
-  // 多事件保障：首次加载 / DOM 就绪 / Astro 路由切换
+  // Ensure init across events: initial load / DOM ready / Astro route changes
   const tryInit = () => initializeTocWithRetry();
   if (
     document.readyState === "complete" ||
@@ -26,7 +26,7 @@
   document.addEventListener("astro:after-swap", tryInit);
 
   async function initializeTocWithRetry(maxRetries = 20, intervalMs = 100) {
-    // 等待 #article 和至少一个标题元素就绪
+    // Wait for #article and at least one heading
     let attempt = 0;
     while (attempt < maxRetries) {
       const article = document.getElementById("article");
@@ -45,17 +45,17 @@
     const tocOpenDesktop = document.getElementById("toc-open-desktop");
 
     if (tocItems.length === 0) {
-      // 没有目录时隐藏按钮与容器
+      // Hide buttons and container when no TOC
       if (tocContainer) tocContainer.style.display = "none";
       if (tocToggle) tocToggle.style.display = "none";
       if (tocOpenDesktop) tocOpenDesktop.style.display = "none";
       return;
     }
 
-    // 有目录时立即显示，避免闪现
+    // Show immediately when TOC exists to avoid flicker
     if (tocContainer) {
       tocContainer.style.display = "";
-      // 添加 xl:block 类以在大屏幕显示
+      // Add xl:block to show on large screens
       tocContainer.classList.add("xl:block");
     }
     if (tocToggle) {
@@ -64,20 +64,20 @@
     }
     if (tocOpenDesktop) tocOpenDesktop.style.display = "none";
 
-    // 清空已有内容避免重复渲染
+    // Clear existing content to avoid duplicate render
     const nav = document.getElementById("toc-nav");
     if (nav) nav.innerHTML = "";
 
-    // 渲染目录
+    // Render TOC
     renderToc(tocItems);
 
-    // 设置滚动监听
+    // Setup scroll observer
     setupScrollObserver();
 
-    // 设置移动端交互（避免重复绑定）
+    // Setup mobile interactions (avoid duplicate binding)
     setupMobileInteractions();
 
-    // 设置桌面端折叠/展开
+    // Setup desktop expand/collapse
     setupDesktopToggle();
   }
 
@@ -89,7 +89,7 @@
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // 清除加载占位符
+    // Remove loading placeholder
     const loading = container.querySelector("#toc-loading");
     if (loading) loading.remove();
 
@@ -106,19 +106,19 @@
       link.className = `block py-2 px-3 text-sm leading-relaxed text-muted hover:text-accent hover:bg-muted/40 rounded-md transition-all duration-200 border-l-2 border-transparent hover:border-accent/30 ${
         level > 0 ? "text-xs py-1.5 ml-2" : "font-medium"
       }`;
-      // 避免无效的 ARIA：锚点不应标记为 listitem，列表语义由 <li> 提供
+      // Avoid invalid ARIA: <a> should not be listitem; <li> provides list semantics
 
-      // 平滑滚动，添加偏移避免闪烁
+      // Smooth scroll with offset to avoid flicker
       link.addEventListener("click", (e: MouseEvent) => {
         e.preventDefault();
         const target = document.getElementById(item.id);
         if (target) {
-          // 计算偏移位置，避免标题被顶部遮挡（增加更多缓冲）
-          const yOffset = -120; // 负值向上偏移，给出更多空间
+          // Compute offset to prevent heading overlap (extra buffer)
+          const yOffset = -120; // Negative to offset upward, give more space
           const y =
             target.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
-          // 先立即更新高亮状态，避免等待 IntersectionObserver 导致的闪烁
+          // Update active state immediately to avoid IO delay flicker
           document
             .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
             .forEach(el => {
@@ -141,14 +141,14 @@
           link.classList.remove("text-muted", "border-transparent");
           link.setAttribute("aria-current", "true");
 
-          // 然后平滑滚动
+          // Then smooth scroll
           window.scrollTo({ top: y, behavior: "smooth" });
         }
       });
 
       li.appendChild(link);
 
-      // 如果有子项，先创建子级 ul 再递归渲染，避免无效容器 id
+      // If children exist, create a nested ul then recurse; avoid invalid container id
       if (item.children && item.children.length > 0) {
         const childUlWrapper = document.createElement("div");
         const childContainerId = `toc-child-${item.id}`;
@@ -181,7 +181,7 @@
           );
 
           if (entry.isIntersecting) {
-            // 移除所有活动状态
+            // Remove all active states
             document
               .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
               .forEach(el => {
@@ -196,7 +196,7 @@
                 el.removeAttribute("aria-current");
               });
 
-            // 添加当前活动状态
+            // Add current active state
             if (link instanceof HTMLAnchorElement) {
               link.classList.add(
                 "active",
@@ -223,7 +223,7 @@
         });
       },
       {
-        rootMargin: "-120px 0px -60% 0px", // 调整顶部边距以匹配滚动偏移，增加缓冲区
+        rootMargin: "-120px 0px -60% 0px", // Adjust top margin to match scroll offset; add buffer
         threshold: [0, 0.1, 0.5],
       }
     );
@@ -239,11 +239,11 @@
 
     if (!toggle || !overlay || !close || !mobileNav) return;
 
-    // 复制桌面端目录到移动端
+    // Copy desktop TOC to mobile
     const desktopNav = document.getElementById("toc-nav");
     if (desktopNav) {
       mobileNav.innerHTML = desktopNav.innerHTML;
-      // 为移动端链接绑定平滑滚动
+      // Bind smooth scroll for mobile links
       mobileNav.querySelectorAll('a[href^="#"]').forEach(a => {
         (a as HTMLAnchorElement).addEventListener("click", e => {
           e.preventDefault();
@@ -255,12 +255,12 @@
           if (!href) return;
           const target = document.querySelector(href);
           if (target instanceof HTMLElement) {
-            // 计算偏移位置，保持与桌面端一致
+            // Compute offset; keep consistent with desktop
             const yOffset = -120;
             const y =
               target.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
-            // 先更新高亮状态
+            // Update active state first
             document
               .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
               .forEach(el => {
@@ -288,17 +288,17 @@
               clickedLink.setAttribute("aria-current", "true");
             }
 
-            // 然后平滑滚动
+            // Then smooth scroll
             window.scrollTo({ top: y, behavior: "smooth" });
           }
-          // 关闭抽屉
+          // Close drawer
           const evt = new Event("click");
           close.dispatchEvent(evt);
         });
       });
     }
 
-    // 切换显示
+    // Toggle visibility
     toggle.addEventListener("click", () => {
       overlay.classList.remove("opacity-0", "pointer-events-none");
       overlay.classList.add("opacity-100", "pointer-events-auto");
@@ -310,7 +310,7 @@
       toggle.setAttribute("aria-expanded", "true");
     });
 
-    // 关闭
+    // Close
     const closeOverlay = () => {
       overlay.classList.add("opacity-0", "pointer-events-none");
       overlay.classList.remove("opacity-100", "pointer-events-auto");
@@ -329,42 +329,42 @@
       }
     });
 
-    // ESC键关闭
+    // Close on ESC key
     document.addEventListener("keydown", e => {
       if (e.key === "Escape" && !overlay.classList.contains("opacity-0")) {
         closeOverlay();
       }
     });
 
-    // 与页面右下「Back To Top」按钮避让，防止重叠
+    // Avoid overlapping with the bottom-right "Back To Top" button
     const avoidOverlap = () => {
       if (!toggle) return;
       const backTop = document.querySelector('[data-button="back-to-top"]');
       const btnContainer = document.querySelector("#btt-btn-container");
 
-      // 默认底部 1.5rem (24px)
+      // Default bottom spacing: 1.5rem (24px)
       let bottom = 24;
 
-      // 移动端固定安全底边距，避免随滚动抖动
+      // Fixed safe bottom spacing on mobile to avoid jitter while scrolling
       const isMobile = window.innerWidth < 640;
       if (isMobile) {
-        bottom = 112; // 7rem，稳定避让 Back To Top
+        bottom = 112; // 7rem, reliably avoids Back To Top
         toggle.style.bottom = `${bottom}px`;
         return;
       }
 
-      // 检查回到顶部按钮是否存在且可见
+      // Check if Back To Top exists and is visible
       if (backTop && btnContainer) {
         const toggleRect = toggle.getBoundingClientRect();
         const backTopRect = btnContainer.getBoundingClientRect();
 
-        // 检查回到顶部按钮是否可见（不透明且位置正常）
+        // Check Back To Top visibility (opaque and correctly positioned)
         const isBackTopVisible =
           !btnContainer.classList.contains("opacity-0") &&
           !btnContainer.classList.contains("translate-y-14");
 
         if (isBackTopVisible) {
-          // 计算重叠情况
+          // Calculate overlap
           const overlap = !(
             toggleRect.right < backTopRect.left ||
             toggleRect.left > backTopRect.right ||
@@ -373,8 +373,8 @@
           );
 
           if (overlap) {
-            // 如果重叠，根据屏幕尺寸动态计算避让距离
-            bottom = 96; // 桌面端 6rem
+            // If overlapping, adjust spacing based on screen size
+            bottom = 96; // Desktop: 6rem
           }
         }
       }
@@ -382,13 +382,13 @@
       toggle.style.bottom = `${bottom}px`;
     };
 
-    // 初始执行
+    // Initial invocation
     avoidOverlap();
 
-    // 监听窗口大小变化
+    // Listen for window resize
     window.addEventListener("resize", avoidOverlap);
 
-    // 监听滚动事件，因为回到顶部按钮的显示/隐藏依赖于滚动
+    // Listen for scroll; Back To Top visibility depends on it
     let ticking = false;
     const scrollHandler = () => {
       if (!ticking) {
@@ -401,7 +401,7 @@
     };
     window.addEventListener("scroll", scrollHandler, { passive: true });
 
-    // 监听回到顶部按钮容器的类变化，以响应其显示/隐藏状态变化
+    // Observe Back To Top container class changes to react to visibility toggles
     if (window.MutationObserver) {
       const btnContainer = document.querySelector("#btt-btn-container");
       if (btnContainer) {
@@ -425,21 +425,21 @@
     const openBtn = document.getElementById("toc-open-desktop");
     if (!aside || !collapseBtn || !openBtn) return;
 
-    // 移动端直接隐藏桌面展开按钮，避免出现第二个悬浮按钮
+    // On mobile, hide the desktop open button to avoid a second floating button
     const isDesktop = window.matchMedia("(min-width: 1280px)").matches;
     if (!isDesktop) {
       openBtn.style.display = "none";
       return;
     }
 
-    // 初始：目录可见，打开按钮隐藏
+    // Initial state: TOC visible, open button hidden
     openBtn.style.display = "none";
     aside.style.display = "";
     aside.classList.add("xl:block");
     aside.setAttribute("aria-hidden", "false");
 
     const hideAside = () => {
-      // 使用 display 切换，确保视觉/可访问均隐藏
+      // Use display toggle to ensure both visual and accessibility hiding
       aside.style.display = "none";
       aside.style.opacity = "";
       aside.style.pointerEvents = "";
