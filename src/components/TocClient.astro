@@ -470,7 +470,6 @@
       });
 
       let finalized = false;
-      let fallbackId: ReturnType<typeof window.setTimeout>;
 
       const finalize = () => {
         if (finalized) return;
@@ -493,8 +492,10 @@
         }
       };
 
+      const fallbackId: ReturnType<typeof window.setTimeout> =
+        window.setTimeout(() => finalize(), transitionDuration + 120);
+
       aside.addEventListener("transitionend", onTransitionEnd);
-      fallbackId = window.setTimeout(finalize, transitionDuration + 120);
     };
 
     const showAside = () => {
@@ -522,7 +523,6 @@
       });
 
       let finalized = false;
-      let fallbackId: ReturnType<typeof window.setTimeout>;
 
       const finalize = () => {
         if (finalized) return;
@@ -542,8 +542,10 @@
         }
       };
 
+      const fallbackId: ReturnType<typeof window.setTimeout> =
+        window.setTimeout(() => finalize(), transitionDuration + 120);
+
       aside.addEventListener("transitionend", onTransitionEnd);
-      fallbackId = window.setTimeout(finalize, transitionDuration + 120);
     };
 
     collapseBtn.addEventListener("click", hideAside);
