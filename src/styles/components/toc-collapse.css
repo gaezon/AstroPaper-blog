@@ -27,20 +27,7 @@
   background: var(--theme-bg-hover);
 }
 
-.toc-collapse summary::-webkit-details-marker {
-  display: none;
-}
-
-.toc-collapse summary::before {
-  content: "▶";
-  display: inline-block;
-  transition: transform 0.2s ease;
-  font-size: 0.8em;
-}
-
-.toc-collapse details[open] > summary::before {
-  transform: rotate(90deg);
-}
+/* 保留浏览器默认的 summary 指示符，以提升屏幕阅读器播报准确性 */
 
 /* 语言特定样式 */
 .toc-collapse-zh {

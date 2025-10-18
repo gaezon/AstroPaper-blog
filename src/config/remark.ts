@@ -79,10 +79,19 @@ export const universalCollapseConfig: RemarkCollapseOptions = {
 export function getCollapseConfig(
   locale: string = "zh-CN"
 ): RemarkCollapseOptions {
-  return (
-    collapseConfigs[locale as keyof typeof collapseConfigs] ||
-    collapseConfigs.zh
-  );
+  const normalizedLocale = locale?.toLowerCase?.() ?? "zh-cn";
+
+  if (Object.prototype.hasOwnProperty.call(collapseConfigs, normalizedLocale)) {
+    return collapseConfigs[normalizedLocale as keyof typeof collapseConfigs];
+  }
+
+  const baseLocale = normalizedLocale.split("-")[0];
+
+  if (Object.prototype.hasOwnProperty.call(collapseConfigs, baseLocale)) {
+    return collapseConfigs[baseLocale as keyof typeof collapseConfigs];
+  }
+
+  return collapseConfigs.zh;
 }
 
 /**
@@ -113,7 +122,9 @@ export function validateCollapseConfig(config: RemarkCollapseOptions): void {
     typeof config.test !== "string" &&
     !(config.test instanceof RegExp)
   ) {
-    throw new Error("remark-collapse: test should be string or RegExp");
+    throw new Error(
+      `remark-collapse: test should be string or RegExp, received ${typeof config.test}`
+    );
   }
 
   if (
