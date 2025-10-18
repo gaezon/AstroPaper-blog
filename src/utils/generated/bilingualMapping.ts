@@ -1,6 +1,6 @@
 /**
  * 自动生成的双语文章映射表
- * 生成时间: 2025-10-18T13:20:57.572Z
+ * 生成时间: 2025-10-18T14:02:17.838Z
  *
  * 此文件由脚本自动生成，请勿手动编辑！
  * 如需重新生成，请运行: pnpm run generate:bilingual-mapping
@@ -88,7 +88,7 @@ export const unifiedCommentPaths: Record<
 };
 
 export const mappingMetadata = {
-  generatedAt: "2025-10-18T13:20:57.572Z",
+  generatedAt: "2025-10-18T14:02:17.838Z",
   totalMatches: 8,
   matchTypes: [
     "originalTitle",
