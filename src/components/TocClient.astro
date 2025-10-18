@@ -454,6 +454,11 @@
       if (aside.dataset.animating === "true") return;
       aside.dataset.animating = "true";
 
+      collapseBtn.setAttribute("aria-expanded", "false");
+      openBtn.setAttribute("aria-expanded", "false");
+      aside.setAttribute("aria-hidden", "true");
+      aside.setAttribute("inert", "");
+
       aside.style.willChange = "opacity, transform";
       aside.style.transition = `opacity ${transitionDuration}ms ${transitionEasing}, transform ${transitionDuration}ms ${transitionEasing}`;
 
@@ -464,14 +469,32 @@
         aside.style.pointerEvents = "none";
       });
 
-      window.setTimeout(() => {
+      let finalized = false;
+      let fallbackId: ReturnType<typeof window.setTimeout>;
+
+      const finalize = () => {
+        if (finalized) return;
+        finalized = true;
         aside.style.display = "none";
-        aside.setAttribute("aria-hidden", "true");
         openBtn.style.display = "inline-flex";
-        collapseBtn.setAttribute("aria-expanded", "false");
-        openBtn.setAttribute("aria-expanded", "false");
+        aside.removeAttribute("inert");
         clearAnimationState();
-      }, transitionDuration + 25);
+        aside.removeEventListener("transitionend", onTransitionEnd);
+        window.clearTimeout(fallbackId);
+      };
+
+      const onTransitionEnd = (event: TransitionEvent) => {
+        if (
+          event.target === aside &&
+          (event.propertyName === "opacity" ||
+            event.propertyName === "transform")
+        ) {
+          finalize();
+        }
+      };
+
+      aside.addEventListener("transitionend", onTransitionEnd);
+      fallbackId = window.setTimeout(finalize, transitionDuration + 120);
     };
 
     const showAside = () => {
@@ -480,7 +503,7 @@
 
       openBtn.style.display = "none";
       aside.style.display = "";
-      aside.classList.add("xl:block");
+      aside.removeAttribute("inert");
       aside.setAttribute("aria-hidden", "false");
       collapseBtn.setAttribute("aria-expanded", "true");
       openBtn.setAttribute("aria-expanded", "true");
@@ -498,9 +521,29 @@
         });
       });
 
-      window.setTimeout(() => {
+      let finalized = false;
+      let fallbackId: ReturnType<typeof window.setTimeout>;
+
+      const finalize = () => {
+        if (finalized) return;
+        finalized = true;
         clearAnimationState();
-      }, transitionDuration + 25);
+        aside.removeEventListener("transitionend", onTransitionEnd);
+        window.clearTimeout(fallbackId);
+      };
+
+      const onTransitionEnd = (event: TransitionEvent) => {
+        if (
+          event.target === aside &&
+          (event.propertyName === "opacity" ||
+            event.propertyName === "transform")
+        ) {
+          finalize();
+        }
+      };
+
+      aside.addEventListener("transitionend", onTransitionEnd);
+      fallbackId = window.setTimeout(finalize, transitionDuration + 120);
     };
 
     collapseBtn.addEventListener("click", hideAside);
