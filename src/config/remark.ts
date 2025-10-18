@@ -1,4 +1,33 @@
-import type { RemarkCollapseOptions } from "../../remark-collapse";
+export interface RemarkCollapseOptions {
+  /**
+   * Test string or RegExp to match headings that should be collapsible
+   * @default "Table of contents"
+   */
+  test?: string | RegExp;
+
+  /**
+   * Summary text for the collapsible section
+   * @default "Toggle"
+   */
+  summary?: string;
+
+  /**
+   * Whether the collapsible section should be open by default
+   * @default true
+   */
+  open?: boolean;
+
+  /**
+   * CSS class to add to the collapsible container
+   * @default "remark-collapse"
+   */
+  class?: string;
+
+  /**
+   * Additional HTML attributes to add to the details element
+   */
+  attributes?: Record<string, string>;
+}
 
 /**
  * 国际化支持的 remark-collapse 配置
