@@ -1,4 +1,4 @@
-// 兼容 unified 与 vite 类型差异：尽量不关闭校验，使用局部忽略
+// Compatibility between unified and vite types: avoid disabling validation, use local ignores
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
@@ -11,6 +11,7 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
+import { getI18nCollapseConfig, tocConfig } from "./src/config/remark";
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,18 +21,21 @@ export default defineConfig({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
   ],
-  // 国际化路由配置
+  // Internationalization routing configuration
   output: "static",
   trailingSlash: "always",
   i18n: {
     defaultLocale: "zh-CN",
     locales: ["zh-CN", "en"],
     routing: {
-      prefixDefaultLocale: false, // 中文默认不使用前缀，保持 URL 简洁
+      prefixDefaultLocale: false, // Chinese default without prefix for clean URLs
     },
   },
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
+    remarkPlugins: [
+      [remarkToc, tocConfig],
+      [remarkCollapse, getI18nCollapseConfig()], // Internationalization-aware common configuration
+    ],
     rehypePlugins: [
       // Temporarily disable rehype-mermaid
       // [[
@@ -41,13 +45,13 @@ export default defineConfig({
       //     dark: true,
       //     colorScheme: "light",
       //     mermaidConfig: {
-      //       // 低饱和浅色主题，配合本站配色
+      //       // Low saturation light theme matching site color scheme
       //       theme: "base",
       //       themeVariables: {
-      //         primaryColor: "#f5fafc",          // 节点背景: 极浅蓝
-      //         primaryTextColor: "#282728",      // 文字: 与正文一致
-      //         primaryBorderColor: "#7aa4c7",    // 边框: 低饱和蓝
-      //         lineColor: "#7aa4c7",             // 连线: 同边框
+      //         primaryColor: "#f5fafc",          // Node background: Very light blue
+      //         primaryTextColor: "#282728",      // Text: Consistent with body text
+      //         primaryBorderColor: "#7aa4c7",    // Border: Low saturation blue
+      //         lineColor: "#7aa4c7",             // Line: Same as border
       //         secondaryBorderColor: "#cdd6dd",
       //         secondaryColor: "#ffffff",
       //         tertiaryColor: "#eef3f6",
