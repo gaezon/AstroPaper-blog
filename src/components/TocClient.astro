@@ -492,8 +492,10 @@
         }
       };
 
-      const fallbackId: ReturnType<typeof window.setTimeout> =
-        window.setTimeout(() => finalize(), transitionDuration + 120);
+      const fallbackId = window.setTimeout(
+        () => finalize(),
+        transitionDuration + 120
+      );
 
       aside.addEventListener("transitionend", onTransitionEnd);
     };
@@ -542,8 +544,10 @@
         }
       };
 
-      const fallbackId: ReturnType<typeof window.setTimeout> =
-        window.setTimeout(() => finalize(), transitionDuration + 120);
+      const fallbackId = window.setTimeout(
+        () => finalize(),
+        transitionDuration + 120
+      );
 
       aside.addEventListener("transitionend", onTransitionEnd);
     };
