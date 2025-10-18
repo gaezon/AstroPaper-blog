@@ -251,7 +251,6 @@ const siteHostname = new URL(SITE.website).hostname;
     <ClientRouter />
 
     <script is:inline src="/toggle-theme.js"></script>
-
     <!-- Google AdSense -->
     <GoogleAdsense />
 
@@ -262,6 +261,7 @@ const siteHostname = new URL(SITE.website).hostname;
       import.meta.env.PROD && (
         // Umami Analytics（仅生产环境 & 限定域名）
         <script
+          is:inline
           defer
           src="https://umami.gaazeon.com/umami"
           data-website-id="82ee4d3c-d021-4a8b-94b3-6ce6840b6416"

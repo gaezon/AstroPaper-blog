@@ -1,0 +1,132 @@
+/* TOC 折叠样式 */
+.toc-collapse {
+  margin: 1.5rem 0;
+  border: 1px solid var(--theme-border);
+  border-radius: 0.5rem;
+  background: var(--theme-bg);
+}
+
+.toc-collapse details {
+  padding: 1rem;
+}
+
+.toc-collapse summary {
+  font-weight: 600;
+  color: var(--theme-text);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toc-collapse summary:hover {
+  background: var(--theme-bg-hover);
+}
+
+/* 保留浏览器默认的 summary 指示符，以提升屏幕阅读器播报准确性 */
+
+/* 语言特定样式 */
+.toc-collapse-zh {
+  border-color: var(--theme-accent-blue);
+}
+
+.toc-collapse-zh summary {
+  color: var(--theme-accent-blue);
+}
+
+.toc-collapse-en {
+  border-color: var(--theme-accent-green);
+}
+
+.toc-collapse-en summary {
+  color: var(--theme-accent-green);
+}
+
+/* TOC 内容样式 */
+.toc-collapse ul {
+  margin: 1rem 0 0 0;
+  padding-left: 1.5rem;
+  list-style: none;
+}
+
+.toc-collapse li {
+  margin: 0.5rem 0;
+}
+
+.toc-collapse a {
+  color: var(--theme-text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 0.25rem 0;
+  display: block;
+}
+
+.toc-collapse a:hover {
+  color: var(--theme-accent);
+  text-decoration: underline;
+}
+
+/* 嵌套层级样式 */
+.toc-collapse ul ul {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+}
+
+.toc-collapse ul li a {
+  font-size: 0.95em;
+  opacity: 0.9;
+}
+
+.toc-collapse ul ul li a {
+  font-size: 0.9em;
+  opacity: 0.85;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .toc-collapse {
+    margin: 1rem 0;
+  }
+
+  .toc-collapse details {
+    padding: 0.75rem;
+  }
+
+  .toc-collapse summary {
+    font-size: 0.95em;
+  }
+
+  .toc-collapse ul {
+    padding-left: 1rem;
+  }
+}
+
+/* 深色主题适配 */
+html[data-theme="dark"] .toc-collapse {
+  border-color: var(--theme-border);
+  background: var(--theme-bg-secondary);
+}
+
+html[data-theme="dark"] .toc-collapse summary:hover {
+  background: var(--theme-bg);
+}
+
+/* 动画效果 */
+.toc-collapse {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
