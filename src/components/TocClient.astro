@@ -438,27 +438,69 @@
     aside.classList.add("xl:block");
     aside.setAttribute("aria-hidden", "false");
 
-    const hideAside = () => {
-      // Use display toggle to ensure both visual and accessibility hiding
-      aside.style.display = "none";
+    const transitionDuration = 260;
+    const transitionEasing = "cubic-bezier(0.4, 0, 0.2, 1)";
+
+    const clearAnimationState = () => {
+      aside.style.transition = "";
+      aside.style.willChange = "";
+      aside.style.transform = "";
       aside.style.opacity = "";
       aside.style.pointerEvents = "";
-      aside.style.transform = "";
-      aside.setAttribute("aria-hidden", "true");
-      openBtn.style.display = "inline-flex";
-      collapseBtn.setAttribute("aria-expanded", "false");
-      openBtn.setAttribute("aria-expanded", "false");
+      aside.removeAttribute("data-animating");
     };
+
+    const hideAside = () => {
+      if (aside.dataset.animating === "true") return;
+      aside.dataset.animating = "true";
+
+      aside.style.willChange = "opacity, transform";
+      aside.style.transition = `opacity ${transitionDuration}ms ${transitionEasing}, transform ${transitionDuration}ms ${transitionEasing}`;
+
+      // Trigger the animation on the next frame for smoothness
+      requestAnimationFrame(() => {
+        aside.style.opacity = "0";
+        aside.style.transform = "translateX(-0.75rem)";
+        aside.style.pointerEvents = "none";
+      });
+
+      window.setTimeout(() => {
+        aside.style.display = "none";
+        aside.setAttribute("aria-hidden", "true");
+        openBtn.style.display = "inline-flex";
+        collapseBtn.setAttribute("aria-expanded", "false");
+        openBtn.setAttribute("aria-expanded", "false");
+        clearAnimationState();
+      }, transitionDuration + 25);
+    };
+
     const showAside = () => {
+      if (aside.dataset.animating === "true") return;
+      aside.dataset.animating = "true";
+
+      openBtn.style.display = "none";
       aside.style.display = "";
       aside.classList.add("xl:block");
-      aside.style.opacity = "";
-      aside.style.pointerEvents = "";
-      aside.style.transform = "";
       aside.setAttribute("aria-hidden", "false");
-      openBtn.style.display = "none";
       collapseBtn.setAttribute("aria-expanded", "true");
       openBtn.setAttribute("aria-expanded", "true");
+
+      aside.style.opacity = "0";
+      aside.style.transform = "translateX(-0.75rem)";
+      aside.style.pointerEvents = "none";
+      aside.style.willChange = "opacity, transform";
+
+      requestAnimationFrame(() => {
+        aside.style.transition = `opacity ${transitionDuration}ms ${transitionEasing}, transform ${transitionDuration}ms ${transitionEasing}`;
+        requestAnimationFrame(() => {
+          aside.style.opacity = "1";
+          aside.style.transform = "translateX(0)";
+        });
+      });
+
+      window.setTimeout(() => {
+        clearAnimationState();
+      }, transitionDuration + 25);
     };
 
     collapseBtn.addEventListener("click", hideAside);
