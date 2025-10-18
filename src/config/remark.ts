@@ -72,38 +72,32 @@ export const tocConfig = {
 
 /**
  * 验证 remark-collapse 配置选项
+ * @throws Error if configuration is invalid
  */
-export function validateCollapseConfig(config: RemarkCollapseOptions): boolean {
+export function validateCollapseConfig(config: RemarkCollapseOptions): void {
   if (
     config.test &&
     typeof config.test !== "string" &&
     !(config.test instanceof RegExp)
   ) {
-    console.warn("remark-collapse: test should be string or RegExp");
-    return false;
+    throw new Error("remark-collapse: test should be string or RegExp");
   }
 
   if (config.summary && typeof config.summary !== "string") {
-    console.warn("remark-collapse: summary should be string");
-    return false;
+    throw new Error("remark-collapse: summary should be string");
   }
 
   if (config.open !== undefined && typeof config.open !== "boolean") {
-    console.warn("remark-collapse: open should be boolean");
-    return false;
+    throw new Error("remark-collapse: open should be boolean");
   }
 
   if (config.class && typeof config.class !== "string") {
-    console.warn("remark-collapse: class should be string");
-    return false;
+    throw new Error("remark-collapse: class should be string");
   }
 
   if (config.attributes && typeof config.attributes !== "object") {
-    console.warn("remark-collapse: attributes should be object");
-    return false;
+    throw new Error("remark-collapse: attributes should be object");
   }
-
-  return true;
 }
 
 /**
@@ -113,7 +107,7 @@ export function mergeCollapseConfig(
   userConfig: Partial<RemarkCollapseOptions>,
   defaultConfig: RemarkCollapseOptions
 ): RemarkCollapseOptions {
-  return {
+  const mergedConfig = {
     ...defaultConfig,
     ...userConfig,
     attributes: {
@@ -121,4 +115,9 @@ export function mergeCollapseConfig(
       ...userConfig.attributes,
     },
   };
+
+  // 验证合并后的配置
+  validateCollapseConfig(mergedConfig);
+
+  return mergedConfig;
 }
