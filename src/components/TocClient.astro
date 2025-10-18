@@ -470,11 +470,12 @@
       }
 
       // Trigger the animation on the next frame for smoothness
+      // Immediately block interactions to avoid any gap
+      aside.style.pointerEvents = "none";
       if (effectiveDuration > 0) {
         requestAnimationFrame(() => {
           aside.style.opacity = "0";
           aside.style.transform = "translateX(-0.75rem)";
-          aside.style.pointerEvents = "none";
         });
       }
 
@@ -485,6 +486,11 @@
         finalized = true;
         aside.style.display = "none";
         openBtn.style.display = "inline-flex";
+        // If focus was inside the collapsed aside, move it to the open button
+        const active = document.activeElement as Element | null;
+        if (active && aside.contains(active)) {
+          openBtn.focus({ preventScroll: true });
+        }
         clearAnimationState();
         aside.removeEventListener("transitionend", onTransitionEnd);
         window.clearTimeout(fallbackId);
