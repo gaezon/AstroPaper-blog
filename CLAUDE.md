@@ -11,26 +11,31 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 ## Common Commands
 
 ### Development
+
 - `pnpm install` - Install dependencies
 - `pnpm run dev` - Start local development server at localhost:4321
 - `pnpm run build` - Build production site to ./dist/
 - `pnpm run preview` - Preview the built site locally
 
 ### Internationalization
+
 - `pnpm run i18n:scaffold-en` - Create English drafts from Chinese posts
 
 ### Code Quality
+
 - `pnpm run format:check` - Check code formatting with Prettier
 - `pnpm run format` - Format code with Prettier
 - `pnpm run lint` - Lint code with ESLint
 - `pnpm run sync` - Generate TypeScript types for Astro modules
 
 ### Validation
+
 - `pnpm run validate:meta` - Validate meta descriptions in blog posts
 
 ## Architecture Overview
 
 ### Core Structure
+
 - `src/content.config.ts` - Defines blog post collection schema
 - `src/config.ts` - Site configuration (title, author, etc.)
 - `src/data/blog/` - Blog post content in Markdown format
@@ -42,6 +47,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - `src/i18n/` - Internationalization configuration and utilities
 
 ### Key Features
+
 1. **Blog System** - Markdown posts with frontmatter metadata
 2. **Dark/Light Theme** - Toggle with localStorage persistence
 3. **Search** - Pagefind-based static search
@@ -53,6 +59,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 9. **Internationalization (i18n)** - Full bilingual support (Chinese/English) with dedicated content collections
 
 ### Content Management
+
 - Chinese posts are stored as Markdown files in `src/data/blog/`
 - English posts are stored as Markdown files in `src/data/blog/en/`
 - Each post requires frontmatter with title, description, pubDatetime, and tags
@@ -61,6 +68,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Use `pnpm run i18n:scaffold-en` to create English drafts from Chinese posts
 
 ### Styling
+
 - Uses TailwindCSS v4 with custom configuration
 - Global styles in `src/styles/global.css`
 - Typography styles in `src/styles/typography.css`
@@ -75,21 +83,25 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 ## Important Implementation Details
 
 ### Theme System
+
 - Theme toggle managed in `public/toggle-theme.js`
 - Uses localStorage for persistence and respects system preference
 - CSS variables controlled by data-theme attribute on html element
 
 ### Search Functionality
+
 - Powered by Pagefind for static search
 - Search index generated during build process
 - UI component located in `src/pages/search.astro`
 
 ### Privacy Compliance
+
 - Cookie consent banner in `src/components/CookieConsentBanner.astro`
 - Granular control over analytics and advertising cookies
 - Settings persisted in localStorage
 
 ### Performance Features
+
 - View transitions for smooth navigation
 - Code block copy buttons
 - Heading anchor links for sharing sections
@@ -97,6 +109,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Back to top button
 
 ### Internationalization (i18n) System
+
 - **Bilingual Support**: Full Chinese/English bilingual support with dedicated content collections
 - **Locale Configuration**: `src/i18n/config.ts` defines supported locales (zh-CN, en) and their profiles
 - **Translation Management**:
