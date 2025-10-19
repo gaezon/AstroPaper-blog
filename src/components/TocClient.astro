@@ -291,7 +291,10 @@
       const headings = document.querySelectorAll(
         "#article h2, #article h3, #article h4, #article h5, #article h6"
       );
-      headings.forEach(heading => tocObserver!.observe(heading));
+      const observer = tocObserver;
+      if (observer) {
+        headings.forEach(heading => observer.observe(heading));
+      }
     }
   }
 
@@ -699,6 +702,8 @@
       const finalize = () => {
         aside.removeAttribute("inert");
         aside.setAttribute("aria-hidden", "false");
+        // Move focus to collapse button for keyboard users
+        collapseBtn.focus({ preventScroll: true });
         clearAnimationState();
         resumeScrollObserver();
       };
