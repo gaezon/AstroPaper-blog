@@ -442,7 +442,7 @@
     aside.setAttribute("aria-hidden", "false");
 
     // Helper to parse CSS time strings (e.g., "260ms", "0.3s") to ms
-    function parseCSSTime(timeStr) {
+    function parseCSSTime(timeStr: string): number {
       if (timeStr.endsWith("ms")) {
         return parseFloat(timeStr);
       } else if (timeStr.endsWith("s")) {
@@ -452,7 +452,7 @@
     }
 
     // Compute transition duration and delay from CSS
-    function getTransitionDurationMs(element) {
+    function getTransitionDurationMs(element: HTMLElement): number {
       const styles = getComputedStyle(element);
       const durations = styles.transitionDuration
         .split(",")
