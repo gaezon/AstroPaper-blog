@@ -12,6 +12,9 @@
     children?: TocItem[];
   };
 
+  // Define transition fallback slack in milliseconds
+  const TRANSITION_FALLBACK_SLACK_MS = 120;
+
   // Ensure init across events: initial load / DOM ready / Astro route changes
   const tryInit = () => initializeTocWithRetry();
   if (
@@ -113,6 +116,14 @@
         e.preventDefault();
         const target = document.getElementById(item.id);
         if (target) {
+          // Set scrolling flag to prevent IntersectionObserver interference
+          isScrolling = true;
+
+          // Clear any existing timeout
+          if (scrollTimeout !== null) {
+            window.clearTimeout(scrollTimeout);
+          }
+
           // Compute offset to prevent heading overlap (extra buffer)
           const yOffset = -120; // Negative to offset upward, give more space
           const y =
@@ -130,7 +141,17 @@
                 "font-semibold"
               );
               el.classList.add("text-muted", "border-transparent");
+              el.removeAttribute("aria-current");
             });
+
+          // Update both desktop and mobile versions of the same link
+          const href = link.getAttribute("href");
+          const mobileLink = href
+            ? document.querySelector(`#toc-nav-mobile a[href="${href}"]`)
+            : null;
+
+          // Update desktop link - batch class changes to minimize mutations
+          link.classList.remove("text-muted", "border-transparent");
           link.classList.add(
             "active",
             "text-accent",
@@ -138,11 +159,29 @@
             "border-accent",
             "font-semibold"
           );
-          link.classList.remove("text-muted", "border-transparent");
           link.setAttribute("aria-current", "true");
+
+          // Update mobile link - batch class changes to minimize mutations
+          if (mobileLink instanceof HTMLAnchorElement) {
+            mobileLink.classList.remove("text-muted", "border-transparent");
+            mobileLink.classList.add(
+              "active",
+              "text-accent",
+              "bg-muted/40",
+              "border-accent",
+              "font-semibold"
+            );
+            mobileLink.setAttribute("aria-current", "true");
+          }
 
           // Then smooth scroll
           window.scrollTo({ top: y, behavior: "smooth" });
+
+          // Reset scrolling flag after scroll completes - increased to 1200ms for longer scrolls
+          scrollTimeout = window.setTimeout(() => {
+            isScrolling = false;
+            scrollTimeout = null;
+          }, 1200);
         }
       });
 
@@ -164,6 +203,10 @@
     container.appendChild(ul);
   }
 
+  let tocObserver: IntersectionObserver | null = null;
+  let isScrolling = false;
+  let scrollTimeout: number | null = null;
+
   function setupScrollObserver(): void {
     const headings = document.querySelectorAll(
       "#article h2, #article h3, #article h4, #article h5, #article h6"
@@ -173,6 +216,9 @@
 
     const observer = new IntersectionObserver(
       entries => {
+        // Skip if currently scrolling programmatically
+        if (isScrolling) return;
+
         entries.forEach(entry => {
           const id = entry.target.id;
           const link = document.querySelector(`#toc-nav a[href="#${id}"]`);
@@ -228,7 +274,28 @@
       }
     );
 
+    tocObserver = observer;
     headings.forEach(heading => observer.observe(heading));
+  }
+
+  function pauseScrollObserver(): void {
+    if (tocObserver) {
+      // Disconnect the observer to prevent interference during animation
+      tocObserver.disconnect();
+    }
+  }
+
+  function resumeScrollObserver(): void {
+    if (tocObserver) {
+      // Re-observe all headings
+      const headings = document.querySelectorAll(
+        "#article h2, #article h3, #article h4, #article h5, #article h6"
+      );
+      const observer = tocObserver;
+      if (observer) {
+        headings.forEach(heading => observer.observe(heading));
+      }
+    }
   }
 
   function setupMobileInteractions(): void {
@@ -255,6 +322,14 @@
           if (!href) return;
           const target = document.querySelector(href);
           if (target instanceof HTMLElement) {
+            // Set scrolling flag to prevent IntersectionObserver interference
+            isScrolling = true;
+
+            // Clear any existing timeout
+            if (scrollTimeout !== null) {
+              window.clearTimeout(scrollTimeout);
+            }
+
             // Compute offset; keep consistent with desktop
             const yOffset = -120;
             const y =
@@ -274,8 +349,14 @@
                 el.classList.add("text-muted", "border-transparent");
                 el.removeAttribute("aria-current");
               });
+
+            // Update both mobile and desktop versions of the same link
             const clickedLink =
               current instanceof HTMLAnchorElement ? current : null;
+            const desktopLink = href
+              ? document.querySelector(`#toc-nav a[href="${href}"]`)
+              : null;
+
             if (clickedLink) {
               clickedLink.classList.add(
                 "active",
@@ -288,8 +369,26 @@
               clickedLink.setAttribute("aria-current", "true");
             }
 
+            if (desktopLink instanceof HTMLAnchorElement) {
+              desktopLink.classList.add(
+                "active",
+                "text-accent",
+                "bg-muted/40",
+                "border-accent",
+                "font-semibold"
+              );
+              desktopLink.classList.remove("text-muted", "border-transparent");
+              desktopLink.setAttribute("aria-current", "true");
+            }
+
             // Then smooth scroll
             window.scrollTo({ top: y, behavior: "smooth" });
+
+            // Reset scrolling flag after scroll completes - increased to 1200ms for longer scrolls
+            scrollTimeout = window.setTimeout(() => {
+              isScrolling = false;
+              scrollTimeout = null;
+            }, 1200);
           }
           // Close drawer
           const evt = new Event("click");
@@ -438,8 +537,42 @@
     aside.classList.add("xl:block");
     aside.setAttribute("aria-hidden", "false");
 
-    const transitionDuration = 260;
-    const transitionEasing = "cubic-bezier(0.4, 0, 0.2, 1)";
+    // Helper to parse CSS time strings (e.g., "260ms", "0.3s") to ms
+    function parseCSSTime(timeStr: string): number {
+      if (timeStr.endsWith("ms")) {
+        return parseFloat(timeStr);
+      } else if (timeStr.endsWith("s")) {
+        return parseFloat(timeStr) * 1000;
+      }
+      return 0;
+    }
+
+    // Compute transition duration and delay from CSS
+    function getTransitionDurationMs(element: HTMLElement): number {
+      const styles = getComputedStyle(element);
+      const durations = styles.transitionDuration
+        .split(",")
+        .map(s => s.trim())
+        .map(parseCSSTime);
+      const delays = styles.transitionDelay
+        .split(",")
+        .map(s => s.trim())
+        .map(parseCSSTime);
+      // Use the max total duration+delay for all transitions
+      const totals = durations.map((d, i) => d + (delays[i] || 0));
+      return Math.max(...totals, 0);
+    }
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Get transition duration from CSS (0 if reduced motion preferred)
+    const transitionDuration = prefersReducedMotion
+      ? 0
+      : getTransitionDurationMs(aside);
+    const effectiveDuration = transitionDuration;
 
     const clearAnimationState = () => {
       aside.style.transition = "";
@@ -450,37 +583,43 @@
       aside.removeAttribute("data-animating");
     };
 
-    const hideAside = () => {
-      if (aside.dataset.animating === "true") return;
-      aside.dataset.animating = "true";
+    const setTransitionState = (
+      state: "entering" | "entered" | "exiting" | "exited"
+    ) => {
+      // Remove all state classes first
+      aside.classList.remove(
+        "toc-entering",
+        "toc-entered",
+        "toc-exiting",
+        "toc-exited"
+      );
 
-      collapseBtn.setAttribute("aria-expanded", "false");
-      openBtn.setAttribute("aria-expanded", "false");
-      aside.setAttribute("aria-hidden", "true");
-      aside.setAttribute("inert", "");
+      // Add the new state class
+      aside.classList.add(`toc-${state}`);
 
-      aside.style.willChange = "opacity, transform";
-      aside.style.transition = `opacity ${transitionDuration}ms ${transitionEasing}, transform ${transitionDuration}ms ${transitionEasing}`;
+      // Update data-state attribute for CSS targeting
+      aside.setAttribute("data-toc-state", state);
+    };
 
-      // Trigger the animation on the next frame for smoothness
-      requestAnimationFrame(() => {
-        aside.style.opacity = "0";
-        aside.style.transform = "translateX(-0.75rem)";
-        aside.style.pointerEvents = "none";
-      });
+    /**
+     * Generic animation wrapper with transitionend listener and fallback
+     * @param finalize Callback to run after transition completes
+     */
+    const runTransition = (finalize: () => void) => {
+      // If reduced motion is preferred, skip animation entirely
+      if (prefersReducedMotion) {
+        finalize();
+        return;
+      }
 
       let finalized = false;
-      let fallbackId: ReturnType<typeof window.setTimeout>;
 
-      const finalize = () => {
+      const doFinalize = () => {
         if (finalized) return;
         finalized = true;
-        aside.style.display = "none";
-        openBtn.style.display = "inline-flex";
-        aside.removeAttribute("inert");
-        clearAnimationState();
         aside.removeEventListener("transitionend", onTransitionEnd);
         window.clearTimeout(fallbackId);
+        finalize();
       };
 
       const onTransitionEnd = (event: TransitionEvent) => {
@@ -489,61 +628,91 @@
           (event.propertyName === "opacity" ||
             event.propertyName === "transform")
         ) {
-          finalize();
+          doFinalize();
         }
       };
 
-      aside.addEventListener("transitionend", onTransitionEnd);
-      fallbackId = window.setTimeout(finalize, transitionDuration + 120);
+      const fallbackId = window.setTimeout(
+        () => doFinalize(),
+        effectiveDuration + TRANSITION_FALLBACK_SLACK_MS
+      );
+
+      if (effectiveDuration > 0) {
+        aside.addEventListener("transitionend", onTransitionEnd);
+      } else {
+        doFinalize();
+      }
+    };
+
+    const hideAside = () => {
+      if (aside.dataset.animating === "true") return;
+      aside.dataset.animating = "true";
+
+      // Pause observer to prevent interference during animation
+      pauseScrollObserver();
+
+      // Set ARIA states immediately for assistive technologies
+      collapseBtn.setAttribute("aria-expanded", "false");
+      openBtn.setAttribute("aria-expanded", "false");
+      aside.setAttribute("aria-hidden", "true");
+      aside.setAttribute("inert", "");
+
+      // Disable pointer events immediately to prevent interaction during animation
+      aside.style.pointerEvents = "none";
+
+      // Set transition state to exiting to trigger CSS animation
+      setTransitionState("exiting");
+
+      // Define finalization logic
+      const finalize = () => {
+        aside.style.display = "none";
+        openBtn.style.display = "inline-flex";
+        setTransitionState("exited");
+
+        // Move focus to open button if it was inside the collapsed aside
+        if (aside.contains(document.activeElement)) {
+          openBtn.focus({ preventScroll: true });
+        }
+
+        clearAnimationState();
+        resumeScrollObserver();
+      };
+
+      runTransition(finalize);
     };
 
     const showAside = () => {
       if (aside.dataset.animating === "true") return;
       aside.dataset.animating = "true";
 
+      // Pause observer to prevent interference during animation
+      pauseScrollObserver();
+
+      // Prepare element for animation
       openBtn.style.display = "none";
       aside.style.display = "";
-      aside.removeAttribute("inert");
-      aside.setAttribute("aria-hidden", "false");
+      aside.setAttribute("inert", ""); // Keep inert during animation
       collapseBtn.setAttribute("aria-expanded", "true");
       openBtn.setAttribute("aria-expanded", "true");
 
-      aside.style.opacity = "0";
-      aside.style.transform = "translateX(-0.75rem)";
-      aside.style.pointerEvents = "none";
-      aside.style.willChange = "opacity, transform";
+      // Trigger CSS animation
+      setTransitionState("entering");
 
-      requestAnimationFrame(() => {
-        aside.style.transition = `opacity ${transitionDuration}ms ${transitionEasing}, transform ${transitionDuration}ms ${transitionEasing}`;
-        requestAnimationFrame(() => {
-          aside.style.opacity = "1";
-          aside.style.transform = "translateX(0)";
-        });
-      });
-
-      let finalized = false;
-      let fallbackId: ReturnType<typeof window.setTimeout>;
-
+      // Define finalization logic
       const finalize = () => {
-        if (finalized) return;
-        finalized = true;
+        aside.removeAttribute("inert");
+        aside.setAttribute("aria-hidden", "false");
+        // Move focus to collapse button for keyboard users
+        collapseBtn.focus({ preventScroll: true });
         clearAnimationState();
-        aside.removeEventListener("transitionend", onTransitionEnd);
-        window.clearTimeout(fallbackId);
+        resumeScrollObserver();
       };
 
-      const onTransitionEnd = (event: TransitionEvent) => {
-        if (
-          event.target === aside &&
-          (event.propertyName === "opacity" ||
-            event.propertyName === "transform")
-        ) {
-          finalize();
-        }
-      };
-
-      aside.addEventListener("transitionend", onTransitionEnd);
-      fallbackId = window.setTimeout(finalize, transitionDuration + 120);
+      // Defer to next frame to ensure CSS transition triggers
+      requestAnimationFrame(() => {
+        runTransition(finalize);
+        setTransitionState("entered");
+      });
     };
 
     collapseBtn.addEventListener("click", hideAside);
