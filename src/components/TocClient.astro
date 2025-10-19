@@ -12,6 +12,9 @@
     children?: TocItem[];
   };
 
+  // Define transition fallback slack in milliseconds
+  const TRANSITION_FALLBACK_SLACK_MS = 120;
+
   // Ensure init across events: initial load / DOM ready / Astro route changes
   const tryInit = () => initializeTocWithRetry();
   if (
@@ -461,7 +464,7 @@
 
       collapseBtn.setAttribute("aria-expanded", "false");
       openBtn.setAttribute("aria-expanded", "false");
-      aside.setAttribute("aria-hidden", "true");
+      // aria-hidden will be set in finalize() after inert is removed
       aside.setAttribute("inert", "");
 
       if (effectiveDuration > 0) {
@@ -486,6 +489,8 @@
         finalized = true;
         aside.style.display = "none";
         openBtn.style.display = "inline-flex";
+        // Set aria-hidden after inert is removed to keep assistive tech state in sync
+        aside.setAttribute("aria-hidden", "true");
         // If focus was inside the collapsed aside, move it to the open button
         const active = document.activeElement as Element | null;
         if (active && aside.contains(active)) {
@@ -508,7 +513,7 @@
 
       const fallbackId = window.setTimeout(
         () => finalize(),
-        effectiveDuration + 120
+        effectiveDuration + TRANSITION_FALLBACK_SLACK_MS
       );
       if (effectiveDuration > 0) {
         aside.addEventListener("transitionend", onTransitionEnd);
@@ -523,7 +528,7 @@
 
       openBtn.style.display = "none";
       aside.style.display = "";
-      aside.setAttribute("aria-hidden", "false");
+      // aria-hidden will be set in finalize() after inert is removed
       collapseBtn.setAttribute("aria-expanded", "true");
       openBtn.setAttribute("aria-expanded", "true");
 
@@ -550,6 +555,8 @@
         if (finalized) return;
         finalized = true;
         aside.removeAttribute("inert");
+        // Set aria-hidden after inert is removed to keep assistive tech state in sync
+        aside.setAttribute("aria-hidden", "false");
         clearAnimationState();
         aside.removeEventListener("transitionend", onTransitionEnd);
         window.clearTimeout(fallbackId);
@@ -567,7 +574,7 @@
 
       const fallbackId = window.setTimeout(
         () => finalize(),
-        effectiveDuration + 120
+        effectiveDuration + TRANSITION_FALLBACK_SLACK_MS
       );
       if (effectiveDuration > 0) {
         aside.addEventListener("transitionend", onTransitionEnd);
