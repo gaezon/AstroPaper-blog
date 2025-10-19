@@ -9,7 +9,7 @@ tags:
   - Raycast
   - GPT AI
   - macOS Launcher
-description: "In-depth analysis of why I abandoned Hapigo after two years of use in favor of the more powerful Raycast. Detailed comparison of features, examination of Hapigo's stalled development, and Raycast's thriving plugin ecosystem. Includes real-world usage experiences, feature comparisons, and migration recommendations for Mac productivity tool users."
+description: "Why I switched from Hapigo to Raycast after two years. Analysis of stalled development and Raycast's superior plugin ecosystem for Mac users."
 locale: en
 originalTitle: 为什么放弃已经使用两年多的 Hapigo：官方更新停滞与 Raycast 的强大替代
 ---

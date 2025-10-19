@@ -9,7 +9,7 @@ tags:
   - docker-compose
   - Qinglong
   - Privacy
-description: "Comprehensive tutorial on removing Sentry.io tracking JavaScript code from Qinglong Panel by modifying docker-compose configuration and custom scripts. Resolves the issue of AdGuardHome frequently blocking the o1098464.ingest.sentry.io domain, improving system efficiency and privacy protection."
+description: "Remove Sentry.io tracking from Qinglong Panel using docker-compose. Stop AdGuardHome blocking sentry.io domains and boost privacy."
 locale: en
 originalTitle: 修改 docker-compose 配置移除青龙面板 sentry.io 跟踪 js 代码
 ---

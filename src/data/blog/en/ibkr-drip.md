@@ -11,7 +11,7 @@ tags:
   - Investing
   - Dividends
   - DRIP
-description: "Deep dive into the truth behind IBKR Interactive Brokers' 'zero commission' dividend reinvestment plan (DRIP). Using a real 0.0003 share NVDA transaction as a case study, this article analyzes actual commission calculation rules, backend accounting systems, and fractional share handling mechanisms. Reveals the true costs of US stock DRIP investing and important considerations for investors."
+description: "IBKR 'zero commission' DRIP analysis: uncover real fees through NVDA case study. Learn commission calculations, rounding rules, and true DRIP costs."
 locale: en
 originalTitle: IBKR 股息再投资 (DRIP) 是零佣金吗？美股盈透证券佣金小数点后的收费规则
 ---

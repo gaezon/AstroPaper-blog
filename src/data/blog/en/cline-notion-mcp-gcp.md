@@ -10,7 +10,7 @@ tags:
   - MCP
   - Automation
   - LLM
-description: "Comprehensive tutorial on leveraging Cline with Notion MCP and OpenRouter's quasar-alpha model to automatically add subscription records to Notion databases using natural language commands. Includes SVG icon integration for enhanced visual appeal, covering complete setup, authorization, and implementation workflows."
+description: "Use Cline with Notion MCP to add database records via natural language. Tutorial covers setup, authorization, and AI-powered subscription management."
 locale: en
 originalTitle: Cline + Notion MCP 用自然语言为 Notion 数据库增加记录 —— 以管理个人订阅服务 notion 数据库为例
 ---
@@ -146,17 +146,3 @@ This workflow dramatically reduces manual data entry time while improving data c
 1. [Notion API Capabilities](https://developers.notion.com/reference/capabilities)
 2. [Cline Project on GitHub](https://github.com/cline/cline)
 3. [OpenRouter Platform](https://openrouter.ai/)
-
-## Summary
-
-With Cline + Notion MCP + a decent LLM you can:
-
-- Automate adding rows to Notion databases
-- Control field values precisely via natural language
-- Auto‑attach brand icons for a clean catalog look
-
-## References
-
-1. [Notion API Capabilities](https://developers.notion.com/reference/capabilities)
-2. [Cline on GitHub](https://github.com/cline/cline)
-3. [OpenRouter](https://openrouter.ai/)
