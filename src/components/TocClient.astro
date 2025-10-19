@@ -564,6 +564,8 @@
       typeof window !== "undefined" &&
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Get transition duration from CSS (0 if reduced motion preferred)
     const transitionDuration = prefersReducedMotion
       ? 0
       : getTransitionDurationMs(aside);
@@ -596,15 +598,25 @@
       aside.setAttribute("data-toc-state", state);
     };
 
+    /**
+     * Generic animation wrapper with transitionend listener and fallback
+     * @param finalize Callback to run after transition completes
+     */
     const runTransition = (finalize: () => void) => {
+      // If reduced motion is preferred, skip animation entirely
+      if (prefersReducedMotion) {
+        finalize();
+        return;
+      }
+
       let finalized = false;
 
       const doFinalize = () => {
         if (finalized) return;
         finalized = true;
-        finalize();
         aside.removeEventListener("transitionend", onTransitionEnd);
         window.clearTimeout(fallbackId);
+        finalize();
       };
 
       const onTransitionEnd = (event: TransitionEvent) => {
@@ -626,7 +638,6 @@
         aside.addEventListener("transitionend", onTransitionEnd);
       } else {
         doFinalize();
-        window.clearTimeout(fallbackId);
       }
     };
 
@@ -637,28 +648,30 @@
       // Pause observer to prevent interference during animation
       pauseScrollObserver();
 
+      // Set ARIA states immediately for assistive technologies
       collapseBtn.setAttribute("aria-expanded", "false");
       openBtn.setAttribute("aria-expanded", "false");
-      // aria-hidden will be set in finalize()
+      aside.setAttribute("aria-hidden", "true");
       aside.setAttribute("inert", "");
+
+      // Disable pointer events immediately to prevent interaction during animation
+      aside.style.pointerEvents = "none";
 
       // Set transition state to exiting to trigger CSS animation
       setTransitionState("exiting");
 
+      // Define finalization logic
       const finalize = () => {
         aside.style.display = "none";
         openBtn.style.display = "inline-flex";
-        // Set aria-hidden to true when hidden
-        aside.setAttribute("aria-hidden", "true");
-        // Set transition state to exited
         setTransitionState("exited");
-        // If focus was inside the collapsed aside, move it to the open button
-        const active = document.activeElement as Element | null;
-        if (active && aside.contains(active)) {
+
+        // Move focus to open button if it was inside the collapsed aside
+        if (aside.contains(document.activeElement)) {
           openBtn.focus({ preventScroll: true });
         }
+
         clearAnimationState();
-        // Resume observer after animation completes
         resumeScrollObserver();
       };
 
@@ -672,25 +685,25 @@
       // Pause observer to prevent interference during animation
       pauseScrollObserver();
 
+      // Prepare element for animation
       openBtn.style.display = "none";
       aside.style.display = "";
-      // aria-hidden will be set in finalize() after inert is removed
+      aside.setAttribute("inert", ""); // Keep inert during animation
       collapseBtn.setAttribute("aria-expanded", "true");
       openBtn.setAttribute("aria-expanded", "true");
 
-      // Set transition state to entering to trigger CSS animation
+      // Trigger CSS animation
       setTransitionState("entering");
 
+      // Define finalization logic
       const finalize = () => {
         aside.removeAttribute("inert");
-        // Set aria-hidden after inert is removed to keep assistive tech state in sync
         aside.setAttribute("aria-hidden", "false");
         clearAnimationState();
-        // Resume observer after animation completes
         resumeScrollObserver();
       };
 
-      // Defer transition logic to next frame to ensure animation starts
+      // Defer to next frame to ensure CSS transition triggers
       requestAnimationFrame(() => {
         runTransition(finalize);
         setTransitionState("entered");

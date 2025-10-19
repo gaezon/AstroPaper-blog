@@ -135,11 +135,14 @@ html[data-theme="dark"] .toc-collapse summary:hover {
 #toc-sidebar {
   --toc-transition-duration: 260ms;
   --toc-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Apply transition to all state changes */
   transition:
     opacity var(--toc-transition-duration) var(--toc-transition-easing),
     transform var(--toc-transition-duration) var(--toc-transition-easing);
 }
 
+/* Entering state: invisible, translated left */
 #toc-sidebar.toc-entering {
   opacity: 0;
   transform: translateX(-0.75rem);
@@ -147,12 +150,15 @@ html[data-theme="dark"] .toc-collapse summary:hover {
   will-change: opacity, transform;
 }
 
+/* Entered state: fully visible */
 #toc-sidebar.toc-entered {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
+  will-change: auto; /* Reset will-change after animation */
 }
 
+/* Exiting state: fading out and translating left */
 #toc-sidebar.toc-exiting {
   opacity: 0;
   transform: translateX(-0.75rem);
@@ -160,19 +166,23 @@ html[data-theme="dark"] .toc-collapse summary:hover {
   will-change: opacity, transform;
 }
 
+/* Exited state: hidden */
 #toc-sidebar.toc-exited {
   opacity: 0;
   transform: translateX(-0.75rem);
   pointer-events: none;
+  will-change: auto; /* Reset will-change to reduce GPU memory */
 }
 
-/* Respect reduced motion preferences */
+/* Respect reduced motion preferences - disable all animations */
 @media (prefers-reduced-motion: reduce) {
+  #toc-sidebar,
   #toc-sidebar.toc-entering,
   #toc-sidebar.toc-entered,
   #toc-sidebar.toc-exiting,
   #toc-sidebar.toc-exited {
     transition: none !important;
     transform: none !important;
+    will-change: auto !important;
   }
 }
