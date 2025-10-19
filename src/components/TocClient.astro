@@ -441,12 +441,40 @@
     aside.classList.add("xl:block");
     aside.setAttribute("aria-hidden", "false");
 
-    const transitionDuration = 260;
+    // Helper to parse CSS time strings (e.g., "260ms", "0.3s") to ms
+    function parseCSSTime(timeStr) {
+      if (timeStr.endsWith("ms")) {
+        return parseFloat(timeStr);
+      } else if (timeStr.endsWith("s")) {
+        return parseFloat(timeStr) * 1000;
+      }
+      return 0;
+    }
+
+    // Compute transition duration and delay from CSS
+    function getTransitionDurationMs(element) {
+      const styles = getComputedStyle(element);
+      const durations = styles.transitionDuration
+        .split(",")
+        .map(s => s.trim())
+        .map(parseCSSTime);
+      const delays = styles.transitionDelay
+        .split(",")
+        .map(s => s.trim())
+        .map(parseCSSTime);
+      // Use the max total duration+delay for all transitions
+      const totals = durations.map((d, i) => d + (delays[i] || 0));
+      return Math.max(...totals, 0);
+    }
+
     const prefersReducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const effectiveDuration = prefersReducedMotion ? 0 : transitionDuration;
+    const transitionDuration = prefersReducedMotion
+      ? 0
+      : getTransitionDurationMs(aside);
+    const effectiveDuration = transitionDuration;
 
     const clearAnimationState = () => {
       aside.style.transition = "";
@@ -483,6 +511,7 @@
         finalized = true;
         finalize();
         aside.removeEventListener("transitionend", onTransitionEnd);
+        window.clearTimeout(fallbackId);
       };
 
       const onTransitionEnd = (event: TransitionEvent) => {
@@ -551,6 +580,12 @@
       // Set transition state to entering to trigger CSS animation
       setTransitionState("entering");
 
+      // Defer transition logic to next frame to ensure animation starts
+      requestAnimationFrame(() => {
+        runTransition(finalize);
+        setTransitionState("entered");
+      });
+
       const finalize = () => {
         aside.removeAttribute("inert");
         // Set aria-hidden after inert is removed to keep assistive tech state in sync
@@ -559,8 +594,6 @@
         setTransitionState("entered");
         clearAnimationState();
       };
-
-      runTransition(finalize);
     };
 
     collapseBtn.addEventListener("click", hideAside);
