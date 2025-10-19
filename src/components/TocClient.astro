@@ -580,20 +580,18 @@
       // Set transition state to entering to trigger CSS animation
       setTransitionState("entering");
 
+      const finalize = () => {
+        aside.removeAttribute("inert");
+        // Set aria-hidden after inert is removed to keep assistive tech state in sync
+        aside.setAttribute("aria-hidden", "false");
+        clearAnimationState();
+      };
+
       // Defer transition logic to next frame to ensure animation starts
       requestAnimationFrame(() => {
         runTransition(finalize);
         setTransitionState("entered");
       });
-
-      const finalize = () => {
-        aside.removeAttribute("inert");
-        // Set aria-hidden after inert is removed to keep assistive tech state in sync
-        aside.setAttribute("aria-hidden", "false");
-        // Set transition state to entered
-        setTransitionState("entered");
-        clearAnimationState();
-      };
     };
 
     collapseBtn.addEventListener("click", hideAside);

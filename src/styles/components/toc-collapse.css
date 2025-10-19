@@ -157,6 +157,7 @@ html[data-theme="dark"] .toc-collapse summary:hover {
   opacity: 0;
   transform: translateX(-0.75rem);
   pointer-events: none;
+  will-change: opacity, transform;
 }
 
 #toc-sidebar.toc-exited {
