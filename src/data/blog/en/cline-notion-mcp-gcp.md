@@ -146,17 +146,3 @@ This workflow dramatically reduces manual data entry time while improving data c
 1. [Notion API Capabilities](https://developers.notion.com/reference/capabilities)
 2. [Cline Project on GitHub](https://github.com/cline/cline)
 3. [OpenRouter Platform](https://openrouter.ai/)
-
-## Summary
-
-With Cline + Notion MCP + a decent LLM you can:
-
-- Automate adding rows to Notion databases
-- Control field values precisely via natural language
-- Auto‑attach brand icons for a clean catalog look
-
-## References
-
-1. [Notion API Capabilities](https://developers.notion.com/reference/capabilities)
-2. [Cline on GitHub](https://github.com/cline/cline)
-3. [OpenRouter](https://openrouter.ai/)
