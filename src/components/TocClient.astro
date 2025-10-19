@@ -442,7 +442,6 @@
     aside.setAttribute("aria-hidden", "false");
 
     const transitionDuration = 260;
-    const transitionEasing = "cubic-bezier(0.4, 0, 0.2, 1)";
     const prefersReducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia &&
@@ -478,14 +477,12 @@
 
     const runTransition = (finalize: () => void) => {
       let finalized = false;
-      let fallbackId: number;
 
       const doFinalize = () => {
         if (finalized) return;
         finalized = true;
         finalize();
         aside.removeEventListener("transitionend", onTransitionEnd);
-        window.clearTimeout(fallbackId);
       };
 
       const onTransitionEnd = (event: TransitionEvent) => {
@@ -498,7 +495,7 @@
         }
       };
 
-      fallbackId = window.setTimeout(
+      const fallbackId = window.setTimeout(
         () => doFinalize(),
         effectiveDuration + TRANSITION_FALLBACK_SLACK_MS
       );
@@ -507,6 +504,7 @@
         aside.addEventListener("transitionend", onTransitionEnd);
       } else {
         doFinalize();
+        window.clearTimeout(fallbackId);
       }
     };
 
