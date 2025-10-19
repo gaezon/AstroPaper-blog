@@ -116,6 +116,14 @@
         e.preventDefault();
         const target = document.getElementById(item.id);
         if (target) {
+          // Set scrolling flag to prevent IntersectionObserver interference
+          isScrolling = true;
+
+          // Clear any existing timeout
+          if (scrollTimeout !== null) {
+            window.clearTimeout(scrollTimeout);
+          }
+
           // Compute offset to prevent heading overlap (extra buffer)
           const yOffset = -120; // Negative to offset upward, give more space
           const y =
@@ -133,7 +141,17 @@
                 "font-semibold"
               );
               el.classList.add("text-muted", "border-transparent");
+              el.removeAttribute("aria-current");
             });
+
+          // Update both desktop and mobile versions of the same link
+          const href = link.getAttribute("href");
+          const mobileLink = href
+            ? document.querySelector(`#toc-nav-mobile a[href="${href}"]`)
+            : null;
+
+          // Update desktop link - batch class changes to minimize mutations
+          link.classList.remove("text-muted", "border-transparent");
           link.classList.add(
             "active",
             "text-accent",
@@ -141,11 +159,29 @@
             "border-accent",
             "font-semibold"
           );
-          link.classList.remove("text-muted", "border-transparent");
           link.setAttribute("aria-current", "true");
+
+          // Update mobile link - batch class changes to minimize mutations
+          if (mobileLink instanceof HTMLAnchorElement) {
+            mobileLink.classList.remove("text-muted", "border-transparent");
+            mobileLink.classList.add(
+              "active",
+              "text-accent",
+              "bg-muted/40",
+              "border-accent",
+              "font-semibold"
+            );
+            mobileLink.setAttribute("aria-current", "true");
+          }
 
           // Then smooth scroll
           window.scrollTo({ top: y, behavior: "smooth" });
+
+          // Reset scrolling flag after scroll completes - increased to 1200ms for longer scrolls
+          scrollTimeout = window.setTimeout(() => {
+            isScrolling = false;
+            scrollTimeout = null;
+          }, 1200);
         }
       });
 
@@ -167,6 +203,10 @@
     container.appendChild(ul);
   }
 
+  let tocObserver: IntersectionObserver | null = null;
+  let isScrolling = false;
+  let scrollTimeout: number | null = null;
+
   function setupScrollObserver(): void {
     const headings = document.querySelectorAll(
       "#article h2, #article h3, #article h4, #article h5, #article h6"
@@ -176,6 +216,9 @@
 
     const observer = new IntersectionObserver(
       entries => {
+        // Skip if currently scrolling programmatically
+        if (isScrolling) return;
+
         entries.forEach(entry => {
           const id = entry.target.id;
           const link = document.querySelector(`#toc-nav a[href="#${id}"]`);
@@ -231,7 +274,25 @@
       }
     );
 
+    tocObserver = observer;
     headings.forEach(heading => observer.observe(heading));
+  }
+
+  function pauseScrollObserver(): void {
+    if (tocObserver) {
+      // Disconnect the observer to prevent interference during animation
+      tocObserver.disconnect();
+    }
+  }
+
+  function resumeScrollObserver(): void {
+    if (tocObserver) {
+      // Re-observe all headings
+      const headings = document.querySelectorAll(
+        "#article h2, #article h3, #article h4, #article h5, #article h6"
+      );
+      headings.forEach(heading => tocObserver!.observe(heading));
+    }
   }
 
   function setupMobileInteractions(): void {
@@ -258,6 +319,14 @@
           if (!href) return;
           const target = document.querySelector(href);
           if (target instanceof HTMLElement) {
+            // Set scrolling flag to prevent IntersectionObserver interference
+            isScrolling = true;
+
+            // Clear any existing timeout
+            if (scrollTimeout !== null) {
+              window.clearTimeout(scrollTimeout);
+            }
+
             // Compute offset; keep consistent with desktop
             const yOffset = -120;
             const y =
@@ -277,8 +346,14 @@
                 el.classList.add("text-muted", "border-transparent");
                 el.removeAttribute("aria-current");
               });
+
+            // Update both mobile and desktop versions of the same link
             const clickedLink =
               current instanceof HTMLAnchorElement ? current : null;
+            const desktopLink = href
+              ? document.querySelector(`#toc-nav a[href="${href}"]`)
+              : null;
+
             if (clickedLink) {
               clickedLink.classList.add(
                 "active",
@@ -291,8 +366,26 @@
               clickedLink.setAttribute("aria-current", "true");
             }
 
+            if (desktopLink instanceof HTMLAnchorElement) {
+              desktopLink.classList.add(
+                "active",
+                "text-accent",
+                "bg-muted/40",
+                "border-accent",
+                "font-semibold"
+              );
+              desktopLink.classList.remove("text-muted", "border-transparent");
+              desktopLink.setAttribute("aria-current", "true");
+            }
+
             // Then smooth scroll
             window.scrollTo({ top: y, behavior: "smooth" });
+
+            // Reset scrolling flag after scroll completes - increased to 1200ms for longer scrolls
+            scrollTimeout = window.setTimeout(() => {
+              isScrolling = false;
+              scrollTimeout = null;
+            }, 1200);
           }
           // Close drawer
           const evt = new Event("click");
@@ -541,6 +634,9 @@
       if (aside.dataset.animating === "true") return;
       aside.dataset.animating = "true";
 
+      // Pause observer to prevent interference during animation
+      pauseScrollObserver();
+
       collapseBtn.setAttribute("aria-expanded", "false");
       openBtn.setAttribute("aria-expanded", "false");
       // aria-hidden will be set in finalize()
@@ -562,6 +658,8 @@
           openBtn.focus({ preventScroll: true });
         }
         clearAnimationState();
+        // Resume observer after animation completes
+        resumeScrollObserver();
       };
 
       runTransition(finalize);
@@ -570,6 +668,9 @@
     const showAside = () => {
       if (aside.dataset.animating === "true") return;
       aside.dataset.animating = "true";
+
+      // Pause observer to prevent interference during animation
+      pauseScrollObserver();
 
       openBtn.style.display = "none";
       aside.style.display = "";
@@ -585,6 +686,8 @@
         // Set aria-hidden after inert is removed to keep assistive tech state in sync
         aside.setAttribute("aria-hidden", "false");
         clearAnimationState();
+        // Resume observer after animation completes
+        resumeScrollObserver();
       };
 
       // Defer transition logic to next frame to ensure animation starts
