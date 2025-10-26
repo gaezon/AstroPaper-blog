@@ -66,6 +66,8 @@ const structuredData = {
 };
 // Restrict Umami tracking to specific domains (avoid local/preview)
 const siteHostname = new URL(SITE.website).hostname;
+// Only enable Vercel Speed Insights on Vercel production builds
+const isVercelProd = process.env.VERCEL_ENV === "production";
 ---
 
 <!doctype html>
@@ -270,8 +272,13 @@ const siteHostname = new URL(SITE.website).hostname;
       )
     }
 
-    <!-- Vercel Speed Insights -->
-    <script is:inline defer src="/_vercel/speed-insights/script.js"></script>
+    <!-- Vercel Speed Insights (production on Vercel only) -->
+    {
+      // Only include when building on Vercel production to avoid 404s locally/preview
+      isVercelProd && (
+        <script is:inline defer src="/_vercel/speed-insights/script.js" />
+      )
+    }
     <style is:inline>
       html,
       body {
