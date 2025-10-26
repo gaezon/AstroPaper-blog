@@ -16,6 +16,6 @@ description: "技术爱好者 Gaazeon 的个人介绍。非计算机专业出身
 
 ---
 
-有任何问题想交流可以邮件联系：gaazeon@gaazeon.com
+有任何问题想交流可以邮件联系： [gaazeon@gaazeon.com](mailto:gaazeon@gaazeon.com)
 
 主要聊文章里提到的问题、类似的踩坑经验，或者你觉得有什么工具值得试试。不用太拘束，就像和朋友聊天一样就好。

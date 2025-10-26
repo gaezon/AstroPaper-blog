@@ -16,6 +16,6 @@ Chinese is my native language, and I can read English technical documentation. I
 
 ---
 
-Feel free to email me if you want to chat: gaazeon@gaazeon.com
+Feel free to email me if you want to chat: [gaazeon@gaazeon.com](mailto:gaazeon@gaazeon.com)
 
 Mainly about problems from my articles, similar troubleshooting experiences, or tools you think are worth trying. No need to be formal - just chat like a friend.

@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { getPath } from "@/utils/getPath";
 import { generateOgImageForPost } from "@/utils/generateOgImages";
+import { toArrayBuffer } from "@/utils/toArrayBuffer";
 import { SITE } from "@/config";
 
 export async function getStaticPaths() {
@@ -39,7 +40,12 @@ export const GET: APIRoute = async ({ props, params }) => {
     if (!entry) return new Response(null, { status: 404 });
 
     const png = await generateOgImageForPost(entry);
-    return new Response(png, { headers: { "Content-Type": "image/png" } });
+    const body: Uint8Array =
+      png instanceof Uint8Array ? png : new Uint8Array(png);
+    const arrayBuffer = toArrayBuffer(body);
+    return new Response(arrayBuffer, {
+      headers: { "Content-Type": "image/png" },
+    });
   } catch (e) {
     console.error("OG image route error:", e);
     return new Response(null, {
