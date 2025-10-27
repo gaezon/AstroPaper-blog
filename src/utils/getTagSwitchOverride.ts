@@ -156,9 +156,7 @@ export async function getTagSwitchOverride(
     const targetSlug = resolveCounterpartSlug({
       sourceTaggedPosts: taggedEnPosts,
       matchPair: sourcePost => {
-        const originalTitle = sourcePost.data.originalTitle as
-          | string
-          | undefined;
+        const originalTitle = sourcePost.data.originalTitle;
         if (!originalTitle) return undefined;
         return zhByTitle.get(originalTitle);
       },
