@@ -1,21 +1,10 @@
 ---
 import { getCurrentLocale, t } from "@/i18n/utils";
+import { normalizePathWithLocale } from "@/utils/url";
 
 const currentLocale = getCurrentLocale(Astro);
-const ensureLeadingSlash = (path: string) =>
-  path.startsWith("/") ? path : `/${path}`;
-const ensureTrailingSlash = (path: string) =>
-  path.endsWith("/") ? path : `${path}/`;
-const localeUrl = (path: string) => {
-  const normalized = ensureTrailingSlash(ensureLeadingSlash(path));
-
-  if (currentLocale === "zh-CN") {
-    return normalized;
-  }
-
-  const prefixed = `/en${normalized}`;
-  return prefixed.replace(/\/+/g, "/");
-};
+const localePrefix = currentLocale === "zh-CN" ? "" : `/${currentLocale}`;
+const localeUrl = (path: string) => normalizePathWithLocale(path, localePrefix);
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 ---
