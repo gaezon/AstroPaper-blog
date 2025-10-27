@@ -67,8 +67,8 @@ function buildTargetUrl(
     segments.push(...restSegments);
   }
 
-  const pathname = `/${segments.join("/")}/`.replace(/\/+/g, "/");
-  return `${pathname}${search ?? ""}${hash ?? ""}`;
+  const pathname = `/${segments.filter(Boolean).join("/")}/`;
+  return `${pathname}${search}${hash}`;
 }
 
 function normalizeSegments(
