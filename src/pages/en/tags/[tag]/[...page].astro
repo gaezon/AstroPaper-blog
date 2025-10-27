@@ -11,6 +11,7 @@ import getUniqueTags from "@/utils/getUniqueTags";
 import getPostsByTag from "@/utils/getPostsByTag";
 import { SITE } from "@/config";
 import { t } from "@/i18n/utils";
+import { getTagSwitchOverride } from "@/utils/getTagSwitchOverride";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const posts = await getCollection("blog-en");
@@ -32,12 +33,13 @@ type PageProps = InferGetStaticPropsType<typeof getStaticPaths> & {
   page: { data: CollectionEntry<"blog-en">[]; [key: string]: unknown };
 };
 const { page, tagName } = Astro.props as PageProps;
+const switchOverride = await getTagSwitchOverride(Astro);
 const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
 const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
 ---
 
 <Layout title={`${pageTitle} | ${SITE.title}`} description={pageDescription}>
-  <Header />
+  <Header switchOverride={switchOverride} />
   <Main
     pageTitle={[`${t(Astro, "tags.title")}:`, `${tagName}`]}
     titleTransition={tag}
