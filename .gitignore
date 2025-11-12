@@ -33,6 +33,10 @@ public/pagefind
 
 # Playwright MCP artifacts
 .playwright-mcp/
+
+# Playwright test results
+test-results/
+
 # Debug scripts and temporary output
 debug-*.ts
 test-*.ts

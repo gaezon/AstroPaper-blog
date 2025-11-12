@@ -54,9 +54,10 @@ const xDefaultURL = (() => {
     return canonicalURL;
   }
 
-  if (url.pathname === `/${currentLocale}`) {
-    url.pathname = "/";
-  } else if (url.pathname === `/${currentLocale}/`) {
+  if (
+    url.pathname === `/${currentLocale}` ||
+    url.pathname === `/${currentLocale}/`
+  ) {
     url.pathname = "/";
   } else if (url.pathname.startsWith(`/${currentLocale}/`)) {
     url.pathname = url.pathname.replace(`/${currentLocale}`, "");
