@@ -10,6 +10,7 @@ import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
 import DummyLogo from "@/assets/dummy-logo.svg";
 import { getCurrentLocale, t } from "@/i18n/utils";
+import { normalizePathWithLocale } from "@/utils/url";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 
 interface HeaderProps {
@@ -53,15 +54,7 @@ const isActive = (path: string) => {
 };
 
 // Build localized URL
-const localeUrl = (path: string) => {
-  const fullPath = `${localePrefix}${path}`;
-  // Ensure root returns "/", and other paths end with "/"
-  return fullPath === "/"
-    ? "/"
-    : fullPath.endsWith("/")
-      ? fullPath
-      : `${fullPath}/`;
-};
+const localeUrl = (path: string) => normalizePathWithLocale(path, localePrefix);
 
 // Get translation function
 const tr = (key: string, params?: Record<string, string | number>) =>

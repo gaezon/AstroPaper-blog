@@ -1,4 +1,5 @@
 import type { AstroGlobal } from "astro";
+import { ensureTrailingSlash } from "@/utils/url";
 import { I18N_CONFIG, getLocaleProfile } from "./config";
 
 /**
@@ -144,11 +145,6 @@ function getLocaleSwitchUrlForPath(
 }
 
 // Helper: ensure the URL ends with /
-function ensureTrailingSlash(path: string): string {
-  if (path === "/") return "/";
-  return path.endsWith("/") ? path : `${path}/`;
-}
-
 function appendUrlParts(path: string, search: string, hash: string): string {
   return `${path}${search ?? ""}${hash ?? ""}`;
 }

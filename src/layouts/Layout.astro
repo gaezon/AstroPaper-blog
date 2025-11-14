@@ -12,6 +12,7 @@ import {
   getTextDirection,
   t,
 } from "@/i18n/utils";
+import { ensureTrailingSlash } from "@/utils/url";
 
 // I18n variables
 const currentLocale = getCurrentLocale(Astro);
@@ -36,11 +37,35 @@ const {
   profile = SITE.profile,
   description = currentLocale === "en" ? SITE.descEn || SITE.desc : SITE.desc,
   ogImage = SITE.ogImage,
-  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+  canonicalURL: canonicalURLProp = new URL(Astro.url.pathname, Astro.site).href,
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
 } = Astro.props;
+
+const canonicalURL = ensureTrailingSlash(
+  new URL(canonicalURLProp, Astro.site).href
+);
+
+const xDefaultURL = (() => {
+  const url = new URL(canonicalURL);
+
+  if (currentLocale === "zh-CN") {
+    return canonicalURL;
+  }
+
+  if (
+    url.pathname === `/${currentLocale}` ||
+    url.pathname === `/${currentLocale}/`
+  ) {
+    url.pathname = "/";
+  } else if (url.pathname.startsWith(`/${currentLocale}/`)) {
+    url.pathname = url.pathname.replace(`/${currentLocale}`, "");
+  }
+
+  url.pathname = ensureTrailingSlash(url.pathname);
+  return url.toString();
+})();
 
 // Use the processed 'description' as finalDescription
 const finalDescription = description;
@@ -171,12 +196,7 @@ const isVercelProd = process.env.VERCEL_ENV === "production";
 
     <!-- hreflang tags for SEO -->
     <link rel="alternate" hreflang={currentLocale} href={canonicalURL} />
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href={canonicalURL.replace(`/${currentLocale}`, "").replace(/\/$/, "") ||
-        "/"}
-    />
+    <link rel="alternate" hreflang="x-default" href={xDefaultURL} />
 
     <!-- General Meta Tags -->
     <title>{title}</title>
