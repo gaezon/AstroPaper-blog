@@ -78,6 +78,17 @@ const layoutProps = {
 
 /* ========== Prev/Next Posts ========== */
 
+// Helper function to get adjacent posts with proper boundary checking
+const getAdjacentPosts = (
+  allPosts: Array<{ id: string; title: string; filePath: string | undefined }>,
+  currentIndex: number
+) => {
+  const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+  const nextPost =
+    currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+  return { prevPost, nextPost };
+};
+
 const allPosts = posts.map(({ data: { title }, id, filePath }) => ({
   id,
   title,
@@ -86,9 +97,7 @@ const allPosts = posts.map(({ data: { title }, id, filePath }) => ({
 
 const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
 
-const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
-const nextPost =
-  currentPostIndex !== allPosts.length ? allPosts[currentPostIndex + 1] : null;
+const { prevPost, nextPost } = getAdjacentPosts(allPosts, currentPostIndex);
 
 // ===== Language switch: cross-link overrides (precomputed before template) =====
 const currentLocale = getCurrentLocale(Astro);
