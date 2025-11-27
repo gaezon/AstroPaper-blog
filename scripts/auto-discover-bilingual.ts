@@ -346,14 +346,43 @@ function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
 /**
  * Save results to file
  */
-function saveResults(results: DynamicMappingResult): void {
+/**
+ * Save results to file
+ */
+async function saveResults(results: DynamicMappingResult): Promise<void> {
   const outputPath = join(PROJECT_ROOT, "src", "utils", "generated");
+  const outputFile = join(outputPath, "bilingualMapping.ts");
 
   // Ensure output directory exists
   try {
     mkdirSync(outputPath, { recursive: true });
   } catch {
     // Directory may already exist
+  }
+
+  // Check if file exists and content matches
+  if (existsSync(outputFile)) {
+    try {
+      // Use dynamic import to load the existing module
+      // We need a file URL or relative path for import
+      const modulePath = outputFile;
+      const currentModule = await import(modulePath);
+
+      const currentMapping = currentModule.dynamicSlugMapping;
+      const currentUnifiedPaths = currentModule.unifiedCommentPaths;
+
+      // Compare objects
+      if (
+        JSON.stringify(currentMapping) === JSON.stringify(results.mapping) &&
+        JSON.stringify(currentUnifiedPaths) ===
+          JSON.stringify(results.unifiedPaths)
+      ) {
+        log("✨ 映射关系未发生变化，跳过文件写入 (保持原有时间戳)");
+        return;
+      }
+    } catch (e) {
+      log("⚠️ 读取现有文件失败，将重新生成: " + e);
+    }
   }
 
   // Save dynamic mapping
@@ -384,13 +413,14 @@ export const unifiedCommentPaths: Record<string, {
 export const mappingMetadata = ${JSON.stringify(metadata, null, 2)};
 `;
 
-  writeFileSync(join(outputPath, "bilingualMapping.ts"), mappingContent);
+  writeFileSync(outputFile, mappingContent);
+  log("📁 已更新文件: src/utils/generated/bilingualMapping.ts");
 }
 
 /**
  * Main function
  */
-function main(): void {
+async function main(): Promise<void> {
   log("🔍 开始自动发现双语文章配对...");
 
   const articles = getArticles();
@@ -415,7 +445,7 @@ function main(): void {
 
   // Generate dynamic mapping
   const results = generateDynamicMapping(allMatches);
-  saveResults(results);
+  await saveResults(results);
 
   // Output report
   log("\n📊 匹配报告:");
