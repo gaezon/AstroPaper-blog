@@ -1,0 +1,98 @@
+---
+import {
+  getCurrentLocale,
+  getLocaleSwitchUrl,
+  getAvailableLocales,
+} from "@/i18n/utils";
+
+interface Props {
+  class?: string;
+  override?: Record<string, string | undefined>;
+}
+
+const { class: className = "", override } = Astro.props;
+
+const currentLocale = getCurrentLocale(Astro);
+const availableLocales = getAvailableLocales();
+---
+
+<div class={`language-switcher-toggle ${className}`}>
+  {
+    availableLocales.map(locale => {
+      const targetHref =
+        override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
+      return (
+        <a
+          href={targetHref}
+          data-base-href={targetHref}
+          data-locale={locale.code}
+          class={`lang-toggle-btn ${locale.code === currentLocale ? "active" : ""}`}
+          lang={locale.profile.langTag}
+          hreflang={locale.code}
+          aria-label={locale.name}
+          title={locale.name}
+          data-astro-reload
+        >
+          {locale.profile.label || locale.name}
+        </a>
+      );
+    })
+  }
+</div>
+
+<style>
+  /* ========== Toggle button styles - Liquid Glass design ========== */
+  .language-switcher-toggle {
+    display: inline-flex;
+    gap: 0.375rem;
+    padding: 0.375rem;
+    background: hsl(var(--background) / 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: 0.625rem;
+    box-shadow:
+      0 1px 2px hsl(var(--foreground) / 0.04),
+      0 2px 8px hsl(var(--foreground) / 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .language-switcher-toggle:hover {
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-color: hsl(var(--border) / 0.7);
+    box-shadow:
+      0 2px 4px hsl(var(--foreground) / 0.06),
+      0 4px 12px hsl(var(--foreground) / 0.08);
+  }
+
+  .lang-toggle-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--foreground) / 0.65);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(2px);
+  }
+
+  .lang-toggle-btn:hover {
+    color: hsl(var(--foreground) / 0.9);
+    background: hsl(var(--muted) / 0.5);
+    backdrop-filter: blur(4px);
+    transform: translateY(-1px);
+  }
+
+  .lang-toggle-btn.active {
+    background: hsl(var(--accent) / 0.9);
+    backdrop-filter: blur(8px);
+    color: hsl(var(--accent-foreground));
+    font-weight: 600;
+    box-shadow:
+      0 2px 8px hsl(var(--accent) / 0.3),
+      0 0 16px hsl(var(--accent) / 0.15),
+      inset 0 1px 0 hsl(var(--accent-foreground) / 0.2);
+  }
+</style>

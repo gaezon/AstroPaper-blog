@@ -1,0 +1,302 @@
+---
+import {
+  getCurrentLocale,
+  getLocaleSwitchUrl,
+  getAvailableLocales,
+} from "@/i18n/utils";
+
+interface Props {
+  class?: string;
+  override?: Record<string, string | undefined>;
+}
+
+const { class: className = "", override } = Astro.props;
+
+const currentLocale = getCurrentLocale(Astro);
+const availableLocales = getAvailableLocales();
+
+// Get short display label for language code.
+// If locale.profile.label is not set, this will fall back to the uppercase language code (e.g., "ZH" for "zh-CN").
+// This is a change from the previous hard-coded mapping (e.g., "zh-CN" => "中", others => "EN").
+// Ensure all locales have appropriate profile.label values, or accept/display this fallback.
+const getShortLabel = (locale: (typeof availableLocales)[0]) => {
+  if (locale.profile.label) return locale.profile.label;
+  // Fallback: use first two letters of locale code, uppercased (e.g., "es" => "ES", "zh-CN" => "ZH")
+  return locale.code.toUpperCase().slice(0, 2);
+};
+---
+
+<div class={`language-switcher-compact ${className}`}>
+  <div class="lang-compact-wrapper">
+    <svg
+      class="globe-icon-compact"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+      ></path>
+    </svg>
+    {
+      availableLocales.map((locale, index) => {
+        const targetHref =
+          override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
+        return (
+          <>
+            <a
+              href={targetHref}
+              data-base-href={targetHref}
+              data-locale={locale.code}
+              class={`lang-compact-btn ${locale.code === currentLocale ? "active" : ""}`}
+              lang={locale.profile.langTag}
+              hreflang={locale.code}
+              aria-label={locale.name}
+              title={locale.name}
+              aria-current={locale.code === currentLocale ? "page" : undefined}
+              data-astro-reload
+            >
+              {getShortLabel(locale)}
+            </a>
+            {index < availableLocales.length - 1 && (
+              <span class="lang-separator">/</span>
+            )}
+          </>
+        );
+      })
+    }
+  </div>
+</div>
+
+<style>
+  /* ========== Compact styles - Liquid Glass design ========== */
+  .language-switcher-compact {
+    display: inline-flex;
+    width: 100%;
+  }
+
+  .lang-compact-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    padding: 0.625rem 1rem;
+
+    /* Liquid Glass core styles */
+    background: hsl(var(--background) / 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: 0.75rem;
+
+    /* Multi-layer shadows to create depth */
+    box-shadow:
+      0 1px 2px hsl(var(--foreground) / 0.04),
+      0 4px 12px hsl(var(--foreground) / 0.06),
+      inset 0 1px 0 hsl(var(--background) / 0.8);
+
+    font-size: 0.875rem;
+    width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lang-compact-wrapper:hover {
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-color: hsl(var(--border) / 0.7);
+
+    /* Stronger shadow on hover */
+    box-shadow:
+      0 2px 4px hsl(var(--foreground) / 0.06),
+      0 8px 24px hsl(var(--foreground) / 0.1),
+      inset 0 1px 0 hsl(var(--background) / 0.9);
+
+    transform: translateY(-2px);
+  }
+
+  .globe-icon-compact {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: hsl(var(--accent));
+    opacity: 0.75;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 4px hsl(var(--accent) / 0.2));
+  }
+
+  .lang-compact-wrapper:hover .globe-icon-compact {
+    opacity: 0.95;
+    transform: rotate(20deg) scale(1.05);
+    filter: drop-shadow(0 0 8px hsl(var(--accent) / 0.3));
+  }
+
+  .lang-compact-btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    color: hsl(var(--foreground) / 0.65);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    min-width: 2.5rem;
+    text-align: center;
+    position: relative;
+    backdrop-filter: blur(2px);
+  }
+
+  .lang-compact-btn:hover {
+    color: hsl(var(--foreground) / 0.9);
+    background: hsl(var(--muted) / 0.5);
+    backdrop-filter: blur(4px);
+    transform: scale(1.05);
+    text-shadow: 0 0 8px hsl(var(--foreground) / 0.1);
+  }
+
+  .lang-compact-btn.active {
+    color: hsl(var(--accent-foreground));
+    font-weight: 600;
+    background: hsl(var(--accent) / 0.9);
+    backdrop-filter: blur(8px);
+
+    /* Glow when active */
+    box-shadow:
+      0 2px 8px hsl(var(--accent) / 0.3),
+      0 0 20px hsl(var(--accent) / 0.15),
+      inset 0 1px 0 hsl(var(--accent-foreground) / 0.2);
+
+    text-shadow: 0 0 12px hsl(var(--accent-foreground) / 0.2);
+  }
+
+  .lang-compact-btn.active::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 0.625rem;
+    border: 1.5px solid hsl(var(--accent) / 0.3);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--accent) / 0.1) 0%,
+      transparent 50%,
+      hsl(var(--accent) / 0.05) 100%
+    );
+    pointer-events: none;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .lang-separator {
+    color: hsl(var(--foreground) / 0.3);
+    font-weight: 300;
+    user-select: none;
+    font-size: 0.75rem;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 640px) {
+    /* Mobile compact mode - reserved for other scenarios */
+    .language-switcher-compact {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .lang-compact-wrapper {
+      font-size: 0.9375rem;
+      padding: 0.875rem 1.25rem;
+      width: 100%;
+      max-width: 100%;
+      gap: 0.75rem;
+      border-radius: 1rem;
+
+      /* Enhance Liquid Glass effect on mobile */
+      background: linear-gradient(
+        135deg,
+        hsl(var(--background) / 0.75) 0%,
+        hsl(var(--background) / 0.65) 100%
+      );
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid hsl(var(--border) / 0.4);
+
+      box-shadow:
+        0 2px 4px hsl(var(--foreground) / 0.06),
+        0 8px 24px hsl(var(--foreground) / 0.08),
+        inset 0 1px 0 hsl(var(--background) / 0.9),
+        inset 0 -1px 0 hsl(var(--foreground) / 0.02);
+    }
+
+    .lang-compact-wrapper:hover {
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-color: hsl(var(--border) / 0.6);
+
+      box-shadow:
+        0 4px 8px hsl(var(--foreground) / 0.08),
+        0 12px 32px hsl(var(--foreground) / 0.12),
+        inset 0 1px 0 hsl(var(--background)),
+        inset 0 -1px 0 hsl(var(--foreground) / 0.03);
+
+      transform: translateY(-3px);
+    }
+
+    .lang-compact-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.9375rem;
+      min-width: 3rem;
+      font-weight: 600;
+      border-radius: 0.625rem;
+    }
+
+    .lang-compact-btn.active {
+      box-shadow:
+        0 3px 12px hsl(var(--accent) / 0.35),
+        0 0 24px hsl(var(--accent) / 0.2),
+        inset 0 1px 0 hsl(var(--accent-foreground) / 0.25);
+    }
+
+    .globe-icon-compact {
+      width: 1.25rem;
+      height: 1.25rem;
+      filter: drop-shadow(0 0 6px hsl(var(--accent) / 0.25));
+    }
+
+    .lang-compact-wrapper:hover .globe-icon-compact {
+      filter: drop-shadow(0 0 10px hsl(var(--accent) / 0.35));
+    }
+  }
+
+  @media (max-width: 375px) {
+    .lang-compact-wrapper {
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    .lang-compact-btn {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      min-width: 2.5rem;
+    }
+
+    .globe-icon-compact {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  /* Animation used by .lang-compact-btn.active::after */
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.02);
+    }
+  }
+</style>
