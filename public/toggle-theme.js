@@ -52,6 +52,12 @@ function reflectPreference() {
 
     // Sync Mermaid diagram light/dark theme
     updateMermaidMedia(themeValue);
+
+    // Dispatch theme-changed event for MermaidClient
+    const event = new CustomEvent("theme-changed", {
+      detail: { theme: themeValue },
+    });
+    document.dispatchEvent(event);
   }
 }
 
@@ -104,48 +110,3 @@ window
     themeValue = isDark ? "dark" : "light";
     setPreference();
   });
-
-const getTheme = () => {
-  if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
-    return localStorage.getItem("theme");
-  }
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "dark";
-  }
-  return "light";
-};
-
-const theme = getTheme();
-
-if (theme === "light") {
-  document.documentElement.classList.remove("dark");
-} else {
-  document.documentElement.classList.add("dark");
-}
-
-window.localStorage.setItem("theme", theme);
-
-const dispatchThemeChangeEvent = newTheme => {
-  const event = new CustomEvent("theme-changed", {
-    detail: { theme: newTheme },
-  });
-  document.dispatchEvent(event);
-  console.log(`Dispatched theme-changed event: ${newTheme}`);
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleTheme = () => {
-    const currentTheme = window.localStorage.getItem("theme");
-    const newTheme = currentTheme === "light" ? "dark" : "light";
-
-    window.localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-
-    dispatchThemeChangeEvent(newTheme);
-  };
-
-  document.getElementById("theme-btn")?.addEventListener("click", toggleTheme);
-
-  // Dispatch initial theme once the page is loaded
-  dispatchThemeChangeEvent(getTheme());
-});
