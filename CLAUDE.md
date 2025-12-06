@@ -14,12 +14,13 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 
 - `pnpm install` - Install dependencies
 - `pnpm run dev` - Start local development server at localhost:4321
-- `pnpm run build` - Build production site to ./dist/
+- `pnpm run build` - Build production site to ./dist/ (includes bilingual mapping generation and Mermaid library copy)
 - `pnpm run preview` - Preview the built site locally
 
 ### Internationalization
 
 - `pnpm run i18n:scaffold-en` - Create English drafts from Chinese posts
+- `pnpm run generate:bilingual-mapping` - Generate automatic bilingual post mappings for comment system
 
 ### Code Quality
 
@@ -31,6 +32,11 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 ### Validation
 
 - `pnpm run validate:meta` - Validate meta descriptions in blog posts
+
+### Testing
+
+- `pnpm run test` - Run Playwright tests
+- `npx playwright test tests/[test-file].spec.ts` - Run specific test file
 
 ## Architecture Overview
 
@@ -45,6 +51,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - `src/components/` - Reusable UI components
 - `src/utils/` - Utility functions for data processing and helpers
 - `src/i18n/` - Internationalization configuration and utilities
+- `tests/` - Playwright E2E test suite
 
 ### Key Features
 
@@ -55,8 +62,10 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 5. **SEO Optimization** - Meta tags, structured data, sitemap
 6. **Privacy Features** - Cookie consent banner with granular controls
 7. **Dynamic OG Images** - Auto-generated social media images
-8. **Mermaid Diagrams** - Technical diagram rendering support
+8. **Mermaid Diagrams** - Technical diagram rendering with lazy loading and theme switching
 9. **Internationalization (i18n)** - Full bilingual support (Chinese/English) with dedicated content collections
+10. **Bilingual Comment System** - Automatic post mapping for unified comments across language versions
+11. **Comprehensive Testing** - E2E tests for critical functionality
 
 ### Content Management
 
@@ -66,6 +75,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Posts can be marked as featured or draft
 - OG images can be custom or auto-generated
 - Use `pnpm run i18n:scaffold-en` to create English drafts from Chinese posts
+- Use `originalTitle` field to link bilingual posts for unified comments
 
 ### Styling
 
@@ -75,7 +85,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Theme variables controlled by data-theme attribute
 
 ### Deployment
-- Build process includes Pagefind search index generation
+- Build process includes Pagefind search index generation and bilingual mapping generation
 - Mermaid.js library copied to public directory during build
 - Site deployed to `dist/` directory
 - Docker support via Dockerfile and docker-compose.yml
@@ -87,6 +97,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Theme toggle managed in `public/toggle-theme.js`
 - Uses localStorage for persistence and respects system preference
 - CSS variables controlled by data-theme attribute on html element
+- Synchronizes Mermaid diagram themes with `theme-changed` event
 
 ### Search Functionality
 
@@ -107,6 +118,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Heading anchor links for sharing sections
 - Scroll progress indicator
 - Back to top button
+- Mermaid diagram lazy loading with IntersectionObserver
 
 ### Internationalization (i18n) System
 
@@ -129,3 +141,83 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
   - Chinese: `/posts/slug/` (default, no prefix)
   - English: `/en/posts/slug/` (with `/en/` prefix)
 - **RSS Feeds**: Separate feeds for each language (`/rss.xml` for Chinese, `/rss.en.xml` for English)
+
+### Bilingual Comment System
+
+- **Automatic Mapping**: `scripts/auto-discover-bilingual.ts` scans posts and generates mappings
+- **Matching Strategies**:
+  1. Exact match via `originalTitle` field (confidence: 1.0)
+  2. Similarity match via slug and title similarity (confidence: ≥0.6)
+- **Output**: `src/utils/generated/bilingualMapping.ts` with:
+  - `dynamicSlugMapping`: English slug → Chinese slug mappings
+  - `unifiedCommentPaths`: Unified comment path information
+  - `mappingMetadata`: Generation statistics
+- **Usage**: Run `pnpm run generate:bilingual-mapping` or included in `pnpm run build`
+- **Best Practice**: Set matching `originalTitle` fields in Chinese/English post frontmatter
+
+### Mermaid Diagram System
+
+- **Client-side Rendering**: `src/components/MermaidClient.astro` handles lazy loading
+- **Theme Synchronization**: Diagrams re-render on theme changes via `theme-changed` event
+- **Lazy Loading**: IntersectionObserver triggers rendering when diagrams enter viewport
+- **Memory Management**: Proper cleanup on navigation and DOM removal
+- **Accessibility**: ARIA attributes and proper error handling
+- **Testing**: Comprehensive E2E tests in `tests/mermaid-rendering.spec.ts`
+
+### Testing Strategy
+
+- **Playwright E2E Tests**: Located in `tests/` directory
+- **Key Test Areas**:
+  - Mermaid diagram rendering and theme switching
+  - Language switcher functionality
+  - Post navigation
+  - Legal links and SEO
+  - OG image generation
+  - Table of contents animation optimization
+  - Internationalization
+- **Test Commands**:
+  - `pnpm run test` - Run all tests
+  - `npx playwright test tests/[test-file].spec.ts` - Run specific test
+- **CI Integration**: Tests run in GitHub Actions workflows
+
+### Build Process Enhancements
+
+1. **Mermaid Library Copy**: `scripts/copy-mermaid.ts` copies Mermaid library to public directory
+2. **Bilingual Mapping Generation**: Automatic mapping generation included in build
+3. **Pagefind Index Generation**: Search index created after Astro build
+4. **Type Checking**: `astro check` validates TypeScript types
+
+## Documentation
+
+- `docs/bilingual-comment-system.md` - Bilingual comment system guide
+- `docs/copilot-review-final-assessment.md` - Copilot code review assessments
+- `docs/i18n-language-switcher.md` - Language switcher implementation
+- `docs/og-photo-space-encoding-issue.md` - OG image encoding issues
+- `docs/remark-plugins.md` - Remark plugin configurations
+- `docs/toc-optimization-report.md` - Table of contents optimization
+- `docs/seo-optimization/` - SEO optimization documentation
+
+## Maintenance Notes
+
+### Content Updates
+
+- Ensure `originalTitle` fields match for bilingual posts
+- Run `pnpm run generate:bilingual-mapping` after adding new bilingual content
+- Use `pnpm run validate:meta` to validate meta descriptions
+
+### Code Quality
+
+- Run `pnpm run lint` and `pnpm run format:check` before committing
+- Pre-commit hooks enforce code formatting via Husky and lint-staged
+
+### Testing
+
+- Add tests for new features in `tests/` directory
+- Run `pnpm run test` to ensure no regressions
+- Test bilingual functionality with both Chinese and English posts
+
+### Performance
+
+- Mermaid diagrams are lazy-loaded to improve initial page load
+- Theme switching events are debounced to prevent excessive re-renders
+- Search index is generated at build time for optimal performance
