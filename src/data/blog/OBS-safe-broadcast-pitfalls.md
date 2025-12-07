@@ -197,19 +197,19 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 ```mermaid
 graph TD
     subgraph A ["实时机 Real-time Machine"]
-        A1["OBS Studio<br/>捕捉现场画面"]
-        A2["设置-高级-直播延时<br/>启动20秒延迟"]
-        A3["推流配置<br/>rtmp://延时机IP:1935/live/app"]
+        A1["OBS Studio 捕捉现场画面"]
+        A2["设置-高级-直播延时启动20秒延迟"]
+        A3["推流至 rtmp://延时机IP:1935/live/app"]
         A1 --> A2
         A2 --> A3
     end
 
     subgraph B ["延时机 Delay Machine"]
-        B1["OBS Studio<br/>导播操作台"]
-        B2["媒体源配置<br/>监听RTMP内网流<br/>listen=1"]
-        B3["Mute/Dump<br/>紧急控制"]
-        B4["推流输出<br/>各大直播平台"]
-        B5["防火墙设置<br/>开放1935端口"]
+        B1["OBS Studio 导播操作台"]
+        B2["媒体源配置监听RTMP内网流 listen=1"]
+        B3["Mute/Dump 紧急控制"]
+        B4["推流输出各大直播平台"]
+        B5["防火墙设置开放1935端口"]
 
         B1 --> B2
         B1 --> B3
@@ -217,7 +217,7 @@ graph TD
         B2 -.-> B5
     end
 
-    C["最终直播平台<br/>YouTube/Bilibili等"]
+    C["最终直播平台 YouTube/Bilibili等"]
 
     A3 --> B2
     B4 --> C

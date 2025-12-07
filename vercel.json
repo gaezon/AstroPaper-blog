@@ -1,0 +1,4 @@
+{
+    "installCommand": "echo 'Skip install'",
+    "buildCommand": ""
+}

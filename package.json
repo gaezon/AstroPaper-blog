@@ -4,7 +4,7 @@
   "version": "5.5.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "pnpm tsx scripts/copy-mermaid.ts && pnpm run generate:bilingual-mapping && astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
+    "build": "pnpm run generate:bilingual-mapping && astro check && astro build && pagefind --site .vercel/output/static",
     "og:preview": "tsx scripts/og-preview.ts",
     "preview": "astro preview",
     "sync": "astro sync",
@@ -20,6 +20,7 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/vercel": "^9.0.2",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.1.11",
     "astro": "^5.14.6",
@@ -27,7 +28,7 @@
     "lodash.kebabcase": "^4.1.1",
     "marked": "^14.1.4",
     "mermaid": "^11.7.0",
-    "playwright": "^1.53.1",
+    "playwright": "^1.55.1",
     "rehype-mermaid": "^3.0.0",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",
@@ -64,6 +65,5 @@
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,md,css,astro,yaml,yml}": "prettier --write"
-  },
-  "postinstall": "playwright install --with-deps chromium"
+  }
 }

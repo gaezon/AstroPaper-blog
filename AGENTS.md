@@ -9,10 +9,10 @@
 
 ### New Module Additions
 - `src/components/LanguageSwitcher/` - Refactored language switcher sub-components
-- `src/components/MermaidClient/` - Client-side Mermaid diagram rendering components
 - `src/utils/generated/` - Auto-generated bilingual mapping files
 - `src/utils/og-templates/` - OpenGraph image templates
 - `src/utils/transformers/` - Shiki syntax highlighting transformers
+- `.github/workflows/` - CI and deployment workflows
 
 ## Build, Test, and Development Commands
 
@@ -49,7 +49,7 @@
 - Run `pnpm exec playwright test --reporter=line` before opening PRs; capture updated screenshots only when UI changes intentionally.
 
 ### Key Test Areas
-- **Mermaid Diagram Rendering**: `tests/mermaid-rendering.spec.ts` - Tests lazy loading, theme switching, and memory management
+- **Mermaid Build-time Rendering**: `tests/mermaid-rendering.spec.ts` - Tests `<picture>` element generation and dark mode
 - **Language Switching**: `tests/language-switcher.spec.ts` - Tests bilingual navigation and UI
 - **Post Navigation**: `tests/post-navigation.spec.ts` - Tests article navigation boundaries
 - **Legal Links & SEO**: `tests/legal-links.spec.ts` - Tests trailing slashes and canonical URLs
@@ -61,8 +61,8 @@
 - Use `test.describe()` blocks to organize related tests
 - Include `test.beforeEach()` for common setup
 - Test both Chinese and English versions of bilingual features
-- Verify theme switching for Mermaid diagrams
-- Check memory leak prevention in interactive components
+- Verify `<picture>` elements contain both light and dark SVG sources
+- Test `prefers-color-scheme` media query handling
 
 ## Commit & Pull Request Guidelines
 
@@ -100,17 +100,11 @@
 
 ## Performance & Optimization Guidelines
 
-- **Mermaid Diagrams**: Use lazy loading via IntersectionObserver; debounce theme change events
+- **Mermaid Diagrams**: Rendered at build time as inline SVG; no client-side JS needed
 - **Search**: Pagefind index generated at build time; keep searchable content minimal
 - **Images**: Use responsive images with `astro:image`; optimize with sharp
 - **Fonts**: Load only necessary weights; use font-display: swap
 - **CSS**: Tree-shake unused Tailwind classes; minify in production
-
-### Memory Management
-- Cleanup event listeners and observers on component unmount
-- Use weak references or proper cleanup for long-running operations
-- Test memory leak scenarios in Playwright tests
-- Monitor console errors during theme switching and navigation
 
 ## Accessibility Standards
 
@@ -124,9 +118,10 @@
 
 - Build artifacts go to `dist/` directory
 - Pagefind search index copied to `public/` during build
-- Mermaid library copied via `scripts/copy-mermaid.ts`
-- GitHub Actions run tests on PRs
-- Vercel for production deployments
+- **GitHub Actions Deployment**:
+  - `ci.yml` - Runs lint, format, and build on PRs
+  - `deploy-preview.yml` - Deploys feature branches to Vercel preview
+- `vercel.json` skips Vercel build (uses pre-built artifacts from CI)
 - Docker support available via `Dockerfile` and `docker-compose.yml`
 
 ## Documentation Maintenance

@@ -14,7 +14,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 
 - `pnpm install` - Install dependencies
 - `pnpm run dev` - Start local development server at localhost:4321
-- `pnpm run build` - Build production site to ./dist/ (includes bilingual mapping generation and Mermaid library copy)
+- `pnpm run build` - Build production site to ./dist/ (includes bilingual mapping generation and build-time Mermaid rendering)
 - `pnpm run preview` - Preview the built site locally
 
 ### Internationalization
@@ -85,10 +85,16 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Theme variables controlled by data-theme attribute
 
 ### Deployment
-- Build process includes Pagefind search index generation and bilingual mapping generation
-- Mermaid.js library copied to public directory during build
-- Site deployed to `dist/` directory
+
+- Build artifacts deployed via GitHub Actions workflows
+- `vercel.json` configured to skip Vercel build (uses pre-built artifacts)
+- GitHub Actions runs on feature branches for preview deployments
 - Docker support via Dockerfile and docker-compose.yml
+
+### CI/CD Workflows
+
+- `.github/workflows/ci.yml` - Runs lint, format check, and build on PRs
+- `.github/workflows/deploy-preview.yml` - Deploys feature branches to Vercel preview
 
 ## Important Implementation Details
 
@@ -157,12 +163,12 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 
 ### Mermaid Diagram System
 
-- **Client-side Rendering**: `src/components/MermaidClient.astro` handles lazy loading
-- **Theme Synchronization**: Diagrams re-render on theme changes via `theme-changed` event
-- **Lazy Loading**: IntersectionObserver triggers rendering when diagrams enter viewport
-- **Memory Management**: Proper cleanup on navigation and DOM removal
-- **Accessibility**: ARIA attributes and proper error handling
-- **Testing**: Comprehensive E2E tests in `tests/mermaid-rendering.spec.ts`
+- **Build-time Rendering**: `rehype-mermaid` plugin renders diagrams as inline SVG at build time
+- **Strategy**: `img-svg` with `dark: true` for responsive dark mode support
+- **Dark Mode**: Uses `<picture>` element with `prefers-color-scheme` media query
+- **Zero Client-side JavaScript**: No Mermaid JS library loaded in browser
+- **Configuration**: Theme variables defined in `astro.config.ts` under `rehypeMermaid`
+- **Testing**: E2E tests in `tests/mermaid-rendering.spec.ts` verify `<picture>` elements
 
 ### Testing Strategy
 
@@ -182,10 +188,11 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 
 ### Build Process Enhancements
 
-1. **Mermaid Library Copy**: `scripts/copy-mermaid.ts` copies Mermaid library to public directory
-2. **Bilingual Mapping Generation**: Automatic mapping generation included in build
-3. **Pagefind Index Generation**: Search index created after Astro build
-4. **Type Checking**: `astro check` validates TypeScript types
+1. **Build-time Mermaid Rendering**: `rehype-mermaid` converts Mermaid code blocks to inline SVG
+2. **Playwright Browsers**: Installed during CI for Mermaid rendering
+3. **Bilingual Mapping Generation**: Automatic mapping generation included in build
+4. **Pagefind Index Generation**: Search index created after Astro build
+5. **Type Checking**: `astro check` validates TypeScript types
 
 ## Documentation
 
