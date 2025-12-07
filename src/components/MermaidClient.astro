@@ -1,0 +1,12 @@
+---
+
+---
+
+<script>
+  import { initMermaid, cleanupMermaid } from "./MermaidClient/client";
+
+  // Initialize on load and re-initialize on view transitions
+  initMermaid();
+  document.addEventListener("astro:after-swap", initMermaid);
+  document.addEventListener("astro:before-swap", cleanupMermaid);
+</script>
