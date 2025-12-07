@@ -12,10 +12,13 @@ import {
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
 import { getI18nCollapseConfig, tocConfig } from "./src/config/remark";
+import vercel from "@astrojs/vercel";
+import rehypeMermaid from "rehype-mermaid";
 
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
+  adapter: vercel(),
   integrations: [
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
@@ -37,29 +40,89 @@ export default defineConfig({
       [remarkCollapse, getI18nCollapseConfig()], // Internationalization-aware common configuration
     ],
     rehypePlugins: [
-      // Temporarily disable rehype-mermaid
-      // [[
-      //   rehypeMermaid,
-      //   {
-      //     strategy: "pre-mermaid",
-      //     dark: true,
-      //     colorScheme: "light",
-      //     mermaidConfig: {
-      //       // Low saturation light theme matching site color scheme
-      //       theme: "base",
-      //       themeVariables: {
-      //         primaryColor: "#f5fafc",          // Node background: Very light blue
-      //         primaryTextColor: "#282728",      // Text: Consistent with body text
-      //         primaryBorderColor: "#7aa4c7",    // Border: Low saturation blue
-      //         lineColor: "#7aa4c7",             // Line: Same as border
-      //         secondaryBorderColor: "#cdd6dd",
-      //         secondaryColor: "#ffffff",
-      //         tertiaryColor: "#eef3f6",
-      //         fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
-      //       },
-      //     },
-      //   },
-      // ]] as any,
+      // Build-time Mermaid rendering with dark mode support
+      [
+        rehypeMermaid,
+        {
+          strategy: "img-svg", // Render as SVG images at build time
+          // Custom dark theme configuration matching the original client-side orange theme
+          dark: {
+            theme: "base",
+            themeVariables: {
+              background: "transparent",
+              primaryColor: "#2d3548",
+              secondaryColor: "#343f60",
+              primaryTextColor: "#eaedf3",
+              secondaryTextColor: "#eaedf3",
+              primaryBorderColor: "#ff6b01",
+              lineColor: "#ff6b01",
+              clusterBkg: "#343f60",
+              titleColor: "#eaedf3",
+              tertiaryColor: "#2d3548",
+              noteBkgColor: "#ff8534",
+              noteTextColor: "#ffffff",
+              fontFamily:
+                'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
+              // Timeline/chart colors - using the dark blue theme
+              cScale0: "#2d3548",
+              cScale1: "#343f60",
+              cScale2: "#2d3548",
+              cScale3: "#343f60",
+              cScale4: "#2d3548",
+              cScale5: "#343f60",
+              cScaleLabel0: "#eaedf3",
+              cScaleLabel1: "#eaedf3",
+              cScaleLabel2: "#eaedf3",
+              cScaleLabel3: "#eaedf3",
+              cScaleLabel4: "#eaedf3",
+              cScaleLabel5: "#eaedf3",
+            },
+          },
+          colorScheme: "light", // Default color scheme
+          // Use system Chrome in CI to avoid Playwright installation issues
+          ...(process.env.CI
+            ? {
+                launchOptions: {
+                  executablePath: "/usr/bin/google-chrome",
+                  channel: "chrome",
+                },
+              }
+            : {}),
+          mermaidConfig: {
+            theme: "base",
+            themeVariables: {
+              // Light theme colors (matching existing client-side config)
+              background: "transparent",
+              primaryColor: "#e6f4fb",
+              secondaryColor: "#f0f7fb",
+              primaryTextColor: "#282728",
+              secondaryTextColor: "#282728",
+              primaryBorderColor: "#006cac",
+              lineColor: "#006cac",
+              clusterBkg: "#f5fafc",
+              titleColor: "#282728",
+              tertiaryColor: "#ffffff",
+              noteBkgColor: "#0088cc",
+              noteTextColor: "#ffffff",
+              fontFamily:
+                'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
+              // Timeline-specific colors for milestones page
+              cScale0: "#e6f4fb",
+              cScale1: "#f0f7fb",
+              cScale2: "#ffffff",
+              cScale3: "#e6f4fb",
+              cScale4: "#f0f7fb",
+              cScale5: "#ffffff",
+              cScaleLabel0: "#282728",
+              cScaleLabel1: "#282728",
+              cScaleLabel2: "#282728",
+              cScaleLabel3: "#282728",
+              cScaleLabel4: "#282728",
+              cScaleLabel5: "#282728",
+            },
+          },
+        },
+      ],
     ],
     syntaxHighlight: {
       excludeLangs: ["mermaid"],
@@ -85,17 +148,6 @@ export default defineConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
-      include: ["mermaid"],
-    },
-    build: {
-      rollupOptions: {
-        external: [],
-        output: {
-          manualChunks: {
-            mermaid: ["mermaid"],
-          },
-        },
-      },
     },
   },
   image: {
