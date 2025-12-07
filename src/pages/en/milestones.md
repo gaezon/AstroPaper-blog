@@ -13,38 +13,15 @@ This blog is like my tech notebook, documenting my tinkering journey at differen
 ## 📊 Evolution Timeline
 
 ```mermaid
-graph TD
-    %% Define styles for year titles
-    classDef yearTitle fill:none,stroke:none,color:#ff6b01,font-size:1.1em,font-weight:bold;
-
-    subgraph Y2023_Group [ ]
-        direction TB
-        T2023["🌱 2023 Starting"]:::yearTitle
-        A1["Hexo + GitHub Pages"]
-        A2["The simplest static blog"]
-        T2023 --- A1 --- A2
-    end
-
-    subgraph Y2024_Group [ ]
-        direction TB
-        T2024["🚀 2024 Refactor"]:::yearTitle
-        B1["Migrated to Astro"]
-        B2["TypeScript + TailwindCSS"]
-        B3["Dark theme + Mermaid"]
-        T2024 --- B1 --- B2 --- B3
-    end
-
-    subgraph Y2025_Group [ ]
-        direction TB
-        T2025["🌏 2025 i18n"]:::yearTitle
-        C1["Implemented i18n framework"]
-        C2["Bilingual system"]
-        T2025 --- C1 --- C2
-    end
-
-    %% Connect blocks via year titles
-    A2 ==> T2024
-    B3 ==> T2025
+timeline
+    title Blog Tech Stack Evolution
+    2023 : Hexo + GitHub Pages
+         : The simplest static blog
+    2024 : Migrated to Astro
+         : TypeScript + TailwindCSS
+         : Dark theme + Mermaid
+    2025 : Implemented i18n
+         : Bilingual system
 ```
 
 ---

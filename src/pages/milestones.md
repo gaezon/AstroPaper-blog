@@ -13,38 +13,15 @@ description: "折腾博客这些年的心路历程，经过这些折腾，博客
 ## 🕰️ 演进时间线
 
 ```mermaid
-graph TD
-    %% Define styles for year titles
-    classDef yearTitle fill:none,stroke:none,color:#ff6b01,font-size:1.1em,font-weight:bold;
-
-    subgraph Y2023_Group [ ]
-        direction TB
-        T2023["🌱 2023 起步&nbsp;&nbsp;"]:::yearTitle
-        A1["Hexo + GitHub Pages&nbsp;&nbsp;"]
-        A2["最朴素的静态博客&nbsp;&nbsp;"]
-        T2023 --- A1 --- A2
-    end
-
-    subgraph Y2024_Group [ ]
-        direction TB
-        T2024["🚀 2024 重构&nbsp;&nbsp;"]:::yearTitle
-        B1["迁移到 Astro&nbsp;&nbsp;"]
-        B2["TypeScript + TailwindCSS&nbsp;&nbsp;"]
-        B3["暗色主题 + Mermaid&nbsp;&nbsp;"]
-        T2024 --- B1 --- B2 --- B3
-    end
-
-    subgraph Y2025_Group [ ]
-        direction TB
-        T2025["🌏 2025 国际化&nbsp;&nbsp;"]:::yearTitle
-        C1["实现 i18n 框架&nbsp;&nbsp;"]
-        C2["中英文双语系统&nbsp;&nbsp;"]
-        T2025 --- C1 --- C2
-    end
-
-    %% Connect blocks via year titles
-    A2 ==> T2024
-    B3 ==> T2025
+timeline
+    title 博客技术栈演变
+    2023 : Hexo + GitHub Pages
+         : 最朴素的静态博客
+    2024 : 迁移到 Astro
+         : TypeScript + TailwindCSS
+         : 暗色主题 + Mermaid
+    2025 : 实现国际化
+         : 中英文双语系统
 ```
 
 ---
