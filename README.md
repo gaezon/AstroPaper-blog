@@ -124,9 +124,10 @@ Documentation can be read in two formats\_ _markdown_ & _blog post_.
 **Styling** - [TailwindCSS](https://tailwindcss.com/)  
 **UI/UX** - [Figma Design File](https://www.figma.com/community/file/1356898632249991861)  
 **Static Search** - [FuseJS](https://pagefind.app/)  
+**Mermaid Diagrams** - [rehype-mermaid](https://github.com/remcohaszing/rehype-mermaid) (build-time rendering)  
 **Icons** - [Tablers](https://tabler-icons.io/)  
 **Code Formatting** - [Prettier](https://prettier.io/)  
-**Deployment** - [Cloudflare Pages](https://pages.cloudflare.com/)  
+**Deployment** - [Vercel](https://vercel.com/) via [GitHub Actions](https://github.com/features/actions)  
 **Illustration in About Page** - [https://freesvgillustration.com](https://freesvgillustration.com/)  
 **Linting** - [ESLint](https://eslint.org)
 
