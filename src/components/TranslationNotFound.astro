@@ -1,250 +1,156 @@
 ---
-import { t, getLocaleSwitchUrl } from "@/i18n/utils";
-import IconGlobe from "@/assets/icons/IconGlobe.svg";
-
 export interface Props {
   targetLocale: string;
   currentPostTitle: string;
   currentPath: string;
 }
 
-const { targetLocale, currentPostTitle } = Astro.props;
-const tr = (key: string, params?: Record<string, string | number>) =>
-  t(Astro, key, params);
+const { targetLocale, currentPostTitle, currentPath } = Astro.props;
 
-// Note: currentPath is passed but not currently used
-// It may be needed for future features
+// Determine which language is missing based on targetLocale
+const isMissingEnglish = targetLocale === "en";
+const isMissingChinese = targetLocale === "zh-CN";
 
-// Get target language info
-const targetLocaleInfo = {
-  en: { name: "English", lang: "en" },
-  "zh-CN": { name: "简体中文", lang: "zh-CN" },
-}[targetLocale] ?? { name: targetLocale, lang: targetLocale };
-
-// Get language switch URL
-const switchUrl = getLocaleSwitchUrl(Astro, targetLocale);
+// Dynamic content based on missing language
+const missingLanguageName = isMissingEnglish ? "English" : "Chinese";
+const availableLanguageName = isMissingEnglish ? "Chinese" : "English";
+const browseAllLink = isMissingEnglish ? "/" : "/en/";
+const browseAllText = isMissingEnglish
+  ? "browse all Chinese posts"
+  : "browse all English posts";
 ---
 
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+  class="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center"
 >
-  <div
-    class="mx-4 max-w-md rounded-xl border border-border/60 bg-background p-6 shadow-2xl"
-  >
-    <div class="mb-4 flex items-center gap-3">
-      <IconGlobe width={24} height={24} class="text-accent" />
-      <h3 class="text-lg font-semibold text-foreground">
-        {tr("language.translationNotFound")}
-      </h3>
-    </div>
-
-    <p class="text-muted-foreground mb-6">
-      {
-        tr("language.translationNotFoundDescription", {
-          title: currentPostTitle,
-          targetLanguage: targetLocaleInfo.name,
-        })
-      }
-    </p>
-
-    <div class="flex flex-col gap-3 sm:flex-row sm:gap-2">
-      <a
-        href={switchUrl}
-        class="text-accent-foreground flex-1 rounded-lg bg-accent px-4 py-2 text-center font-medium transition-colors hover:bg-accent/90"
-      >
-        {tr("language.viewOtherPosts")}
-      </a>
-      <button
-        onclick="history.back()"
-        class="flex-1 rounded-lg border border-border/60 bg-background px-4 py-2 text-center font-medium text-foreground transition-colors hover:bg-muted"
-      >
-        {tr("ui.back")}
-      </button>
-    </div>
+  <div class="mb-8 rounded-full bg-accent/10 p-6">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="64"
+      height="64"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="text-accent"
+      aria-hidden="true"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+      ></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="9" y1="15" x2="15" y2="15"></line>
+    </svg>
   </div>
+
+  <h1
+    class="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
+  >
+    {missingLanguageName} Translation Not Available
+  </h1>
+  {
+    isMissingEnglish && (
+      <p class="text-muted-foreground mb-8 text-lg font-medium">暂无英文版本</p>
+    )
+  }
+  {
+    isMissingChinese && (
+      <p class="text-muted-foreground mb-8 text-lg font-medium">暂无中文版本</p>
+    )
+  }
+
+  <div class="text-muted-foreground/80 mb-8 max-w-lg space-y-2">
+    {
+      currentPostTitle && currentPostTitle !== "Article" && (
+        <p>
+          The article{" "}
+          <span class="font-semibold text-foreground">
+            "{currentPostTitle}"
+          </span>{" "}
+          is not yet available in {missingLanguageName}.
+        </p>
+      )
+    }
+    {
+      isMissingEnglish && (
+        <p class="text-sm">
+          文章
+          <span class="font-medium text-foreground">
+            「{currentPostTitle || "本文"}」
+          </span>
+          暂无英文版本。
+        </p>
+      )
+    }
+    {
+      isMissingChinese && (
+        <p class="text-sm">
+          文章
+          <span class="font-medium text-foreground">
+            「{currentPostTitle || "本文"}」
+          </span>
+          暂无中文版本。
+        </p>
+      )
+    }
+  </div>
+
+  <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
+    <!-- Primary: Go Back (most likely user intent) -->
+    <button
+      onclick="history.back()"
+      aria-label="Go back to previous page"
+      class="inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-base font-medium text-white transition-colors hover:bg-accent/90"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="mr-2"
+        aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg
+      >
+      Go Back
+      <span class="ml-2 text-xs opacity-80">(返回)</span>
+    </button>
+
+    <!-- Secondary: Read in available language -->
+    <a
+      href={currentPath}
+      aria-label={`Read article in ${availableLanguageName}`}
+      class="inline-flex items-center justify-center rounded-lg border border-border bg-background px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted"
+    >
+      Read in {availableLanguageName}
+      {
+        isMissingEnglish && (
+          <span class="text-muted-foreground ml-2 text-xs opacity-80">
+            (中文版)
+          </span>
+        )
+      }
+      {
+        isMissingChinese && (
+          <span class="text-muted-foreground ml-2 text-xs opacity-80">
+            (English)
+          </span>
+        )
+      }
+    </a>
+  </div>
+
+  <!-- Tertiary: Low-priority navigation option -->
+  <p class="text-muted-foreground mt-10 text-sm">
+    Or{" "}
+    <a href={browseAllLink} class="font-medium text-accent hover:underline">
+      {browseAllText}
+    </a>
+    {isMissingEnglish && <span class="opacity-70">/ 或浏览中文文章</span>}
+    {isMissingChinese && <span class="opacity-70">/ 或浏览英文文章</span>}
+  </p>
 </div>
-
-<style>
-  .fixed {
-    position: fixed;
-  }
-
-  .inset-0 {
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-  .z-50 {
-    z-index: 50;
-  }
-
-  .flex {
-    display: flex;
-  }
-
-  .items-center {
-    align-items: center;
-  }
-
-  .justify-center {
-    justify-content: center;
-  }
-
-  .bg-black\/50 {
-    background-color: rgb(0 0 0 / 0.5);
-  }
-
-  .backdrop-blur-sm {
-    backdrop-filter: blur(4px);
-  }
-
-  .mx-4 {
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-
-  .max-w-md {
-    max-width: 28rem;
-  }
-
-  .rounded-xl {
-    border-radius: 0.75rem;
-  }
-
-  .border {
-    border-width: 1px;
-    border-style: solid;
-  }
-
-  .border-border\/60 {
-    border-color: hsl(var(--border) / 0.6);
-  }
-
-  .bg-background {
-    background-color: hsl(var(--background));
-  }
-
-  .p-6 {
-    padding: 1.5rem;
-  }
-
-  .shadow-2xl {
-    box-shadow:
-      0 20px 25px -5px rgb(0 0 0 / 0.1),
-      0 8px 10px -6px rgb(0 0 0 / 0.1);
-  }
-
-  .mb-4 {
-    margin-bottom: 1rem;
-  }
-
-  .gap-3 {
-    gap: 0.75rem;
-  }
-
-  .text-lg {
-    font-size: 1.125rem;
-    line-height: 1.75rem;
-  }
-
-  .font-semibold {
-    font-weight: 600;
-  }
-
-  .text-foreground {
-    color: hsl(var(--foreground));
-  }
-
-  .text-accent {
-    color: hsl(var(--accent));
-  }
-
-  .mb-6 {
-    margin-bottom: 1.5rem;
-  }
-
-  .text-muted-foreground {
-    color: hsl(var(--muted-foreground));
-  }
-
-  .flex-col {
-    flex-direction: column;
-  }
-
-  .gap-2 {
-    gap: 0.5rem;
-  }
-
-  .flex-1 {
-    flex: 1 1 0%;
-  }
-
-  .rounded-lg {
-    border-radius: 0.5rem;
-  }
-
-  .bg-accent {
-    background-color: hsl(var(--accent));
-  }
-
-  .px-4 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .py-2 {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-  }
-
-  .text-center {
-    text-align: center;
-  }
-
-  .font-medium {
-    font-weight: 500;
-  }
-
-  .text-accent-foreground {
-    color: hsl(var(--accent-foreground));
-  }
-
-  .transition-colors {
-    transition-property:
-      color, background-color, border-color, text-decoration-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-  }
-
-  .hover\:bg-accent\/90:hover {
-    background-color: hsl(var(--accent) / 0.9);
-  }
-
-  .border-border\/60:hover {
-    border-color: hsl(var(--border) / 0.6);
-  }
-
-  .bg-background:hover {
-    background-color: hsl(var(--background));
-  }
-
-  .text-foreground:hover {
-    color: hsl(var(--foreground));
-  }
-
-  .hover\:bg-muted:hover {
-    background-color: hsl(var(--muted));
-  }
-
-  @media (min-width: 640px) {
-    .sm\:flex-row {
-      flex-direction: row;
-    }
-
-    .sm\:gap-2 {
-      gap: 0.5rem;
-    }
-  }
-</style>

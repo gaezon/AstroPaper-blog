@@ -93,14 +93,14 @@ export function getLocaleSwitchUrl(
   // For post pages, check whether a target translation exists
   // If switching to English and it does not exist, show a notice page
   if (targetLocale === "en" && currentLocale === "zh-CN") {
-    // Redirect to the notice page; title will be extracted from post data
-    return `/translation-not-found?target=en&path=${encodeURIComponent(currentPath)}`;
+    // Redirect to /en/translation-not-found/ for English
+    return `/en/translation-not-found/?target=en&path=${encodeURIComponent(currentPath)}`;
   }
 
   // If switching to Chinese and the Chinese version doesn't exist, show the notice page
   if (targetLocale === "zh-CN" && currentLocale === "en") {
-    // Redirect to the notice page; title will be extracted from post data
-    return `/translation-not-found?target=zh-CN&path=${encodeURIComponent(currentPath)}`;
+    // Redirect to /translation-not-found/ for Chinese
+    return `/translation-not-found/?target=zh-CN&path=${encodeURIComponent(currentPath)}`;
   }
 
   // Default: switch language directly

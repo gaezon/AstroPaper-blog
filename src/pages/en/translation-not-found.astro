@@ -4,10 +4,11 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import TranslationNotFoundComponent from "@/components/TranslationNotFound.astro";
-import { getCurrentLocale, t } from "@/i18n/utils";
+import { t } from "@/i18n/utils";
 import { slugifyStr } from "@/utils/slugify";
 import { sanitizePath } from "@/utils/url";
 
+// Get query params
 const targetLocale = Astro.url.searchParams.get("target") || "en";
 
 // Handle potential malformed URI sequences (e.g., %E0%A4)
@@ -23,38 +24,47 @@ const currentPath = sanitizePath(rawPath);
 const pathSegments = currentPath.split("/").filter(Boolean);
 const postSlug = pathSegments[pathSegments.length - 1] || "Article";
 
-// Determine which collection to search based on current locale
-const currentLocale = getCurrentLocale(Astro);
-const collectionName = currentLocale === "en" ? "blog-en" : "blog";
+// Determine which collection to search for the original article title:
+// - If targetLocale === "en" (missing English translation), search the Chinese collection ('blog') for the original.
+// - If targetLocale === "zh-CN" (missing Chinese translation), search the English collection ('blog-en') for the original.
+// This ensures we always display the original title from the source language.
+const searchCollection = targetLocale === "en" ? "blog" : "blog-en";
 
-// Try to find the post and extract its title
 let currentPostTitle = postSlug; // Fallback to slug if post not found
 
 try {
-  const posts = await getCollection(collectionName as "blog" | "blog-en");
-  // Check if post.data.slug (custom slug) matches, otherwise check automated slug
-  const post = posts.find(
-    p =>
-      (p.data.slug && p.data.slug === postSlug) ||
-      slugifyStr(p.data.title) === postSlug
-  );
+  const posts = await getCollection(searchCollection);
 
-  if (post) {
-    currentPostTitle = post.data.title;
+  // Find the post to get its title
+  if (pathSegments.length > 0) {
+    // Try to match by explicit slug first (for posts with custom slug)
+    // or fallback to slugified title matching
+    const post = posts.find(
+      p =>
+        (p.data.slug && p.data.slug === postSlug) ||
+        slugifyStr(p.data.title) === postSlug
+    );
+
+    if (post) {
+      currentPostTitle = post.data.title;
+    }
   }
 } catch {
-  // Silently fallback to slug if post cannot be found
+  // Silently fallback to slug if collection cannot be retrieved
 }
 
+// Get translation function
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
-// If missing Chinese (target=zh-CN), English is the original.
-// If missing English (target=en) but fell back here, Chinese is the original.
+
+// Override logic:
+// If target=en (Missing English), Chinese is the original.
+// If target=zh-CN (Missing Chinese), English is the original.
 const switchOverride: Record<string, string> = {};
-if (targetLocale === "zh-CN") {
-  switchOverride["en"] = currentPath;
-} else {
+if (targetLocale === "en") {
   switchOverride["zh-CN"] = currentPath;
+} else {
+  switchOverride["en"] = currentPath;
 }
 ---
 

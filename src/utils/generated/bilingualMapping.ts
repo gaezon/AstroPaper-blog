@@ -14,7 +14,6 @@ export const dynamicSlugMapping: Record<string, string> = {
   "cline-notion-mcp-gcp": "cline-notion-mcp-gcp",
   "ibkr-drip": "is-ibkr-drip-really-commission-free",
   "remove-tracking-qinglong": "remove-tracking-qinglong",
-  "upgrade-astropaper-git": "upgrade-astropaper-git",
   "why-switch-from-hapigo-to-raycast": "why-switch-from-hapigo-to-raycast",
 };
 
@@ -71,13 +70,7 @@ export const unifiedCommentPaths: Record<
     confidence: 1,
     matchType: "originalTitle",
   },
-  "使用 git 升级更新 Astropaper theme 主题": {
-    zhPath: "/posts/upgrade-astropaper-git/",
-    enPath: "/en/posts/upgrade-astropaper-git/",
-    unifiedCommentPath: "/comments/upgrade-astropaper-git/",
-    confidence: 1,
-    matchType: "originalTitle",
-  },
+
   "为什么放弃已经使用两年多的 Hapigo：官方更新停滞与 Raycast 的强大替代": {
     zhPath: "/posts/why-switch-from-hapigo-to-raycast/",
     enPath: "/en/posts/why-switch-from-hapigo-to-raycast/",
@@ -88,10 +81,9 @@ export const unifiedCommentPaths: Record<
 };
 
 export const mappingMetadata = {
-  generatedAt: "2025-10-27T10:07:29.790Z",
-  totalMatches: 8,
+  generatedAt: "2025-12-07T15:29:00.000Z",
+  totalMatches: 7,
   matchTypes: [
-    "originalTitle",
     "originalTitle",
     "originalTitle",
     "originalTitle",
