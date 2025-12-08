@@ -30,11 +30,13 @@ IBKR’s DRIP isn’t literally fee‑free — the commission is so small that i
 
 ## A “mysterious” $NVDA dividend reinvestment
 
-On 2025‑04‑03 I noticed my $NVDA position increased by 0.0003 share — clearly from IBKR’s DRIP[^1]. The execution price was about $104.28 and the total value only $0.031. Yet the web HTML report showed the commission as **$0.00**.
+On 2025‑04‑03 I noticed my $NVDA position increased by 0.0003 share—clearly from IBKR's DRIP[^1]. The execution price was about $104.28 and the total value only $0.031. Yet the web HTML report boldly displayed the commission as **$0.00**.
+
+**Wait a minute—isn't the minimum commission for IBKR Pro $0.35? Could it be that DRIP trades are actually fee-free?**
 
 ![IBKR HTML Report DRIP Transaction](https://img.gaazeon.com/2025/06/IBKR-HTML-Report-DRIP-Transaction.avif)
 
-It looked like IBKR waived the fee — but that felt unlikely. Exporting the detailed CSV (which shows 4 decimal places) revealed the actual numbers underneath:
+It looked like IBKR waived the fee—but my gut told me that couldn't be right. IBKR isn't running a charity here. Exporting the detailed CSV (which shows 4 decimal places) revealed the actual numbers underneath:
 
 ```csv
 Trade Data Order Stock USD NVDA 2025-04-03, 09:31:11 0.0003 104.28 101.8 -0.031284 -0.000031381 0.031315381 0 -0.0007 O;R
@@ -85,7 +87,7 @@ For most long‑term investors, **yes**.
 
 - Taxes still apply: dividends are subject to withholding. If you’re a non‑US resident, default is 30% unless reduced by treaty via W‑8BEN (often 10%–15%). DRIP doesn’t reduce taxes — it simply automates reinvestment.
 
-When you see that tempting “$0.00 commission” next time, take it for what it is: a rounding artifact on a fee that’s small enough to be effectively negligible.
+When you see that tempting "$0.00 commission" next time, you can smile knowingly. The fee isn't absent—it's just so tiny it became invisible.
 
 ### FAQ: If I only have one tiny DRIP that day, will $0.01 be “charged later”?
 

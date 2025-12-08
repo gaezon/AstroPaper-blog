@@ -22,13 +22,13 @@ As of May 22, 2024, when I'm writing this article, it's been nearly six months s
 
 ### LobeChat Replaced Hapigo's GPT AI Functionality
 
-I originally subscribed to Hapigo primarily for its GPT AI feature launched mid-2023. I paid ¥69 for an annual subscription (and subscribed on day one of the feature launch, only to feel betrayed when a ¥59 promotional price appeared on Sspai later). Initially, subscribers could even access GPT-4 for free, but the official team later removed this option due to the high cost of GPT-4 API calls. Pro subscribers were limited to GPT-3.5-turbo, though at the time, ¥69 per year for GPT-3.5-turbo still felt like excellent value.
+I originally subscribed to Hapigo primarily for its GPT AI feature launched mid-2023. I shelled out ¥69 for an annual subscription (and subscribed on day one, only to get stabbed in the back when Sspai listed it at ¥59 shortly after). Initially, subscribers could even access GPT-4 for free, but the official team later removed this option due to the high cost of GPT-4 API calls. Pro subscribers were limited to GPT-3.5-turbo, though at the time, ¥69 per year for GPT-3.5-turbo still felt like excellent value.
 
 However, as OpenAI continued releasing more powerful models while Hapigo remained stagnant without updates, paid users were stuck with GPT-3.5-turbo. There was no integration with domestic Chinese large language models, not even a simple custom model configuration button.
 
 Over the past six months, I gradually migrated all my chat services from Hapigo's GPT AI to my self-hosted one-api + LobeChat setup. I used Hapigo's services less and less. During this period, I came to realize that self-hosting a chatbot is the optimal solution—no need to route through third-party servers, and data security is significantly enhanced.
 
-Without the constraint of the ChatBot dependency, I decisively abandoned Hapigo and switched to Raycast, which has a steeper learning curve but a far more active plugin community. This opened up a whole new world of possibilities.
+With the ChatBot shackles finally off, I made a clean break from Hapigo and switched to Raycast. It opened up a whole new world.
 
 ![Personal Hapigo usage statistics](https://img.gaazeon.com/2024%2F05%2F202405222325673.avif)
 I was previously a heavy Hapigo power user.
@@ -39,7 +39,7 @@ When using a launcher, one of my most frequently used features is the Everything
 
 ### 1. Aliases & Quick Web Navigation ⇋ Quicklinks
 
-The functionality in both applications is virtually identical: type a short alias followed by a space and {query} to trigger the search. The key difference is that in Hapigo, after adding a webpage URL, you must manually add an icon. In Raycast, the system automatically reads the URL's favicon and generates the icon. For example, when setting up a search for the popular Chinese e-commerce site "Smzdm" (什么值得买), Raycast automatically fetches the icon, whereas Hapigo requires manual icon upload.
+The functionality in both applications is virtually identical: type a short alias followed by a space and {query} to trigger the search. The key difference is that in Hapigo, after adding a webpage URL, you must manually add an icon. In Raycast, the system automatically reads the URL's favicon and generates the icon. For example, when setting up a search for "Smzdm" (什么值得买)—a shopping deals site beloved by middle-aged Chinese men—Raycast automatically fetches the icon, whereas Hapigo requires manual icon upload.
 
 ![Raycast QuickLinks example](https://img.gaazeon.com/2024/05/202405230923546.avif)
 
@@ -59,7 +59,7 @@ In contrast, Raycast's Snippets feature robust customization capabilities throug
 
 ## The Rich Plugin Ecosystem: Raycast's True Competitive Advantage
 
-Raycast's extensive plugin ecosystem is its real competitive edge and the reason I felt I should have switched much earlier.
+Raycast's extensive plugin ecosystem is its real competitive edge—and the moment I started exploring it, I immediately regretted not switching sooner.
 
 Compared to Hapigo's closed ecosystem, the difference between Raycast and Hapigo's plugin ecosystems is like comparing Apple Silicon Macs to Windows on ARM—night and day.
 
@@ -67,7 +67,7 @@ For example, after switching to Raycast, I discovered that many popular third-pa
 
 ![Using the 'riji' alias in Raycast to invoke Obsidian](https://img.gaazeon.com/2024%2F05%2F202405222325702.avif)
 
-Simply typing my preset `riji` alias directly opens today's journal in Obsidian—incredibly powerful. I really wish I had discovered this sooner.
+Simply typing my preset `riji` alias directly opens today's journal in Obsidian—incredibly powerful. Seriously, where has this been all my life?
 
 There are many other excellent plugins. For example, I use the open-source [Easydict](https://github.com/tisfeng/Easydict) combined with Raycast's [extensions/easydict](https://github.com/raycast/extensions/blob/1eb9ef9d103488453a7bfa4bae630d8adaa1e3da/extensions/easydict/README.md) plugin to replace Hapigo's translation feature. This setup allows me to use more affordable domestic models instead of the relatively expensive GPT-4 for translation—absolutely fantastic.
 
