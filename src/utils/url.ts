@@ -41,3 +41,29 @@ export function normalizePathWithLocale(
   const prefix = ensureLeadingSlash(localePrefix).replace(/\/$/, "");
   return `${prefix}${normalized}`;
 }
+
+/**
+ * Sanitize a path from untrusted input (e.g., query parameters).
+ * Prevents XSS via javascript: URLs and open redirect attacks.
+ * Returns "/" if the path is invalid or potentially dangerous.
+ */
+export function sanitizePath(path: string | null | undefined): string {
+  if (!path) return "/";
+
+  const trimmed = path.trim();
+
+  // Must start with "/" (relative path only)
+  if (!trimmed.startsWith("/")) return "/";
+
+  // Block dangerous protocols (case-insensitive)
+  const lowerPath = trimmed.toLowerCase();
+  const dangerousProtocols = ["javascript:", "data:", "vbscript:"];
+  if (dangerousProtocols.some(proto => lowerPath.includes(proto))) {
+    return "/";
+  }
+
+  // Block protocol-relative URLs (//example.com)
+  if (trimmed.startsWith("//")) return "/";
+
+  return trimmed;
+}

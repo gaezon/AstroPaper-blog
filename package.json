@@ -15,6 +15,7 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "validate:meta": "pnpm tsx scripts/validate-meta-descriptions.ts",
+    "test:unit": "vitest run",
     "prepare": "husky"
   },
   "dependencies": {
@@ -61,7 +62,8 @@
     "prettier-plugin-tailwindcss": "^0.6.13",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.36.0"
+    "typescript-eslint": "^8.36.0",
+    "vitest": "^4.0.15"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,md,css,astro,yaml,yml}": "prettier --write"
