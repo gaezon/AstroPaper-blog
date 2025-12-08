@@ -28,11 +28,11 @@ slug: self-host-hoarder-replace-cubox
 
   ![censorship of Cubox](https://img.gaazeon.com/2024/06/202406081735586.avif)
 
-- **Pricing**: The free tier is limited to 200 items; VIP costs ¥198/year. If you already have a NAS, self‑hosting is cheaper over time.
+- **Pricing**: The free tier is limited to 200 items; VIP costs ¥198/year. If you already have a NAS, self‑hosting is cheaper over time. In this economy, every cent saved counts.
 
   ![price-of-cubox](https://img.gaazeon.com/2024/06/202406081735584.avif)
 
-- **No need for extra fluff**: Cubox kept adding features (AI summaries, etc.) that I don’t need. I use Readwise for reading; I want a reliable “cold storage” for web pages.
+- **No need for extra fluff**: Cubox kept adding features (AI summaries, highlighting, etc.) that I don't need. I use Readwise for reading—Cubox to me is just a "digital hoarder's junk drawer," a local archive in case the original source disappears overnight. Occam's Razor: don't multiply entities unnecessarily.
 
 ## Self-Hosting Installation Guide
 
@@ -122,7 +122,7 @@ INFERENCE_TEXT_MODEL=qwen2-72b-instruct # model used for auto-tagging; qwen2-72b
 
 ### AI‑assisted tagging
 
-Great for hands‑off clipping — I don’t need to decide tags each time, but still get useful categorization for later search.
+Great for hands‑off clipping—I don't need to agonize over which tags to apply, yet everything still ends up reasonably categorized for later search.
 
 ![AI-Mark-of-Hoard](https://img.gaazeon.com/2024/06/202406081735583.avif)
 
@@ -136,7 +136,7 @@ Snapshots are stored in `.db` files. I’d love an option to keep an `.html` sna
 
 ### Some sites are hard to capture
 
-Hoarder drives a headless Chrome to capture snapshots. Some blogs behind Cloudflare’s bot checks may block it (e.g. [Sukka’s post](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/)):
+Hoarder drives a headless Chrome to capture snapshots. Some blogs protected by Cloudflare's bot checks will block it—for example, [Sukka's blog](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/) (a well-known developer in the Chinese tech community):
 
 ![cf-block-Hoarder-eg](https://img.gaazeon.com/2024/06/202406081735587.avif)
 
