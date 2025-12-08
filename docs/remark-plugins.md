@@ -243,5 +243,11 @@ function getI18nCollapseConfig(): RemarkCollapseOptions;
 
 ---
 
+## 相关文档
+
+- [Mermaid 构建时渲染](./mermaid-rendering.md) - Mermaid 图表的构建时渲染配置
+
+---
+
 维护者：项目开发团队
-最后更新：2025年1月
+最后更新：2025 年 12 月

@@ -4,7 +4,12 @@
 
 ## 概览
 
-- `src/components/LanguageSwitcher.astro` 提供 `dropdown`、`compact`、`toggle` 三种变体，默认在导航栏使用 `dropdown`。
+- `src/components/LanguageSwitcher/` 目录包含模块化子组件：
+  - `LanguageSwitcher.astro` - 主入口（根据 `variant` 属性选择变体）
+  - `Dropdown.astro` - 下拉菜单变体（桌面导航、语言 > 2 种时）
+  - `Compact.astro` - 紧凑变体（空间有限的导航按钮）
+  - `Toggle.astro` - 切换变体（双语或侧边栏局部切换）
+  - `client.ts` - 客户端交互逻辑
 - 语言数据与 URL 生成逻辑位于 `src/i18n/utils.ts`，所有链接最终回落到真实的静态页面，确保 SEO 友好。
 - 导航栏需要完整刷新以恢复事件监听，因此语言链接带有 `data-astro-reload` 属性。
 
