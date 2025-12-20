@@ -1,8 +1,8 @@
 ---
 author: gaazeon
 pubDatetime: 2024-06-08T17:21:00.000+08:00
-modDatetime: 2025-12-15T00:00:00.000+08:00
-title: "Self‑Host Karakeep (formerly Hoarder) to Replace Cubox: Privacy, Data Control, and Cost Savings"
+modDatetime: 2025-12-20T00:00:00.000+08:00
+title: "Reclaiming the Digital Sanctuary: Why I Trashed Cubox for a Self-Hosted Karakeep"
 featured: false
 draft: false
 tags:
@@ -12,8 +12,8 @@ tags:
   - Privacy
   - NAS
   - Digital hoarding
-  - Self‑host
-description: "Self-host Hoarder web clipper as a privacy-focused Cubox alternative. Learn Docker setup, AI auto-tagging, and cost-saving benefits."
+  - Selfhost
+description: "A journey from the constraints of Cubox to the freedom of Karakeep. A deep dive into privacy, minimalist digital hoarding, and the technical blueprint for those who demand total control over their web archives."
 locale: en
 originalTitle: 自建 Karakeep（原 Hoarder）剪藏服务取代 Cubox：解决隐私与成本问题
 slug: self-host-hoarder-replace-cubox
@@ -21,27 +21,40 @@ slug: self-host-hoarder-replace-cubox
 
 ## Table of contents
 
-## Why leave Cubox
+## Prologue
 
-> Update (2025-12-15): Hoarder has been rebranded to **Karakeep** (server). There is also a third‑party iOS/Safari client called **Karakeeper**. This post updates the Docker image / compose example accordingly, and adds a note about a security‑related crawler setting (`CRAWLER_ALLOWED_INTERNAL_HOSTNAMES`).
+> **Update (2025-12-15)**: The project has evolved. _Hoarder_ is now officially **Karakeep** (server-side), with a beautiful third-party iOS/Safari companion named **Karakeeper**. This post has been fully aligned with the new image names, configuration patterns, and a critical deep-dive into the security setting `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES`—a must-know for anyone behind a complex network setup.
 >
-> In an age of information overload, a good web clipper is a must for digital hoarders. I used Cubox for a long time, but several issues pushed me to self‑host Hoarder i nstead.
+> In an era of informational deluge, most digital hoarders eventually face a structural crisis. For a long time, **Cubox** was my lighthouse. Yet, its growing weight and opaque boundaries eventually made me crave something closer to the source: an open-source sanctuary I could call my own.
 
-- **Privacy**: The mainland edition of Cubox applies content controls. Some clipped pages could not be shared due to “force majeure”. Keeping a local copy on my NAS is more trustworthy.
+## The Breaking Point with Cubox
+
+For the uninitiated, **Cubox** is a popular comprehensive "read-it-later" service developed in China. It's sleek, packs powerful parsing capabilities, and offers seamless sync across Apple & Android ecosystems. Think of it as a localized, feature-rich alternative to Pocket or Instapaper. However, its origin story comes with strings attached that eventually became deal-breakers for me.
+
+- **The Privacy Shadow: Data Sovereignty vs. State Compliance**
+
+  Content curation is deeply personal, but in the specific context of the Chinese internet, it's also political. Cubox operates two segregated versions: an international version (`cubox.cc`) and a mainland domestic version (`cubox.pro`). Due to strict local cybersecurity laws, the domestic version is subject to rigorous content compliance and censorship mechanisms.
+
+  This isn't theoretical. Usage is shadowed by the constant risk of "Force Majeure"—a common euphemism in Chinese tech for government-mandated censorship. I've personally encountered situations where clipped articles (captured for private archival) were flagged and rendered "unshareable" or inaccessible because they triggered sensitive keyword filters.
+
+  The screenshot below illustrates this reality: a generic error message blocking content distribution due to "uncontrollable factors." For an archivist, this is the ultimate betrayal. **If your digital memory can be redacted by an algorithm adhering to state policy, you don't own your data—you are merely renting a view.**
 
   ![censorship of Cubox](https://img.gaazeon.com/2024/06/202406081735586.avif)
 
-- **Pricing**: The free tier is limited to 200 items; VIP costs ¥198/year. If you already have a NAS, self‑hosting is cheaper over time. In this economy, every cent saved counts.
+- **The Subscription Tax**
 
-  ![price-of-cubox](https://img.gaazeon.com/2024/06/202406081735584.avif)
+  Cubox's free tier, capped at a mere 200 items, feels like a restricted demo. Stepping up to VIP demands ¥198/year. While reasonable for some, for those of us who have already invested in a NAS, paying a recurring fee for storage we already own feels like a redundancy. In a tightening economy, frugality is a virtue.
 
-- **No need for extra fluff**: Cubox kept adding features (AI summaries, highlighting, etc.) that I don't need. I use Readwise for reading—Cubox to me is just a "digital hoarder's junk drawer," a local archive in case the original source disappears overnight. Occam's Razor: don't multiply entities unnecessarily.
+- **Death by a Thousand Features**
 
-## Self-Hosting Installation Guide
+  Cubox began as a blade, sharp and focused. But complexity crept in—AI summaries and highlighting tools that I never asked for. To me, a clipper is a "digital hoarder's junk drawer"—a local, immutable archive to prevent the sting of broken links. _Simplicity isn't just a choice; it's a discipline._ Driven by the philosophy of "Entia non sunt multiplicanda praeter necessitatem" (Occam's Razor), it was time to trim the fat.
 
-> Karakeep (formerly Hoarder) is open-source and available on [GitHub](https://github.com/karakeep-app/karakeep). There is also an official Hoarder → Karakeep migration note. For Synology/NAS specific walkthroughs, you can also follow [NasDaddy](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8).
+## The Blueprint: Self-Hosting Guide
 
-I highly recommend using Docker for installation. Here's a reference Docker Compose YAML configuration:
+> Karakeep (the soul formerly known as Hoarder) is alive on [GitHub](https://github.com/karakeep-app/karakeep). If you're migrating, check the official notes. For platform-specific walkthroughs like Synology, the community guides at [NasDaddy](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8) are excellent companions.
+
+I recommend the Docker route for its isolation and elegance.
+Here’s the refined `docker-compose.yml`:
 
 ```yaml
 version: "3.8"
@@ -52,17 +65,20 @@ services:
     volumes:
       - data:/data
     ports:
-      - 3000:3000 # change to any port you prefer
+      - 3000:3000 # Map to your port of choice
     env_file:
       - .env
     environment:
-      MEILI_ADDR: http://meilisearch:7700
+      REDIS_HOST: redis
       BROWSER_WEB_URL: http://chrome:9222
-      DATA_DIR: /data # DON'T CHANGE THIS
-      # Allowlist internal hostnames for the crawler (SSRF protection).
-      # Passing "." allowlists all domains (use with care; see notes below).
+      MEILI_ADDR: http://meilisearch:7700
+      # Specifically allow the crawler to access domains resolving to internal/loopback IPs.
       CRAWLER_ALLOWED_INTERNAL_HOSTNAMES: "."
-      # OPENAI_API_KEY: ...
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    volumes:
+      - redis:/data
   chrome:
     image: gcr.io/zenika-hub/alpine-chrome:124
     restart: unless-stopped
@@ -86,60 +102,59 @@ services:
 volumes:
   meilisearch:
   data:
+  redis:
 ```
 
-Create a `.env` file yourself (compose won’t generate it) and restart the stack whenever you change values:
+The heart of the configuration lies in the `.env` file. Docker Compose requires you to create this manually to inject the variables into the service lifecycle:
 
 ```plaintext
 KARAKEEP_VERSION=release
-NEXTAUTH_SECRET=xxxx # random string
-MEILI_MASTER_KEY=xxxx # random string
-NEXTAUTH_URL=http://localhost:3000 # local URL of Karakeep or your reverse-proxy URL
+NEXTAUTH_SECRET=your_random_secret_here
+MEILI_MASTER_KEY=your_random_key_here
+NEXTAUTH_URL=http://localhost:3000 # Your public-facing URL or local address
 
-## Optional below
-OPENAI_BASE_URL=https://xxx.com/v1 # OpenAI official endpoint or third-party compatible endpoint
-OPENAI_API_KEY=sk-xxxxx # OpenAI API key
-INFERENCE_LANG=chinese
-INFERENCE_TEXT_MODEL=qwen2-72b-instruct # model used for auto-tagging; qwen2-72b-instruct works great in my setup
+## Intelligence Layer (Optional)
+OPENAI_BASE_URL=https://xxx.com/v1
+OPENAI_API_KEY=sk-your-key
+INFERENCE_LANG=en
+INFERENCE_TEXT_MODEL=qwen2-72b-instruct # I personally find qwen2-72b remarkably sharp for tagging
 ```
 
-## `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES` (Security note)
+## Decoding `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES` (Security Insights)
 
-Karakeep’s crawler/worker makes outbound requests (crawling pages, fetching RSS, delivering webhooks, etc.). For safety, Karakeep blocks worker‑initiated requests where DNS resolves to private / loopback / link‑local IPs by default.
+Karakeep's workers are curious; they initiate outbound requests to capture the web. To prevent SSRF (Server-Side Request Forgery), Karakeep acts as a gatekeeper, blocking any request that resolves to a private or loopback IP.
 
-- **When it was introduced**: `v0.28.0` (release notes show Nov 9) shipped “Stricter URL validation to protect against SSRF attacks” (PR [#2082](https://github.com/karakeep-app/karakeep/pull/2082)). It also states that internal IP requests are blocked by default unless explicitly allowlisted via `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES`.
-- **Official semantics**: The configuration docs explain wildcard support (prefix a dot like `.local`), and explicitly say that passing `.` allowlists all domains. It also notes that internal IP validation is bypassed when a proxy is configured for the URL.
-- **Bypass‑all shortcut**: `v0.29.0` release notes mention that you can bypass IP validation for all domains by setting `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES` to `.` (see commit [67b8a3c](https://github.com/karakeep-app/karakeep/commit/67b8a3c141e537571c9cda58265b261ff35ed385)).
+- **The Tightening of the Net**: Since `v0.28.0`, SSRF protection has become much stricter. Requests reaching toward internal IPs are dropped by default unless whitelisted.
+- **The Mainland Context**: In environments utilizing "Transparent Proxy / Fake-IP DNS" setups (common in China), certain domains might resolve to private addresses during the redirection dance. A crawler unaware of this will see an "internal IP" and refuse to move.
+- **The Shortcut**: Setting `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES` to `.` is the universal bypass—handy for resolving reachability issues, though it should be used with an understanding of your network boundaries.
 
-This setting often matters if you run DNS “fake‑IP” modes in transparent proxy setups. In mainland China, cross‑border connectivity restrictions and DNS interference (pollution/hijacking) are more commonly encountered, so transparent proxy + policy routing setups are widely used and fake‑IP is a common DNS mode. In these setups, some hostnames may resolve to private IPs and get blocked. Prefer a narrow allowlist (e.g. `.local` or your internal domain suffix) and only use `.` as a temporary troubleshooting switch.
+## The Karakeep Edge
 
-## What I like
+### AI-Assisted Serendipity
 
-### AI‑assisted tagging
-
-Great for hands‑off clipping—I don't need to agonize over which tags to apply, yet everything still ends up reasonably categorized for later search.
+For the "passive hoarder," this is the killer feature. You don't have to agonize over taxonomy. The AI observes the content and applies tags that facilitate discovery without the friction of manual curation.
 
 ![AI-Mark-of-Hoard](https://img.gaazeon.com/2024/06/202406081735583.avif)
 
-## What could be better
+## Room for Growth
 
-### Proprietary snapshot format
+### The Snapshot Silo
 
-Snapshots are stored in `.db` files. I’d love an option to keep an `.html` snapshot or a `.png` image for maximal portability.
+Karakeep's snapshots are currently tucked away in proprietary `.db` formats. To truly fulfill the promise of local archival, I'd hope for a shift toward universal formats—pure `.html` or high-fidelity `.png` captures that survive even if the software doesn't.
 
 ![dbformat-of-Hoarder](https://img.gaazeon.com/2024/06/202406081735585.avif)
 
-### Some sites are hard to capture
+### The Cloudflare Wall
 
-Hoarder drives a headless Chrome to capture snapshots. Some blogs protected by Cloudflare's bot checks will block it—for example, [Sukka's blog](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/) (a well-known developer in the Chinese tech community):
+Because Karakeep relies on a headless Chrome instance to simulate human presence, it occasionally hits the "Cloudflare Turnstile" barrier. High-security blogs might occasionally slam the door on the crawler, leaving you with a capture of a challenge page rather than the wisdom you sought.
 
 ![cf-block-Hoarder-eg](https://img.gaazeon.com/2024/06/202406081735587.avif)
 
 ## References
 
-1. [Karakeep on GitHub](https://github.com/karakeep-app/karakeep)
-2. [Hoarder → Karakeep migration note (official)](https://docs.karakeep.app/guides/hoarder-to-karakeep-migration/)
-3. [Karakeep configuration docs (official)](https://docs.karakeep.app/configuration/)
-4. [Karakeep `v0.28.0` release (SSRF hardening / PR #2082)](https://github.com/karakeep-app/karakeep/releases/tag/v0.28.0)
-5. [Karakeep `v0.29.0` release (`CRAWLER_ALLOWED_INTERNAL_HOSTNAMES=.` bypass)](https://github.com/karakeep-app/karakeep/releases/tag/v0.29.0)
-6. [NasDaddy — how to run Hoarder on your NAS](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8)
+1. [Karakeep | GitHub](https://github.com/karakeep-app/karakeep)
+2. [Migration Guide: Hoarder to Karakeep (Official)](https://docs.karakeep.app/guides/hoarder-to-karakeep-migration/)
+3. [Configuration Spec: `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES`](https://docs.karakeep.app/configuration/)
+4. [Release Notes: Karakeep `v0.28.0` (SSRF Hardening)](https://github.com/karakeep-app/karakeep/releases/tag/v0.28.0)
+5. [Release Notes: Karakeep `v0.29.0` (The "." Bypass)](https://github.com/karakeep-app/karakeep/releases/tag/v0.29.0)
+6. [NasDaddy: The Definitive Guide to Self-Hosted Bookmark Management](https://nasdaddy.com/how-to-install-hoarder-on-your-nas/#5-%E4%BD%BF%E7%94%A8)
