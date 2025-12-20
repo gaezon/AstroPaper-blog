@@ -42,7 +42,7 @@ slug: hoarder-app-replace-cubox
 
 - 不需要过于花哨的内容
 
-  一开始 cubox 作为剪藏产品还是比较简洁功能单一，随后不断加入一些花哨的功能，比如 Cubox 中的 AI 解读、标记功能对我来说并不适用。我已经有了 Readwise 作为阅读器，Cubox 对我而且其实只是作为一个“数字囤积爱好者的垃圾桶”，用来本地化存储一些网页，防止删库跑路。显然，稍后读、AI 解读对我而言稍显冗余，秉承「如无必要，勿增实体」的哲学，我早就想换掉 Cubox 了
+  一开始 cubox 作为剪藏产品还是比较简洁功能单一，随后不断加入一些花哨的功能，比如 Cubox 中的 AI 解读、标记功能对我来说并不适用。我已经有了 Readwise 作为阅读器，Cubox 对我而且其实只是作为一个「数字囤积爱好者的垃圾桶」，用来本地化存储一些网页，防止删库跑路。显然，稍后读、AI 解读对我而言稍显冗余，秉承「如无必要，勿增实体」的哲学，我早就想换掉 Cubox 了
 
 ## 自建安装步骤
 
@@ -112,16 +112,22 @@ INFERENCE_TEXT_MODEL=qwen2-72b-instruct #用于打标的模型，我自己用上
 
 ## `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES`（安全说明）
 
-Karakeep 的 worker/crawler 会发起外部请求（抓取网页、RSS、Webhook 等）。从安全角度出发，Karakeep 默认会阻止“域名解析到内网/回环/链路本地 IP”的请求，避免 SSRF 类风险。
+Karakeep 的 worker/crawler 会发起外部请求（抓取网页、RSS、Webhook 等）。从安全角度出发，Karakeep 默认会阻止「域名解析到内网/回环/链路本地 IP」的请求，避免 SSRF 类风险。
 
 - **引入时间（安全收紧）**：在 `v0.28.0`（GitHub Release 显示为 Nov 9）中引入了更严格的 SSRF 防护（PR [#2082](https://github.com/karakeep-app/karakeep/pull/2082)）。该版本的 release notes 明确：所有 server 发起、指向内部 IP 的请求默认会被阻止，除非通过 `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES` 显式 allowlist。
 - **官方文档语义**：配置页说明该变量支持前导点通配（例如 `.local`、`.internal.company.com`），并且 **传入 `.` 会放行所有域名**；此外，若目标 URL 配置了代理（`CRAWLER_HTTP_PROXY/CRAWLER_HTTPS_PROXY`），内部 IP 校验会被绕过（因为实际 DNS 解析可能由代理侧完成）。
 - **“`.` 放行全部”的能力**：在 `v0.29.0` 的 release notes 中明确提到：将 `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES` 设为 `.` 可绕过所有域名的 IP 校验（对应修复提交 [67b8a3c](https://github.com/karakeep-app/karakeep/commit/67b8a3c141e537571c9cda58265b261ff35ed385)）。
 
-实际使用上，这个配置经常和“透明代理 / Fake-IP DNS”一起出现：在中国大陆的网络环境中，跨境站点访问限制、DNS 污染/劫持等问题更常见，因此很多人会使用代理软件做透明代理与分流，Fake-IP 也是常见配置之一。比如你启用了 OpenClash 的 Fake-IP，某些域名可能会被解析到私网地址，crawler 就会认为是“内部地址”从而拒绝抓取。
+但实际使用上，官方这个配置，不符合中国大陆特殊的环境，「透明代理 / Fake-IP DNS」一起出现：在中国大陆的网络环境中，跨境站点访问限制、DNS 污染/劫持等问题更常见，我们一般会使用代理软件做透明代理与分流，Fake-IP 也是常见配置之一。比如你启用了 OpenClash 的 Fake-IP，某些域名可能会被解析到私网地址，crawler 就会认为是「内部地址」从而拒绝抓取。
 
-- **更安全的建议**：优先按需 allowlist（例如 `.local` 或你内网自建域名的后缀），不要长期使用 `.`。
-- **临时排障**：如果你确认环境可信、只是想快速恢复抓取，可临时用 `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES: "."` 验证是不是被 SSRF 防护拦截。
+- **解决方法**：
+
+docker-compose.yml 中添加
+
+```yaml
+# 👇 新增：允许爬虫访问解析为内网 IP 的域名（解决 OpenClash Fake-IP 问题）
+CRAWLER_ALLOWED_INTERNAL_HOSTNAMES: "."
+```
 
 ## Hoarder 的优点
 
