@@ -1,4 +1,4 @@
 {
-    "installCommand": "echo 'Skip install'",
-    "buildCommand": ""
+    "installCommand": "pnpm install --frozen-lockfile",
+    "buildCommand": "pnpm build"
 }
