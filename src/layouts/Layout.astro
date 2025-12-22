@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from "astro:transitions";
+import SpeedInsights from "@vercel/speed-insights/astro";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import "@/styles/global.css";
@@ -90,8 +91,6 @@ const structuredData = {
 };
 // Restrict Umami tracking to specific domains (avoid local/preview)
 const siteHostname = new URL(SITE.website).hostname;
-// Only enable Vercel Speed Insights on Vercel production builds
-const isVercelProd = process.env.VERCEL_ENV === "production";
 ---
 
 <!doctype html>
@@ -288,13 +287,6 @@ const isVercelProd = process.env.VERCEL_ENV === "production";
       )
     }
 
-    <!-- Vercel Speed Insights (production on Vercel only) -->
-    {
-      // Only include when building on Vercel production to avoid 404s locally/preview
-      isVercelProd && (
-        <script is:inline defer src="/_vercel/speed-insights/script.js" />
-      )
-    }
     <style is:inline>
       html,
       body {
@@ -307,5 +299,7 @@ const isVercelProd = process.env.VERCEL_ENV === "production";
   <body>
     <slot />
     <CookieConsentBanner />
+
+    {import.meta.env.PROD && <SpeedInsights />}
   </body>
 </html>
