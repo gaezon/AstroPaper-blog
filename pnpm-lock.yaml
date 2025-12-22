@@ -23,6 +23,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.11
         version: 4.1.11(vite@6.4.0(@types/node@24.0.13)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.1))
+      '@vercel/speed-insights':
+        specifier: ^1.3.1
+        version: 1.3.1
       astro:
         specifier: ^5.14.6
         version: 5.14.6(@types/node@24.0.13)(@vercel/functions@2.2.13)(jiti@2.4.2)(lightningcss@1.30.1)(rollup@4.44.2)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.1)
@@ -37,7 +40,7 @@ importers:
         version: 14.1.4
       rehype-mermaid:
         specifier: ^3.0.0
-        version: 3.0.0(playwright@1.55.1)
+        version: 3.0.0(playwright@1.54.1)
       remark-collapse:
         specifier: ^0.1.2
         version: 0.1.2
@@ -73,8 +76,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       '@playwright/test':
-        specifier: ^1.55.1
-        version: 1.55.1
+        specifier: 1.54.1
+        version: 1.54.1
       '@shikijs/transformers':
         specifier: ^3.7.0
         version: 3.7.0
@@ -115,8 +118,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       playwright:
-        specifier: ^1.55.1
-        version: 1.55.1
+        specifier: 1.54.1
+        version: 1.54.1
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -704,8 +707,8 @@ packages:
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@playwright/test@1.55.1':
-    resolution: {integrity: sha512-IVAh/nOJaw6W9g+RJVlIQJ6gSiER+ae6mKQ5CX1bERzQgbC1VSeBlwdvczT7pxb0GWiyrxH4TGKbMfDb4Sq/ig==}
+  '@playwright/test@1.54.1':
+    resolution: {integrity: sha512-FS8hQ12acieG2dYSksmLOF7BNxnVf2afRJdCuM1eMSxj6QTSE6G4InGF7oApGgDb65MX7AwMVlIkpru0yZA4Xw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -1306,6 +1309,29 @@ packages:
 
   '@vercel/routing-utils@5.3.0':
     resolution: {integrity: sha512-gKsPSGc/hBMSHiAXTjTcbSa9egy7wCogrLctx8bJUS21w2OppWzrd5ZqUMqvnrfdKzLMpGIJ2bZMxBQ9xjGkaA==}
+
+  '@vercel/speed-insights@1.3.1':
+    resolution: {integrity: sha512-PbEr7FrMkUrGYvlcLHGkXdCkxnylCWePx7lPxxq36DNdfo9mcUjLOmqOyPDHAOgnfqgGGdmE3XI9L/4+5fr+vQ==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
 
   '@vitest/expect@4.0.15':
     resolution: {integrity: sha512-Gfyva9/GxPAWXIWjyGDli9O+waHDC0Q0jaLdFP1qPAUUfo1FEXPXUfUkp3eZA0sSq340vPycSyOlYUeM15Ft1w==}
@@ -2939,13 +2965,13 @@ packages:
   pkg-types@2.2.0:
     resolution: {integrity: sha512-2SM/GZGAEkPp3KWORxQZns4M+WSeXbC2HEvmOIJe3Cmiv6ieAJvdVhDldtHqM5J1Y7MrR1XhkBT/rMlhh9FdqQ==}
 
-  playwright-core@1.55.1:
-    resolution: {integrity: sha512-Z6Mh9mkwX+zxSlHqdr5AOcJnfp+xUWLCt9uKV18fhzA8eyxUd8NUWzAjxUh55RZKSYwDGX0cfaySdhZJGMoJ+w==}
+  playwright-core@1.54.1:
+    resolution: {integrity: sha512-Nbjs2zjj0htNhzgiy5wu+3w09YetDx5pkrpI/kZotDlDUaYk0HVA5xrBVPdow4SAUIlhgKcJeJg4GRKW6xHusA==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.55.1:
-    resolution: {integrity: sha512-cJW4Xd/G3v5ovXtJJ52MAOclqeac9S/aGGgRzLabuF8TnIb6xHvMzKIa6JmrRzUkeXJgfL1MhukP0NK6l39h3A==}
+  playwright@1.54.1:
+    resolution: {integrity: sha512-peWpSwIBmSLi6aW2auvrUtf2DqY16YYcCMO8rTVx486jKmDTJg7UAhyrraP98GB8BoPURZP8+nxO7TSd4cPr5g==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4411,9 +4437,9 @@ snapshots:
 
   '@pkgr/core@0.2.9': {}
 
-  '@playwright/test@1.55.1':
+  '@playwright/test@1.54.1':
     dependencies:
-      playwright: 1.55.1
+      playwright: 1.54.1
 
   '@resvg/resvg-js-android-arm-eabi@2.6.2':
     optional: true
@@ -4995,6 +5021,8 @@ snapshots:
       path-to-regexp-updated: path-to-regexp@6.3.0
     optionalDependencies:
       ajv: 6.12.6
+
+  '@vercel/speed-insights@1.3.1': {}
 
   '@vitest/expect@4.0.15':
     dependencies:
@@ -6566,12 +6594,12 @@ snapshots:
 
   merge2@1.4.1: {}
 
-  mermaid-isomorphic@3.0.4(playwright@1.55.1):
+  mermaid-isomorphic@3.0.4(playwright@1.54.1):
     dependencies:
       '@fortawesome/fontawesome-free': 6.7.2
       mermaid: 11.8.1
     optionalDependencies:
-      playwright: 1.55.1
+      playwright: 1.54.1
     transitivePeerDependencies:
       - supports-color
 
@@ -7067,11 +7095,11 @@ snapshots:
       exsolve: 1.0.7
       pathe: 2.0.3
 
-  playwright-core@1.55.1: {}
+  playwright-core@1.54.1: {}
 
-  playwright@1.55.1:
+  playwright@1.54.1:
     dependencies:
-      playwright-core: 1.55.1
+      playwright-core: 1.54.1
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -7152,19 +7180,19 @@ snapshots:
     dependencies:
       regex-utilities: 2.3.0
 
-  rehype-mermaid@3.0.0(playwright@1.55.1):
+  rehype-mermaid@3.0.0(playwright@1.54.1):
     dependencies:
       '@types/hast': 3.0.4
       hast-util-from-html-isomorphic: 2.0.0
       hast-util-to-text: 4.0.2
-      mermaid-isomorphic: 3.0.4(playwright@1.55.1)
+      mermaid-isomorphic: 3.0.4(playwright@1.54.1)
       mini-svg-data-uri: 1.4.4
       space-separated-tokens: 2.0.2
       unified: 11.0.5
       unist-util-visit-parents: 6.0.1
       vfile: 6.0.3
     optionalDependencies:
-      playwright: 1.55.1
+      playwright: 1.54.1
     transitivePeerDependencies:
       - supports-color
 

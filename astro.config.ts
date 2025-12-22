@@ -16,36 +16,17 @@ import vercel from "@astrojs/vercel";
 import rehypeMermaid from "rehype-mermaid";
 
 // https://astro.build/config
-export default defineConfig({
-  site: SITE.website,
-  adapter: vercel(),
-  integrations: [
-    sitemap({
-      filter: page => SITE.showArchives || !page.endsWith("/archives"),
-    }),
-  ],
-  // Internationalization routing configuration
-  output: "static",
-  trailingSlash: "always",
-  i18n: {
-    defaultLocale: "zh-CN",
-    locales: ["zh-CN", "en"],
-    routing: {
-      prefixDefaultLocale: false, // Chinese default without prefix for clean URLs
-    },
-  },
-  markdown: {
-    remarkPlugins: [
-      [remarkToc, tocConfig],
-      [remarkCollapse, getI18nCollapseConfig()], // Internationalization-aware common configuration
-    ],
-    rehypePlugins: [
-      // Build-time Mermaid rendering with dark mode support
+// Enable build-time mermaid rendering only in GitHub Actions where Playwright browsers are installed
+// Falls back to client-side rendering in other environments (e.g., local dev, Vercel)
+const shouldRenderMermaidAtBuildTime = !!process.env.GITHUB_ACTIONS;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mermaidConfig: any[] = shouldRenderMermaidAtBuildTime
+  ? [
       [
         rehypeMermaid,
         {
-          strategy: "img-svg", // Render as SVG images at build time
-          // Custom dark theme configuration matching the original client-side orange theme
+          strategy: "img-svg",
           dark: {
             theme: "base",
             themeVariables: {
@@ -63,7 +44,6 @@ export default defineConfig({
               noteTextColor: "#ffffff",
               fontFamily:
                 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
-              // Timeline/chart colors - using the dark blue theme
               cScale0: "#2d3548",
               cScale1: "#343f60",
               cScale2: "#2d3548",
@@ -78,20 +58,11 @@ export default defineConfig({
               cScaleLabel5: "#eaedf3",
             },
           },
-          colorScheme: "light", // Default color scheme
-          // Use system Chrome in CI to avoid Playwright installation issues
-          ...(process.env.CI
-            ? {
-                launchOptions: {
-                  executablePath: "/usr/bin/google-chrome",
-                  channel: "chrome",
-                },
-              }
-            : {}),
+          colorScheme: "light",
+          // Mermaid theming configuration for build-time rendering
           mermaidConfig: {
             theme: "base",
             themeVariables: {
-              // Light theme colors (matching existing client-side config)
               background: "transparent",
               primaryColor: "#e6f4fb",
               secondaryColor: "#f0f7fb",
@@ -106,7 +77,6 @@ export default defineConfig({
               noteTextColor: "#ffffff",
               fontFamily:
                 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
-              // Timeline-specific colors for milestones page
               cScale0: "#e6f4fb",
               cScale1: "#f0f7fb",
               cScale2: "#ffffff",
@@ -123,12 +93,39 @@ export default defineConfig({
           },
         },
       ],
+    ]
+  : [];
+
+export default defineConfig({
+  site: SITE.website,
+  adapter: vercel(),
+  integrations: [
+    sitemap({
+      filter: page => SITE.showArchives || !page.endsWith("/archives"),
+    }),
+  ],
+  output: "static",
+  trailingSlash: "always",
+  i18n: {
+    defaultLocale: "zh-CN",
+    locales: ["zh-CN", "en"],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
+  markdown: {
+    remarkPlugins: [
+      [remarkToc, tocConfig],
+      [remarkCollapse, getI18nCollapseConfig()],
+    ],
+    rehypePlugins: [
+      // Build-time Mermaid rendering in GitHub Actions; falls back to client-side rendering in other environments
+      ...mermaidConfig,
     ],
     syntaxHighlight: {
       excludeLangs: ["mermaid"],
     },
     shikiConfig: {
-      // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "night-owl" },
       defaultColor: false,
       wrap: false,
