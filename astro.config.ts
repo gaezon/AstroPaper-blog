@@ -144,6 +144,7 @@ export default defineConfig({
     // See: https://github.com/withastro/astro/issues/14030
     plugins: [tailwindcss()],
     optimizeDeps: {
+      entries: ["src/**/*.{astro,js,ts,jsx,tsx}"],
       exclude: ["@resvg/resvg-js"],
     },
   },

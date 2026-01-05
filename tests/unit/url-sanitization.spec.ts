@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sanitizePath } from "../src/utils/url";
+import { sanitizePath } from "../../src/utils/url";
 
 describe("sanitizePath", () => {
     describe("valid paths", () => {

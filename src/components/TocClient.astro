@@ -646,6 +646,9 @@
 
     const hideAside = () => {
       if (aside.dataset.animating === "true") return;
+      const activeElement = document.activeElement;
+      const hadFocusInside =
+        activeElement instanceof Element && aside.contains(activeElement);
       aside.dataset.animating = "true";
 
       // Pause observer to prevent interference during animation
@@ -670,7 +673,7 @@
         setTransitionState("exited");
 
         // Move focus to open button if it was inside the collapsed aside
-        if (aside.contains(document.activeElement)) {
+        if (hadFocusInside) {
           openBtn.focus({ preventScroll: true });
         }
 
@@ -689,7 +692,6 @@
       pauseScrollObserver();
 
       // Prepare element for animation
-      openBtn.style.display = "none";
       aside.style.display = "";
       aside.setAttribute("inert", ""); // Keep inert during animation
       collapseBtn.setAttribute("aria-expanded", "true");
@@ -702,6 +704,7 @@
       const finalize = () => {
         aside.removeAttribute("inert");
         aside.setAttribute("aria-hidden", "false");
+        openBtn.style.display = "none";
         // Move focus to collapse button for keyboard users
         collapseBtn.focus({ preventScroll: true });
         clearAnimationState();

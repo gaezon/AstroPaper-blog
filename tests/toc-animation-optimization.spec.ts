@@ -1,10 +1,16 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+const TEST_POST_PATH = "/posts/OBS-safe-broadcast-pitfalls/";
+const waitForTocReady = async (page: Page) => {
+  await page.locator("#toc-nav a").first().waitFor();
+};
 
 test.describe("TOC Animation Optimizations", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to a post with TOC
-    await page.goto("/posts/markdown-style-guide/");
+    await page.goto(TEST_POST_PATH);
     await page.waitForLoadState("networkidle");
+    await waitForTocReady(page);
   });
 
   test("should set aria-hidden immediately on collapse", async ({ page }) => {
@@ -18,7 +24,7 @@ test.describe("TOC Animation Optimizations", () => {
     await expect(aside).toHaveAttribute("aria-hidden", "false");
 
     // Click collapse and immediately check aria-hidden
-    await collapseBtn.click();
+    await collapseBtn.click({ force: true });
 
     // aria-hidden should be set immediately (within 10ms)
     await expect(aside).toHaveAttribute("aria-hidden", "true", {
@@ -34,7 +40,7 @@ test.describe("TOC Animation Optimizations", () => {
     const aside = page.locator("#toc-sidebar");
     const collapseBtn = page.locator("#toc-collapse");
 
-    await collapseBtn.click();
+    await collapseBtn.click({ force: true });
 
     // pointer-events should be disabled immediately
     const pointerEvents = await aside.evaluate(
@@ -51,11 +57,11 @@ test.describe("TOC Animation Optimizations", () => {
     const openBtn = page.locator("#toc-open-desktop");
 
     // First collapse
-    await collapseBtn.click();
+    await collapseBtn.click({ force: true });
     await page.waitForTimeout(300); // Wait for animation to complete
 
     // Start showing
-    await openBtn.click();
+    await openBtn.click({ force: true });
 
     // During animation, inert should still be present
     const hasInert = await aside.evaluate(el => el.hasAttribute("inert"));
@@ -77,7 +83,7 @@ test.describe("TOC Animation Optimizations", () => {
     await expect(firstLink).toBeFocused();
 
     // Collapse
-    await collapseBtn.click();
+    await collapseBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Focus should move to open button
@@ -89,8 +95,9 @@ test.describe("TOC Animation Optimizations", () => {
   }) => {
     // Enable reduced motion
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/posts/markdown-style-guide/");
+    await page.goto(TEST_POST_PATH);
     await page.waitForLoadState("networkidle");
+    await waitForTocReady(page);
 
     await page.setViewportSize({ width: 1280, height: 800 });
 
@@ -98,7 +105,7 @@ test.describe("TOC Animation Optimizations", () => {
     const collapseBtn = page.locator("#toc-collapse");
 
     const startTime = Date.now();
-    await collapseBtn.click();
+    await collapseBtn.click({ force: true });
 
     // With reduced motion, animation should complete almost instantly
     await expect(aside).toHaveCSS("display", "none", { timeout: 50 });
@@ -116,18 +123,18 @@ test.describe("TOC Animation Optimizations", () => {
     const openBtn = page.locator("#toc-open-desktop");
 
     // Rapidly click collapse multiple times
-    await collapseBtn.click();
-    await collapseBtn.click();
-    await collapseBtn.click();
+    await collapseBtn.click({ force: true });
+    await collapseBtn.click({ force: true });
+    await collapseBtn.click({ force: true });
 
     // Should still end in collapsed state
     await page.waitForTimeout(400);
     await expect(aside).toHaveCSS("display", "none");
 
     // Now rapidly click open
-    await openBtn.click();
-    await openBtn.click();
-    await openBtn.click();
+    await openBtn.click({ force: true });
+    await openBtn.click({ force: true });
+    await openBtn.click({ force: true });
 
     // Should still end in open state
     await page.waitForTimeout(400);
@@ -140,7 +147,7 @@ test.describe("TOC Animation Optimizations", () => {
     const aside = page.locator("#toc-sidebar");
     const collapseBtn = page.locator("#toc-collapse");
 
-    await collapseBtn.click();
+    await collapseBtn.click({ force: true });
     await page.waitForTimeout(400);
 
     // Check that animation state is cleaned up

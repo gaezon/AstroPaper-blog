@@ -17,8 +17,14 @@ import { test, expect } from "@playwright/test";
 const TEST_POST_PATH = "/posts/OBS-safe-broadcast-pitfalls/";
 // Minimum expected SVG data URI length to verify rendering
 const MIN_SVG_DATA_LENGTH = 100;
+const shouldRenderMermaidAtBuildTime = !!process.env.GITHUB_ACTIONS;
 
 test.describe("Mermaid Build-Time Rendering", () => {
+    test.skip(
+        !shouldRenderMermaidAtBuildTime,
+        "Build-time Mermaid rendering is disabled outside GitHub Actions."
+    );
+
     test.beforeEach(async ({ page }) => {
         await page.goto(TEST_POST_PATH);
         await page.waitForLoadState("networkidle");
@@ -151,6 +157,11 @@ test.describe("Mermaid No Client-Side JavaScript", () => {
 });
 
 test.describe("Mermaid Multiple Diagrams", () => {
+    test.skip(
+        !shouldRenderMermaidAtBuildTime,
+        "Build-time Mermaid rendering is disabled outside GitHub Actions."
+    );
+
     test("should render multiple diagrams on the same page", async ({ page }) => {
         await page.goto(TEST_POST_PATH);
         await page.waitForLoadState("networkidle");
@@ -195,6 +206,11 @@ test.describe("Mermaid Multiple Diagrams", () => {
 });
 
 test.describe("Mermaid Performance", () => {
+    test.skip(
+        !shouldRenderMermaidAtBuildTime,
+        "Build-time Mermaid rendering is disabled outside GitHub Actions."
+    );
+
     test("should render diagrams without JavaScript blocking", async ({ page }) => {
         // Disable JavaScript
         await page.route("**/*.js", route => route.abort());
