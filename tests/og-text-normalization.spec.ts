@@ -18,7 +18,7 @@ test.describe("OG text normalization", () => {
     });
 
     expect(svg).not.toContain("\u2011");
-    expect(svg).toContain("OBS\u2010live streaming pitfalls");
+    expect(svg).toMatch(/OBS-live streaming pitfalls/);
   });
 
   test("does not render fallback squares for normalized hyphen", async () => {
@@ -43,6 +43,6 @@ test.describe("OG text normalization", () => {
     });
 
     expect(svg).not.toContain("\uFE0F");
-    expect(svg).toContain("New Post - Update");
+    expect(svg).toMatch(/New Post - Update/);
   });
 });
