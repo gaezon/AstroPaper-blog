@@ -12,6 +12,7 @@ import {
   getTextDirection,
   t,
 } from "@/i18n/utils";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/i18n/config";
 import { ensureTrailingSlash } from "@/utils/url";
 
 // I18n variables
@@ -29,6 +30,7 @@ export interface Props {
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
+  alternateURLs?: Record<string, string | undefined>;
 }
 
 const {
@@ -41,31 +43,67 @@ const {
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
+  alternateURLs = {},
 } = Astro.props;
 
 const canonicalURL = ensureTrailingSlash(
   new URL(canonicalURLProp, Astro.site).href
 );
 
-const xDefaultURL = (() => {
-  const url = new URL(canonicalURL);
+const normalizedPathname = ensureTrailingSlash(Astro.url.pathname);
+const isPostPage =
+  normalizedPathname.includes("/posts/") &&
+  !normalizedPathname.endsWith("/posts/");
 
-  if (currentLocale === "zh-CN") {
-    return canonicalURL;
+const nonDefaultLocales = SUPPORTED_LOCALES.filter(
+  locale => locale !== DEFAULT_LOCALE
+);
+
+function stripLocalePrefix(pathname: string): string {
+  for (const locale of nonDefaultLocales) {
+    if (pathname === `/${locale}` || pathname === `/${locale}/`) {
+      return "/";
+    }
+    if (pathname.startsWith(`/${locale}/`)) {
+      const stripped = pathname.slice(locale.length + 1);
+      return stripped === "" ? "/" : stripped;
+    }
   }
+  return pathname;
+}
 
-  if (
-    url.pathname === `/${currentLocale}` ||
-    url.pathname === `/${currentLocale}/`
-  ) {
-    url.pathname = "/";
-  } else if (url.pathname.startsWith(`/${currentLocale}/`)) {
-    url.pathname = url.pathname.replace(`/${currentLocale}`, "");
-  }
+const basePath = ensureTrailingSlash(stripLocalePrefix(normalizedPathname));
 
-  url.pathname = ensureTrailingSlash(url.pathname);
-  return url.toString();
-})();
+const alternateUrlByLocale = SUPPORTED_LOCALES.reduce<Record<string, string>>(
+  (acc, locale) => {
+    if (locale === currentLocale) {
+      acc[locale] = canonicalURL;
+      return acc;
+    }
+
+    const override = alternateURLs[locale];
+    if (override) {
+      acc[locale] = new URL(ensureTrailingSlash(override), Astro.site).href;
+      return acc;
+    }
+
+    if (!isPostPage) {
+      const localizedPath =
+        locale === DEFAULT_LOCALE ? basePath : `/${locale}${basePath}`;
+      acc[locale] = new URL(localizedPath, Astro.site).href;
+    }
+
+    return acc;
+  },
+  {}
+);
+
+const hreflangLinks = SUPPORTED_LOCALES.map(locale => ({
+  locale,
+  href: alternateUrlByLocale[locale],
+})).filter(link => Boolean(link.href));
+
+const xDefaultURL = alternateUrlByLocale[DEFAULT_LOCALE] ?? canonicalURL;
 
 // Use the processed 'description' as finalDescription
 const finalDescription = description;
@@ -193,7 +231,11 @@ const siteHostname = new URL(SITE.website).hostname;
     <meta name="generator" content={Astro.generator} />
 
     <!-- hreflang tags for SEO -->
-    <link rel="alternate" hreflang={currentLocale} href={canonicalURL} />
+    {
+      hreflangLinks.map(link => (
+        <link rel="alternate" hreflang={link.locale} href={link.href} />
+      ))
+    }
     <link rel="alternate" hreflang="x-default" href={xDefaultURL} />
 
     <!-- General Meta Tags -->

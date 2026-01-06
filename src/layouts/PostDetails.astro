@@ -65,17 +65,6 @@ const ogImage = ogImageUrl
   ? new URL(ogImageUrl, Astro.url.origin).href
   : undefined;
 
-const layoutProps = {
-  title: `${title} | ${SITE.title}`,
-  author,
-  description,
-  pubDatetime,
-  modDatetime,
-  canonicalURL,
-  ogImage,
-  scrollSmooth: true,
-};
-
 /* ========== Prev/Next Posts ========== */
 
 // Helper function to get adjacent posts with proper boundary checking
@@ -124,6 +113,18 @@ try {
     }
   }
 } catch {}
+
+const layoutProps = {
+  title: `${title} | ${SITE.title}`,
+  author,
+  description,
+  pubDatetime,
+  modDatetime,
+  canonicalURL,
+  ogImage,
+  scrollSmooth: true,
+  alternateURLs: switchOverride,
+};
 ---
 
 <Layout {...layoutProps}>
