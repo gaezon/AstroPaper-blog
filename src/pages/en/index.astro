@@ -111,7 +111,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     }
 
     <div class="my-8 text-center">
-      <LinkButton href="/en/posts/" ariaLabel={t(Astro, "index.viewAllPosts")}>
+      <LinkButton href="/en/posts/" aria-label={t(Astro, "index.viewAllPosts")}>
         {t(Astro, "index.viewAllPosts")}
         <IconArrowRight class="inline-block rtl:-rotate-180" />
       </LinkButton>
