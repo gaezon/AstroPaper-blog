@@ -152,7 +152,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
                       "active-nav [&>svg]:stroke-accent": isActive("/archives"),
                     },
                   ]}
-                  ariaLabel={tr("nav.archives")}
+                  aria-label={tr("nav.archives")}
                   title={tr("nav.archives")}
                 >
                   <IconArchive
@@ -171,7 +171,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
                 "focus-outline flex p-3 sm:p-1",
                 { "[&>svg]:stroke-accent": isActive("/search") },
               ]}
-              ariaLabel={tr("nav.search")}
+              aria-label={tr("nav.search")}
               title={tr("nav.search")}
             >
               <IconSearch aria-hidden="true" />

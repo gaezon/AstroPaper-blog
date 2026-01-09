@@ -29,6 +29,7 @@ export const transformerFileName = ({
 
     for (const item of raw) {
       const [key, value] = item.split("=");
+      if (!key || value === undefined) continue;
       metaMap.set(key, value.replace(/["'`]/g, ""));
     }
 
