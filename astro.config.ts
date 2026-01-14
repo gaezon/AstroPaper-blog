@@ -20,8 +20,11 @@ import rehypeMermaid from "rehype-mermaid";
 // Falls back to client-side rendering in other environments (e.g., local dev, Vercel)
 const shouldRenderMermaidAtBuildTime = !!process.env.GITHUB_ACTIONS;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mermaidConfig: any[] = shouldRenderMermaidAtBuildTime
+type RehypePluginsList = NonNullable<
+  NonNullable<Parameters<typeof defineConfig>[0]["markdown"]>["rehypePlugins"]
+>;
+
+const mermaidConfig: RehypePluginsList = shouldRenderMermaidAtBuildTime
   ? [
       [
         rehypeMermaid,
