@@ -155,6 +155,8 @@
   /* Balance readability and glass effect: use 65% opacity */
   color: hsl(var(--foreground) / 0.65) !important;
   backdrop-filter: blur(1px);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 #toc-nav a:hover,
