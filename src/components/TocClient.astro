@@ -4,6 +4,10 @@
 
 <script>
   import { extractTocFromDOM } from "@/utils/extractToc";
+  import {
+    createThrottledScrollListener,
+    createTocClickHandler,
+  } from "@/utils/scroll";
 
   // TOC item type definition
   type TocItem = {
@@ -29,6 +33,9 @@
   document.addEventListener("astro:after-swap", tryInit);
 
   async function initializeTocWithRetry(maxRetries = 20, intervalMs = 100) {
+    // Clean up previous bindings before re-initializing
+    cleanupToc();
+
     // Wait for #article and at least one heading
     let attempt = 0;
     while (attempt < maxRetries) {
@@ -113,76 +120,14 @@
 
       // Smooth scroll with offset to avoid flicker
       link.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        const target = document.getElementById(item.id);
-        if (target) {
-          // Set scrolling flag to prevent IntersectionObserver interference
-          isScrolling = true;
-
-          // Clear any existing timeout
-          if (scrollTimeout !== null) {
-            window.clearTimeout(scrollTimeout);
-          }
-
-          // Compute offset to prevent heading overlap (extra buffer)
-          const yOffset = -120; // Negative to offset upward, give more space
-          const y =
-            target.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-          // Update active state immediately to avoid IO delay flicker
-          document
-            .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
-            .forEach(el => {
-              el.classList.remove(
-                "active",
-                "text-accent",
-                "bg-muted/40",
-                "border-accent",
-                "font-semibold"
-              );
-              el.classList.add("text-muted", "border-transparent");
-              el.removeAttribute("aria-current");
-            });
-
-          // Update both desktop and mobile versions of the same link
-          const href = link.getAttribute("href");
-          const mobileLink = href
-            ? document.querySelector(`#toc-nav-mobile a[href="${href}"]`)
-            : null;
-
-          // Update desktop link - batch class changes to minimize mutations
-          link.classList.remove("text-muted", "border-transparent");
-          link.classList.add(
-            "active",
-            "text-accent",
-            "bg-muted/40",
-            "border-accent",
-            "font-semibold"
-          );
-          link.setAttribute("aria-current", "true");
-
-          // Update mobile link - batch class changes to minimize mutations
-          if (mobileLink instanceof HTMLAnchorElement) {
-            mobileLink.classList.remove("text-muted", "border-transparent");
-            mobileLink.classList.add(
-              "active",
-              "text-accent",
-              "bg-muted/40",
-              "border-accent",
-              "font-semibold"
-            );
-            mobileLink.setAttribute("aria-current", "true");
-          }
-
-          // Then smooth scroll
-          window.scrollTo({ top: y, behavior: "smooth" });
-
-          // Reset scrolling flag after scroll completes - increased to 1200ms for longer scrolls
-          scrollTimeout = window.setTimeout(() => {
-            isScrolling = false;
-            scrollTimeout = null;
-          }, 1200);
-        }
+        const handler = createTocClickHandler({
+          desktopNavId: "toc-nav",
+          mobileNavId: "toc-nav-mobile",
+          offset: -120,
+          scrollingFlag: scrollingState,
+          timeoutRef: scrollTimeoutRef,
+        });
+        handler(e, link);
       });
 
       li.appendChild(link);
@@ -204,8 +149,74 @@
   }
 
   let tocObserver: IntersectionObserver | null = null;
-  let isScrolling = false;
-  let scrollTimeout: number | null = null;
+  const scrollingState = { value: false };
+  const scrollTimeoutRef = { value: null as number | null };
+
+  // Store cleanup functions to prevent duplicate bindings
+  let scrollCleanup: (() => void) | null = null;
+  let resizeCleanup: (() => void) | null = null;
+  let keydownCleanup: (() => void) | null = null;
+  let mutationObserver: MutationObserver | null = null;
+  let desktopToggleCleanup: (() => void) | null = null;
+  let toggleCleanup: (() => void) | null = null;
+  let closeCleanup: (() => void) | null = null;
+  let overlayClickCleanup: (() => void) | null = null;
+
+  function cleanupToc(): void {
+    // Disconnect IntersectionObserver
+    if (tocObserver) {
+      tocObserver.disconnect();
+      tocObserver = null;
+    }
+
+    // Clean up scroll listener
+    if (scrollCleanup) {
+      scrollCleanup();
+      scrollCleanup = null;
+    }
+
+    // Clean up resize listener
+    if (resizeCleanup) {
+      resizeCleanup();
+      resizeCleanup = null;
+    }
+
+    // Clean up keydown listener
+    if (keydownCleanup) {
+      keydownCleanup();
+      keydownCleanup = null;
+    }
+
+    // Clean up MutationObserver
+    if (mutationObserver) {
+      mutationObserver.disconnect();
+      mutationObserver = null;
+    }
+
+    // Clean up desktop toggle listeners
+    if (desktopToggleCleanup) {
+      desktopToggleCleanup();
+      desktopToggleCleanup = null;
+    }
+
+    // Clean up mobile overlay listeners
+    if (toggleCleanup) {
+      toggleCleanup();
+      toggleCleanup = null;
+    }
+
+    // Clean up close button listener
+    if (closeCleanup) {
+      closeCleanup();
+      closeCleanup = null;
+    }
+
+    // Clean up overlay click listener
+    if (overlayClickCleanup) {
+      overlayClickCleanup();
+      overlayClickCleanup = null;
+    }
+  }
 
   function setupScrollObserver(): void {
     const headings = document.querySelectorAll(
@@ -217,7 +228,7 @@
     const observer = new IntersectionObserver(
       entries => {
         // Skip if currently scrolling programmatically
-        if (isScrolling) return;
+        if (scrollingState.value) return;
 
         entries.forEach(entry => {
           const id = entry.target.id;
@@ -313,92 +324,25 @@
       // Bind smooth scroll for mobile links
       mobileNav.querySelectorAll('a[href^="#"]').forEach(a => {
         (a as HTMLAnchorElement).addEventListener("click", e => {
-          e.preventDefault();
-          const current = e.currentTarget;
-          const href =
-            current instanceof HTMLAnchorElement
-              ? current.getAttribute("href")
-              : null;
-          if (!href) return;
-          const target = document.querySelector(href);
-          if (target instanceof HTMLElement) {
-            // Set scrolling flag to prevent IntersectionObserver interference
-            isScrolling = true;
-
-            // Clear any existing timeout
-            if (scrollTimeout !== null) {
-              window.clearTimeout(scrollTimeout);
-            }
-
-            // Compute offset; keep consistent with desktop
-            const yOffset = -120;
-            const y =
-              target.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-            // Update active state first
-            document
-              .querySelectorAll("#toc-nav a.active, #toc-nav-mobile a.active")
-              .forEach(el => {
-                el.classList.remove(
-                  "active",
-                  "text-accent",
-                  "bg-muted/40",
-                  "border-accent",
-                  "font-semibold"
-                );
-                el.classList.add("text-muted", "border-transparent");
-                el.removeAttribute("aria-current");
-              });
-
-            // Update both mobile and desktop versions of the same link
-            const clickedLink =
-              current instanceof HTMLAnchorElement ? current : null;
-            const desktopLink = href
-              ? document.querySelector(`#toc-nav a[href="${href}"]`)
-              : null;
-
-            if (clickedLink) {
-              clickedLink.classList.add(
-                "active",
-                "text-accent",
-                "bg-muted/40",
-                "border-accent",
-                "font-semibold"
-              );
-              clickedLink.classList.remove("text-muted", "border-transparent");
-              clickedLink.setAttribute("aria-current", "true");
-            }
-
-            if (desktopLink instanceof HTMLAnchorElement) {
-              desktopLink.classList.add(
-                "active",
-                "text-accent",
-                "bg-muted/40",
-                "border-accent",
-                "font-semibold"
-              );
-              desktopLink.classList.remove("text-muted", "border-transparent");
-              desktopLink.setAttribute("aria-current", "true");
-            }
-
-            // Then smooth scroll
-            window.scrollTo({ top: y, behavior: "smooth" });
-
-            // Reset scrolling flag after scroll completes - increased to 1200ms for longer scrolls
-            scrollTimeout = window.setTimeout(() => {
-              isScrolling = false;
-              scrollTimeout = null;
-            }, 1200);
-          }
-          // Close drawer
-          const evt = new Event("click");
-          close.dispatchEvent(evt);
+          const handler = createTocClickHandler({
+            desktopNavId: "toc-nav",
+            mobileNavId: "toc-nav-mobile",
+            offset: -120,
+            scrollingFlag: scrollingState,
+            timeoutRef: scrollTimeoutRef,
+            onClick: () => {
+              // Close drawer
+              const evt = new Event("click");
+              close.dispatchEvent(evt);
+            },
+          });
+          handler(e, a as HTMLAnchorElement);
         });
       });
     }
 
     // Toggle visibility
-    toggle.addEventListener("click", () => {
+    const handleToggleClick = () => {
       overlay.classList.remove("opacity-0", "pointer-events-none");
       overlay.classList.add("opacity-100", "pointer-events-auto");
       const slidePanel = overlay.querySelector(".transform");
@@ -407,7 +351,11 @@
         slidePanel.classList.add("translate-x-0");
       }
       toggle.setAttribute("aria-expanded", "true");
-    });
+    };
+    toggle.addEventListener("click", handleToggleClick);
+    toggleCleanup = () => {
+      toggle.removeEventListener("click", handleToggleClick);
+    };
 
     // Close
     const closeOverlay = () => {
@@ -422,18 +370,30 @@
     };
 
     close.addEventListener("click", closeOverlay);
-    overlay.addEventListener("click", e => {
+    closeCleanup = () => {
+      close.removeEventListener("click", closeOverlay);
+    };
+
+    const handleOverlayClick = (e: MouseEvent) => {
       if (e.target === overlay) {
         closeOverlay();
       }
-    });
+    };
+    overlay.addEventListener("click", handleOverlayClick);
+    overlayClickCleanup = () => {
+      overlay.removeEventListener("click", handleOverlayClick);
+    };
 
     // Close on ESC key
-    document.addEventListener("keydown", e => {
+    const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !overlay.classList.contains("opacity-0")) {
         closeOverlay();
       }
-    });
+    };
+    document.addEventListener("keydown", handleKeydown);
+    keydownCleanup = () => {
+      document.removeEventListener("keydown", handleKeydown);
+    };
 
     // Avoid overlapping with the bottom-right "Back To Top" button
     const avoidOverlap = () => {
@@ -486,29 +446,24 @@
 
     // Listen for window resize
     window.addEventListener("resize", avoidOverlap);
-
-    // Listen for scroll; Back To Top visibility depends on it
-    let ticking = false;
-    const scrollHandler = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          avoidOverlap();
-          ticking = false;
-        });
-        ticking = true;
-      }
+    resizeCleanup = () => {
+      window.removeEventListener("resize", avoidOverlap);
     };
-    window.addEventListener("scroll", scrollHandler, { passive: true });
+
+    // Listen for scroll; Back To Top visibility depends on it (use unified RAF throttling)
+    scrollCleanup = createThrottledScrollListener(window, avoidOverlap, {
+      passive: true,
+    });
 
     // Observe Back To Top container class changes to react to visibility toggles
     if (window.MutationObserver) {
       const btnContainer = document.querySelector("#btt-btn-container");
       if (btnContainer) {
-        const observer = new MutationObserver(() => {
+        mutationObserver = new MutationObserver(() => {
           avoidOverlap();
         });
 
-        observer.observe(btnContainer, {
+        mutationObserver.observe(btnContainer, {
           attributes: true,
           attributeFilter: ["class"],
           childList: false,
@@ -720,5 +675,11 @@
 
     collapseBtn.addEventListener("click", hideAside);
     openBtn.addEventListener("click", showAside);
+
+    // Store cleanup function
+    desktopToggleCleanup = () => {
+      collapseBtn.removeEventListener("click", hideAside);
+      openBtn.removeEventListener("click", showAside);
+    };
   }
 </script>

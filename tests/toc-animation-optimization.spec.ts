@@ -180,4 +180,110 @@ test.describe("TOC Animation Optimizations", () => {
 
     expect(easing.trim()).toBe("cubic-bezier(0.4, 0, 0.2, 1)");
   });
+
+  test.describe("scroll behavior (after refactor)", () => {
+    test("should scroll to heading when TOC link is clicked", async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1280, height: 800 });
+
+      // Get first TOC link
+      const firstLink = page.locator("#toc-nav a").first();
+      const href = await firstLink.getAttribute("href");
+
+      // Click TOC link
+      await firstLink.click();
+
+      // Wait a moment for scroll to complete
+      await page.waitForTimeout(1500);
+
+      // Verify scroll happened
+      const scrollTop = await page.evaluate(() => window.pageYOffset);
+      expect(scrollTop).toBeGreaterThan(0);
+
+      // Verify the target heading is visible
+      const targetId = href?.replace("#", "");
+      const targetHeading = page.locator(`#${targetId}`);
+      await expect(targetHeading).toBeInViewport();
+    });
+
+    test("should update active state when scrolling", async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 800 });
+
+      // Scroll down to trigger TOC update
+      await page.evaluate(() => {
+        window.scrollTo(0, 500);
+      });
+
+      // Wait longer for IntersectionObserver to trigger
+      await page.waitForTimeout(1000);
+
+      // Check that some TOC link is active
+      const activeLink = page.locator("#toc-nav a.active").first();
+      await expect(activeLink).toHaveCount(1);
+    });
+
+    test("should sync active state between desktop and mobile TOC", async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1280, height: 800 });
+
+      // Click a desktop TOC link
+      const firstLink = page.locator("#toc-nav a").first();
+      await firstLink.click();
+      await page.waitForTimeout(1500);
+
+      // Check that both desktop and mobile TOC have active state
+      const desktopActive = page.locator("#toc-nav a.active").first();
+      const mobileActive = page.locator("#toc-nav-mobile a.active").first();
+
+      await expect(desktopActive).toHaveCount(1);
+      await expect(mobileActive).toHaveCount(1);
+
+      // They should point to the same href
+      const desktopHref = await desktopActive.getAttribute("href");
+      const mobileHref = await mobileActive.getAttribute("href");
+      expect(desktopHref).toBe(mobileHref);
+    });
+
+    test("should close mobile drawer after clicking TOC link", async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 }); // Mobile viewport
+
+      // Open mobile TOC drawer
+      const toggle = page.locator("#toc-toggle");
+      await toggle.click();
+
+      // Wait for drawer to open
+      await page.waitForTimeout(300);
+
+      // Click first mobile TOC link
+      const mobileLink = page.locator("#toc-nav-mobile a").first();
+      await mobileLink.click();
+
+      // Wait for scroll and drawer close
+      await page.waitForTimeout(1500);
+
+      // Verify drawer is closed (overlay is hidden)
+      const overlay = page.locator("#toc-overlay");
+      await expect(overlay).toHaveClass(/opacity-0/);
+    });
+
+    test("should avoid overlap with back-to-top button on mobile", async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 }); // Mobile viewport
+
+      const toggle = page.locator("#toc-toggle");
+
+      // Check that toggle has bottom style set (to avoid overlap)
+      const bottomStyle = await toggle.evaluate(el => el.style.bottom);
+
+      // On mobile, toggle should have explicit bottom position
+      // Either 112px (when back-to-top could be visible) or 24px (default)
+      expect(bottomStyle).not.toBe("");
+      expect(parseFloat(bottomStyle)).toBeGreaterThan(0);
+    });
+  });
 });

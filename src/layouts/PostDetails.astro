@@ -232,10 +232,27 @@ const layoutProps = {
   <Footer />
 </Layout>
 
-<script is:inline data-astro-rerun>
+<script>
+  import {
+    createThrottledScrollListener,
+    calculateScrollPercent,
+  } from "@/utils/scroll";
+
+  let scrollProgressCleanup: (() => void) | null = null;
+  const progressContainerSelector = ".progress-container";
+
+  function removeProgressBar() {
+    const existing = document.querySelector(progressContainerSelector);
+    if (existing) {
+      existing.remove();
+    }
+  }
+
   /** Create a progress indicator
    *  at the top */
   function createProgressBar() {
+    if (document.querySelector(progressContainerSelector)) return;
+
     // Create the main container div
     const progressContainer = document.createElement("div");
     progressContainer.className =
@@ -252,28 +269,46 @@ const layoutProps = {
     // Append the progress container to the document body or any other desired parent element
     document.body.appendChild(progressContainer);
   }
-  createProgressBar();
 
   /** Update the progress bar
    *  when user scrolls */
   function updateScrollProgress() {
-    document.addEventListener("scroll", () => {
-      const winScroll =
-        document.body.scrollTop || document.documentElement.scrollTop;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      if (document) {
-        const myBar = document.getElementById("myBar");
-        if (myBar) {
-          myBar.style.width = scrolled + "%";
-        }
-      }
-    });
-  }
-  updateScrollProgress();
+    if (scrollProgressCleanup) {
+      scrollProgressCleanup();
+      scrollProgressCleanup = null;
+    }
 
+    const updateProgress = () => {
+      const scrollPercent = calculateScrollPercent();
+      const myBar = document.getElementById("myBar");
+      if (myBar) {
+        myBar.style.width = `${scrollPercent}%`;
+      }
+    };
+
+    updateProgress();
+    scrollProgressCleanup = createThrottledScrollListener(
+      document,
+      updateProgress
+    );
+  }
+
+  function initProgressBar() {
+    removeProgressBar();
+    createProgressBar();
+    updateScrollProgress();
+  }
+
+  initProgressBar();
+
+  /* Go to page start after page swap */
+  document.addEventListener("astro:after-swap", () => {
+    initProgressBar();
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+  });
+</script>
+
+<script is:inline data-astro-rerun>
   /** Attaches links to headings in the document,
    *  allowing sharing of sections easily */
   function addHeadingLinks() {
@@ -346,9 +381,4 @@ const layoutProps = {
     }
   }
   attachCopyButtons();
-
-  /* Go to page start after page swap */
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
-  );
 </script>
