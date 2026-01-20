@@ -164,6 +164,20 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       return;
     }
 
+    const parseCookieSettings = (value: string | null) => {
+      if (!value) return {};
+      try {
+        const parsed = JSON.parse(value);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          return parsed as Record<string, unknown>;
+        }
+      } catch {
+        // Clear invalid data to avoid repeated parse failures.
+        localStorage.removeItem("cookie-settings");
+      }
+      return {};
+    };
+
     // Check if cookie preferences have been set
     const cookieConsent = localStorage.getItem("cookie-consent");
     if (!cookieConsent) {
@@ -172,13 +186,15 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 
     // Load saved settings
     const savedSettings = localStorage.getItem("cookie-settings");
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      if (analyticsCheckbox)
-        analyticsCheckbox.checked = settings.analytics || false;
-      if (advertisingCheckbox)
-        advertisingCheckbox.checked = settings.advertising || false;
-    }
+    const settings = parseCookieSettings(savedSettings);
+    if (analyticsCheckbox)
+      analyticsCheckbox.checked =
+        typeof settings.analytics === "boolean" ? settings.analytics : false;
+    if (advertisingCheckbox)
+      advertisingCheckbox.checked =
+        typeof settings.advertising === "boolean"
+          ? settings.advertising
+          : false;
 
     // Accept all button
     acceptBtn.addEventListener("click", () => {
@@ -263,10 +279,9 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 
     // Check existing consent state and load corresponding scripts
     if (cookieConsent) {
-      const settings = JSON.parse(savedSettings || "{}");
       loadOptionalCookies(
-        settings.analytics || false,
-        settings.advertising || false
+        typeof settings.analytics === "boolean" ? settings.analytics : false,
+        typeof settings.advertising === "boolean" ? settings.advertising : false
       );
     }
   }
