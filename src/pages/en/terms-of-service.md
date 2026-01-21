@@ -4,7 +4,7 @@ title: "Terms of Service"
 description: "Review the terms and conditions for using Gaazeon's blog and related resources."
 ---
 
-_Last updated: June 2025_
+**Last updated:** June 15, 2025
 
 By accessing or using this site, you agree to the terms below.
 
@@ -29,4 +29,4 @@ The blog may link to third-party resources. We are not responsible for the conte
 
 These terms may change without prior notice. Significant updates will be highlighted on the blog, and the “Last updated” date will be adjusted.
 
-If you disagree with any part of these terms, please discontinue use of the site. For questions, reach out to [gaazeon@gaazeon.com].
+If you disagree with any part of these terms, please discontinue use of the site. For questions, reach out to [gaazeon@gaazeon.com](mailto:gaazeon@gaazeon.com).
