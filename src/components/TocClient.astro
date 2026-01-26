@@ -4,10 +4,7 @@
 
 <script>
   import { extractTocFromDOM } from "@/utils/extractToc";
-  import {
-    createThrottledScrollListener,
-    createTocClickHandler,
-  } from "@/utils/scroll";
+  import { createTocClickHandler } from "@/utils/scroll";
 
   // TOC item type definition
   type TocItem = {
@@ -396,49 +393,81 @@
     };
 
     // Avoid overlapping with the bottom-right "Back To Top" button
+    // FastDOM pattern: separate read and write phases to avoid forced reflow
+    //
+    // Throttling state
+    let rafId: number | null = null;
+    let needsUpdate = false;
+
     const avoidOverlap = () => {
       if (!toggle) return;
-      const backTop = document.querySelector('[data-button="back-to-top"]');
-      const btnContainer = document.querySelector("#btt-btn-container");
 
-      // Default bottom spacing: 1.5rem (24px)
-      let bottom = 24;
+      // Schedule update if not already scheduled
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          // Phase 1: READ all layout information in current frame
+          const backTop = document.querySelector('[data-button="back-to-top"]');
+          const btnContainer = document.querySelector("#btt-btn-container");
 
-      // Fixed safe bottom spacing on mobile to avoid jitter while scrolling
-      const isMobile = window.innerWidth < 640;
-      if (isMobile) {
-        bottom = 112; // 7rem, reliably avoids Back To Top
-        toggle.style.bottom = `${bottom}px`;
-        return;
-      }
+          // Default bottom spacing: 1.5rem (24px)
+          let bottom = 24;
 
-      // Check if Back To Top exists and is visible
-      if (backTop && btnContainer) {
-        const toggleRect = toggle.getBoundingClientRect();
-        const backTopRect = btnContainer.getBoundingClientRect();
+          // Fixed safe bottom spacing on mobile to avoid jitter while scrolling
+          const isMobile = window.innerWidth < 640;
+          if (isMobile) {
+            bottom = 112; // 7rem, reliably avoids Back To Top
+            // Phase 2: WRITE all style changes
+            toggle.style.bottom = `${bottom}px`;
+            rafId = null;
 
-        // Check Back To Top visibility (opaque and correctly positioned)
-        const isBackTopVisible =
-          !btnContainer.classList.contains("opacity-0") &&
-          !btnContainer.classList.contains("translate-y-14");
-
-        if (isBackTopVisible) {
-          // Calculate overlap
-          const overlap = !(
-            toggleRect.right < backTopRect.left ||
-            toggleRect.left > backTopRect.right ||
-            toggleRect.bottom < backTopRect.top ||
-            toggleRect.top > backTopRect.bottom
-          );
-
-          if (overlap) {
-            // If overlapping, adjust spacing based on screen size
-            bottom = 96; // Desktop: 6rem
+            // Check if another update was requested during this frame
+            if (needsUpdate) {
+              needsUpdate = false;
+              avoidOverlap();
+            }
+            return;
           }
-        }
-      }
 
-      toggle.style.bottom = `${bottom}px`;
+          // Check if Back To Top exists and is visible
+          if (backTop && btnContainer) {
+            const toggleRect = toggle.getBoundingClientRect();
+            const backTopRect = btnContainer.getBoundingClientRect();
+
+            // Check Back To Top visibility (opaque and correctly positioned)
+            const isBackTopVisible =
+              !btnContainer.classList.contains("opacity-0") &&
+              !btnContainer.classList.contains("translate-y-14");
+
+            if (isBackTopVisible) {
+              // Calculate overlap
+              const overlap = !(
+                toggleRect.right < backTopRect.left ||
+                toggleRect.left > backTopRect.right ||
+                toggleRect.bottom < backTopRect.top ||
+                toggleRect.top > backTopRect.bottom
+              );
+
+              if (overlap) {
+                // If overlapping, adjust spacing based on screen size
+                bottom = 96; // Desktop: 6rem
+              }
+            }
+          }
+
+          // Phase 2: WRITE all style changes
+          toggle.style.bottom = `${bottom}px`;
+          rafId = null;
+
+          // Check if another update was requested during this frame
+          if (needsUpdate) {
+            needsUpdate = false;
+            avoidOverlap();
+          }
+        });
+      } else {
+        // Mark that update is needed after current frame completes
+        needsUpdate = true;
+      }
     };
 
     // Initial invocation
@@ -450,10 +479,11 @@
       window.removeEventListener("resize", avoidOverlap);
     };
 
-    // Listen for scroll; Back To Top visibility depends on it (use unified RAF throttling)
-    scrollCleanup = createThrottledScrollListener(window, avoidOverlap, {
-      passive: true,
-    });
+    // Listen for scroll; Back To Top visibility depends on it (use RAF throttling)
+    window.addEventListener("scroll", avoidOverlap, { passive: true });
+    scrollCleanup = () => {
+      window.removeEventListener("scroll", avoidOverlap);
+    };
 
     // Observe Back To Top container class changes to react to visibility toggles
     if (window.MutationObserver) {
