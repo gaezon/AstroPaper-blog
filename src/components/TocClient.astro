@@ -149,6 +149,10 @@
   const scrollingState = { value: false };
   const scrollTimeoutRef = { value: null as number | null };
 
+  // RAF throttling state for avoidOverlap (module scope for consistent lifecycle)
+  let overlapRafId: number | null = null;
+  let overlapNeedsUpdate = false;
+
   // Store cleanup functions to prevent duplicate bindings
   let scrollCleanup: (() => void) | null = null;
   let resizeCleanup: (() => void) | null = null;
@@ -394,20 +398,15 @@
 
     // Avoid overlapping with the bottom-right "Back To Top" button
     // FastDOM pattern: separate read and write phases to avoid forced reflow
-    //
-    // Throttling state
-    let rafId: number | null = null;
-    let needsUpdate = false;
-
     const avoidOverlap = () => {
       if (!toggle) return;
 
       // Schedule update if not already scheduled
-      if (rafId === null) {
-        rafId = requestAnimationFrame(() => {
+      if (overlapRafId === null) {
+        overlapRafId = requestAnimationFrame(() => {
           // Defensive: check if element still exists (may be removed during route navigation)
           if (!toggle) {
-            rafId = null;
+            overlapRafId = null;
             return;
           }
 
@@ -452,15 +451,15 @@
           toggle.style.bottom = `${bottom}px`;
 
           // Unified cleanup: reset state and process pending update
-          rafId = null;
-          if (needsUpdate) {
-            needsUpdate = false;
+          overlapRafId = null;
+          if (overlapNeedsUpdate) {
+            overlapNeedsUpdate = false;
             avoidOverlap();
           }
         });
       } else {
         // Mark that update is needed after current frame completes
-        needsUpdate = true;
+        overlapNeedsUpdate = true;
       }
     };
 
@@ -472,9 +471,9 @@
     resizeCleanup = () => {
       window.removeEventListener("resize", avoidOverlap);
       // Cancel pending RAF to prevent memory leaks and cross-event interference
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
+      if (overlapRafId !== null) {
+        cancelAnimationFrame(overlapRafId);
+        overlapRafId = null;
       }
     };
 
@@ -483,9 +482,9 @@
     scrollCleanup = () => {
       window.removeEventListener("scroll", avoidOverlap);
       // Cancel pending RAF to prevent memory leaks
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
+      if (overlapRafId !== null) {
+        cancelAnimationFrame(overlapRafId);
+        overlapRafId = null;
       }
     };
 
