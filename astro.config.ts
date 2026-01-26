@@ -19,6 +19,20 @@ import {
   darkThemeColors,
   lightThemeColors,
 } from "./src/utils/mermaidTheme";
+import { unifiedCommentPaths } from "./src/utils/generated/bilingualMapping";
+
+// Create a lookup map for bilingual posts
+// Key: path without trailing slash
+// Value: { zh: string, en: string } paths with trailing slashes
+const bilingualPostMap = new Map<string, { zh: string; en: string }>();
+
+if (typeof unifiedCommentPaths === "object") {
+  Object.values(unifiedCommentPaths).forEach(({ zhPath, enPath }) => {
+    // Store paths without trailing slash for matching
+    bilingualPostMap.set(zhPath.replace(/\/$/, ""), { zh: zhPath, en: enPath });
+    bilingualPostMap.set(enPath.replace(/\/$/, ""), { zh: zhPath, en: enPath });
+  });
+}
 
 // https://astro.build/config
 // Enable build-time mermaid rendering only in GitHub Actions where Playwright browsers are installed
@@ -55,6 +69,93 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
+      i18n: {
+        defaultLocale: "zh-CN",
+        locales: {
+          "zh-CN": "zh-CN",
+          en: "en",
+        },
+      },
+      serialize(item) {
+        try {
+          const urlObj = new URL(item.url);
+          // Normalize pathname: remove leading/trailing slashes for processing
+          // Note: "/" becomes "" and "/en/" becomes "/en"
+          const path = urlObj.pathname.replace(/\/$/, "");
+
+          // 1. Try exact match in bilingual map (for posts)
+          const mapping = bilingualPostMap.get(path);
+          const siteBase = SITE.website.replace(/\/$/, "");
+
+          if (mapping) {
+            return {
+              ...item,
+              links: [
+                { lang: "zh-CN", url: siteBase + mapping.zh },
+                { lang: "en", url: siteBase + mapping.en },
+                { lang: "x-default", url: siteBase + mapping.zh },
+              ],
+            };
+          }
+
+          // 2. Identify if it's a Single Post that failed exact match
+          // Pagination/List pages: /posts, /posts/2, /en/posts, /en/posts/2
+          const isPagination = /^(\/en)?\/posts(\/\d+)?$/.test(path);
+          // Any post-like path: starts with /posts or /en/posts
+          const isPostPath =
+            path.startsWith("/posts/") || path.startsWith("/en/posts/");
+
+          // If it looks like a post path, but isn't a pagination page, and wasn't found in map
+          // -> It's a single language post. Do NOT generate alternates.
+          if (isPostPath && !isPagination) {
+            return { ...item, links: [] };
+          }
+
+          // 3. Filter Tag Detail pages
+          // Tag details (e.g. /tags/foo) are usually language-specific and inconsistent
+          const isTagDetail = /^(\/en)?\/tags\/[^/]+(\/\d+)?$/.test(path);
+          if (isTagDetail) {
+            return { ...item, links: [] };
+          }
+
+          // 4. Fallback: Structural pages (Home, Tags List, About, Pagination, etc.)
+
+          // Check for English prefix
+          const isEnglish = path === "/en" || path.startsWith("/en/");
+
+          // Get the base path without language prefix
+          const basePath = isEnglish ? path.replace(/^\/en/, "") : path;
+
+          // Construct final URLs ensuring clean slashes
+          // For Chinese (default) and x-default
+          const zhUrl = siteBase + (basePath === "" ? "/" : `${basePath}/`);
+          // For English
+          const enUrl =
+            siteBase + `/en${basePath === "" ? "/" : `${basePath}/`}`;
+
+          return {
+            ...item,
+            links: [
+              {
+                lang: "zh-CN",
+                url: zhUrl,
+              },
+              {
+                lang: "en",
+                url: enUrl,
+              },
+              {
+                lang: "x-default",
+                url: zhUrl,
+              },
+            ],
+          };
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error("Error serializing sitemap item:", item.url, error);
+          return item;
+        }
+      },
     }),
   ],
   output: "static",

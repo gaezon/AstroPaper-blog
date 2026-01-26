@@ -17,6 +17,7 @@
     "lint": "eslint .",
     "validate:meta": "pnpm tsx scripts/validate-meta-descriptions.ts",
     "test:unit": "vitest run",
+    "test:sitemap": "pnpm build && npx playwright test --config=playwright.sitemap.config.ts",
     "prepare": "husky"
   },
   "dependencies": {

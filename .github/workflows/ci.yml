@@ -16,7 +16,7 @@ jobs:
   build:
     name: Code standards & build
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 10 # Playwright 安装 + 构建 + 测试需要更多时间
 
     strategy:
       matrix:
@@ -49,3 +49,9 @@ jobs:
 
       - name: "🚀 Build the project"
         run: pnpm run build
+
+      - name: "🎭 Run Playwright tests"
+        run: pnpm exec playwright test --retries=2
+
+      - name: "🗺️ Run sitemap tests"
+        run: pnpm exec playwright test --config=playwright.sitemap.config.ts --retries=1

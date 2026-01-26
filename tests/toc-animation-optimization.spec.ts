@@ -9,7 +9,7 @@ test.describe("TOC Animation Optimizations", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to a post with TOC
     await page.goto(TEST_POST_PATH);
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await waitForTocReady(page);
   });
 
@@ -61,6 +61,7 @@ test.describe("TOC Animation Optimizations", () => {
     await page.waitForTimeout(300); // Wait for animation to complete
 
     // Start showing
+    await openBtn.waitFor({ state: "visible" });
     await openBtn.click({ force: true });
 
     // During animation, inert should still be present
@@ -96,7 +97,7 @@ test.describe("TOC Animation Optimizations", () => {
     // Enable reduced motion
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(TEST_POST_PATH);
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await waitForTocReady(page);
 
     await page.setViewportSize({ width: 1280, height: 800 });
@@ -210,17 +211,28 @@ test.describe("TOC Animation Optimizations", () => {
     test("should update active state when scrolling", async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 800 });
 
-      // Scroll down to trigger TOC update
-      await page.evaluate(() => {
-        window.scrollTo(0, 500);
-      });
+      // Get the ID of the first heading that is linked in TOC
+      const firstLink = page.locator("#toc-nav a").first();
+      const href = await firstLink.getAttribute("href");
+      const targetId = href?.replace("#", "");
 
-      // Wait longer for IntersectionObserver to trigger
+      // Scroll to the heading + small offset to ensure it intersects
+      await page.evaluate((id) => {
+        const el = document.getElementById(id!);
+        if (el) {
+          el.scrollIntoView();
+          // Scroll up slightly to ensure it's not covered by header if any,
+          // but IntersectionObserver typically works with standard margins.
+          // Let's just wait a bit after scroll.
+        }
+      }, targetId);
+
+      // Wait for IntersectionObserver to trigger (can be async)
       await page.waitForTimeout(1000);
 
-      // Check that some TOC link is active
-      const activeLink = page.locator("#toc-nav a.active").first();
-      await expect(activeLink).toHaveCount(1);
+      // Check that the corresponding link is active
+      const activeLink = page.locator(`#toc-nav a[href="${href}"]`);
+      await expect(activeLink).toHaveClass(/active/);
     });
 
     test("should sync active state between desktop and mobile TOC", async ({
