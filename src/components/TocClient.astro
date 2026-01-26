@@ -456,9 +456,9 @@
 
           // Phase 2: WRITE all style changes
           toggle.style.bottom = `${bottom}px`;
-          rafId = null;
 
-          // Check if another update was requested during this frame
+          // Unified cleanup: reset state and process pending update
+          rafId = null;
           if (needsUpdate) {
             needsUpdate = false;
             avoidOverlap();
@@ -483,6 +483,11 @@
     window.addEventListener("scroll", avoidOverlap, { passive: true });
     scrollCleanup = () => {
       window.removeEventListener("scroll", avoidOverlap);
+      // Cancel pending RAF to prevent memory leaks
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
     };
 
     // Observe Back To Top container class changes to react to visibility toggles
