@@ -405,6 +405,12 @@
       // Schedule update if not already scheduled
       if (rafId === null) {
         rafId = requestAnimationFrame(() => {
+          // Defensive: check if element still exists (may be removed during route navigation)
+          if (!toggle) {
+            rafId = null;
+            return;
+          }
+
           // Phase 1: READ all layout information in current frame
           const backTop = document.querySelector('[data-button="back-to-top"]');
           const btnContainer = document.querySelector("#btt-btn-container");
@@ -416,20 +422,8 @@
           const isMobile = window.innerWidth < 640;
           if (isMobile) {
             bottom = 112; // 7rem, reliably avoids Back To Top
-            // Phase 2: WRITE all style changes
-            toggle.style.bottom = `${bottom}px`;
-            rafId = null;
-
-            // Check if another update was requested during this frame
-            if (needsUpdate) {
-              needsUpdate = false;
-              avoidOverlap();
-            }
-            return;
-          }
-
-          // Check if Back To Top exists and is visible
-          if (backTop && btnContainer) {
+          } else if (backTop && btnContainer) {
+            // Desktop: Check if Back To Top exists and is visible
             const toggleRect = toggle.getBoundingClientRect();
             const backTopRect = btnContainer.getBoundingClientRect();
 
@@ -477,6 +471,11 @@
     window.addEventListener("resize", avoidOverlap);
     resizeCleanup = () => {
       window.removeEventListener("resize", avoidOverlap);
+      // Cancel pending RAF to prevent memory leaks and cross-event interference
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
     };
 
     // Listen for scroll; Back To Top visibility depends on it (use RAF throttling)
