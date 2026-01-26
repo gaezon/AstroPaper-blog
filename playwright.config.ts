@@ -2,9 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  testIgnore: ['**/unit/**'],
+  testIgnore: ['**/unit/**', '**/sitemap.spec.ts'], // sitemap 测试需要构建产物，使用 pnpm test:sitemap 运行
   fullyParallel: true,
-  retries: 0,
+  retries: 0, // 本地不重试；CI 通过 --retries 参数覆盖
   use: {
     baseURL: 'http://127.0.0.1:4321',
     trace: 'on-first-retry',
