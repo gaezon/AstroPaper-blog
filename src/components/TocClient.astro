@@ -4,10 +4,7 @@
 
 <script>
   import { extractTocFromDOM } from "@/utils/extractToc";
-  import {
-    createThrottledScrollListener,
-    createTocClickHandler,
-  } from "@/utils/scroll";
+  import { createTocClickHandler } from "@/utils/scroll";
 
   // TOC item type definition
   type TocItem = {
@@ -152,6 +149,22 @@
   const scrollingState = { value: false };
   const scrollTimeoutRef = { value: null as number | null };
 
+  // RAF throttling state for avoidOverlap (module scope for consistent lifecycle)
+  let overlapRafId: number | null = null;
+  let overlapNeedsUpdate = false;
+
+  /**
+   * Reset RAF throttling state to prevent memory leaks and state corruption.
+   * Should be called in all cleanup paths.
+   */
+  function resetOverlapState(): void {
+    if (overlapRafId !== null) {
+      cancelAnimationFrame(overlapRafId);
+      overlapRafId = null;
+    }
+    overlapNeedsUpdate = false;
+  }
+
   // Store cleanup functions to prevent duplicate bindings
   let scrollCleanup: (() => void) | null = null;
   let resizeCleanup: (() => void) | null = null;
@@ -216,6 +229,9 @@
       overlayClickCleanup();
       overlayClickCleanup = null;
     }
+
+    // Reset RAF state to prevent memory leaks
+    resetOverlapState();
   }
 
   function setupScrollObserver(): void {
@@ -396,49 +412,70 @@
     };
 
     // Avoid overlapping with the bottom-right "Back To Top" button
+    // FastDOM pattern: separate read and write phases to avoid forced reflow
     const avoidOverlap = () => {
       if (!toggle) return;
-      const backTop = document.querySelector('[data-button="back-to-top"]');
-      const btnContainer = document.querySelector("#btt-btn-container");
 
-      // Default bottom spacing: 1.5rem (24px)
-      let bottom = 24;
-
-      // Fixed safe bottom spacing on mobile to avoid jitter while scrolling
-      const isMobile = window.innerWidth < 640;
-      if (isMobile) {
-        bottom = 112; // 7rem, reliably avoids Back To Top
-        toggle.style.bottom = `${bottom}px`;
-        return;
-      }
-
-      // Check if Back To Top exists and is visible
-      if (backTop && btnContainer) {
-        const toggleRect = toggle.getBoundingClientRect();
-        const backTopRect = btnContainer.getBoundingClientRect();
-
-        // Check Back To Top visibility (opaque and correctly positioned)
-        const isBackTopVisible =
-          !btnContainer.classList.contains("opacity-0") &&
-          !btnContainer.classList.contains("translate-y-14");
-
-        if (isBackTopVisible) {
-          // Calculate overlap
-          const overlap = !(
-            toggleRect.right < backTopRect.left ||
-            toggleRect.left > backTopRect.right ||
-            toggleRect.bottom < backTopRect.top ||
-            toggleRect.top > backTopRect.bottom
-          );
-
-          if (overlap) {
-            // If overlapping, adjust spacing based on screen size
-            bottom = 96; // Desktop: 6rem
+      // Schedule update if not already scheduled
+      if (overlapRafId === null) {
+        overlapRafId = requestAnimationFrame(() => {
+          // Defensive: check if element still exists (may be removed during route navigation)
+          if (!toggle) {
+            overlapRafId = null;
+            return;
           }
-        }
-      }
 
-      toggle.style.bottom = `${bottom}px`;
+          // Phase 1: READ all layout information in current frame
+          const backTop = document.querySelector('[data-button="back-to-top"]');
+          const btnContainer = document.querySelector("#btt-btn-container");
+
+          // Default bottom spacing: 1.5rem (24px)
+          let bottom = 24;
+
+          // Fixed safe bottom spacing on mobile to avoid jitter while scrolling
+          const isMobile = window.innerWidth < 640;
+          if (isMobile) {
+            bottom = 112; // 7rem, reliably avoids Back To Top
+          } else if (backTop && btnContainer) {
+            // Desktop: Check if Back To Top exists and is visible
+            const toggleRect = toggle.getBoundingClientRect();
+            const backTopRect = btnContainer.getBoundingClientRect();
+
+            // Check Back To Top visibility (opaque and correctly positioned)
+            const isBackTopVisible =
+              !btnContainer.classList.contains("opacity-0") &&
+              !btnContainer.classList.contains("translate-y-14");
+
+            if (isBackTopVisible) {
+              // Calculate overlap
+              const overlap = !(
+                toggleRect.right < backTopRect.left ||
+                toggleRect.left > backTopRect.right ||
+                toggleRect.bottom < backTopRect.top ||
+                toggleRect.top > backTopRect.bottom
+              );
+
+              if (overlap) {
+                // If overlapping, adjust spacing based on screen size
+                bottom = 96; // Desktop: 6rem
+              }
+            }
+          }
+
+          // Phase 2: WRITE all style changes
+          toggle.style.bottom = `${bottom}px`;
+
+          // Unified cleanup: reset state and process pending update
+          overlapRafId = null;
+          if (overlapNeedsUpdate) {
+            overlapNeedsUpdate = false;
+            avoidOverlap();
+          }
+        });
+      } else {
+        // Mark that update is needed after current frame completes
+        overlapNeedsUpdate = true;
+      }
     };
 
     // Initial invocation
@@ -448,12 +485,15 @@
     window.addEventListener("resize", avoidOverlap);
     resizeCleanup = () => {
       window.removeEventListener("resize", avoidOverlap);
+      resetOverlapState();
     };
 
-    // Listen for scroll; Back To Top visibility depends on it (use unified RAF throttling)
-    scrollCleanup = createThrottledScrollListener(window, avoidOverlap, {
-      passive: true,
-    });
+    // Listen for scroll; Back To Top visibility depends on it (use inline RAF throttling)
+    window.addEventListener("scroll", avoidOverlap, { passive: true });
+    scrollCleanup = () => {
+      window.removeEventListener("scroll", avoidOverlap);
+      resetOverlapState();
+    };
 
     // Observe Back To Top container class changes to react to visibility toggles
     if (window.MutationObserver) {
