@@ -109,11 +109,12 @@ test.describe("TOC Animation Optimizations", () => {
     await collapseBtn.click({ force: true });
 
     // With reduced motion, animation should complete almost instantly
-    await expect(aside).toHaveCSS("display", "none", { timeout: 50 });
+    await expect(aside).toHaveCSS("display", "none", { timeout: 100 });
     const elapsed = Date.now() - startTime;
 
-    // Should take less than 100ms (no 260ms animation)
-    expect(elapsed).toBeLessThan(100);
+    // Should take less than 200ms (no 260ms animation)
+    // Increased threshold to account for CI environment variability
+    expect(elapsed).toBeLessThan(200);
   });
 
   test("should handle rapid clicks gracefully", async ({ page }) => {

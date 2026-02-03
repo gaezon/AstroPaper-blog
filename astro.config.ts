@@ -14,6 +14,7 @@ import { SITE } from "./src/config";
 import { getI18nCollapseConfig, tocConfig } from "./src/config/remark";
 import vercel from "@astrojs/vercel";
 import rehypeMermaid from "rehype-mermaid";
+import rehypeImageSize from "./src/utils/rehype-image-size";
 import {
   createThemeVariables,
   darkThemeColors,
@@ -175,6 +176,8 @@ export default defineConfig({
     rehypePlugins: [
       // Build-time Mermaid rendering in GitHub Actions; falls back to client-side rendering in other environments
       ...mermaidConfig,
+      // Add width/height attributes to images to prevent CLS
+      rehypeImageSize,
     ],
     syntaxHighlight: {
       excludeLangs: ["mermaid"],
