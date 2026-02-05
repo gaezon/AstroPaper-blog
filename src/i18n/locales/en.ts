@@ -184,6 +184,11 @@ export default {
         description:
           "Used to deliver personalized advertisements and measure campaign performance.",
       },
+      status: {
+        accepted: "All cookies accepted",
+        rejected: "Only essential cookies accepted",
+        saved: "Cookie settings saved",
+      },
     },
   },
 

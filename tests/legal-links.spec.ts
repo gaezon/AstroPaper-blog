@@ -9,7 +9,9 @@ const LEGAL_LINK_HREFS = [
 
 async function assertLegalLinks(page: Page, localeUrl: string) {
   await page.goto(localeUrl);
-  const anchors = page.locator('.legal-links a');
+  const anchors = page.locator(
+    '.legal-links a:not([data-cookie-settings-trigger])'
+  );
   await expect(anchors).toHaveCount(LEGAL_LINK_HREFS.length);
 
   for (const hrefEnding of LEGAL_LINK_HREFS) {

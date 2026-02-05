@@ -9,7 +9,7 @@ test.describe("TOC Animation Optimizations", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to a post with TOC
     await page.goto(TEST_POST_PATH);
-    await page.waitForLoadState("domcontentloaded");
+    await page.waitForLoadState("load");
     await waitForTocReady(page);
   });
 
@@ -97,7 +97,7 @@ test.describe("TOC Animation Optimizations", () => {
     // Enable reduced motion
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(TEST_POST_PATH);
-    await page.waitForLoadState("domcontentloaded");
+    await page.waitForLoadState("load");
     await waitForTocReady(page);
 
     await page.setViewportSize({ width: 1280, height: 800 });
@@ -218,18 +218,24 @@ test.describe("TOC Animation Optimizations", () => {
       const targetId = href?.replace("#", "");
 
       // Scroll to the heading + small offset to ensure it intersects
-      await page.evaluate((id) => {
+      await page.evaluate(id => {
         const el = document.getElementById(id!);
         if (el) {
           el.scrollIntoView();
-          // Scroll up slightly to ensure it's not covered by header if any,
-          // but IntersectionObserver typically works with standard margins.
-          // Let's just wait a bit after scroll.
+          window.dispatchEvent(new Event("scroll"));
         }
       }, targetId);
 
-      // Wait for IntersectionObserver to trigger (can be async)
-      await page.waitForTimeout(1000);
+      await page.waitForFunction(
+        linkHref => {
+          const link = document.querySelector(
+            `#toc-nav a[href="${linkHref}"]`
+          );
+          return Boolean(link?.classList.contains("active"));
+        },
+        href,
+        { timeout: 5000 }
+      );
 
       // Check that the corresponding link is active
       const activeLink = page.locator(`#toc-nav a[href="${href}"]`);

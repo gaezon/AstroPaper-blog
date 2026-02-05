@@ -181,6 +181,11 @@ export default {
         title: "广告 Cookies",
         description: "用于显示个性化广告和衡量广告效果。",
       },
+      status: {
+        accepted: "已接受所有 Cookies",
+        rejected: "仅接受必要 Cookies",
+        saved: "Cookie 设置已保存",
+      },
     },
   },
 

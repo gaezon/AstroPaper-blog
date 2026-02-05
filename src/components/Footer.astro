@@ -57,6 +57,13 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       </a>
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
+        href="#cookie-settings"
+        data-cookie-settings-trigger
+      >
+        {tr("ui.cookie.settings")}
+      </a>
+      <a
+        class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
         href={localeUrl("/terms-of-service")}
       >
         {tr("ui.termsOfService")}
