@@ -27,7 +27,7 @@ test.describe("Mermaid Build-Time Rendering", () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto(TEST_POST_PATH);
-        await page.waitForLoadState("domcontentloaded");
+        await page.waitForLoadState("load");
     });
 
     test("should render mermaid diagrams as <picture> elements with inline SVG", async ({
@@ -133,7 +133,7 @@ test.describe("Mermaid No Client-Side JavaScript", () => {
         });
 
         await page.goto(TEST_POST_PATH);
-        await page.waitForLoadState("domcontentloaded");
+        await page.waitForLoadState("load");
 
         // Should not have any requests for mermaid JavaScript
         expect(mermaidRequests).toHaveLength(0);
@@ -149,7 +149,7 @@ test.describe("Mermaid No Client-Side JavaScript", () => {
         });
 
         await page.goto(TEST_POST_PATH);
-        await page.waitForLoadState("domcontentloaded");
+        await page.waitForLoadState("load");
 
         // Should not have any MermaidClient logs (no client-side rendering)
         expect(mermaidLogs).toHaveLength(0);
@@ -164,7 +164,7 @@ test.describe("Mermaid Multiple Diagrams", () => {
 
     test("should render multiple diagrams on the same page", async ({ page }) => {
         await page.goto(TEST_POST_PATH);
-        await page.waitForLoadState("domcontentloaded");
+        await page.waitForLoadState("load");
 
         const pictures = page.locator("picture");
         const count = await pictures.count();
@@ -185,7 +185,7 @@ test.describe("Mermaid Multiple Diagrams", () => {
 
     test("should have unique IDs for each mermaid diagram", async ({ page }) => {
         await page.goto(TEST_POST_PATH);
-        await page.waitForLoadState("domcontentloaded");
+        await page.waitForLoadState("load");
 
         const pictures = page.locator("picture");
         const count = await pictures.count();
