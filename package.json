@@ -12,6 +12,8 @@
     "i18n:scaffold-en": "tsx scripts/create-english-drafts.ts",
     "generate:bilingual-mapping": "pnpm tsx scripts/auto-discover-bilingual.ts",
     "fetch:image-sizes": "pnpm tsx scripts/fetch-image-sizes.ts",
+    "twikoo:sri:update": "pnpm tsx scripts/manage-twikoo-sri.ts",
+    "twikoo:sri:check": "pnpm tsx scripts/manage-twikoo-sri.ts --check",
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
