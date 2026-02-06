@@ -1,5 +1,7 @@
 ---
 import { getLangTag } from "@/i18n/utils";
+import { TWIKOO_CDN_URL } from "@/config/twikoo";
+import { TWIKOO_SRI } from "@/utils/generated/twikooSRI";
 import type { CollectionEntry } from "astro:content";
 
 // Try to import dynamically generated mapping (Phase II)
@@ -90,17 +92,49 @@ const getCommentPath = () => {
 const commentPath = getCommentPath();
 ---
 
-<div id="tcomment"></div>
+<div
+  id="tcomment"
+  data-twikoo-cdn={TWIKOO_CDN_URL}
+  data-twikoo-sri={TWIKOO_SRI}
+>
+</div>
 
-<script is:inline define:vars={{ langTag, commentId, commentPath }}>
+<script
+  is:inline
+  define:vars={{
+    langTag,
+    commentId,
+    commentPath,
+  }}
+>
   document.addEventListener("astro:page-load", () => {
     function loadTwikoo() {
       const commentsContainer = document.getElementById("tcomment");
       if (commentsContainer) {
+        const twikooCdnUrl = commentsContainer.dataset.twikooCdn;
+        const twikooSri = commentsContainer.dataset.twikooSri;
+        const loadErrorMessage =
+          langTag === "zh-CN"
+            ? "评论系统加载失败，请稍后重试。"
+            : "Failed to load the comment system. Please try again later.";
+
+        const showCommentLoadError = () => {
+          commentsContainer.setAttribute("role", "status");
+          commentsContainer.textContent = loadErrorMessage;
+        };
+
+        if (!twikooCdnUrl) {
+          showCommentLoadError();
+          return;
+        }
+
         const script = document.createElement("script");
-        script.src =
-          "https://cdn.staticfile.org/twikoo/1.6.44/twikoo.all.min.js";
+        script.src = twikooCdnUrl;
         script.async = true;
+        script.crossOrigin = "anonymous";
+        if (twikooSri) {
+          script.integrity = twikooSri;
+        }
         script.onload = () => {
           // Build Twikoo configuration
           const twikooConfig = {
@@ -116,10 +150,14 @@ const commentPath = getCommentPath();
             twikooConfig.path = commentPath;
           }
 
-          const initScript = document.createElement("script");
-          initScript.innerHTML =
-            "twikoo.init(" + JSON.stringify(twikooConfig) + ");";
-          document.body.appendChild(initScript);
+          if (window.twikoo && typeof window.twikoo.init === "function") {
+            window.twikoo.init(twikooConfig);
+          } else {
+            showCommentLoadError();
+          }
+        };
+        script.onerror = () => {
+          showCommentLoadError();
         };
         document.body.appendChild(script);
       }
