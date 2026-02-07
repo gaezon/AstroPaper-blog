@@ -17,7 +17,8 @@
 ## Build, Test, and Development Commands
 
 - `pnpm dev` launches the Astro dev server with hot reload.
-- `pnpm build` runs type checks, generates bilingual mappings, builds the site, and prepares Pagefind search assets.
+- `pnpm build` runs a fast local build (no type check): generates bilingual mappings, builds the site, and prepares Pagefind search assets.
+- `pnpm build:strict` runs the full CI-equivalent build with `astro check` + site build + Pagefind.
 - `pnpm preview` serves the production build locally.
 - `pnpm lint`, `pnpm format`, and `pnpm format:check` enforce ESLint and Prettier rules.
 - `pnpm exec playwright test` runs the end-to-end suite; append `--headed` for debug runs.
@@ -69,10 +70,10 @@
 - Follow Conventional Commits seen in history (`feat`, `fix`, `chore`, `docs`), adding scopes when helpful (e.g., `feat(toc): ...`).
 - Keep messages imperative and ≤72 characters; elaborate in the body if context is non-obvious.
 - PRs should summarize changes, list testing performed, and link issues or discussions. Attach before/after screenshots for visual updates.
-- Ensure `pnpm build`, `pnpm lint`, and required Playwright checks pass locally before requesting review.
+- Ensure `pnpm build:strict`, `pnpm lint`, and required Playwright checks pass locally before requesting review.
 
 ### Pull Request Checklist
-- [ ] Run `pnpm build` and verify no errors
+- [ ] Run `pnpm build:strict` and verify no errors
 - [ ] Run `pnpm lint` and `pnpm format:check`
 - [ ] Run `pnpm exec playwright test` for affected features
 - [ ] Update documentation if needed (CLAUDE.md, AGENTS.md, or feature docs)

@@ -111,73 +111,78 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
   return out;
 }
 
-const USE_LOCAL_FONTS_FIRST = process.env.OG_ALLOW_LOCAL_FONTS !== "false";
-const ALLOW_LOCAL_FALLBACK = process.env.OG_DISABLE_LOCAL_FALLBACK !== "true";
+const localFontCache = new Map<string, Promise<ArrayBuffer | null>>();
 
 async function tryLoadLocalFont(
   fontName: string,
-  weight: number,
-  force = false
+  weight: number
 ): Promise<ArrayBuffer | null> {
-  if (!force && !USE_LOCAL_FONTS_FIRST) return null;
-
-  try {
-    const candidates: string[] = [];
-
-    if (fontName.includes("IBM+Plex+Sans")) {
-      // Prefer any local TTF/OTF if available (rare in @fontsource), otherwise skip
-      candidates.push(
-        `node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-${weight}-normal.woff`,
-        `node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-${weight}-normal.woff`,
-        `public/fonts/ibm-plex-sans-${weight}.woff`,
-        `public/fonts/ibm-plex-sans-${weight}.ttf`
-      );
-    } else if (fontName.includes("Noto+Sans+SC")) {
-      candidates.push(
-        `node_modules/@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-${weight}-normal.woff`,
-        `public/fonts/noto-sans-sc-${weight}.woff`,
-        `public/fonts/noto-sans-sc-${weight}.ttf`
-      );
-    } else if (fontName.includes("Noto+Sans")) {
-      candidates.push(
-        `node_modules/@fontsource/noto-sans/files/noto-sans-latin-${weight}-normal.woff`,
-        `public/fonts/noto-sans-${weight}.woff`,
-        `public/fonts/noto-sans-${weight}.ttf`
-      );
-    }
-
-    for (const rel of candidates) {
-      const fontPath = path.resolve(process.cwd(), rel);
+  const cacheKey = `${fontName}:${weight}`;
+  let loadPromise = localFontCache.get(cacheKey);
+  if (!loadPromise) {
+    loadPromise = (async () => {
       try {
-        await fs.access(fontPath);
-        const fontBuffer = await fs.readFile(fontPath);
-        const tag = fontBuffer.toString("ascii", 0, 4);
-        let usable: Buffer | null = null;
+        const candidates: string[] = [];
 
-        if (tag === "\x00\x01\x00\x00" || tag === "OTTO") {
-          usable = fontBuffer;
-        } else if (tag === "wOFF") {
-          usable = convertWoffToTtf(fontBuffer);
+        if (fontName.includes("IBM+Plex+Sans")) {
+          // Prefer any local TTF/OTF if available (rare in @fontsource), otherwise skip
+          candidates.push(
+            `node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-${weight}-normal.woff`,
+            `node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-${weight}-normal.woff`,
+            `public/fonts/ibm-plex-sans-${weight}.woff`,
+            `public/fonts/ibm-plex-sans-${weight}.ttf`
+          );
+        } else if (fontName.includes("Noto+Sans+SC")) {
+          candidates.push(
+            `node_modules/@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-${weight}-normal.woff`,
+            `public/fonts/noto-sans-sc-${weight}.woff`,
+            `public/fonts/noto-sans-sc-${weight}.ttf`
+          );
+        } else if (fontName.includes("Noto+Sans")) {
+          candidates.push(
+            `node_modules/@fontsource/noto-sans/files/noto-sans-latin-${weight}-normal.woff`,
+            `public/fonts/noto-sans-${weight}.woff`,
+            `public/fonts/noto-sans-${weight}.ttf`
+          );
         }
 
-        if (usable) {
-          const view = usable.subarray(0);
-          const arrayBuffer = view.buffer.slice(
-            view.byteOffset,
-            view.byteOffset + view.byteLength
-          ) as ArrayBuffer;
-          return arrayBuffer;
+        for (const rel of candidates) {
+          const fontPath = path.resolve(process.cwd(), rel);
+          try {
+            await fs.access(fontPath);
+            const fontBuffer = await fs.readFile(fontPath);
+            const tag = fontBuffer.toString("ascii", 0, 4);
+            let usable: Buffer | null = null;
+
+            if (tag === "\x00\x01\x00\x00" || tag === "OTTO") {
+              usable = fontBuffer;
+            } else if (tag === "wOFF") {
+              usable = convertWoffToTtf(fontBuffer);
+            }
+
+            if (usable) {
+              const view = usable.subarray(0);
+              const arrayBuffer = view.buffer.slice(
+                view.byteOffset,
+                view.byteOffset + view.byteLength
+              ) as ArrayBuffer;
+              return arrayBuffer;
+            }
+          } catch {
+            // try next
+          }
         }
-      } catch {
-        // try next
+
+        return null;
+      } catch (e) {
+        console.error("Error loading local font:", e);
+        return null;
       }
-    }
-
-    return null;
-  } catch (e) {
-    console.error("Error loading local font:", e);
-    return null;
+    })();
+    localFontCache.set(cacheKey, loadPromise);
   }
+
+  return await loadPromise;
 }
 
 async function loadGoogleFont(
@@ -186,17 +191,12 @@ async function loadGoogleFont(
   weight: number
 ): Promise<ArrayBuffer> {
   const tryLocalFallback = async () => {
-    if (!ALLOW_LOCAL_FALLBACK) {
-      return null;
-    }
-    return await tryLoadLocalFont(font, weight, true);
+    return await tryLoadLocalFont(font, weight);
   };
 
-  if (USE_LOCAL_FONTS_FIRST) {
-    const eager = await tryLoadLocalFont(font, weight);
-    if (eager) {
-      return eager;
-    }
+  const eager = await tryLoadLocalFont(font, weight);
+  if (eager) {
+    return eager;
   }
 
   const directSourceKey = `${font}:${weight}`;

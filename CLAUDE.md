@@ -14,7 +14,8 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 
 - `pnpm install` - Install dependencies
 - `pnpm run dev` - Start local development server at localhost:4321
-- `pnpm run build` - Build production site to ./dist/ (includes bilingual mapping generation and build-time Mermaid rendering)
+- `pnpm run build` - Fast local production build to ./dist/ (includes bilingual mapping generation and build-time Mermaid rendering; skips `astro check`)
+- `pnpm run build:strict` - CI-equivalent build with `astro check` + production build + Pagefind index generation
 - `pnpm run preview` - Preview the built site locally
 
 ### Internationalization
@@ -93,7 +94,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 
 ### CI/CD Workflows
 
-- `.github/workflows/ci.yml` - Runs lint, format check, and build on PRs
+- `.github/workflows/ci.yml` - Runs lint, format check, strict build, and tests on PRs
 - `.github/workflows/deploy-preview.yml` - Deploys feature branches to Vercel preview
 
 ## Important Implementation Details
@@ -192,7 +193,7 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 2. **Playwright Browsers**: Installed during CI for Mermaid rendering
 3. **Bilingual Mapping Generation**: Automatic mapping generation included in build
 4. **Pagefind Index Generation**: Search index created after Astro build
-5. **Type Checking**: `astro check` validates TypeScript types
+5. **Type Checking**: `astro check` validates TypeScript types (executed in `pnpm run build:strict`)
 
 ## Documentation
 

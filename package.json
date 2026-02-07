@@ -5,7 +5,8 @@
   "packageManager": "pnpm@10.20.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "pnpm run fetch:image-sizes && pnpm run generate:bilingual-mapping && astro check && astro build && pagefind --site .vercel/output/static",
+    "build": "pnpm run fetch:image-sizes && pnpm run generate:bilingual-mapping && astro build && pagefind --site .vercel/output/static",
+    "build:strict": "pnpm run fetch:image-sizes && pnpm run generate:bilingual-mapping && astro check && astro build && pagefind --site .vercel/output/static",
     "og:preview": "tsx scripts/og-preview.ts",
     "preview": "astro preview",
     "sync": "astro sync",

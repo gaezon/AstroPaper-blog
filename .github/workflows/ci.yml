@@ -38,6 +38,12 @@ jobs:
       - name: "📦 Install dependencies"
         run: pnpm install
 
+      - name: "🗂️ Restore OG image cache"
+        uses: actions/cache@v4
+        with:
+          path: tmp/og-image-cache
+          key: ${{ runner.os }}-og-cache-${{ hashFiles('src/data/blog/**/*.md', 'src/utils/og-templates/*.js', 'src/utils/og-templates/*.ts', 'src/utils/loadGoogleFont.ts', 'src/config.ts', 'package.json', 'pnpm-lock.yaml') }}
+
       - name: "🎭 Install Playwright browsers"
         run: pnpm exec playwright install --with-deps chromium
 
@@ -51,7 +57,7 @@ jobs:
         run: pnpm run twikoo:sri:check
 
       - name: "🚀 Build the project"
-        run: pnpm run build
+        run: pnpm run build:strict
 
       - name: "🎭 Run Playwright tests"
         run: pnpm exec playwright test --retries=2
