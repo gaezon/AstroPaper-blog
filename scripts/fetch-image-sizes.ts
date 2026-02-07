@@ -190,6 +190,8 @@ async function main() {
     console.log("📦 无现有缓存，将创建新缓存\n");
   }
 
+  const isCI = !!process.env.CI || !!process.env.GITHUB_ACTIONS;
+
   // 扫描所有 Markdown 文件
   console.log("🔍 扫描 Markdown 文件...");
   const mdFiles = await scanDirectory(BLOG_DIR);
@@ -202,19 +204,44 @@ async function main() {
     urls.forEach(url => allUrls.add(url));
   }
 
-  console.log(`🌐 发现 ${allUrls.size} 个唯一远程图片\n`);
-
-  // CI 环境检查：禁止网络请求
-  const isCI = !!process.env.CI || !!process.env.GITHUB_ACTIONS;
   const urlsArray = Array.from(allUrls);
-  const needsFetch = urlsArray.filter(
+  console.log(`🌐 发现 ${urlsArray.length} 个唯一远程图片\n`);
+
+  const missingCacheEntries = urlsArray.filter(
     url => !existingCache[url]?.width || !existingCache[url]?.height
   );
 
-  if (isCI && needsFetch.length > 0) {
+  // 仅在非 CI 下允许 mtime 快速跳过；但若缓存存在缺失项仍继续补齐
+  if (!isCI && Object.keys(existingCache).length > 0) {
+    try {
+      const cacheStat = await fs.stat(CACHE_FILE);
+      let latestMTimeMs = 0;
+      for (const file of mdFiles) {
+        const stat = await fs.stat(file);
+        latestMTimeMs = Math.max(latestMTimeMs, stat.mtimeMs);
+      }
+      const count = mdFiles.length;
+
+      if (count > 0 && latestMTimeMs <= cacheStat.mtimeMs) {
+        if (missingCacheEntries.length === 0) {
+          console.log("⏭️  Markdown 未更新，且缓存完整，跳过远程图片尺寸扫描");
+          return;
+        }
+
+        console.log(
+          `⚠️  检测到 ${missingCacheEntries.length} 张图片缓存缺失，将继续补齐`
+        );
+      }
+    } catch {
+      // 忽略 stat 失败并继续完整扫描流程
+    }
+  }
+
+  // CI 环境检查：禁止网络请求
+  if (isCI && missingCacheEntries.length > 0) {
     console.error(`\n❌ CI 环境禁止网络请求！`);
-    console.error(`\n检测到 ${needsFetch.length} 张未缓存的图片：`);
-    needsFetch.forEach(url => console.error(`  - ${url}`));
+    console.error(`\n检测到 ${missingCacheEntries.length} 张未缓存的图片：`);
+    missingCacheEntries.forEach(url => console.error(`  - ${url}`));
     console.error(`\n请在本地运行以下命令后提交更新的缓存文件：`);
     console.error(`  pnpm fetch:image-sizes\n`);
     process.exit(1);
@@ -226,7 +253,7 @@ async function main() {
   let skipped = 0;
   let failed = 0;
 
-  for (const url of allUrls) {
+  for (const url of urlsArray) {
     // 如果缓存中已存在且有效，跳过
     if (existingCache[url]?.width && existingCache[url]?.height) {
       console.log(`  ⏭️  跳过（已缓存）: ${url}`);
