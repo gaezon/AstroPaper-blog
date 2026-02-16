@@ -4,7 +4,7 @@ title: "Cookie Policy"
 description: "Understand how Gaazeon's blog uses cookies and similar technologies to improve your browsing experience."
 ---
 
-_Last updated: June 2025_
+_Last updated: February 2026_
 
 ## 1. What are cookies?
 
@@ -14,7 +14,7 @@ Cookies are small text files stored on your device. They help remember your pref
 
 - **Essential cookies** keep features like theme selection working.
 - **Analytics cookies** (currently optional) help us understand how the site is used.
-- **Advertising cookies** are only enabled if you consent to personalized ads in the future.
+- **Advertising cookies** are currently disabled site-wide. If we enable ad services in the future, we will update this policy and request consent first.
 
 ## 3. Managing your preferences
 
@@ -22,7 +22,7 @@ You can adjust cookie preferences at any time through the cookie banner or the s
 
 ## 4. Third-party services
 
-Services such as Umami analytics are privacy friendly and do not store identifiable information. If additional services are integrated, they will follow the same privacy standards.
+Services such as Umami analytics are privacy friendly and do not store identifiable information. Google AdSense is currently not active on this site. If additional services are integrated, they will follow the same privacy standards.
 
 ## 5. Updates
 

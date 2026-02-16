@@ -4,7 +4,6 @@ import SpeedInsights from "@vercel/speed-insights/astro";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import "@/styles/global.css";
-import GoogleAdsense from "@/components/GoogleAdsense.astro";
 import CookieConsentBanner from "@/components/CookieConsentBanner.astro";
 import {
   getCurrentLocale,
@@ -313,8 +312,6 @@ const siteHostname = new URL(SITE.website).hostname;
     <ClientRouter />
 
     <script is:inline src="/toggle-theme.js"></script>
-    <!-- Google AdSense -->
-    <GoogleAdsense />
 
     {
       import.meta.env.PROD && (

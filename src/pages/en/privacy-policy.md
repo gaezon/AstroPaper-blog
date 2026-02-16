@@ -4,7 +4,7 @@ title: "Privacy Policy"
 description: "Learn how Gaazeon's blog collects, uses, and protects your personal information."
 ---
 
-_Last updated: June 2025_
+_Last updated: February 2026_
 
 ## 1. Information we collect
 
@@ -47,7 +47,7 @@ You may request access to, correction of, or deletion of your personal data. Ple
 
 ## 6. Third-party services
 
-We use privacy-friendly analytics (currently Umami) that does not store personally identifiable information. If new services are added, they will follow the same standard.
+We use privacy-friendly analytics (currently Umami) that does not store personally identifiable information. Google AdSense is currently disabled and no ad network scripts are loaded. If new services are added, they will follow the same standard.
 
 ## 7. Changes to this policy
 

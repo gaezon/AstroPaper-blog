@@ -185,7 +185,7 @@ export default {
           "Used to deliver personalized advertisements and measure campaign performance.",
       },
       status: {
-        accepted: "All cookies accepted",
+        accepted: "Currently enabled cookies accepted",
         rejected: "Only essential cookies accepted",
         saved: "Cookie settings saved",
       },
