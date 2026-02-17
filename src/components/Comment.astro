@@ -1,6 +1,6 @@
 ---
 import { getLangTag } from "@/i18n/utils";
-import { TWIKOO_CDN_URL } from "@/config/twikoo";
+import { TWIKOO_CDN_URL, TWIKOO_CSS_URL } from "@/config/twikoo";
 import { TWIKOO_SRI } from "@/utils/generated/twikooSRI";
 import type { CollectionEntry } from "astro:content";
 
@@ -90,78 +90,426 @@ const getCommentPath = () => {
 };
 
 const commentPath = getCommentPath();
+const commentLoadTriggerLabel =
+  langTag === "zh-CN" ? "点击加载评论" : "Load comments";
+const commentAutoLoadHint =
+  langTag === "zh-CN"
+    ? "或滚动到评论区附近自动加载"
+    : "Or scroll near this section to load automatically";
+const commentLoadingMessage =
+  langTag === "zh-CN" ? "正在加载评论..." : "Loading comments...";
+const twikooObserverOffset = 400;
 ---
 
 <div
   id="tcomment"
+  data-comment-root="true"
   data-twikoo-cdn={TWIKOO_CDN_URL}
+  data-twikoo-css={TWIKOO_CSS_URL}
   data-twikoo-sri={TWIKOO_SRI}
+  data-lang-tag={langTag}
+  data-comment-id={commentId ?? ""}
+  data-comment-path={commentPath ?? ""}
+  data-comment-loading={commentLoadingMessage}
+  data-twikoo-observer-offset={String(twikooObserverOffset)}
+  class="min-h-[140px]"
 >
+  <div
+    data-comment-trigger-ui
+    class="my-4 flex flex-col items-center gap-2 text-center text-sm text-muted"
+  >
+    <button
+      type="button"
+      data-comment-load-trigger
+      class="rounded-md border border-border bg-muted/50 px-4 py-2 text-foreground transition-colors hover:bg-muted"
+      aria-label={commentLoadTriggerLabel}
+    >
+      {commentLoadTriggerLabel}
+    </button>
+    <p>{commentAutoLoadHint}</p>
+  </div>
 </div>
 
-<script
-  is:inline
-  define:vars={{
-    langTag,
-    commentId,
-    commentPath,
-  }}
->
-  document.addEventListener("astro:page-load", () => {
-    function loadTwikoo() {
-      const commentsContainer = document.getElementById("tcomment");
-      if (commentsContainer) {
-        const twikooCdnUrl = commentsContainer.dataset.twikooCdn;
-        const twikooSri = commentsContainer.dataset.twikooSri;
-        const loadErrorMessage =
-          langTag === "zh-CN"
-            ? "评论系统加载失败，请稍后重试。"
-            : "Failed to load the comment system. Please try again later.";
+<script is:inline>
+  const COMMENT_ROOT_SELECTOR = "[data-comment-root='true']";
 
-        const showCommentLoadError = () => {
-          commentsContainer.setAttribute("role", "status");
-          commentsContainer.textContent = loadErrorMessage;
-        };
+  const ensureTwikooLoaderBootstrap = () => {
+    if (window.__twikooLazyLoaderBootstrapped) {
+      return;
+    }
 
-        if (!twikooCdnUrl) {
-          showCommentLoadError();
-          return;
+    window.__twikooLazyLoaderBootstrapped = true;
+    window.__twikooActiveCommentLoaders = new Set();
+
+    document.addEventListener("astro:before-swap", () => {
+      if (!(window.__twikooActiveCommentLoaders instanceof Set)) {
+        return;
+      }
+
+      for (const disposeLoader of Array.from(
+        window.__twikooActiveCommentLoaders
+      )) {
+        if (typeof disposeLoader === "function") {
+          disposeLoader();
+        }
+      }
+
+      window.__twikooActiveCommentLoaders.clear();
+    });
+
+    document.addEventListener("astro:page-load", () => {
+      initCommentLoaders();
+    });
+
+    document.addEventListener("astro:after-swap", () => {
+      initCommentLoaders();
+    });
+  };
+
+  const setupCommentLoader = commentsContainer => {
+    if (!(commentsContainer instanceof HTMLElement)) {
+      return;
+    }
+
+    if (commentsContainer.dataset.commentLoaderBound === "true") {
+      return;
+    }
+
+    commentsContainer.dataset.commentLoaderBound = "true";
+
+    if (!commentsContainer.id) {
+      commentsContainer.id = "tcomment";
+    }
+
+    if (
+      commentsContainer.id === "tcomment" &&
+      document.querySelectorAll("#tcomment").length > 1
+    ) {
+      const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+      commentsContainer.id = `tcomment-${Date.now().toString(36)}-${uniqueSuffix}`;
+    }
+
+    const twikooElementSelector = `#${commentsContainer.id}`;
+
+    const langTag = commentsContainer.dataset.langTag || "zh-CN";
+    const commentId = commentsContainer.dataset.commentId;
+    const commentPath = commentsContainer.dataset.commentPath;
+    const twikooCdnUrl = commentsContainer.dataset.twikooCdn;
+    const twikooCssUrl = commentsContainer.dataset.twikooCss;
+    const twikooSri = commentsContainer.dataset.twikooSri;
+    const loadingMessage =
+      commentsContainer.dataset.commentLoading || "Loading comments...";
+    const observerOffset = Number(
+      commentsContainer.dataset.twikooObserverOffset || 400
+    );
+    const prefetchDistance = Math.min(500, Math.max(300, observerOffset));
+
+    const loadErrorMessage =
+      langTag === "zh-CN"
+        ? "评论系统加载失败，请稍后重试。"
+        : "Failed to load the comment system. Please try again later.";
+
+    const triggerUi = commentsContainer.querySelector(
+      "[data-comment-trigger-ui]"
+    );
+    const loadButton = commentsContainer.querySelector(
+      "[data-comment-load-trigger]"
+    );
+
+    let hasStarted = false;
+    let isDisposed = false;
+    let observer = null;
+    let cleanupFallbackListener = null;
+
+    const showCommentLoadError = () => {
+      commentsContainer.removeAttribute("aria-busy");
+      commentsContainer.setAttribute("role", "status");
+      commentsContainer.textContent = loadErrorMessage;
+    };
+
+    const showLoadingState = () => {
+      commentsContainer.setAttribute("aria-busy", "true");
+      if (triggerUi) {
+        triggerUi.setAttribute("role", "status");
+        triggerUi.textContent = loadingMessage;
+      } else {
+        commentsContainer.setAttribute("role", "status");
+        commentsContainer.textContent = loadingMessage;
+      }
+    };
+
+    const ensureTwikooScript = () => {
+      if (!twikooCdnUrl) {
+        return Promise.reject(new Error("Missing Twikoo CDN URL"));
+      }
+
+      if (window.twikoo && typeof window.twikoo.init === "function") {
+        return Promise.resolve(window.twikoo);
+      }
+
+      if (window.__twikooScriptPromise) {
+        return window.__twikooScriptPromise;
+      }
+
+      window.__twikooScriptPromise = new Promise((resolve, reject) => {
+        const existingScript = document.querySelector(
+          'script[data-twikoo-script="true"]'
+        );
+
+        if (existingScript) {
+          existingScript.remove();
         }
 
         const script = document.createElement("script");
         script.src = twikooCdnUrl;
         script.async = true;
         script.crossOrigin = "anonymous";
+        script.dataset.twikooScript = "true";
+        script.dataset.twikooState = "loading";
+
         if (twikooSri) {
           script.integrity = twikooSri;
         }
+
         script.onload = () => {
-          // Build Twikoo configuration
+          script.dataset.twikooState = "loaded";
+
+          if (window.twikoo && typeof window.twikoo.init === "function") {
+            resolve(window.twikoo);
+          } else {
+            script.dataset.twikooState = "error";
+            script.remove();
+            window.__twikooScriptPromise = null;
+            reject(new Error("Twikoo loaded but init is unavailable"));
+          }
+        };
+
+        script.onerror = () => {
+          script.dataset.twikooState = "error";
+          script.remove();
+          window.__twikooScriptPromise = null;
+          reject(new Error("Failed to load Twikoo script"));
+        };
+
+        document.body.appendChild(script);
+      });
+
+      return window.__twikooScriptPromise;
+    };
+
+    const ensureTwikooStyles = () => {
+      if (!twikooCssUrl) {
+        return Promise.resolve();
+      }
+
+      const existingStyleLink = document.querySelector(
+        'link[data-twikoo-style="true"]'
+      );
+      if (existingStyleLink) {
+        return Promise.resolve();
+      }
+
+      const matchedLink = document.querySelector(
+        `link[rel="stylesheet"][href="${twikooCssUrl}"]`
+      );
+      if (matchedLink instanceof HTMLLinkElement) {
+        matchedLink.dataset.twikooStyle = "true";
+        return Promise.resolve();
+      }
+
+      return new Promise(resolve => {
+        const styleLink = document.createElement("link");
+        styleLink.rel = "stylesheet";
+        styleLink.href = twikooCssUrl;
+        styleLink.crossOrigin = "anonymous";
+        styleLink.dataset.twikooStyle = "true";
+
+        const cleanup = () => {
+          styleLink.removeEventListener("load", handleLoad);
+          styleLink.removeEventListener("error", handleError);
+        };
+
+        const handleLoad = () => {
+          cleanup();
+          resolve();
+        };
+
+        const handleError = () => {
+          cleanup();
+          resolve();
+        };
+
+        styleLink.addEventListener("load", handleLoad, { once: true });
+        styleLink.addEventListener("error", handleError, { once: true });
+
+        const styleMountTarget = document.body || document.documentElement;
+        styleMountTarget.appendChild(styleLink);
+      });
+    };
+
+    const cleanupTriggers = () => {
+      if (observer) {
+        observer.disconnect();
+        observer = null;
+      }
+
+      if (cleanupFallbackListener) {
+        cleanupFallbackListener();
+        cleanupFallbackListener = null;
+      }
+    };
+
+    const startLoadingTwikoo = () => {
+      if (hasStarted) {
+        return;
+      }
+
+      hasStarted = true;
+      cleanupTriggers();
+
+      if (loadButton instanceof HTMLButtonElement) {
+        loadButton.disabled = true;
+      }
+
+      showLoadingState();
+
+      Promise.all([ensureTwikooStyles(), ensureTwikooScript()])
+        .then(() => {
+          if (isDisposed || !commentsContainer.isConnected) {
+            return;
+          }
+
+          if (triggerUi) {
+            triggerUi.remove();
+          }
+
           const twikooConfig = {
             envId: "https://comment.gaazeon.com/",
-            el: "#tcomment",
+            el: twikooElementSelector,
             lang: langTag,
           };
 
-          // If there is a unified comment ID, use it
           if (commentId && commentPath) {
             twikooConfig.id = commentId;
-            // Use the unified comment path for both language versions
             twikooConfig.path = commentPath;
           }
 
           if (window.twikoo && typeof window.twikoo.init === "function") {
+            commentsContainer.removeAttribute("role");
+            commentsContainer.removeAttribute("aria-busy");
             window.twikoo.init(twikooConfig);
           } else {
             showCommentLoadError();
           }
-        };
-        script.onerror = () => {
+        })
+        .catch(() => {
+          if (isDisposed || !commentsContainer.isConnected) {
+            return;
+          }
+
           showCommentLoadError();
-        };
-        document.body.appendChild(script);
+        });
+    };
+
+    const setupScrollFallbackTrigger = () => {
+      let scrollRafId = null;
+
+      const maybeLoadByScroll = () => {
+        const distanceToViewport =
+          commentsContainer.getBoundingClientRect().top - window.innerHeight;
+
+        if (distanceToViewport <= prefetchDistance) {
+          startLoadingTwikoo();
+        }
+      };
+
+      const scheduleMaybeLoadByScroll = () => {
+        if (scrollRafId !== null) {
+          return;
+        }
+
+        scrollRafId = window.requestAnimationFrame(() => {
+          scrollRafId = null;
+          maybeLoadByScroll();
+        });
+      };
+
+      const onScroll = () => {
+        scheduleMaybeLoadByScroll();
+      };
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      scheduleMaybeLoadByScroll();
+
+      cleanupFallbackListener = () => {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+
+        if (scrollRafId !== null) {
+          window.cancelAnimationFrame(scrollRafId);
+          scrollRafId = null;
+        }
+      };
+    };
+
+    const clickTriggerHandler = () => {
+      startLoadingTwikoo();
+    };
+
+    const disposeCommentLoader = () => {
+      if (isDisposed) {
+        return;
       }
+
+      isDisposed = true;
+      cleanupTriggers();
+
+      if (loadButton instanceof HTMLButtonElement) {
+        loadButton.removeEventListener("click", clickTriggerHandler);
+      }
+
+      delete commentsContainer.dataset.commentLoaderBound;
+
+      if (window.__twikooActiveCommentLoaders instanceof Set) {
+        window.__twikooActiveCommentLoaders.delete(disposeCommentLoader);
+      }
+    };
+
+    if (window.__twikooActiveCommentLoaders instanceof Set) {
+      window.__twikooActiveCommentLoaders.add(disposeCommentLoader);
     }
-    loadTwikoo();
-  });
+
+    if (loadButton instanceof HTMLButtonElement) {
+      loadButton.addEventListener("click", clickTriggerHandler, { once: true });
+    }
+
+    if ("IntersectionObserver" in window) {
+      observer = new IntersectionObserver(
+        entries => {
+          if (entries.some(entry => entry.isIntersecting)) {
+            startLoadingTwikoo();
+          }
+        },
+        {
+          rootMargin: `0px 0px ${prefetchDistance}px 0px`,
+          threshold: 0,
+        }
+      );
+
+      observer.observe(commentsContainer);
+    }
+
+    setupScrollFallbackTrigger();
+  };
+
+  const initCommentLoaders = () => {
+    const commentRoots = document.querySelectorAll(COMMENT_ROOT_SELECTOR);
+    for (const commentRoot of commentRoots) {
+      setupCommentLoader(commentRoot);
+    }
+  };
+
+  ensureTwikooLoaderBootstrap();
+  initCommentLoaders();
 </script>
