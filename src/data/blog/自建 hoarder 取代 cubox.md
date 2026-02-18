@@ -32,7 +32,7 @@ slug: hoarder-app-replace-cubox
 
   Cubox 国内版有审查，某一次发现自己剪藏的文章，因为「不可抗力」的原因无法分享，同时思前想后发现剪藏这类服务还是存在自己 NAS 中自己保存一份比较安心
 
-  ![censorship of Cubox](https://img.gaazeon.com/2024/06/202406081735586.avif)
+  ![censorship of Cubox](https://img.gaazeon.com/2024/06/202406081735586.avif "lcp")
 
 - 价格原因
 

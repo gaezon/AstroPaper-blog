@@ -206,6 +206,7 @@ export default defineConfig({
     },
   },
   image: {
+    domains: ["img.gaazeon.com"],
     responsiveStyles: true,
     layout: "constrained",
   },

@@ -39,7 +39,7 @@ For the uninitiated, **Cubox** is a popular comprehensive "read-it-later" servic
 
   The screenshot below illustrates this reality: a generic error message blocking content distribution due to "uncontrollable factors." For an archivist, this is the ultimate betrayal. **If your digital memory can be redacted by an algorithm adhering to state policy, you don't own your data—you are merely renting a view.**
 
-  ![censorship of Cubox](https://img.gaazeon.com/2024/06/202406081735586.avif)
+  ![censorship of Cubox](https://img.gaazeon.com/2024/06/202406081735586.avif "lcp")
 
 - **The Subscription Tax**
 
