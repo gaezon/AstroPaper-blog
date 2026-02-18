@@ -18,8 +18,32 @@ const CACHE_FILE = path.join(
 );
 const BLOG_DIR = path.join(__dirname, "../src/data/blog");
 
-// 匹配 Markdown 图片语法: ![alt](url)
+// 匹配 Markdown 图片语法: ![alt](url "optional title")
 const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)]+)\)/g;
+
+/**
+ * 从 Markdown 图片目标字符串中提取 URL
+ * 支持：
+ * - ![alt](https://example.com/a.png)
+ * - ![alt](https://example.com/a.png "title")
+ * - ![alt](<https://example.com/a.png> "title")
+ */
+function extractImageUrl(target: string): string | null {
+  const trimmed = target.trim();
+  if (!trimmed) return null;
+
+  if (trimmed.startsWith("<")) {
+    const endIndex = trimmed.indexOf(">");
+    if (endIndex === -1) return null;
+
+    const inner = trimmed.slice(1, endIndex).trim();
+    if (!inner) return null;
+    return inner;
+  }
+
+  const firstToken = trimmed.split(/\s+/)[0];
+  return firstToken || null;
+}
 
 interface ImageSize {
   width: number;
@@ -114,7 +138,9 @@ async function scanMarkdownFile(filePath: string): Promise<string[]> {
   let match: RegExpExecArray | null = null;
 
   while ((match = IMAGE_REGEX.exec(content)) !== null) {
-    const url = match[2].trim();
+    const url = extractImageUrl(match[2] ?? "");
+    if (!url) continue;
+
     // 只处理安全的远程图片
     if (url.startsWith("http://") || url.startsWith("https://")) {
       if (isSafeURL(url)) {
