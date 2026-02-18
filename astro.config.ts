@@ -176,7 +176,7 @@ export default defineConfig({
     rehypePlugins: [
       // Build-time Mermaid rendering in GitHub Actions; falls back to client-side rendering in other environments
       ...mermaidConfig,
-      // Add width/height attributes to images to prevent CLS
+      // Normalize Markdown image priority and fallback rendering attributes
       rehypeImageSize,
     ],
     syntaxHighlight: {
@@ -209,6 +209,9 @@ export default defineConfig({
     domains: ["img.gaazeon.com"],
     responsiveStyles: true,
     layout: "constrained",
+    service: {
+      entrypoint: "./src/utils/markdown-image-service.ts",
+    },
   },
   env: {
     schema: {
