@@ -1,98 +1,125 @@
 const primaryColorScheme = ""; // "light" | "dark"
+const storageKey = "theme";
+const themeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+const themeColorFallback = {
+  light: "#fdfdfd",
+  dark: "#212737",
+};
 
-// Get theme data from local storage
-const currentTheme = localStorage.getItem("theme");
+function readStoredTheme() {
+  try {
+    return localStorage.getItem(storageKey);
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredTheme(theme) {
+  try {
+    localStorage.setItem(storageKey, theme);
+  } catch {
+    // noop
+  }
+}
 
 function getPreferTheme() {
-  // return theme value in local storage if it is set
-  if (currentTheme) return currentTheme;
+  const currentTheme = readStoredTheme();
+  if (currentTheme === "light" || currentTheme === "dark") return currentTheme;
 
-  // return primary color scheme if it is set
-  if (primaryColorScheme) return primaryColorScheme;
+  if (primaryColorScheme === "light" || primaryColorScheme === "dark") {
+    return primaryColorScheme;
+  }
 
-  // return user device's prefer color scheme
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return themeMediaQuery.matches ? "dark" : "light";
 }
 
-let themeValue = getPreferTheme();
-
-function setPreference() {
-  localStorage.setItem("theme", themeValue);
-  reflectPreference();
+let themeValue = document.documentElement.getAttribute("data-theme");
+if (themeValue !== "light" && themeValue !== "dark") {
+  themeValue = getPreferTheme();
 }
 
-function reflectPreference() {
-  document.firstElementChild.setAttribute("data-theme", themeValue);
-
+function updateThemeButtonLabel() {
   const themeBtn = document.querySelector("#theme-btn");
-  if (themeBtn) {
-    themeBtn.setAttribute(
-      "aria-label",
-      themeValue === "dark" ? "Switch to light theme" : "Switch to dark theme"
-    );
-  }
+  if (!themeBtn) return;
 
-  // Get a reference to the body element
-  const body = document.body;
-
-  // Check if the body element exists before using getComputedStyle
-  if (body) {
-    // Get the computed styles for the body element
-    const computedStyles = window.getComputedStyle(body);
-
-    // Get the background color property
-    const bgColor = computedStyles.backgroundColor;
-
-    // Set the background color in <meta theme-color ... />
-    document
-      .querySelector("meta[name='theme-color']")
-      ?.setAttribute("content", bgColor);
-
-    // Sync Mermaid diagram light/dark theme
-    updateMermaidMedia(themeValue);
-
-    // Dispatch theme-changed event for MermaidClient
-    const event = new CustomEvent("theme-changed", {
-      detail: { theme: themeValue },
-    });
-    document.dispatchEvent(event);
-  }
+  themeBtn.setAttribute(
+    "aria-label",
+    themeValue === "dark" ? "Switch to light theme" : "Switch to dark theme"
+  );
 }
 
-// Display corresponding Mermaid assets based on current theme
+function updateThemeColorMeta() {
+  const fallbackColor =
+    themeValue === "dark" ? themeColorFallback.dark : themeColorFallback.light;
+  const bgColor =
+    document.body && window.getComputedStyle(document.body).backgroundColor;
+  const resolvedColor =
+    bgColor && bgColor !== "rgba(0, 0, 0, 0)" ? bgColor : fallbackColor;
+
+  document
+    .querySelector("meta[name='theme-color']")
+    ?.setAttribute("content", resolvedColor);
+}
+
+function syncThemeColorAfterPaint() {
+  window.requestAnimationFrame(updateThemeColorMeta);
+}
+
 function updateMermaidMedia(theme) {
-  // With dark:true, rehype-mermaid generates <picture> → <source id="mermaid-dark-n">
   document.querySelectorAll('source[id^="mermaid-dark-"]').forEach(el => {
-    // Show dark SVGs in dark theme; disable otherwise
     el.setAttribute("media", theme === "dark" ? "all" : "none");
   });
 }
 
-// set early so no page flashes / CSS is made aware
-reflectPreference();
+function reflectPreference() {
+  document.documentElement.setAttribute("data-theme", themeValue);
+  updateThemeButtonLabel();
+  updateThemeColorMeta();
+  updateMermaidMedia(themeValue);
 
-window.onload = () => {
-  function setThemeFeature() {
-    // set on load so screen readers can get the latest value on the button
-    reflectPreference();
+  document.dispatchEvent(
+    new CustomEvent("theme-changed", {
+      detail: { theme: themeValue },
+    })
+  );
+}
 
-    // now this script can find and listen for clicks on the control
-    document.querySelector("#theme-btn")?.addEventListener("click", () => {
-      themeValue = themeValue === "light" ? "dark" : "light";
-      setPreference();
-    });
-  }
+function setPreference() {
+  writeStoredTheme(themeValue);
+  reflectPreference();
+}
 
-  setThemeFeature();
+function handleThemeToggleClick() {
+  themeValue = themeValue === "light" ? "dark" : "light";
+  setPreference();
+}
 
-  // Runs on view transitions navigation
-  document.addEventListener("astro:after-swap", setThemeFeature);
-};
+function bindThemeButton() {
+  const themeBtn = document.querySelector("#theme-btn");
+  if (!themeBtn) return;
 
-// Set theme-color value before page transition
-// to avoid navigation bar color flickering in Android dark mode
+  if (themeBtn.getAttribute("data-theme-bound") === "true") return;
+
+  themeBtn.setAttribute("data-theme-bound", "true");
+  themeBtn.addEventListener("click", handleThemeToggleClick);
+}
+
+function initThemeFeature() {
+  reflectPreference();
+  bindThemeButton();
+  syncThemeColorAfterPaint();
+}
+
+initThemeFeature();
+
+document.addEventListener("astro:after-swap", initThemeFeature);
+
+if (document.readyState === "complete") {
+  syncThemeColorAfterPaint();
+} else {
+  window.addEventListener("load", syncThemeColorAfterPaint, { once: true });
+}
+
 document.addEventListener("astro:before-swap", event => {
   const bgColor = document
     .querySelector("meta[name='theme-color']")
@@ -103,10 +130,13 @@ document.addEventListener("astro:before-swap", event => {
     ?.setAttribute("content", bgColor);
 });
 
-// sync with system changes
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", ({ matches: isDark }) => {
-    themeValue = isDark ? "dark" : "light";
-    setPreference();
-  });
+const handleSystemThemeChange = event => {
+  themeValue = event.matches ? "dark" : "light";
+  setPreference();
+};
+
+if (typeof themeMediaQuery.addEventListener === "function") {
+  themeMediaQuery.addEventListener("change", handleSystemThemeChange);
+} else if (typeof themeMediaQuery.addListener === "function") {
+  themeMediaQuery.addListener(handleSystemThemeChange);
+}

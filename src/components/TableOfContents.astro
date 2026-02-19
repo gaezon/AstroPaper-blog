@@ -3,6 +3,7 @@ import TocClient from "./TocClient.astro";
 import { extractTocFromContent } from "@/utils/extractToc";
 import { t } from "@/i18n/utils";
 import type { MarkdownHeading } from "astro";
+import "@/styles/components/toc-collapse.css";
 
 export interface Props {
   class?: string;

@@ -225,6 +225,49 @@ const siteHostname = new URL(SITE.website).hostname;
         }
       })();
     </script>
+    <meta name="theme-color" content="#fdfdfd" />
+    <script is:inline>
+      (() => {
+        const storageKey = "theme";
+        const root = document.documentElement;
+        const primaryColorScheme = "";
+        const darkThemeColor = "#212737";
+        const lightThemeColor = "#fdfdfd";
+
+        let theme = "";
+
+        try {
+          const storedTheme = localStorage.getItem(storageKey);
+          if (storedTheme === "light" || storedTheme === "dark") {
+            theme = storedTheme;
+          }
+        } catch {
+          theme = "";
+        }
+
+        if (
+          !theme &&
+          (primaryColorScheme === "light" || primaryColorScheme === "dark")
+        ) {
+          theme = primaryColorScheme;
+        }
+
+        if (!theme) {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+
+        root.setAttribute("data-theme", theme);
+
+        document
+          .querySelector("meta[name='theme-color']")
+          ?.setAttribute(
+            "content",
+            theme === "dark" ? darkThemeColor : lightThemeColor
+          );
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
@@ -295,8 +338,6 @@ const siteHostname = new URL(SITE.website).hostname;
       )}
     />
 
-    <meta name="theme-color" content="" />
-
     {
       // If PUBLIC_GOOGLE_SITE_VERIFICATION is set in the environment variable,
       // include google-site-verification tag in the heading
@@ -311,7 +352,7 @@ const siteHostname = new URL(SITE.website).hostname;
 
     <ClientRouter />
 
-    <script is:inline src="/toggle-theme.js"></script>
+    <script defer src="/toggle-theme.js"></script>
 
     {
       import.meta.env.PROD && (
