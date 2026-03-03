@@ -90,7 +90,6 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - Build artifacts deployed via GitHub Actions workflows
 - `vercel.json` configured to skip Vercel build (uses pre-built artifacts)
 - GitHub Actions runs on feature branches for preview deployments
-- Docker support via Dockerfile and docker-compose.yml
 
 ### CI/CD Workflows
 
