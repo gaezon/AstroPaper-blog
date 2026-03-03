@@ -16,6 +16,8 @@
 
 ## Build, Test, and Development Commands
 
+> **Note:** This project uses **pnpm-only** package management. Do not use npm, yarn, or bun. All commands must be run with pnpm.
+
 - `pnpm dev` launches the Astro dev server with hot reload.
 - `pnpm build` runs a fast local build (no type check): generates bilingual mappings, builds the site, and prepares Pagefind search assets.
 - `pnpm build:strict` runs the full CI-equivalent build with `astro check` + site build + Pagefind.
@@ -23,6 +25,12 @@
 - `pnpm lint`, `pnpm format`, and `pnpm format:check` enforce ESLint and Prettier rules.
 - `pnpm exec playwright test` runs the end-to-end suite; append `--headed` for debug runs.
 - `pnpm validate:meta` verifies SEO meta descriptions across posts.
+
+### Package Management Requirements
+
+- **Node.js:** 24.x (defined in `package.json` `engines.node`)
+- **pnpm:** >=10 <11 (defined in `package.json` `engines.pnpm`)
+- No `package-lock.json` is maintained; use `pnpm-lock.yaml` only
 
 ### Enhanced Commands
 - `pnpm i18n:scaffold-en` - Create English drafts from Chinese posts
@@ -73,6 +81,7 @@
 - Ensure `pnpm build:strict`, `pnpm lint`, and required Playwright checks pass locally before requesting review.
 
 ### Pull Request Checklist
+- [ ] Ensure Node.js 24.x is installed (`engines.node` defined in package.json)
 - [ ] Run `pnpm build:strict` and verify no errors
 - [ ] Run `pnpm lint` and `pnpm format:check`
 - [ ] Run `pnpm exec playwright test` for affected features
@@ -122,8 +131,7 @@
 - **GitHub Actions Deployment**:
   - `ci.yml` - Runs lint, format, and build on PRs
   - `deploy-preview.yml` - Deploys feature branches to Vercel preview
-- `vercel.json` skips Vercel build (uses pre-built artifacts from CI)
-- Docker support available via `Dockerfile` and `docker-compose.yml`
+   - `vercel.json` skips Vercel build (uses pre-built artifacts from CI)
 
 ## Documentation Maintenance
 
@@ -132,3 +140,4 @@
 - Add feature documentation in `docs/` directory
 - Include setup instructions for new contributors
 - Document bilingual workflows and content management
+- Update package management documentation when changing dependency strategy (pnpm-only, Node version requirements)
