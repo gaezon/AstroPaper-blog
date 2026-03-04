@@ -21,7 +21,6 @@ export interface Site {
   dynamicOgImage: boolean;
   lang?: string;
   timezone: string;
-  adsenseID?: string;
   /**
    * Document writing direction; default 'ltr'. Options: 'ltr' | 'rtl' | 'auto'
    */

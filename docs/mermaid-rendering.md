@@ -37,11 +37,11 @@ const shouldRenderMermaidAtBuildTime = !!process.env.GITHUB_ACTIONS;
 </picture>
 ```
 
-主题切换由 [`toggle-theme.js`](file:///Users/leojun/code/AstroPaper-blog/public/toggle-theme.js) 控制，通过修改 `<source>` 元素的 `media` 属性实现即时切换。
+主题切换由 [`toggle-theme.js`](../../public/toggle-theme.js) 控制，通过修改 `<source>` 元素的 `media` 属性实现即时切换。
 
 ## 配置位置
 
-完整配置位于 [`astro.config.ts`](file:///Users/leojun/code/AstroPaper-blog/astro.config.ts) 的 `markdown.rehypePlugins` 部分：
+完整配置位于 [`astro.config.ts`](../../astro.config.ts) 的 `markdown.rehypePlugins` 部分：
 
 ```typescript
 rehypePlugins: [
