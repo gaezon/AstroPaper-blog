@@ -148,7 +148,6 @@ export default {
     readArticle: "阅读文章：{{title}}",
     updated: "更新于：",
     privacyPolicy: "隐私政策",
-    cookiePolicy: "Cookie 政策",
     termsOfService: "服务条款",
     tableOfContents: "目录",
     openToc: "打开文章目录",

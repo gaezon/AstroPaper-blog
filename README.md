@@ -45,9 +45,6 @@ AstroPaper includes comprehensive privacy and compliance features to meet modern
 
 All compliance pages are accessible via footer links and include:
 
-- `/privacy-policy/` - Privacy policy with GDPR considerations
-- `/cookie-policy/` - Cookie usage and management information
-- `/terms-of-service/` - Legal terms and conditions
 - `/contact/` - Contact information and communication guidelines
 
 ### Cookie Consent Features

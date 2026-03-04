@@ -38,9 +38,8 @@
 
 1. 在 `src/i18n/config.ts` 和 `src/i18n/utils.ts` 中登记新语言的 `code`、`label`、`profile`。
 2. 为新语言添加 UI 文案：`src/i18n/locales/<locale>.ts`。
-3. 若需要标签映射，更新 `src/i18n/tagMap.ts`。
-4. 创建对应的内容集合或页面（如 `src/data/blog/<locale>/`）。
-5. 按需在 `LanguageSwitcher.astro` 中补充 `getShortLabel` 的显示符号。
+3. 创建对应的内容集合或页面（如 `src/data/blog/<locale>/`）。
+4. 按需在 `src/i18n/config.ts` 的 locale `profile.label` 中补充语言简写展示。
 
 ## 移动端与可访问性要点
 

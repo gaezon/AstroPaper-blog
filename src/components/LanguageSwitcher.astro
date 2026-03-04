@@ -1,26 +1,10 @@
 ---
 import Dropdown from "./LanguageSwitcher/Dropdown.astro";
-import Compact from "./LanguageSwitcher/Compact.astro";
-import Toggle from "./LanguageSwitcher/Toggle.astro";
 
-interface Props {
-  class?: string;
-  variant?: "dropdown" | "toggle" | "compact";
-  override?: Record<string, string | undefined>;
-}
-
-const { class: className = "", variant = "dropdown", override } = Astro.props;
+const { class: className = "", override } = Astro.props;
 ---
 
-{
-  variant === "dropdown" ? (
-    <Dropdown class={className} override={override} />
-  ) : variant === "compact" ? (
-    <Compact class={className} override={override} />
-  ) : (
-    <Toggle class={className} override={override} />
-  )
-}
+<Dropdown class={className} override={override} />
 
 <script>
   import { initLanguageSwitcher } from "./LanguageSwitcher/client";

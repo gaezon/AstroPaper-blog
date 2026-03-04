@@ -4,7 +4,6 @@ import SpeedInsights from "@vercel/speed-insights/astro";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import "@/styles/global.css";
-import CookieConsentBanner from "@/components/CookieConsentBanner.astro";
 import {
   getCurrentLocale,
   getLangTag,
@@ -378,7 +377,6 @@ const siteHostname = new URL(SITE.website).hostname;
   </head>
   <body>
     <slot />
-    <CookieConsentBanner />
 
     {import.meta.env.PROD && <SpeedInsights />}
   </body>

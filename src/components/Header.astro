@@ -15,10 +15,11 @@ import LanguageSwitcher from "./LanguageSwitcher.astro";
 
 interface HeaderProps {
   switchOverride?: Record<string, string | undefined>;
+  activeNav?: string;
 }
 
 const { pathname } = Astro.url;
-const { switchOverride } = Astro.props as HeaderProps;
+const { switchOverride, activeNav } = Astro.props as HeaderProps;
 
 // I18n variables
 const currentLocale = getCurrentLocale(Astro);
@@ -37,12 +38,21 @@ const normalizedCurrentPath = normalizeSegments(
   currentPath.split("/").filter(p => p.trim())
 );
 
+const forcedActiveSegment = activeNav
+  ?.replace(/^\/+|\/+$/g, "")
+  .split("/")
+  .filter(Boolean)[0];
+
 const isActive = (path: string) => {
   const targetSegments = normalizeSegments(
     path.split("/").filter(p => p.trim())
   );
   const currentFirst = normalizedCurrentPath[0];
   const targetFirst = targetSegments[0];
+
+  if (forcedActiveSegment) {
+    return targetFirst === forcedActiveSegment;
+  }
 
   const normalizedCurrent = `/${normalizedCurrentPath.join("/")}` || "/";
   const normalizedTarget = `/${targetSegments.join("/")}` || "/";
@@ -204,15 +214,11 @@ const tr = (key: string, params?: Record<string, string | number>) =>
         </ul>
         <!-- Language switcher - desktop and mobile -->
         <div class="lang-switcher-container hidden sm:flex">
-          <LanguageSwitcher variant="dropdown" override={switchOverride} />
+          <LanguageSwitcher override={switchOverride} />
         </div>
         <!-- Mobile language switcher (show full label) -->
         <div class="lang-switcher-mobile hidden">
-          <LanguageSwitcher
-            variant="dropdown"
-            override={switchOverride}
-            class="mobile-dropdown"
-          />
+          <LanguageSwitcher override={switchOverride} class="mobile-dropdown" />
         </div>
       </nav>
     </div>
