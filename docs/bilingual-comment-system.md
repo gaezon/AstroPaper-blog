@@ -139,7 +139,7 @@ return `/comments/${slugify(title || id)}/`;
 
 ### 扩展匹配算法
 
-在 `scripts/auto-discover-bilingual.js` 中：
+在 `scripts/auto-discover-bilingual.ts` 中：
 
 ```javascript
 // 调整相似度权重
