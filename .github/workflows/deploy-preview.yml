@@ -58,16 +58,13 @@ jobs:
       - name: Build the project
         run: pnpm run build:strict
 
-      - name: Install Vercel CLI
-        run: pnpm dlx vercel@latest
-
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm dlx vercel@latest pull --yes --environment=preview --token=${VERCEL_TOKEN}
 
       - name: Deploy Project Artifacts to Vercel
         id: vercel-deploy
         run: |
-          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          DEPLOY_URL=$(pnpm dlx vercel@latest deploy --prebuilt --token=${VERCEL_TOKEN})
           echo "preview_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
 
       - name: Comment Preview URL on PR
