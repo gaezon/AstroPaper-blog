@@ -28,7 +28,7 @@ modDatetime: 2025-03-05T12:00:00.000Z # 可选
 title: "为什么我开始写博客"
 featured: false
 draft: false
-# 中文标签为唯一真源
+# 标签按语言独立维护（中文写中文，英文写英文）
 tags:
   - 博文
   - 工具
@@ -47,7 +47,7 @@ locale: "zh-CN" # 默认
 - `title`：标题；
 - `description`：页面描述（150–160 字内）；
 - `pubDatetime`/`modDatetime`：发布时间/最近修改时间；
-- `tags`：仅写中文标签（详见下方“标签与中英映射”）；
+- `tags`：按当前文章语言填写标签（中文文章用中文标签，英文文章用英文标签）；
 - `draft`：草稿不发布；
 - `featured`：是否在首页“精选”展示；
 - `timezone`：影响页面显示的本地化日期。
@@ -64,18 +64,13 @@ locale: "zh-CN" # 默认
 
 ---
 
-## 标签与中英映射（单一真源：中文）
+## 标签管理
 
-- 仅在中文文章中维护中文标签；英文站点上的标签页与内容，统一**映射到中文标签**展示同一组文章。
-- 映射表：`src/i18n/tagMap.ts`
-  - 结构：
-    ```ts
-    export const TAG_MAP: Record<string, { enSlug: string; enName: string }>
-    ```
-  - 写法建议：
-    - `enSlug`：全部小写、短横线分隔、仅 ASCII（如 `us-stocks`, `digital-hoarding`）。
-    - `enName`：页面上显示的英文名（首字母大写，简洁清晰）。
-- 新增中文标签后，记得补充映射项，英文站点即可生成对应的 `/en/tags/<enSlug>/` 路由与英文展示名，并与中文标签页显示同一批文章。
+- 每种语言独立维护标签：中文文章用中文标签（如 `美股`），英文文章用英文标签（如 `US Stocks`）。
+- 标签会自动生成对应的标签页路由：
+  - 中文：`/tags/<slugified-tag>/`
+  - 英文：`/en/tags/<slugified-tag>/`
+- 标签 slug 通过 `slugifyStr()` 自动生成，无需手动维护映射表。
 
 ---
 
@@ -124,7 +119,7 @@ locale: "zh-CN" # 默认
 - 文章切换语言跳到列表页？
   - 通常是英文文章缺失或 `originalTitle` 未与中文标题匹配；检查英文 frontmatter。
 - 新标签在英文站点不规范或不出现？
-  - 在 `src/i18n/tagMap.ts` 补充中文标签到英文的映射（`enSlug` 与 `enName`）。
+  - 英文文章需单独维护英文标签，标签 slug 会通过 `slugifyStr()` 自动生成。
 - 日期显示不符合预期？
   - 可在文章 frontmatter 填写 `timezone`（如 `Asia/Shanghai`）。
 - OG 封面图怎么来？
@@ -151,7 +146,7 @@ title: "Why I Started Blogging"
 featured: false
 # 翻译完成后移除草稿标记
 # draft: true 
-# 英文标签可先不改，核心是中文标签是唯一真源（英文标签页会通过映射显示同内容）
+# 英文文章请填写英文标签（与中文标签独立维护）
 tags:
   - blog
   - introduction

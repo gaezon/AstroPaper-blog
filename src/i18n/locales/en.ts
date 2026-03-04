@@ -149,7 +149,6 @@ export default {
     readArticle: "Read article: {{title}}",
     updated: "Updated:",
     privacyPolicy: "Privacy Policy",
-    cookiePolicy: "Cookie Policy",
     termsOfService: "Terms of Service",
     tableOfContents: "Table of Contents",
     openToc: "Open Table of Contents",

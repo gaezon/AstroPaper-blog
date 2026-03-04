@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { getPath } from "@/utils/getPath";
 import { generateOgImageForPost } from "@/utils/generateOgImages";
-import { toArrayBuffer } from "@/utils/toArrayBuffer";
+import { createOgResponse } from "@/utils/og-response";
 import { SITE } from "@/config";
 
 export async function getStaticPaths() {
@@ -15,7 +15,6 @@ export async function getStaticPaths() {
   );
 
   return posts.map(post => ({
-    // For catch-all [...slug], Astro expects a string param during build
     params: { slug: getPath(post.id, post.filePath, false, post.data.slug) },
     props: post,
   }));
@@ -34,7 +33,6 @@ export const GET: APIRoute = async ({ props, params }) => {
       | CollectionEntry<"blog">
       | undefined;
 
-    // If props not provided (e.g., dev SSR for non-prelisted path), resolve by slug
     if (!entry) {
       const slugStr = Array.isArray(params?.slug)
         ? (params!.slug as string[]).join("/")
@@ -52,12 +50,7 @@ export const GET: APIRoute = async ({ props, params }) => {
     }
 
     const png = await generateOgImageForPost(entry);
-    const body: Uint8Array =
-      png instanceof Uint8Array ? png : new Uint8Array(png);
-    const arrayBuffer = toArrayBuffer(body);
-    return new Response(arrayBuffer, {
-      headers: { "Content-Type": "image/png" },
-    });
+    return createOgResponse(png);
   } catch (e) {
     console.error("OG image route error:", e);
     return new Response(null, {

@@ -133,7 +133,6 @@ This specific instance is used for the blog at blog.gaazeon.com, based on the up
 - **Translation Management**:
   - Chinese: `src/i18n/locales/zh-CN.ts`
   - English: `src/i18n/locales/en.ts`
-- **Tag Mapping**: `src/i18n/tagMap.ts` provides Chinese-to-English tag translation
 - **Content Collections**:
   - `blog` collection: Chinese posts (excludes `/en` subdirectory)
   - `blogEn` collection: English posts (only from `/en` subdirectory)

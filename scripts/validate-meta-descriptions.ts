@@ -49,9 +49,6 @@ function checkMarkdownFiles(): boolean {
   const staticPages: string[] = [
     path.join(__dirname, "../src/pages/about.md"),
     path.join(__dirname, "../src/pages/contact.md"),
-    path.join(__dirname, "../src/pages/privacy-policy.md"),
-    path.join(__dirname, "../src/pages/terms-of-service.md"),
-    path.join(__dirname, "../src/pages/cookie-policy.md"),
   ];
 
   const issues: ValidationIssue[] = [];
