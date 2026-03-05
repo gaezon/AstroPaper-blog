@@ -14,9 +14,8 @@ import {
   existsSync,
   mkdirSync,
   writeFileSync,
-} from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+} from "node:fs";
+import { join } from "node:path";
 
 // Type definitions
 interface ArticleFrontmatter {
@@ -80,9 +79,7 @@ const log = (message: string): void => {
   }
 };
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const PROJECT_ROOT = join(__dirname, "..");
+const PROJECT_ROOT = join(import.meta.dirname, "..");
 const BLOG_PATH = join(PROJECT_ROOT, "src", "data", "blog");
 const BLOG_EN_PATH = join(BLOG_PATH, "en");
 

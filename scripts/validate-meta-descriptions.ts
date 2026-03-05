@@ -1,11 +1,9 @@
 #!/usr/bin/env tsx
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const SCRIPT_DIR = import.meta.dirname;
 
 // SEO best practice: Meta description should be 150-160 characters
 const MIN_LENGTH = 120;
@@ -45,10 +43,10 @@ function colorize(text: string, color: keyof Colors): string {
 }
 
 function checkMarkdownFiles(): boolean {
-  const blogDir = path.join(__dirname, "../src/data/blog");
+  const blogDir = path.join(SCRIPT_DIR, "../src/data/blog");
   const staticPages: string[] = [
-    path.join(__dirname, "../src/pages/about.md"),
-    path.join(__dirname, "../src/pages/contact.md"),
+    path.join(SCRIPT_DIR, "../src/pages/about.md"),
+    path.join(SCRIPT_DIR, "../src/pages/contact.md"),
   ];
 
   const issues: ValidationIssue[] = [];
@@ -198,7 +196,7 @@ function checkMarkdownFiles(): boolean {
 
 // Check Astro page configuration
 function checkAstroPages(): void {
-  const configPath = path.join(__dirname, "../src/config.ts");
+  const configPath = path.join(SCRIPT_DIR, "../src/config.ts");
 
   if (fs.existsSync(configPath)) {
     const content = fs.readFileSync(configPath, "utf-8");

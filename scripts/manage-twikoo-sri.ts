@@ -44,14 +44,10 @@ async function fetchWithRetry(url: string): Promise<Response> {
   let lastError: unknown = new Error("Unknown fetch error");
 
   for (let attempt = 1; attempt <= FETCH_RETRIES; attempt += 1) {
-    const controller = new AbortController();
-    const timeoutHandle = setTimeout(
-      () => controller.abort(),
-      FETCH_TIMEOUT_MS
-    );
-
     try {
-      const res = await fetch(url, { signal: controller.signal });
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
@@ -61,8 +57,6 @@ async function fetchWithRetry(url: string): Promise<Response> {
       if (attempt < FETCH_RETRIES) {
         await sleep(attempt * 500);
       }
-    } finally {
-      clearTimeout(timeoutHandle);
     }
   }
 

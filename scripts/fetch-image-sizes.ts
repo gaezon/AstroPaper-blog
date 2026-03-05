@@ -8,15 +8,14 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import probe from "probe-image-size";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SCRIPT_DIR = import.meta.dirname;
 const CACHE_FILE = path.join(
-  __dirname,
+  SCRIPT_DIR,
   "../src/utils/generated/imageSizes.json"
 );
-const BLOG_DIR = path.join(__dirname, "../src/data/blog");
+const BLOG_DIR = path.join(SCRIPT_DIR, "../src/data/blog");
 
 // 匹配 Markdown 图片语法: ![alt](url "optional title")
 const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)]+)\)/g;
