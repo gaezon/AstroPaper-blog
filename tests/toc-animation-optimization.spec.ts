@@ -162,9 +162,7 @@ test.describe("TOC Animation Optimizations", () => {
     await expect(aside).toHaveCSS("display", "none");
 
     // Check that animation state is cleaned up
-    await expect
-      .poll(() => aside.getAttribute("data-animating"))
-      .toBeNull();
+    await expect.poll(() => aside.getAttribute("data-animating")).toBeNull();
     await expect
       .poll(() => aside.evaluate(el => getComputedStyle(el).willChange))
       .toBe("auto");
@@ -234,9 +232,7 @@ test.describe("TOC Animation Optimizations", () => {
 
       await page.waitForFunction(
         linkHref => {
-          const link = document.querySelector(
-            `#toc-nav a[href="${linkHref}"]`
-          );
+          const link = document.querySelector(`#toc-nav a[href="${linkHref}"]`);
           return Boolean(link?.classList.contains("active"));
         },
         href,
