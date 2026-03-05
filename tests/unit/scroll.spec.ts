@@ -18,11 +18,7 @@ describe("scroll utilities (unit tests)", () => {
     document?: Document;
   };
 
-  const createMockAnchor = (
-    navId: string,
-    href: string,
-    isActive = false
-  ) => {
+  const createMockAnchor = (navId: string, href: string, isActive = false) => {
     const classSet = new Set<string>(isActive ? ["active"] : []);
     const attrs: Record<string, string> = { href };
 
@@ -89,7 +85,8 @@ describe("scroll utilities (unit tests)", () => {
                   ? mobileAnchors
                   : [];
             return (
-              anchors.find(anchor => anchor.getAttribute("href") === href) ?? null
+              anchors.find(anchor => anchor.getAttribute("href") === href) ??
+              null
             );
           }
         }
@@ -259,7 +256,9 @@ describe("scroll utilities (unit tests)", () => {
 
       let capturedOptions: AddEventListenerOptions | undefined;
       const target = {
-        addEventListener: (...args: Parameters<EventTarget["addEventListener"]>) => {
+        addEventListener: (
+          ...args: Parameters<EventTarget["addEventListener"]>
+        ) => {
           capturedOptions = args[2] as AddEventListenerOptions | undefined;
         },
         removeEventListener: vi.fn(),

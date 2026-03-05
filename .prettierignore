@@ -6,9 +6,12 @@
 !/public
 !/docs
 !/scripts
+!/tests
 !/.github
 !tsconfig.json
 !astro.config.ts
+!playwright.config.ts
+!playwright.sitemap.config.ts
 !.prettierrc.mjs
 !package.json
 !.prettierrc
