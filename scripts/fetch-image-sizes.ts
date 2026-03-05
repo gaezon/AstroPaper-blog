@@ -156,19 +156,9 @@ async function scanMarkdownFile(filePath: string): Promise<string[]> {
  */
 async function scanDirectory(dir: string): Promise<string[]> {
   const files: string[] = [];
-  const entries = await fs.readdir(dir, { withFileTypes: true });
 
-  // 确保遍历顺序在不同平台/文件系统上一致
-  entries.sort((a, b) => a.name.localeCompare(b.name));
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      const subFiles = await scanDirectory(fullPath);
-      files.push(...subFiles);
-    } else if (entry.name.endsWith(".md")) {
-      files.push(fullPath);
-    }
+  for await (const relativePath of fs.glob("**/*.md", { cwd: dir })) {
+    files.push(path.join(dir, relativePath));
   }
 
   // 返回排序后的文件列表，以获得稳定的处理顺序

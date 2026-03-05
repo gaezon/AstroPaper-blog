@@ -9,6 +9,8 @@ type FontConfig = {
   style: string;
 };
 
+const FETCH_TIMEOUT_MS = 10_000;
+
 /**
  * Converts a WOFF (Web Open Font Format) font to TTF (TrueType Font) format.
  *
@@ -112,6 +114,19 @@ function convertWoffToTtf(buffer: Buffer): Buffer | null {
 }
 
 const localFontCache = new Map<string, Promise<ArrayBuffer | null>>();
+
+async function fetchWithTimeout(
+  input: string | URL,
+  init: RequestInit = {},
+  timeoutMs = FETCH_TIMEOUT_MS
+): Promise<Response> {
+  const timeoutSignal = AbortSignal.timeout(timeoutMs);
+  const signal = init.signal
+    ? AbortSignal.any([init.signal, timeoutSignal])
+    : timeoutSignal;
+
+  return await fetch(input, { ...init, signal });
+}
 
 async function tryLoadLocalFont(
   fontName: string,
@@ -218,7 +233,7 @@ async function loadGoogleFont(
   const directUrl = directSources[directSourceKey];
   if (directUrl) {
     try {
-      const res = await fetch(directUrl);
+      const res = await fetchWithTimeout(directUrl);
       if (res.ok) {
         const buffer = await res.arrayBuffer();
         if (buffer.byteLength > 1024) {
@@ -239,12 +254,14 @@ async function loadGoogleFont(
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
     };
 
-    let css = await (await fetch(legacyAPI, { headers })).text();
+    const legacyResponse = await fetchWithTimeout(legacyAPI, { headers });
+    let css = await legacyResponse.text();
 
     // Fallback to CSS2 if legacy doesn't return usable sources
     if (!/format\('(opentype|truetype)'\)/.test(css)) {
       const css2API = `https://fonts.googleapis.com/css2?family=${font}:wght@${weight}&text=${encodeURIComponent(text)}`;
-      css = await (await fetch(css2API, { headers })).text();
+      const css2Response = await fetchWithTimeout(css2API, { headers });
+      css = await css2Response.text();
     }
 
     // Only accept TrueType/OpenType for Satori
@@ -268,7 +285,7 @@ async function loadGoogleFont(
     }
 
     const url = picked[1].replace(/^['"]|['"]$/g, "");
-    const res = await fetch(url);
+    const res = await fetchWithTimeout(url);
 
     if (!res.ok) {
       console.warn(`Failed to download font: ${res.status}, using fallback`);
