@@ -5,6 +5,18 @@ const waitForTocReady = async (page: Page) => {
   await page.locator("#toc-nav a").first().waitFor();
 };
 
+const clickWhenActionable = async (locator: ReturnType<Page["locator"]>) => {
+  await expect(locator).toBeVisible();
+  await expect(locator).toBeEnabled();
+  await locator.click();
+};
+
+const clickViaDispatch = async (locator: ReturnType<Page["locator"]>) => {
+  await expect(locator).toBeVisible();
+  await expect(locator).toBeEnabled();
+  await locator.dispatchEvent("click");
+};
+
 test.describe("TOC Animation Optimizations", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to a post with TOC
@@ -24,7 +36,7 @@ test.describe("TOC Animation Optimizations", () => {
     await expect(aside).toHaveAttribute("aria-hidden", "false");
 
     // Click collapse and immediately check aria-hidden
-    await collapseBtn.click({ force: true });
+    await clickWhenActionable(collapseBtn);
 
     // aria-hidden should be set immediately (within 10ms)
     await expect(aside).toHaveAttribute("aria-hidden", "true", {
@@ -40,7 +52,7 @@ test.describe("TOC Animation Optimizations", () => {
     const aside = page.locator("#toc-sidebar");
     const collapseBtn = page.locator("#toc-collapse");
 
-    await collapseBtn.click({ force: true });
+    await clickWhenActionable(collapseBtn);
 
     // pointer-events should be disabled immediately
     const pointerEvents = await aside.evaluate(
@@ -57,12 +69,12 @@ test.describe("TOC Animation Optimizations", () => {
     const openBtn = page.locator("#toc-open-desktop");
 
     // First collapse
-    await collapseBtn.click({ force: true });
-    await page.waitForTimeout(300); // Wait for animation to complete
+    await clickWhenActionable(collapseBtn);
+    await expect(aside).toHaveCSS("display", "none");
 
     // Start showing
     await openBtn.waitFor({ state: "visible" });
-    await openBtn.click({ force: true });
+    await clickViaDispatch(openBtn);
 
     // During animation, inert should still be present
     const hasInert = await aside.evaluate(el => el.hasAttribute("inert"));
@@ -84,8 +96,7 @@ test.describe("TOC Animation Optimizations", () => {
     await expect(firstLink).toBeFocused();
 
     // Collapse
-    await collapseBtn.click({ force: true });
-    await page.waitForTimeout(300);
+    await clickWhenActionable(collapseBtn);
 
     // Focus should move to open button
     await expect(openBtn).toBeFocused();
@@ -106,7 +117,7 @@ test.describe("TOC Animation Optimizations", () => {
     const collapseBtn = page.locator("#toc-collapse");
 
     const startTime = Date.now();
-    await collapseBtn.click({ force: true });
+    await clickWhenActionable(collapseBtn);
 
     // With reduced motion, animation should complete almost instantly
     await expect(aside).toHaveCSS("display", "none", { timeout: 100 });
@@ -125,21 +136,19 @@ test.describe("TOC Animation Optimizations", () => {
     const openBtn = page.locator("#toc-open-desktop");
 
     // Rapidly click collapse multiple times
-    await collapseBtn.click({ force: true });
-    await collapseBtn.click({ force: true });
-    await collapseBtn.click({ force: true });
+    await clickWhenActionable(collapseBtn);
+    await collapseBtn.dispatchEvent("click");
+    await collapseBtn.dispatchEvent("click");
 
     // Should still end in collapsed state
-    await page.waitForTimeout(400);
     await expect(aside).toHaveCSS("display", "none");
 
     // Now rapidly click open
-    await openBtn.click({ force: true });
-    await openBtn.click({ force: true });
-    await openBtn.click({ force: true });
+    await clickViaDispatch(openBtn);
+    await openBtn.dispatchEvent("click");
+    await openBtn.dispatchEvent("click");
 
     // Should still end in open state
-    await page.waitForTimeout(400);
     await expect(aside).not.toHaveCSS("display", "none");
   });
 
@@ -149,17 +158,16 @@ test.describe("TOC Animation Optimizations", () => {
     const aside = page.locator("#toc-sidebar");
     const collapseBtn = page.locator("#toc-collapse");
 
-    await collapseBtn.click({ force: true });
-    await page.waitForTimeout(400);
+    await clickWhenActionable(collapseBtn);
+    await expect(aside).toHaveCSS("display", "none");
 
     // Check that animation state is cleaned up
-    const animating = await aside.getAttribute("data-animating");
-    expect(animating).toBeNull();
-
-    const willChange = await aside.evaluate(
-      el => getComputedStyle(el).willChange
-    );
-    expect(willChange).toBe("auto");
+    await expect
+      .poll(() => aside.getAttribute("data-animating"))
+      .toBeNull();
+    await expect
+      .poll(() => aside.evaluate(el => getComputedStyle(el).willChange))
+      .toBe("auto");
   });
 
   test("should respect CSS custom properties for duration", async ({
@@ -196,17 +204,15 @@ test.describe("TOC Animation Optimizations", () => {
       // Click TOC link
       await firstLink.click();
 
-      // Wait a moment for scroll to complete
-      await page.waitForTimeout(1500);
-
-      // Verify scroll happened
-      const scrollTop = await page.evaluate(() => window.pageYOffset);
-      expect(scrollTop).toBeGreaterThan(0);
-
       // Verify the target heading is visible
       const targetId = href?.replace("#", "");
       const targetHeading = page.locator(`#${targetId}`);
       await expect(targetHeading).toBeInViewport();
+
+      // Verify scroll happened
+      await expect
+        .poll(() => page.evaluate(() => window.pageYOffset))
+        .toBeGreaterThan(0);
     });
 
     test("should update active state when scrolling", async ({ page }) => {
@@ -250,7 +256,6 @@ test.describe("TOC Animation Optimizations", () => {
       // Click a desktop TOC link
       const firstLink = page.locator("#toc-nav a").first();
       await firstLink.click();
-      await page.waitForTimeout(1500);
 
       // Check that both desktop and mobile TOC have active state
       const desktopActive = page.locator("#toc-nav a.active").first();
@@ -273,19 +278,14 @@ test.describe("TOC Animation Optimizations", () => {
       // Open mobile TOC drawer
       const toggle = page.locator("#toc-toggle");
       await toggle.click();
-
-      // Wait for drawer to open
-      await page.waitForTimeout(300);
+      const overlay = page.locator("#toc-overlay");
+      await expect(overlay).toHaveClass(/opacity-100/);
 
       // Click first mobile TOC link
       const mobileLink = page.locator("#toc-nav-mobile a").first();
       await mobileLink.click();
 
-      // Wait for scroll and drawer close
-      await page.waitForTimeout(1500);
-
       // Verify drawer is closed (overlay is hidden)
-      const overlay = page.locator("#toc-overlay");
       await expect(overlay).toHaveClass(/opacity-0/);
     });
 
