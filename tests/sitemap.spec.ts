@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 /**
  * Sitemap 测试

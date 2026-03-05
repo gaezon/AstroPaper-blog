@@ -3,7 +3,6 @@ import { type CollectionEntry } from "astro:content";
 import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { SITE } from "@/config";
 import postOgImage from "./og-templates/post";
 import siteOgImage from "./og-templates/site";
@@ -19,7 +18,7 @@ const TRANSPARENT_PNG_FALLBACK = new Uint8Array([
 
 const OG_CACHE_VERSION = 1;
 const DISK_CACHE_DIR = path.resolve(process.cwd(), "tmp", "og-image-cache");
-const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const CURRENT_DIR = import.meta.dirname;
 const TEMPLATE_FILES = [
   path.resolve(CURRENT_DIR, "og-templates/post.js"),
   path.resolve(CURRENT_DIR, "og-templates/site.js"),

@@ -17,6 +17,12 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 - pnpm `>=10 <11`
 - pnpm-only workflow (no npm/yarn/bun)
 
+## Local Node Setup (Optional)
+
+- Recommended for personal use: manage project Node with `fnm` and use Node `24.x` in this repo.
+- Keep a system Node installation for external tools that invoke `node`/`npx` globally (for example, MCP helpers).
+- Before running project commands, verify `node -v` is `24.x` in this repository.
+
 ## Quick start
 
 ```bash
