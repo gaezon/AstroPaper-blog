@@ -3,6 +3,36 @@ import { expect, test, type Page } from '@playwright/test';
 const TEST_POST_PATH = '/posts/hoarder-app-replace-cubox/';
 const SECOND_POST_PATH = '/posts/OBS-safe-broadcast-pitfalls/';
 
+async function clearTwikooSri(page: Page) {
+  await page.evaluate(() => {
+    const roots = document.querySelectorAll<HTMLElement>(
+      '[data-comment-root="true"]'
+    );
+    const comments = roots[roots.length - 1];
+    if (comments) comments.dataset.twikooSri = '';
+  });
+}
+
+async function scrollUntilTwikooLoads(
+  page: Page,
+  getRequestCount: () => number
+) {
+  await expect
+    .poll(async () => {
+      const count = getRequestCount();
+      if (count > 0) {
+        return count;
+      }
+
+      await page.mouse.wheel(0, 900);
+      await page.evaluate(
+        () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+      );
+      return getRequestCount();
+    }, { timeout: 10_000 })
+    .toBe(1);
+}
+
 async function mockTwikooScript(page: Page, delayMs = 0) {
   let twikooRequestCount = 0;
 
@@ -41,13 +71,7 @@ test.describe('Twikoo lazy-load triggers', () => {
     const twikooMock = await mockTwikooScript(page, 150);
 
     await page.goto(TEST_POST_PATH);
-    await page.evaluate(() => {
-      const roots = document.querySelectorAll<HTMLElement>(
-        '[data-comment-root="true"]'
-      );
-      const comments = roots[roots.length - 1];
-      if (comments) comments.dataset.twikooSri = '';
-    });
+    await clearTwikooSri(page);
 
     const commentsContainer = page.locator('#tcomment');
     const loadButton = page.locator('[data-comment-load-trigger]');
@@ -62,35 +86,20 @@ test.describe('Twikoo lazy-load triggers', () => {
     await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
 
     await expect.poll(() => twikooMock.getRequestCount()).toBe(1);
-
   });
 
   test('loads automatically when scrolling near comments section', async ({ page }) => {
     const twikooMock = await mockTwikooScript(page);
 
     await page.goto(TEST_POST_PATH);
-    await page.evaluate(() => {
-      const roots = document.querySelectorAll<HTMLElement>(
-        '[data-comment-root="true"]'
-      );
-      const comments = roots[roots.length - 1];
-      if (comments) comments.dataset.twikooSri = '';
-    });
+    await clearTwikooSri(page);
 
     const loadButton = page.locator('[data-comment-load-trigger]');
 
     await expect(loadButton).toBeVisible();
     expect(twikooMock.getRequestCount()).toBe(0);
 
-    for (let i = 0; i < 18; i++) {
-      await page.mouse.wheel(0, 900);
-      if (twikooMock.getRequestCount() > 0) {
-        break;
-      }
-      await page.waitForTimeout(50);
-    }
-
-    await expect.poll(() => twikooMock.getRequestCount()).toBe(1);
+    await scrollUntilTwikooLoads(page, twikooMock.getRequestCount);
     await expect(page.locator('[data-comment-trigger-ui]')).toHaveCount(0);
     await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
   });
@@ -114,25 +123,11 @@ test.describe('Twikoo lazy-load triggers', () => {
     const commentRoot = page.locator('[data-comment-root="true"]');
     await expect(commentRoot).toHaveCount(1);
 
-    await page.evaluate(() => {
-      const roots = document.querySelectorAll<HTMLElement>(
-        '[data-comment-root="true"]'
-      );
-      const comments = roots[roots.length - 1];
-      if (comments) comments.dataset.twikooSri = '';
-    });
+    await clearTwikooSri(page);
 
     expect(twikooMock.getRequestCount()).toBe(0);
 
-    for (let i = 0; i < 18; i++) {
-      await page.mouse.wheel(0, 900);
-      if (twikooMock.getRequestCount() > 0) {
-        break;
-      }
-      await page.waitForTimeout(50);
-    }
-
-    await expect.poll(() => twikooMock.getRequestCount()).toBe(1);
+    await scrollUntilTwikooLoads(page, twikooMock.getRequestCount);
     await expect(page.locator('[data-comment-trigger-ui]')).toHaveCount(0);
     await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
   });
@@ -152,25 +147,11 @@ test.describe('Twikoo lazy-load triggers', () => {
     await page.locator(`a[href="${SECOND_POST_PATH}"]`).first().click();
     await expect(page).toHaveURL(SECOND_POST_PATH);
 
-    await page.evaluate(() => {
-      const roots = document.querySelectorAll<HTMLElement>(
-        '[data-comment-root="true"]'
-      );
-      const comments = roots[roots.length - 1];
-      if (comments) comments.dataset.twikooSri = '';
-    });
+    await clearTwikooSri(page);
 
     expect(twikooMock.getRequestCount()).toBe(0);
 
-    for (let i = 0; i < 18; i++) {
-      await page.mouse.wheel(0, 900);
-      if (twikooMock.getRequestCount() > 0) {
-        break;
-      }
-      await page.waitForTimeout(50);
-    }
-
-    await expect.poll(() => twikooMock.getRequestCount()).toBe(1);
+    await scrollUntilTwikooLoads(page, twikooMock.getRequestCount);
     await expect(page.locator('[data-comment-trigger-ui]')).toHaveCount(0);
     await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
   });
