@@ -36,8 +36,9 @@ if (typeof unifiedCommentPaths === "object") {
 }
 
 // https://astro.build/config
-// Enable build-time mermaid rendering only in GitHub Actions where Playwright browsers are installed
-// Falls back to client-side rendering in other environments (e.g., local dev, Vercel)
+// Enable build-time Mermaid rendering only in GitHub Actions where Playwright browsers are installed.
+// In other environments (e.g., local dev, Vercel), the plugin is skipped and raw mermaid code blocks remain.
+// This repo does not auto-inject a Mermaid client-side renderer by default.
 const shouldRenderMermaidAtBuildTime = !!process.env.GITHUB_ACTIONS;
 
 type RehypePluginsList = NonNullable<
@@ -174,7 +175,7 @@ export default defineConfig({
       [remarkCollapse, getI18nCollapseConfig()],
     ],
     rehypePlugins: [
-      // Build-time Mermaid rendering in GitHub Actions; falls back to client-side rendering in other environments
+      // Build-time Mermaid rendering in GitHub Actions only; otherwise this plugin is skipped.
       ...mermaidConfig,
       // Normalize Markdown image priority and fallback rendering attributes
       rehypeImageSize,

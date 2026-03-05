@@ -1,174 +1,74 @@
-# 双语评论系统自动映射指南
+# 双语评论映射指南
 
-本博客实现了智能的双语评论自动映射系统，支持中英文文章评论的自动同步。
+本项目通过构建期脚本自动建立中英文文章映射，用于统一评论路径与双语页面关联。
 
-## 功能特性
+## 当前机制（推荐理解）
 
-### 阶段一：基于 originalTitle 的自动映射
+- 核心字段：`originalTitle`
+  - 中文文章与英文文章使用同一个 `originalTitle` 值
+  - 优先按 `originalTitle` 精确匹配
+- 兜底策略：相似度匹配
+  - 当仍有未被 `originalTitle` 成功配对的英文文章时，脚本会基于 slug/title 相似度为其寻找最佳中文候选
+  - 默认阈值：`0.6`
+- 产物文件：`src/utils/generated/bilingualMapping.ts`
+  - `dynamicSlugMapping`: 英文 slug 到中文 slug
+  - `unifiedCommentPaths`: 中英文文章到统一评论路径的关系
+  - `mappingMetadata`: 生成统计信息
 
-- 通过 `originalTitle` 字段建立中英文文章关联
-- 零配置，无需手动维护映射表
-- 向后兼容现有文章
+## 相关文件
 
-### 阶段二：构建时智能发现
+- 生成脚本：`scripts/auto-discover-bilingual.ts`
+- 生成命令：`pnpm generate:bilingual-mapping`
+- 构建流程：`pnpm build` / `pnpm build:strict`（已自动包含映射生成）
 
-- 自动扫描和分析双语文章
-- 基于文件名和标题相似度智能匹配
-- 生成动态映射表，提供匹配置信度
+## 使用方式
 
-## 使用方法
+### 1) 维护 frontmatter
 
-### 新建双语文章
+中文文章（`src/data/blog/`）：
 
-1. **中文文章**（`src/data/blog/`）：
+```yaml
+---
+title: "中文文章标题"
+originalTitle: "中文文章标题"
+---
+```
 
-   ```yaml
-   ---
-   title: "中文文章标题"
-   originalTitle: "中文文章标题" # 重要：用于双语关联
-   ---
-   ```
+英文文章（`src/data/blog/en/`）：
 
-2. **英文文章**（`src/data/blog/en/`）：
-   ```yaml
-   ---
-   title: "English Article Title"
-   originalTitle: "中文文章标题" # 与中文文章保持一致
-   ---
-   ```
+```yaml
+---
+title: "English Article Title"
+originalTitle: "中文文章标题"
+---
+```
 
-### 自动生成映射
+### 2) 生成映射
 
 ```bash
-# 手动触发映射生成
-pnpm run generate:bilingual-mapping
-
-# 完整构建（自动包含映射生成）
-pnpm run build
+pnpm generate:bilingual-mapping
 ```
 
-## 技术实现
+### 3) 发布前检查
 
-### 映射生成流程
+- 运行 `pnpm build:strict`
+- 查看脚本输出中是否出现「低置信度匹配」
 
-1. **originalTitle 匹配**（优先级：高）
-   - 通过 `originalTitle` 字段精确匹配
-   - 置信度：1.0
+## 常见问题
 
-2. **相似度匹配**（优先级：中）
-   - 基于 slug 和标题相似度
-   - 综合评分算法（slug 70% + 标题 30%）
-   - 置信度阈值：0.6
+### 匹配失败
 
-### 输出文件
+- 检查中英文文章的 `originalTitle` 是否一致
+- 确认英文文章不处于 `draft: true`
+- 重新执行 `pnpm generate:bilingual-mapping`
 
-- **动态映射表**：`src/utils/generated/bilingualMapping.ts`
-- **包含内容**：
-  - `dynamicSlugMapping`: 英文 slug 到中文 slug 的映射
-  - `unifiedCommentPaths`: 统一评论路径信息
-  - `mappingMetadata`: 映射统计信息
+### 出现低置信度匹配
 
-### 评论路径生成规则
+- 优先补齐或修正 `originalTitle`
+- 如确有必要，再调整 slug 以提高相似度可读性
 
-```typescript
-// 阶段二：使用动态生成的统一路径
-if (unifiedPaths && post.data.originalTitle) {
-  const unifiedInfo = unifiedPaths[post.data.originalTitle];
-  return unifiedInfo?.unifiedCommentPath;
-}
+## 维护建议
 
-// 阶段一：基于 originalTitle 生成路径
-if (post.data.originalTitle) {
-  return `/comments/${slugify(originalTitle)}/`;
-}
-
-// 兜底策略
-return `/comments/${slugify(title || id)}/`;
-```
-
-## 匹配报告解读
-
-运行 `pnpm run generate:bilingual-mapping` 后的输出示例：
-
-```
-🔍 开始自动发现双语文章配对...
-📚 发现 9 篇中文文章，10 篇英文文章
-✅ 通过 originalTitle 匹配 7 对文章
-🔍 剩余 3 篇英文文章待匹配
-🎯 通过相似度匹配 1 对文章
-
-📊 匹配报告:
-总共匹配 8 对文章
-置信度分布:
-  1: 7 对      # originalTitle 匹配
-  0.7: 1 对    # 相似度匹配
-
-⚠️ 低置信度匹配（需要人工检查）:
-  article-zh <-> article-en (0.74)
-```
-
-## 维护指南
-
-### 新文章最佳实践
-
-1. **确保 originalTitle 一致**：中英文版本使用相同的 `originalTitle`
-2. **文件命名规范**：建议使用描述性的 slug
-3. **运行构建验证**：发布前运行完整构建确保映射正确
-
-### 故障排除
-
-#### 匹配失败
-
-- 检查 `originalTitle` 字段是否一致
-- 验证文件名是否包含特殊字符
-- 运行 `pnpm run generate:bilingual-mapping` 查看详细报告
-
-#### 低置信度匹配
-
-- 检查文章 slug 和标题是否合理对应
-- 可能需要手动调整 `originalTitle`
-- 考虑文件重命名以提高相似度
-
-### 向后兼容
-
-- 旧的 `slugMapping.ts` 已移除，不再需要手动维护映射
-- 现有文章通过 `originalTitle` 与构建期的动态映射自动兼容
-- 如需修复历史文章的关联，请统一 `originalTitle` 字段后重新生成映射
-
-## 开发者指南
-
-### 扩展匹配算法
-
-在 `scripts/auto-discover-bilingual.ts` 中：
-
-```javascript
-// 调整相似度权重
-const combinedScore = slugSimilarity * 0.7 + titleSimilarity * 0.3;
-
-// 修改置信度阈值
-if (combinedScore > bestScore && combinedScore > 0.6) {
-  // 匹配逻辑
-}
-```
-
-### 自定义映射规则
-
-可以添加额外的匹配策略：
-
-- 基于发布时间匹配
-- 基于标签匹配
-- 基于内容相似度匹配
-
-## 性能影响
-
-- **构建时**：增加约 1-2 秒映射生成时间
-- **运行时**：无额外性能开销
-- **存储**：动态映射文件约 2-3KB
-
-## 版本历史
-
-### 2025-01-10
-
-- 移除历史遗留的 `slugMapping.ts`，不再依赖手工维护的 slug 对应表
-- 采用 `originalTitle` + 构建期 `auto-discover-bilingual` 输出的映射作为唯一来源
-- 更新 Comment 组件逻辑及相关文档，确保新老文章自动兼容
+- 以 `originalTitle` 作为唯一人工维护入口，不手写映射文件
+- 不要手动编辑 `src/utils/generated/bilingualMapping.ts`
+- 新增双语文章后，养成执行 `pnpm generate:bilingual-mapping` 的习惯

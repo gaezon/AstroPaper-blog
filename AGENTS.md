@@ -59,12 +59,12 @@
 
 ### Key Test Areas
 - **Mermaid Build-time Rendering**: `tests/mermaid-rendering.spec.ts` - Tests `<picture>` element generation and dark mode
-- **Language Switching**: `tests/language-switcher.spec.ts` - Tests bilingual navigation and UI
+- **Language Switching**: `tests/language-switcher.spec.ts` - Tests switcher interaction and listener cleanup
 - **Post Navigation**: `tests/post-navigation.spec.ts` - Tests article navigation boundaries
-- **Legal Links & SEO**: `tests/legal-links.spec.ts` - Tests trailing slashes and canonical URLs
+- **Comments Lazy Load**: `tests/comment-lazy-load.spec.ts` - Tests comment loading behavior
 - **OpenGraph Images**: `tests/og-text-normalization.spec.ts` - Tests OG image generation
-- **Table of Contents**: `tests/toc-animation-optimization.spec.ts` - Tests TOC behavior
-- **Internationalization**: `tests/i18n.spec.ts` - Tests i18n utilities
+- **Table of Contents**: `tests/toc-animation-optimization.spec.ts` - Tests TOC behavior and animation
+- **Internationalization**: `tests/i18n.spec.ts` - Tests i18n routes and locale behavior
 
 ### Test Best Practices
 - Use `test.describe()` blocks to organize related tests
@@ -92,7 +92,7 @@
 
 ## Content & Localization Tips
 
-- Use `pnpm i18n:scaffold-en` or `scripts/create-english-drafts.ts` to seed bilingual articles, then edit drafts under `src/content/`.
+- Use `pnpm i18n:scaffold-en` or `scripts/create-english-drafts.ts` to seed bilingual articles, then edit drafts under `src/data/blog/en/`.
 - Regenerate OpenGraph previews with `pnpm og:preview` after changing layouts or typography tokens.
 
 ### Bilingual Content Management
@@ -126,8 +126,8 @@
 
 ## Deployment & CI/CD
 
-- Build artifacts go to `dist/` directory
-- Pagefind search index copied to `public/` during build
+- Build output is produced via Astro static build and Vercel prebuilt artifacts under `.vercel/output/`
+- Pagefind index is generated during build against `.vercel/output/static`
 - **GitHub Actions Deployment**:
   - `ci.yml` - Runs lint, format, and build on PRs
   - `deploy-preview.yml` - Deploys feature branches to Vercel preview
