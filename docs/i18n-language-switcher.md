@@ -4,28 +4,21 @@
 
 ## 概览
 
-- `src/components/LanguageSwitcher/` 目录包含模块化子组件：
-  - `LanguageSwitcher.astro` - 主入口（根据 `variant` 属性选择变体）
-  - `Dropdown.astro` - 下拉菜单变体（桌面导航、语言 > 2 种时）
-  - `Compact.astro` - 紧凑变体（空间有限的导航按钮）
-  - `Toggle.astro` - 切换变体（双语或侧边栏局部切换）
-  - `client.ts` - 客户端交互逻辑
+- 当前语言切换器由以下文件组成：
+  - `src/components/LanguageSwitcher.astro` - 主入口组件
+  - `src/components/LanguageSwitcher/Dropdown.astro` - 下拉菜单 UI
+  - `src/components/LanguageSwitcher/client.ts` - 客户端交互与事件清理
 - 语言数据与 URL 生成逻辑位于 `src/i18n/utils.ts`，所有链接最终回落到真实的静态页面，确保 SEO 友好。
 - 导航栏需要完整刷新以恢复事件监听，因此语言链接带有 `data-astro-reload` 属性。
 
 ## 快速使用
 
-| 变体       | 推荐场景                | 代码片段                                                            |
-| ---------- | ----------------------- | ------------------------------------------------------------------- |
-| `dropdown` | 桌面导航、语言 > 2 种时 | `<LanguageSwitcher variant="dropdown" override={switchOverride} />` |
-| `compact`  | 空间有限的导航按钮      | `<LanguageSwitcher variant="compact" />`                            |
-| `toggle`   | 双语或侧边栏局部切换    | `<LanguageSwitcher variant="toggle" />`                             |
+当前实现为单一 Dropdown 变体，调用方式如下：
 
 常用参数：
 
 ```astro
 <LanguageSwitcher
-  variant="dropdown"
   class="mobile-dropdown"
   override={{ en: "/en/about/", "zh-CN": "/about/" }}
 />
@@ -45,7 +38,7 @@
 
 - 桌面端容器：`.lang-switcher-container` 使用 Flex 排版，保持导航对齐。
 - 移动端容器：`.lang-switcher-mobile` 在汉堡菜单展开时显示，按钮宽度占满，触摸面积 ≥ 44px。
-- `focus-outline`、ARIA 属性、`data-astro-reload` 已内建，更新样式时不要去掉。
+- `focus-outline`、ARIA 属性、`data-astro-reload` 已内建，更新样式时不要移除。
 - 若自定义样式，确保 `/src/components/Header.astro` 内的媒体查询与布局同步调整。
 
 ## 自动化与手动测试
@@ -53,6 +46,7 @@
 ### Playwright 覆盖
 
 - `tests/i18n.spec.ts`：回归语言切换、英文导航、URL 保持查询参数等核心流程。
+- `tests/language-switcher.spec.ts`：验证视图切换后的下拉可用性与事件监听清理。
 - `tests/og-text-normalization.spec.ts`：验证 OG 图标题的 Unicode 归一化逻辑。
 
 运行示例：
@@ -72,6 +66,6 @@ pnpm exec playwright test tests/og-text-normalization.spec.ts
 ## 维护清单
 
 - 调整导航结构时同步检查 `switchOverride` 传入路径。
-- 更新 `getShortLabel` 或样式时，同时在深色/浅色主题下验证可读性。
+- 更新语言标签展示或样式时，同时在深色/浅色主题下验证可读性。
 - 新增 Playwright 场景时记得退出本地 dev server 后执行，以免缓存影响。
 - 需要临时关闭语言切换器时，可在 Header 中隐藏容器，保留组件以减少回归成本。
