@@ -1,36 +1,13 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { getCollection } from "astro:content";
-import Main from "@/layouts/Main.astro";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
-import Card from "@/components/Card.astro";
-import Pagination from "@/components/Pagination.astro";
-import getSortedPosts from "@/utils/getSortedPosts";
-import { SITE } from "@/config";
-import { t } from "@/i18n/utils";
+import PostListPage from "@/components/PostListPage.astro";
+import { getPaginatedPostPaths } from "@/utils/i18n-pages";
 
 export const getStaticPaths = (async ({ paginate }) => {
-  const posts = await getCollection("blog", ({ data }) => !data.draft);
-  return paginate(getSortedPosts(posts), { pageSize: SITE.postPerPage });
+  return getPaginatedPostPaths("zh-CN", paginate);
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
-const pageTitle = t(Astro, "post.listTitle");
-const pageDescription = t(Astro, "post.listDescription");
-const layoutTitle = `${pageTitle} | ${SITE.title}`;
 ---
 
-<Layout title={layoutTitle} description={pageDescription}>
-  <Header />
-  <Main pageTitle={pageTitle} pageDesc={pageDescription}>
-    <ul>
-      {page.data.map(data => <Card {...data} />)}
-    </ul>
-  </Main>
-
-  <Pagination {page} />
-
-  <Footer noMarginTop={page.lastPage > 1} />
-</Layout>
+<PostListPage {page} />

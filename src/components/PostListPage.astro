@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Main from "@/layouts/Main.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import Pagination from "@/components/Pagination.astro";
+import { getCurrentLocale, t } from "@/i18n/utils";
+import { getLocalizedSiteTitle, normalizeBlogLocale } from "@/utils/i18n-pages";
+
+const { page } = Astro.props;
+
+const currentLocale = normalizeBlogLocale(getCurrentLocale(Astro));
+const pageTitle = t(Astro, "post.listTitle");
+const pageDescription = t(Astro, "post.listDescription");
+const layoutTitle = `${pageTitle} | ${getLocalizedSiteTitle(currentLocale)}`;
+const pageEntries = page.data as CollectionEntry<"blog" | "blog-en">[];
+---
+
+<Layout title={layoutTitle} description={pageDescription}>
+  <Header />
+  <Main pageTitle={pageTitle} pageDesc={pageDescription}>
+    <ul>
+      {pageEntries.map(data => <Card {...data} />)}
+    </ul>
+  </Main>
+
+  <Pagination {page} />
+
+  <Footer noMarginTop={page.lastPage > 1} />
+</Layout>

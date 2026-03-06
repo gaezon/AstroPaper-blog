@@ -1,57 +1,14 @@
 ---
-import { getCollection } from "astro:content";
 import type { GetStaticPathsOptions } from "astro";
-import Main from "@/layouts/Main.astro";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
-import Card from "@/components/Card.astro";
-import Pagination from "@/components/Pagination.astro";
-import getUniqueTags from "@/utils/getUniqueTags";
-import getPostsByTag from "@/utils/getPostsByTag";
-import { SITE } from "@/config";
-import { t } from "@/i18n/utils";
-import { getTagSwitchOverride } from "@/utils/getTagSwitchOverride";
+import TagPostsPage from "@/components/TagPostsPage.astro";
+import { getPaginatedTagPaths } from "@/utils/i18n-pages";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-  const posts = await getCollection("blog");
-  const tags = getUniqueTags(posts);
-
-  return tags.flatMap(({ tag, tagName }) => {
-    const tagPosts = getPostsByTag(posts, tag);
-
-    return paginate(tagPosts, {
-      params: { tag },
-      props: { tagName },
-      pageSize: SITE.postPerPage,
-    });
-  });
+  return getPaginatedTagPaths("zh-CN", paginate);
 }
 
-const params = Astro.params;
-const { tag } = params;
+const { tag } = Astro.params;
 const { page, tagName } = Astro.props;
-const switchOverride = await getTagSwitchOverride(Astro);
-const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
-const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}.`;
 ---
 
-<Layout title={`${pageTitle} | ${SITE.title}`} description={pageDescription}>
-  <Header switchOverride={switchOverride} />
-  <Main
-    pageTitle={[`${t(Astro, "tags.title")}:`, `${tagName}`]}
-    titleTransition={tag}
-    pageDesc={pageDescription}
-  >
-    <h1 slot="title" transition:name={tag}>
-      {`${t(Astro, "tags.title")}:${tag}`}
-    </h1>
-    <ul>
-      {page.data.map(data => <Card {...data} />)}
-    </ul>
-  </Main>
-
-  <Pagination {page} />
-
-  <Footer noMarginTop={page.lastPage > 1} />
-</Layout>
+<TagPostsPage {page} tag={tag} {tagName} />

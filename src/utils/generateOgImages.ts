@@ -4,6 +4,11 @@ import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE } from "@/config";
+import {
+  getLocalizedSiteDescription,
+  getLocalizedSiteTitle,
+  type BlogLocale,
+} from "@/utils/i18n-pages";
 import postOgImage from "./og-templates/post";
 import siteOgImage from "./og-templates/site";
 
@@ -31,7 +36,7 @@ const PNG_SIGNATURE = new Uint8Array([
 const MIN_PNG_BYTES = 24;
 
 const postOgImageCache = new Map<string, Promise<Uint8Array>>();
-let siteOgImageCache: Promise<Uint8Array> | null = null;
+const siteOgImageCache = new Map<BlogLocale, Promise<Uint8Array>>();
 let templateFingerprintPromise: Promise<string> | null = null;
 
 function createDigest(input: string) {
@@ -104,15 +109,20 @@ async function buildPostDiskCacheKey(
   return createDigest(payload);
 }
 
-async function buildSiteDiskCacheKey() {
+async function buildSiteDiskCacheKey(
+  locale: BlogLocale,
+  title: string,
+  description: string
+) {
   const templateFingerprint = await getTemplateFingerprint();
   const payload = JSON.stringify({
     templateFingerprint,
     type: "site",
-    title: SITE.title,
-    desc: SITE.desc,
+    locale,
+    title,
+    desc: description,
     website: SITE.website,
-    lang: SITE.lang,
+    lang: locale,
   });
 
   return createDigest(payload);
@@ -194,15 +204,23 @@ export async function generateOgImageForPost(
   }
 }
 
-export async function generateOgImageForSite() {
-  if (!siteOgImageCache) {
-    siteOgImageCache = (async () => {
+export async function generateOgImageForSite(locale: BlogLocale = "zh-CN") {
+  let job = siteOgImageCache.get(locale);
+  if (!job) {
+    const title = getLocalizedSiteTitle(locale);
+    const description = getLocalizedSiteDescription(locale);
+
+    job = (async () => {
       try {
-        const diskKey = await buildSiteDiskCacheKey();
+        const diskKey = await buildSiteDiskCacheKey(locale, title, description);
         const diskCached = await readCachedPng(diskKey);
         if (diskCached) return diskCached;
 
-        const svg = await siteOgImage();
+        const svg = await siteOgImage({
+          title,
+          description,
+          website: SITE.website,
+        });
         const rendered = toUint8Array(svgBufferToPngBuffer(svg));
 
         if (rendered !== TRANSPARENT_PNG_FALLBACK) {
@@ -215,18 +233,19 @@ export async function generateOgImageForSite() {
         return TRANSPARENT_PNG_FALLBACK;
       }
     })();
+    siteOgImageCache.set(locale, job);
   }
 
   try {
-    const cachedImage = await siteOgImageCache;
+    const cachedImage = await job;
     if (cachedImage === TRANSPARENT_PNG_FALLBACK) {
-      siteOgImageCache = null;
+      siteOgImageCache.delete(locale);
     }
 
     return cachedImage.slice();
   } catch (error) {
     console.error("Error awaiting site OG image cache:", error);
-    siteOgImageCache = null;
+    siteOgImageCache.delete(locale);
     return TRANSPARENT_PNG_FALLBACK.slice();
   }
 }

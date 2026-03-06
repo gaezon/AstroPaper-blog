@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro";
-import { generateOgImageForSite } from "@/utils/generateOgImages";
-import { createOgResponse } from "@/utils/og-response";
+import { createLocalizedSiteOgResponse } from "@/utils/i18n-api";
 
 export const GET: APIRoute = async () => {
-  const image = await generateOgImageForSite();
-  return createOgResponse(image);
+  return createLocalizedSiteOgResponse("zh-CN");
 };
