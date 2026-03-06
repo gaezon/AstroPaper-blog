@@ -1,9 +1,8 @@
 import satori from "satori";
-import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
 import { createOgFrame, createFooter } from "./shared";
 
-export default async () => {
+export default async ({ title, description, website }) => {
   const mainContent = [
     {
       type: "div",
@@ -23,26 +22,26 @@ export default async () => {
             type: "p",
             props: {
               style: { fontSize: 72, fontWeight: "bold" },
-              children: SITE.title,
+              children: title,
             },
           },
           {
             type: "p",
             props: {
               style: { fontSize: 28 },
-              children: SITE.desc,
+              children: description,
             },
           },
         ],
       },
     },
-    createFooter(new URL(SITE.website).hostname),
+    createFooter(new URL(website).hostname),
   ];
 
   return satori(createOgFrame(mainContent), {
     width: 1200,
     height: 630,
     embedFont: true,
-    fonts: await loadGoogleFonts(SITE.title + SITE.desc + SITE.website),
+    fonts: await loadGoogleFonts(title + description + website),
   });
 };

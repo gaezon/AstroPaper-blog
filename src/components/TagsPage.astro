@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Tag from "@/components/Tag.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import getUniqueTags from "@/utils/getUniqueTags";
+import { getCurrentLocale, t } from "@/i18n/utils";
+import { getLocalizedSiteTitle, normalizeBlogLocale } from "@/utils/i18n-pages";
+
+interface Props {
+  posts: CollectionEntry<"blog" | "blog-en">[];
+}
+
+const { posts } = Astro.props;
+
+const currentLocale = normalizeBlogLocale(getCurrentLocale(Astro));
+const tags = getUniqueTags(posts);
+const pageTitle = t(Astro, "tags.title");
+const pageDescription = t(Astro, "tags.description");
+const layoutTitle = `${pageTitle} | ${getLocalizedSiteTitle(currentLocale)}`;
+---
+
+<Layout title={layoutTitle} description={pageDescription}>
+  <Header />
+  <Main pageTitle={pageTitle} pageDesc={t(Astro, "tags.allTags")}>
+    <ul>
+      {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} size="lg" />)}
+    </ul>
+  </Main>
+  <Footer />
+</Layout>

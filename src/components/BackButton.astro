@@ -24,15 +24,17 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 }
 
 <script>
-  /* Update Search Praam */
+  import { sanitizePath } from "@/utils/url";
+
+  /* Update back button URL from session storage */
   function updateGoBackUrl() {
     const backButton: HTMLAnchorElement | null =
       document.querySelector("#back-button");
 
-    const backUrl = sessionStorage.getItem("backUrl");
+    const storedBackUrl = sessionStorage.getItem("backUrl");
 
-    if (backUrl && backButton) {
-      backButton.href = backUrl;
+    if (storedBackUrl && backButton) {
+      backButton.href = sanitizePath(storedBackUrl);
     }
   }
 

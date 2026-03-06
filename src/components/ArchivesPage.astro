@@ -1,0 +1,90 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
+import { getCurrentLocale, t } from "@/i18n/utils";
+import { getLocalizedSiteTitle, normalizeBlogLocale } from "@/utils/i18n-pages";
+
+interface Props {
+  posts: CollectionEntry<"blog" | "blog-en">[];
+}
+
+const { posts } = Astro.props;
+
+const currentLocale = normalizeBlogLocale(getCurrentLocale(Astro));
+const pageTitle = t(Astro, "archives.title");
+const pageDescription = t(Astro, "archives.description");
+const layoutTitle = `${pageTitle} | ${getLocalizedSiteTitle(currentLocale)}`;
+
+const monthKeys = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+];
+
+const months = monthKeys.map(key => t(Astro, `datetime.months.${key}`));
+---
+
+<Layout title={layoutTitle} description={pageDescription}>
+  <Header />
+  <Main pageTitle={pageTitle} pageDesc={pageDescription}>
+    {
+      Object.entries(
+        getPostsByGroupCondition(posts, post =>
+          post.data.pubDatetime.getFullYear()
+        )
+      )
+        .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+        .map(([year, yearGroup]) => (
+          <div>
+            <span class="text-2xl font-bold">{year}</span>
+            <sup class="text-sm">{yearGroup.length}</sup>
+            {Object.entries(
+              getPostsByGroupCondition(
+                yearGroup,
+                post => post.data.pubDatetime.getMonth() + 1
+              )
+            )
+              .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
+              .map(([month, monthGroup]) => (
+                <div class="flex flex-col sm:flex-row">
+                  <div class="mt-6 min-w-36 text-lg sm:my-6">
+                    <span class="font-bold">{months[Number(month) - 1]}</span>
+                    <sup class="text-xs">{monthGroup.length}</sup>
+                  </div>
+                  <ul>
+                    {monthGroup
+                      .sort(
+                        (a, b) =>
+                          Math.floor(
+                            new Date(b.data.pubDatetime).getTime() / 1000
+                          ) -
+                          Math.floor(
+                            new Date(a.data.pubDatetime).getTime() / 1000
+                          )
+                      )
+                      .map(data => (
+                        <Card {...data} />
+                      ))}
+                  </ul>
+                </div>
+              ))}
+          </div>
+        ))
+    }
+  </Main>
+  <Footer />
+</Layout>
