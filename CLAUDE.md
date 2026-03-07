@@ -53,6 +53,7 @@ This file provides concise, repository-specific guidance for coding agents.
 - `src/data/blog/en/` - English posts
 - `src/pages/` - Route pages
 - `src/components/` - UI components
+- `src/scripts/` - Astro-processed browser runtime modules loaded from `src/`
 - `src/i18n/` - Locale config and dictionaries
 - `src/types/` - Shared TypeScript contracts for reusable route and component data shapes
 - `src/utils/generated/` - Auto-generated bilingual mapping (do not edit manually)
@@ -88,6 +89,12 @@ This file provides concise, repository-specific guidance for coding agents.
 - Current implementation: dropdown variant only (`src/components/LanguageSwitcher/Dropdown.astro`)
 - Client behavior and event cleanup: `src/components/LanguageSwitcher/client.ts`
 - Uses `data-astro-reload` on language links to ensure reliable re-binding after navigation
+
+### Theme runtime
+
+- First-paint theme selection stays inline in `src/layouts/Layout.astro` to avoid flash of incorrect theme
+- Deferred interactive theme logic lives in `src/scripts/toggle-theme.ts` so Astro/Vite can type-check and bundle it
+- Prefer Astro-processed `src/` scripts for browser runtime modules instead of `public/` copies when TypeScript or bundling is needed
 
 ### Mermaid rendering
 

@@ -4,6 +4,7 @@
 
 - `src/pages/` hosts route-level Astro files; co-locate page-specific assets under matching directories.
 - `src/components/` and `src/layouts/` hold reusable UI fragments, while `src/styles/` centralizes global Tailwind and CSS utilities.
+- `src/scripts/` holds Astro-processed browser runtime modules that should be bundled from `src/` instead of copied from `public/`.
 - Content, metadata, and bilingual mapping live under `src/content.config.ts`, `src/data/`, and `public/`. Use `scripts/` helpers for i18n scaffolding and OpenGraph assets.
 - Automated Playwright specs live in `tests/`; artifacts land in `test-results/`. Keep fixtures small and clear.
 
@@ -21,6 +22,7 @@
 - `src/utils/generated/` - Auto-generated bilingual mapping files
 - `src/utils/og-templates/` - OpenGraph image templates
 - `src/utils/transformers/` - Shiki syntax highlighting transformers
+- `src/scripts/toggle-theme.ts` - Deferred theme runtime; keep first-paint theme boot inline in `src/layouts/Layout.astro`
 - `.github/workflows/` - CI and deployment workflows
 
 ## Build, Test, and Development Commands
