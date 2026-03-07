@@ -1,0 +1,32 @@
+---
+import type { TocItem } from "@/utils/toc/types";
+
+export interface Props {
+  items: TocItem[];
+  level?: number;
+}
+
+const { items, level = 0 } = Astro.props as Props;
+
+const listClass = level === 0 ? "space-y-1.5" : "ml-4 mt-1 space-y-1";
+const linkClass = `block rounded-md border-l-2 border-transparent px-3 py-2 text-sm leading-relaxed text-muted transition-all duration-200 hover:border-accent/30 hover:bg-muted/40 hover:text-accent ${
+  level > 0 ? "ml-2 py-1.5 text-xs" : "font-medium"
+}`;
+---
+
+<ul class={listClass} role="list">
+  {
+    items.map(item => (
+      <li>
+        <a href={`#${item.id}`} class={linkClass}>
+          {item.title}
+        </a>
+        {item.children?.length ? (
+          <div class="mt-2">
+            <Astro.self items={item.children} level={level + 1} />
+          </div>
+        ) : null}
+      </li>
+    ))
+  }
+</ul>

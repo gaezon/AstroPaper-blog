@@ -1,4 +1,8 @@
 /* TOC collapse styles */
+#article .toc-collapse {
+  display: none;
+}
+
 .toc-collapse {
   margin: 1.5rem 0;
   border: 1px solid var(--theme-border);

@@ -1,3 +1,9 @@
+import {
+  TOC_ACTIVE_CLASSES,
+  TOC_INACTIVE_CLASSES,
+  TOC_SCROLL_RESET_DELAY_MS,
+} from "@/utils/toc/constants";
+
 /**
  * Scroll utility functions for consistent scroll behavior across components.
  *
@@ -188,17 +194,8 @@ export function updateTocActiveState(
     clearAll = true,
   } = options || {};
 
-  // Active classes to add
-  const activeClasses = [
-    "active",
-    "text-accent",
-    "bg-muted/40",
-    "border-accent",
-    "font-semibold",
-  ];
-
-  // Inactive classes to remove
-  const inactiveClasses = ["text-muted", "border-transparent"];
+  const activeClasses = [...TOC_ACTIVE_CLASSES];
+  const inactiveClasses = [...TOC_INACTIVE_CLASSES];
 
   if (clearAll) {
     // Clear all active states from both navs
@@ -336,6 +333,6 @@ export function createTocClickHandler(
     timeoutRef.value = window.setTimeout(() => {
       scrollingFlag.value = false;
       timeoutRef.value = null;
-    }, 1200);
+    }, TOC_SCROLL_RESET_DELAY_MS);
   };
 }
