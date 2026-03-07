@@ -64,6 +64,7 @@ src/
   data/blog/en/       English posts
   i18n/               Locale config and dictionaries
   pages/              Astro routes
+  scripts/            Bundled browser runtime modules
   styles/             Global and component styles
   utils/              Shared helpers and generated mapping
 scripts/              Build and content automation scripts
@@ -72,6 +73,7 @@ docs/                 Feature and maintenance docs
 ```
 
 - Mirrored zh/en routes are kept as thin wrappers where possible and delegate shared rendering/data logic to locale-aware components and helpers under `src/components/` and `src/utils/`.
+- Client runtime code that needs TypeScript or bundling should live under `src/scripts/`; the theme runtime keeps a minimal inline first-paint boot in `src/layouts/Layout.astro` and a deferred module in `src/scripts/toggle-theme.ts`.
 
 ## Documentation
 
