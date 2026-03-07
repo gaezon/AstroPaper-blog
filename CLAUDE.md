@@ -33,7 +33,8 @@ This file provides concise, repository-specific guidance for coding agents.
 
 ### Testing
 
-- `pnpm test:unit` - Run Vitest unit tests
+- `pnpm test:unit` - Run the repository's Vitest suite
+- `pnpm exec vitest run tests/unit/<file>.spec.ts` - Run one targeted Vitest unit test
 - `pnpm test:sitemap` - Build + sitemap Playwright checks
 - `pnpm exec playwright test` - Run all Playwright E2E tests
 - `pnpm exec playwright test tests/<file>.spec.ts` - Run one Playwright spec
@@ -53,6 +54,7 @@ This file provides concise, repository-specific guidance for coding agents.
 - `src/pages/` - Route pages
 - `src/components/` - UI components
 - `src/i18n/` - Locale config and dictionaries
+- `src/types/` - Shared TypeScript contracts for reusable route and component data shapes
 - `src/utils/generated/` - Auto-generated bilingual mapping (do not edit manually)
 - `scripts/` - Content/build automation scripts
 - `tests/` - Playwright specs
@@ -62,6 +64,23 @@ This file provides concise, repository-specific guidance for coding agents.
 - Chinese routes have no locale prefix (`/posts/...`)
 - English routes use `/en/` prefix (`/en/posts/...`)
 - Language relationship uses `originalTitle` in frontmatter
+- Mirrored zh/en routes should stay thin and delegate shared rendering/data logic to locale-aware page components or helpers
+
+### Shared locale route architecture
+
+- Shared page components:
+  - `src/components/HomePage.astro`
+  - `src/components/PostListPage.astro`
+  - `src/components/ArchivesPage.astro`
+  - `src/components/TagsPage.astro`
+  - `src/components/TagPostsPage.astro`
+- Shared pagination and locale contracts:
+  - `src/types/pagination.ts` - shared paginated page shape for locale-aware list and tag routes
+  - `src/utils/blog-locale.ts` - strict `BlogLocale` helpers and fail-fast locale normalization
+- Shared locale helpers:
+  - `src/utils/i18n-pages.ts` - localized collection selection, page titles, localized paths, and paginated route helpers; keep focused on page/path logic
+  - `src/utils/i18n-api.ts` - localized RSS and OG endpoint helpers
+- Route files under `src/pages/` and `src/pages/en/` should remain lightweight wrappers when a page exists in both locales
 
 ### Language switcher
 

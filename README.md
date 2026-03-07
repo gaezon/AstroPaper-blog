@@ -49,9 +49,11 @@ Open `http://localhost:4321`.
 | `pnpm og:preview`                 | Preview OG images locally                              |
 | `pnpm twikoo:sri:check`           | Verify Twikoo SRI hash                                 |
 | `pnpm twikoo:sri:update`          | Update Twikoo SRI hash                                 |
-| `pnpm test:unit`                  | Run Vitest unit tests                                  |
+| `pnpm test:unit`                  | Run the repository's Vitest suite                      |
 | `pnpm test:sitemap`               | Build + sitemap Playwright checks                      |
 | `pnpm exec playwright test`       | Run E2E tests                                          |
+
+- For a targeted Vitest run, use `pnpm exec vitest run tests/unit/<file>.spec.ts`.
 
 ## Project structure
 
@@ -68,6 +70,8 @@ scripts/              Build and content automation scripts
 tests/                Playwright E2E tests
 docs/                 Feature and maintenance docs
 ```
+
+- Mirrored zh/en routes are kept as thin wrappers where possible and delegate shared rendering/data logic to locale-aware components and helpers under `src/components/` and `src/utils/`.
 
 ## Documentation
 

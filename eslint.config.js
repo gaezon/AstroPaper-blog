@@ -15,7 +15,14 @@ export default [
   },
   { rules: { "no-console": "error" } },
   {
-    ignores: ["dist/**", ".astro", "public/**", ".vercel/**"],
+    ignores: [
+      "dist/**",
+      ".astro",
+      "public/**",
+      ".vercel/**",
+      "test-results/**",
+      "playwright-report/**",
+    ],
   },
   {
     files: [

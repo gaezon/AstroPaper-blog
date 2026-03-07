@@ -4,10 +4,10 @@ import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE } from "@/config";
+import type { BlogLocale } from "@/utils/blog-locale";
 import {
   getLocalizedSiteDescription,
   getLocalizedSiteTitle,
-  type BlogLocale,
 } from "@/utils/i18n-pages";
 import postOgImage from "./og-templates/post";
 import siteOgImage from "./og-templates/site";

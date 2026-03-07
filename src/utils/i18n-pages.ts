@@ -2,17 +2,14 @@ import type { GetStaticPaths } from "astro";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getCollection } from "astro:content";
 import { SITE } from "@/config";
+import type { BlogLocale } from "@/utils/blog-locale";
 import getPostsByTag from "@/utils/getPostsByTag";
 import getSortedPosts from "@/utils/getSortedPosts";
 import getUniqueTags from "@/utils/getUniqueTags";
 import { ensureTrailingSlash } from "@/utils/url";
 
-export type BlogLocale = "zh-CN" | "en";
+// Keep this module focused on locale-aware page and path helpers.
 export type BlogCollectionName = "blog" | "blog-en";
-
-export function normalizeBlogLocale(locale: string): BlogLocale {
-  return locale === "en" ? "en" : "zh-CN";
-}
 
 export function getBlogCollectionName(locale: BlogLocale): BlogCollectionName {
   return locale === "en" ? "blog-en" : "blog";
