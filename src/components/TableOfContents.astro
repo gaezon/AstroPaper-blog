@@ -1,6 +1,10 @@
 ---
 import TocClient from "./TocClient.astro";
-import { extractTocFromContent } from "@/utils/extractToc";
+import TocList from "./TocList.astro";
+import {
+  extractTocFromContent,
+  extractTocFromHeadings,
+} from "@/utils/extractToc";
 import { t } from "@/i18n/utils";
 import type { MarkdownHeading } from "astro";
 import "@/styles/components/toc-collapse.css";
@@ -20,11 +24,14 @@ const {
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
 
-// Server-side: detect whether the content has headings
-// If heading info is not provided, do not show TOC by default
-const hasHeadings =
-  (headings && headings.length > 0) ||
-  (content && extractTocFromContent(content).length > 0);
+const tocItems =
+  headings && headings.length > 0
+    ? extractTocFromHeadings(headings)
+    : content
+      ? extractTocFromContent(content)
+      : [];
+
+const hasHeadings = tocItems.length > 0;
 ---
 
 {
@@ -77,15 +84,8 @@ const hasHeadings =
           </button>
         </div>
 
-        {/* TOC list container, filled by client-side JavaScript */}
-        <div id="toc-nav" class="space-y-1.5" role="list">
-          {/* Loading placeholder */}
-          <div id="toc-loading" class="space-y-3">
-            <div class="h-4 animate-pulse rounded-md bg-muted/40" />
-            <div class="h-4 w-4/5 animate-pulse rounded-md bg-muted/40" />
-            <div class="ml-4 h-3.5 w-3/5 animate-pulse rounded-md bg-muted/30" />
-            <div class="ml-4 h-3.5 w-2/3 animate-pulse rounded-md bg-muted/30" />
-          </div>
+        <div id="toc-nav">
+          <TocList items={tocItems} />
         </div>
       </nav>
 
@@ -142,8 +142,13 @@ const hasHeadings =
         role="dialog"
         aria-labelledby="toc-title"
         aria-modal="true"
+        aria-hidden="true"
+        inert
       >
-        <div class="fixed top-0 right-0 h-full w-80 max-w-[90vw] translate-x-full transform border-l border-border/70 bg-background shadow-2xl transition-transform duration-250">
+        <div
+          class="fixed top-0 right-0 h-full w-80 max-w-[90vw] translate-x-full transform border-l border-border/70 bg-background shadow-2xl transition-transform duration-250"
+          aria-hidden="true"
+        >
           <div class="flex items-center justify-between border-b border-border/70 p-5">
             <h3
               id="toc-title"
@@ -172,7 +177,7 @@ const hasHeadings =
             role="navigation"
             aria-label={tr("ui.tableOfContents")}
           >
-            {/* Mobile TOC content, filled by client-side JavaScript */}
+            <TocList items={tocItems} />
           </nav>
         </div>
       </div>

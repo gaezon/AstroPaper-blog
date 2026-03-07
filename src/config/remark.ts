@@ -106,7 +106,7 @@ export function getI18nCollapseConfig(): RemarkCollapseOptions {
  */
 export const tocConfig = {
   heading: "contents|目录|table of contents",
-  maxDepth: 3,
+  maxDepth: 2,
   tight: true,
   ordered: false,
   prefix: "",

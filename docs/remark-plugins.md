@@ -23,7 +23,7 @@
 ```typescript
 export const tocConfig = {
   heading: "contents|目录|table of contents", // 支持多语言目录标题
-  maxDepth: 3, // 最大目录深度
+  maxDepth: 2, // 博客默认只保留主章节层级
   tight: true, // 紧凑模式
   ordered: false, // 无序列表
   prefix: "", // 无前缀
@@ -33,9 +33,16 @@ export const tocConfig = {
 ### 功能特性
 
 - 支持中英文目录标题识别
-- 限制目录层级避免过于深层
+- 默认限制为更克制的博客目录层级，避免侧边导航过长
 - 使用无序列表保持简洁
 - 紧凑模式减少空白空间
+
+### 当前博客中的 TOC 策略
+
+- Markdown 中的 `## Table of contents` 仍会在构建阶段由 `remark-toc` 与 `remark-collapse` 处理，主要作为内容层的兼容输入。
+- 文章页真正展示给读者的导航是 `src/components/TableOfContents.astro` 提供的侧边栏 / 移动抽屉 TOC。
+- 当前站点默认仅将主章节标题纳入文章 TOC，以保持博客阅读场景下的扫读效率，避免把过细的小标题全部暴露到侧边栏。
+- 为避免重复导航，正文中的折叠 TOC 在文章样式里默认隐藏，保留侧边栏与移动端抽屉作为主要入口。
 
 ## remark-collapse 配置
 
@@ -195,9 +202,9 @@ function getI18nCollapseConfig(): RemarkCollapseOptions;
 
 ### 3. 性能优化
 
-- 客户端脚本延迟执行
+- 在构建阶段生成 TOC 结构，客户端只做交互增强
 - 避免不必要的 DOM 操作
-- 使用事件委托减少监听器数量
+- 将正文 TOC 与侧边 TOC 分工，减少重复渲染与重复导航
 
 ### 4. 可访问性
 
@@ -250,4 +257,4 @@ function getI18nCollapseConfig(): RemarkCollapseOptions;
 ---
 
 维护者：项目开发团队
-最后更新：2025 年 12 月
+最后更新：2026 年 3 月
