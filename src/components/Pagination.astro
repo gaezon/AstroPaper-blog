@@ -1,26 +1,28 @@
 ---
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import type { BlogPaginatedPage } from "@/types/pagination";
 import LinkButton from "./LinkButton.astro";
 import { t } from "@/i18n/utils";
 
 export interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  page: any;
+  page: BlogPaginatedPage;
 }
 
 const { page } = Astro.props;
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
+const prevUrl = page.url.prev;
+const nextUrl = page.url.next;
 ---
 
 {
   page.lastPage > 1 && (
     <nav class="mt-auto mb-8 flex justify-center" aria-label="Pagination">
       <LinkButton
-        disabled={!page.url.prev}
-        href={page.url.prev as string}
-        class:list={["me-4 select-none", { "opacity-50": !page.url.prev }]}
+        disabled={!prevUrl}
+        href={prevUrl}
+        class:list={["me-4 select-none", { "opacity-50": !prevUrl }]}
         aria-label={tr("pagination.previous")}
       >
         <IconArrowLeft class="inline-block rtl:rotate-180" />
@@ -31,9 +33,9 @@ const tr = (key: string, params?: Record<string, string | number>) =>
         total: page.lastPage,
       })}
       <LinkButton
-        disabled={!page.url.next}
-        href={page.url.next as string}
-        class:list={["ms-4 select-none", { "opacity-50": !page.url.next }]}
+        disabled={!nextUrl}
+        href={nextUrl}
+        class:list={["ms-4 select-none", { "opacity-50": !nextUrl }]}
         aria-label={tr("pagination.next")}
       >
         {tr("pagination.next")}

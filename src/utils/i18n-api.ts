@@ -8,7 +8,7 @@ import {
   getRssTitle,
 } from "@/utils/rss-feed";
 import { getPath } from "@/utils/getPath";
-import type { BlogLocale } from "@/utils/i18n-pages";
+import type { BlogLocale } from "@/utils/blog-locale";
 import { getBlogPosts } from "@/utils/i18n-pages";
 
 type BlogEntry = CollectionEntry<"blog" | "blog-en">;

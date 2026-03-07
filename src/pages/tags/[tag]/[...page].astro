@@ -1,13 +1,20 @@
 ---
-import type { GetStaticPathsOptions } from "astro";
+import type { GetStaticPaths } from "astro";
+import type { BlogTagPaginatedPageProps } from "@/types/pagination";
 import TagPostsPage from "@/components/TagPostsPage.astro";
 import { getPaginatedTagPaths } from "@/utils/i18n-pages";
 
-export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+type Props = BlogTagPaginatedPageProps;
+
+export const getStaticPaths = (async ({ paginate }) => {
   return getPaginatedTagPaths("zh-CN", paginate);
-}
+}) satisfies GetStaticPaths;
 
 const { tag } = Astro.params;
+if (!tag) {
+  throw new Error("Missing tag route parameter.");
+}
+
 const { page, tagName } = Astro.props;
 ---
 

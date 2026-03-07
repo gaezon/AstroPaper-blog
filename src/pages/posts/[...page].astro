@@ -1,7 +1,10 @@
 ---
 import type { GetStaticPaths } from "astro";
+import type { BlogPaginatedPageProps } from "@/types/pagination";
 import PostListPage from "@/components/PostListPage.astro";
 import { getPaginatedPostPaths } from "@/utils/i18n-pages";
+
+type Props = BlogPaginatedPageProps;
 
 export const getStaticPaths = (async ({ paginate }) => {
   return getPaginatedPostPaths("zh-CN", paginate);

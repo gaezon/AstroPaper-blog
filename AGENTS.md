@@ -9,6 +9,15 @@
 
 ### New Module Additions
 - `src/components/LanguageSwitcher/` - Refactored language switcher sub-components
+- `src/components/HomePage.astro` - Shared localized home page renderer
+- `src/components/PostListPage.astro` - Shared localized posts pagination renderer
+- `src/components/ArchivesPage.astro` - Shared localized archives renderer
+- `src/components/TagsPage.astro` - Shared localized tags index renderer
+- `src/components/TagPostsPage.astro` - Shared localized tag posts renderer
+- `src/types/pagination.ts` - Shared pagination contracts for paginated routes and components
+- `src/utils/blog-locale.ts` - Strict blog locale helpers and normalization guard
+- `src/utils/i18n-pages.ts` - Shared locale-aware page and pagination helpers
+- `src/utils/i18n-api.ts` - Shared locale-aware RSS and OG endpoint helpers
 - `src/utils/generated/` - Auto-generated bilingual mapping files
 - `src/utils/og-templates/` - OpenGraph image templates
 - `src/utils/transformers/` - Shiki syntax highlighting transformers
@@ -41,7 +50,7 @@
 ## Coding Style & Naming Conventions
 
 - Prettier (with Astro and Tailwind plugins) enforces 2-space indentation, trailing commas, and quote consistency.
-- Favor TypeScript across new modules; keep strict typings in shared utils (`src/utils/`, `src/types.ts`).
+- Favor TypeScript across new modules; keep strict typings in shared utils (`src/utils/`) and shared type modules (`src/types.ts`, `src/types/`).
 - Use PascalCase for components/layouts, camelCase for functions and helpers, and kebab-case for content slugs and filenames.
 - Tailwind classes should group by layout → spacing → color; avoid unused utilities to keep CSS lean.
 
@@ -50,6 +59,7 @@
 - Chinese routes use no prefix (e.g., `/posts/slug/`)
 - Use `originalTitle` field in frontmatter to link bilingual posts
 - Locale-aware components should handle both `zh-CN` and `en` locales
+- Prefer thin zh/en route wrappers that reuse shared page components or locale helpers instead of duplicating mirrored route logic
 
 ## Testing Guidelines
 
@@ -65,6 +75,7 @@
 - **OpenGraph Images**: `tests/og-text-normalization.spec.ts` - Tests OG image generation
 - **Table of Contents**: `tests/toc-animation-optimization.spec.ts` - Tests TOC behavior and animation
 - **Internationalization**: `tests/i18n.spec.ts` - Tests i18n routes and locale behavior
+- **Pagination Locale Guards**: `tests/pagination-locale.spec.ts` - Tests paginated route prefixes and pagination boundary behavior
 
 ### Test Best Practices
 - Use `test.describe()` blocks to organize related tests
@@ -72,6 +83,7 @@
 - Test both Chinese and English versions of bilingual features
 - Verify `<picture>` elements contain both light and dark SVG sources
 - Test `prefers-color-scheme` media query handling
+- For targeted Vitest runs, prefer `pnpm exec vitest run tests/unit/<file>.spec.ts`
 
 ## Commit & Pull Request Guidelines
 

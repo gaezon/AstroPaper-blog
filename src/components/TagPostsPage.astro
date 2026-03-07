@@ -1,5 +1,5 @@
 ---
-import type { CollectionEntry } from "astro:content";
+import type { BlogTagPaginatedPageProps } from "@/types/pagination";
 import Main from "@/layouts/Main.astro";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
@@ -7,13 +7,12 @@ import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import Pagination from "@/components/Pagination.astro";
 import { getCurrentLocale, t } from "@/i18n/utils";
+import { normalizeBlogLocale } from "@/utils/blog-locale";
 import { getTagSwitchOverride } from "@/utils/getTagSwitchOverride";
-import { getLocalizedSiteTitle, normalizeBlogLocale } from "@/utils/i18n-pages";
+import { getLocalizedSiteTitle } from "@/utils/i18n-pages";
 
-interface Props {
-  page: unknown;
+interface Props extends BlogTagPaginatedPageProps {
   tag: string;
-  tagName: string;
 }
 
 const { page, tag, tagName } = Astro.props;
@@ -23,12 +22,7 @@ const switchOverride = await getTagSwitchOverride(Astro);
 const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
 const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}`;
 const layoutTitle = `${pageTitle} | ${getLocalizedSiteTitle(currentLocale)}`;
-const paginatedPage = page as {
-  data: CollectionEntry<"blog" | "blog-en">[];
-  lastPage: number;
-  [key: string]: unknown;
-};
-const pageEntries = paginatedPage.data;
+const pageEntries = page.data;
 ---
 
 <Layout title={layoutTitle} description={pageDescription}>
@@ -43,7 +37,7 @@ const pageEntries = paginatedPage.data;
     </ul>
   </Main>
 
-  <Pagination page={paginatedPage} />
+  <Pagination {page} />
 
-  <Footer noMarginTop={paginatedPage.lastPage > 1} />
+  <Footer noMarginTop={page.lastPage > 1} />
 </Layout>
