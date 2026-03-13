@@ -35,24 +35,24 @@ Open `http://localhost:4321`.
 
 ## Common commands
 
-| Command                           | Purpose                                                |
-| --------------------------------- | ------------------------------------------------------ |
-| `pnpm dev`                        | Start local dev server                                 |
-| `pnpm build`                      | Fast local build (no `astro check`)                    |
-| `pnpm build:strict`               | CI-equivalent build (`astro check` + build + Pagefind) |
-| `pnpm preview`                    | Preview production build                               |
-| `pnpm lint`                       | Run ESLint                                             |
-| `pnpm format`                     | Format files with Prettier                             |
-| `pnpm format:check`               | Check formatting                                       |
-| `pnpm validate:meta`              | Validate post meta descriptions                        |
-| `pnpm i18n:scaffold-en`           | Generate English draft posts                           |
-| `pnpm generate:bilingual-mapping` | Regenerate bilingual mapping                           |
-| `pnpm og:preview`                 | Preview OG images locally                              |
-| `pnpm twikoo:sri:check`           | Verify Twikoo SRI hash                                 |
-| `pnpm twikoo:sri:update`          | Update Twikoo SRI hash                                 |
-| `pnpm test:unit`                  | Run the repository's Vitest suite                      |
-| `pnpm test:sitemap`               | Build + sitemap Playwright checks                      |
-| `pnpm exec playwright test`       | Run E2E tests                                          |
+| Command                           | Purpose                                                   |
+| --------------------------------- | --------------------------------------------------------- |
+| `pnpm dev`                        | Start local dev server                                    |
+| `pnpm build`                      | Fast local build + Vercel output patch (no `astro check`) |
+| `pnpm build:strict`               | CI-equivalent build + Vercel output patch                 |
+| `pnpm preview`                    | Preview production build                                  |
+| `pnpm lint`                       | Run ESLint                                                |
+| `pnpm format`                     | Format files with Prettier                                |
+| `pnpm format:check`               | Check formatting                                          |
+| `pnpm validate:meta`              | Validate post meta descriptions                           |
+| `pnpm i18n:scaffold-en`           | Generate English draft posts                              |
+| `pnpm generate:bilingual-mapping` | Regenerate bilingual mapping                              |
+| `pnpm og:preview`                 | Preview OG images locally                                 |
+| `pnpm twikoo:sri:check`           | Verify Twikoo SRI hash                                    |
+| `pnpm twikoo:sri:update`          | Update Twikoo SRI hash                                    |
+| `pnpm test:unit`                  | Run the repository's Vitest suite                         |
+| `pnpm test:sitemap`               | Build + sitemap Playwright checks                         |
+| `pnpm exec playwright test`       | Run E2E tests                                             |
 
 - For a targeted Vitest run, use `pnpm exec vitest run tests/unit/<file>.spec.ts`.
 
@@ -89,3 +89,4 @@ docs/                 Feature and maintenance docs
 
 - CI and deploy workflows are under `.github/workflows/`.
 - Production and preview deployments are prebuilt in GitHub Actions and deployed to Vercel with `--prebuilt`.
+- `pnpm build` and `pnpm build:strict` also patch `.vercel/output/config.json` so Vercel prebuilt deployments serve localized zh/en 404 pages.

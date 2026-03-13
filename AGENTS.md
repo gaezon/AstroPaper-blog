@@ -30,8 +30,8 @@
 > **Note:** This project uses **pnpm-only** package management. Do not use npm, yarn, or bun. All commands must be run with pnpm.
 
 - `pnpm dev` launches the Astro dev server with hot reload.
-- `pnpm build` runs a fast local build (no type check): generates bilingual mappings, builds the site, and prepares Pagefind search assets.
-- `pnpm build:strict` runs the full CI-equivalent build with `astro check` + site build + Pagefind.
+- `pnpm build` runs a fast local build (no type check): generates bilingual mappings, builds the site, patches Vercel prebuilt output routes, and prepares Pagefind search assets.
+- `pnpm build:strict` runs the full CI-equivalent build with `astro check` + site build + Vercel prebuilt route patch + Pagefind.
 - `pnpm preview` serves the production build locally.
 - `pnpm lint`, `pnpm format`, and `pnpm format:check` enforce ESLint and Prettier rules.
 - `pnpm exec playwright test` runs the end-to-end suite; append `--headed` for debug runs.
@@ -142,6 +142,7 @@
 ## Deployment & CI/CD
 
 - Build output is produced via Astro static build and Vercel prebuilt artifacts under `.vercel/output/`
+- `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` deploys serve localized zh/en 404 pages correctly
 - Pagefind index is generated during build against `.vercel/output/static`
 - **GitHub Actions Deployment**:
   - `ci.yml` - Runs lint, format, and build on PRs

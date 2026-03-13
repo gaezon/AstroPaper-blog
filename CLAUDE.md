@@ -20,8 +20,8 @@ This file provides concise, repository-specific guidance for coding agents.
 ### Development
 
 - `pnpm dev` - Start local dev server
-- `pnpm build` - Fast build (no `astro check`)
-- `pnpm build:strict` - CI-equivalent build (`astro check` + build + Pagefind)
+- `pnpm build` - Fast build (no `astro check`) + patch Vercel prebuilt output routes
+- `pnpm build:strict` - CI-equivalent build (`astro check` + build + Pagefind) + patch Vercel prebuilt output routes
 - `pnpm preview` - Preview production output
 
 ### Quality and Validation
@@ -65,6 +65,7 @@ This file provides concise, repository-specific guidance for coding agents.
 
 - Chinese routes have no locale prefix (`/posts/...`)
 - English routes use `/en/` prefix (`/en/posts/...`)
+- Localized 404s are emitted as `/404.html` and `/en/404/index.html`; build scripts patch `.vercel/output/config.json` so Vercel `--prebuilt` deploys route missing `/en/*` URLs to the English 404 page.
 - Language relationship uses `originalTitle` in frontmatter
 - Mirrored zh/en routes should stay thin and delegate shared rendering/data logic to locale-aware page components or helpers
 

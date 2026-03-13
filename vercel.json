@@ -1,5 +1,5 @@
 {
-    "installCommand": "pnpm install --frozen-lockfile",
-    "buildCommand": "pnpm build",
-    "trailingSlash": true
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "trailingSlash": true
 }

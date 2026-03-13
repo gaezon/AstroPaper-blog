@@ -30,6 +30,10 @@ export interface Props {
   scrollSmooth?: boolean;
   alternateURLs?: Record<string, string | undefined>;
   disableAutoAlternates?: boolean;
+  disableHreflangAlternates?: boolean;
+  disablePageUrlMeta?: boolean;
+  disableStructuredData?: boolean;
+  robots?: string;
 }
 
 const {
@@ -44,6 +48,10 @@ const {
   scrollSmooth = false,
   alternateURLs = {},
   disableAutoAlternates = false,
+  disableHreflangAlternates = false,
+  disablePageUrlMeta = false,
+  disableStructuredData = false,
+  robots,
 } = Astro.props;
 
 const canonicalURL = ensureTrailingSlash(
@@ -112,21 +120,23 @@ const socialImageURL = new URL(ogImage ?? "/og.png", Astro.url.origin).href;
 
 // Note: When keeping variable examples, avoid unused assignments to satisfy ESLint
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  headline: `${title}`,
-  image: `${socialImageURL}`,
-  datePublished: `${pubDatetime?.toISOString()}`,
-  ...(modDatetime && { dateModified: modDatetime.toISOString() }),
-  author: [
-    {
-      "@type": "Person",
-      name: `${author}`,
-      ...(profile && { url: profile }),
-    },
-  ],
-};
+const structuredData = pubDatetime
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: `${title}`,
+      image: `${socialImageURL}`,
+      datePublished: pubDatetime.toISOString(),
+      ...(modDatetime && { dateModified: modDatetime.toISOString() }),
+      author: [
+        {
+          "@type": "Person",
+          name: `${author}`,
+          ...(profile && { url: profile }),
+        },
+      ],
+    }
+  : null;
 // Restrict Umami tracking to specific domains (avoid local/preview)
 const siteHostname = new URL(SITE.website).hostname;
 ---
@@ -270,16 +280,22 @@ const siteHostname = new URL(SITE.website).hostname;
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={canonicalURL} />
+    {!disablePageUrlMeta && <link rel="canonical" href={canonicalURL} />}
     <meta name="generator" content={Astro.generator} />
+    {robots && <meta name="robots" content={robots} />}
 
     <!-- hreflang tags for SEO -->
     {
-      hreflangLinks.map(link => (
-        <link rel="alternate" hreflang={link.locale} href={link.href} />
-      ))
+      !disableHreflangAlternates &&
+        hreflangLinks.map(link => (
+          <link rel="alternate" hreflang={link.locale} href={link.href} />
+        ))
     }
-    <link rel="alternate" hreflang="x-default" href={xDefaultURL} />
+    {
+      !disableHreflangAlternates && (
+        <link rel="alternate" hreflang="x-default" href={xDefaultURL} />
+      )
+    }
 
     <!-- General Meta Tags -->
     <title>{title}</title>
@@ -291,7 +307,7 @@ const siteHostname = new URL(SITE.website).hostname;
     <!-- Open Graph / Facebook -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={finalDescription} />
-    <meta property="og:url" content={canonicalURL} />
+    {!disablePageUrlMeta && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:image" content={socialImageURL} />
     <meta property="og:locale" content={langTag.replace("-", "_")} />
 
@@ -315,17 +331,25 @@ const siteHostname = new URL(SITE.website).hostname;
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
+    {
+      !disablePageUrlMeta && (
+        <meta property="twitter:url" content={canonicalURL} />
+      )
+    }
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={finalDescription} />
     <meta property="twitter:image" content={socialImageURL} />
 
     <!-- Google JSON-LD Structured data -->
-    <script
-      type="application/ld+json"
-      is:inline
-      set:html={JSON.stringify(structuredData)}
-    />
+    {
+      !disableStructuredData && structuredData && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(structuredData)}
+        />
+      )
+    }
 
     <!-- Enable RSS feed auto-discovery  -->
     <!-- https://docs.astro.build/en/recipes/rss/#enabling-rss-feed-auto-discovery -->
