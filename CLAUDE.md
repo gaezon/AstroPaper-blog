@@ -13,6 +13,7 @@ This file provides concise, repository-specific guidance for coding agents.
 - Node.js: `24.x`
 - pnpm: `>=10 <11`
 - Package manager: pnpm only
+- `.node-version` is committed with `24` so compatible Node version managers can auto-select the project runtime
 
 ## Common Commands
 
