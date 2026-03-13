@@ -19,6 +19,7 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 
 ## Local Node Setup (Optional)
 
+- This repo includes `.node-version` with `24` so `fnm`, `nvm`, and compatible tools can auto-select the supported runtime.
 - Recommended for personal use: manage project Node with `fnm` and use Node `24.x` in this repo.
 - Keep a system Node installation for external tools that invoke `node`/`npx` globally (for example, MCP helpers).
 - Before running project commands, verify `node -v` is `24.x` in this repository.

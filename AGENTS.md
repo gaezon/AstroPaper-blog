@@ -41,6 +41,7 @@
 
 - **Node.js:** 24.x (defined in `package.json` `engines.node`)
 - **pnpm:** >=10 <11 (defined in `package.json` `engines.pnpm`)
+- `.node-version` is committed with `24` so compatible Node version managers can auto-select the project runtime
 - No `package-lock.json` is maintained; use `pnpm-lock.yaml` only
 
 ### Enhanced Commands
