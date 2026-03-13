@@ -1,82 +1,66 @@
 import type { AstroGlobal } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { getCurrentLocale } from "@/i18n/utils";
-import { slugifyAll, slugifyStr } from "@/utils/slugify";
+import type { BlogLocale } from "@/utils/blog-locale";
+import { slugifyStr } from "@/utils/slugify";
 import postFilter from "@/utils/postFilter";
 
+type OverrideMap = Record<string, string | undefined>;
 type BlogEntry = CollectionEntry<"blog">;
 type BlogEnEntry = CollectionEntry<"blog-en">;
 
-type OverrideMap = Record<string, string | undefined>;
-
-interface ResolveOptions {
-  sourceTaggedPosts: Array<BlogEntry | BlogEnEntry>;
-  matchPair: (
-    source: BlogEntry | BlogEnEntry
-  ) => BlogEntry | BlogEnEntry | undefined;
+export interface TagSwitchConfig {
+  switchOverride: OverrideMap;
+  alternateURLs: OverrideMap;
+  disableAutoAlternates: boolean;
 }
 
-/**
- * Derive the most likely counterpart tag slug in the target locale.
- */
-function resolveCounterpartSlug({
-  sourceTaggedPosts,
-  matchPair,
-}: ResolveOptions): string | undefined {
-  const counterTagCounts = new Map<string, number>();
-
-  for (const sourcePost of sourceTaggedPosts) {
-    const targetPost = matchPair(sourcePost);
-    if (!targetPost) continue;
-
-    for (const tag of targetPost.data.tags ?? []) {
-      const slug = slugifyStr(tag);
-      if (!slug) continue;
-      counterTagCounts.set(slug, (counterTagCounts.get(slug) ?? 0) + 1);
-    }
-  }
-
-  if (counterTagCounts.size === 0) return undefined;
-
-  let bestSlug: string | undefined;
-  let bestCount = 0;
-
-  for (const [slug, count] of counterTagCounts.entries()) {
-    if (count > bestCount) {
-      bestSlug = slug;
-      bestCount = count;
-    }
-  }
-
-  return bestSlug;
+interface BilingualTagMaps {
+  zhToEn: Map<string, string>;
+  enToZh: Map<string, string>;
 }
 
-function buildTargetUrl(
-  targetLocale: string,
+let bilingualTagMapsPromise: Promise<BilingualTagMaps> | undefined;
+
+const tagSlugSetCache = new Map<BlogLocale, Promise<Set<string>>>();
+
+function buildTagPath(
+  locale: BlogLocale,
   tagSlug: string,
-  restSegments: string[],
-  search: string,
-  hash: string
+  restSegments: string[] = [],
+  search = "",
+  hash = ""
 ): string {
   const segments =
-    targetLocale === "zh-CN"
-      ? ["tags", tagSlug]
-      : [targetLocale, "tags", tagSlug];
+    locale === "zh-CN" ? ["tags", tagSlug] : [locale, "tags", tagSlug];
 
   if (restSegments.length > 0) {
     segments.push(...restSegments);
   }
 
-  const pathname = `/${segments.filter(Boolean).join("/")}/`;
-  return `${pathname}${search}${hash}`;
+  return `/${segments.join("/")}/${search}${hash}`;
+}
+
+function buildTagIndexPath(locale: BlogLocale, search = "", hash = ""): string {
+  const segments = locale === "zh-CN" ? ["tags"] : [locale, "tags"];
+  return `/${segments.join("/")}/${search}${hash}`;
 }
 
 function normalizeSegments(
   pathname: string,
-  currentLocale: string
+  currentLocale: BlogLocale
 ): { restSegments: string[]; tagSlug?: string } {
   const trimmed = pathname.replace(/\/+$/, "");
-  const segments = trimmed.split("/").filter(Boolean);
+  const segments = trimmed
+    .split("/")
+    .filter(Boolean)
+    .map(segment => {
+      try {
+        return decodeURIComponent(segment);
+      } catch {
+        return segment;
+      }
+    });
 
   const withoutLocale =
     currentLocale !== "zh-CN" && segments[0] === currentLocale
@@ -87,92 +71,257 @@ function normalizeSegments(
     return { restSegments: [] };
   }
 
-  const tagSlug = withoutLocale[1];
-  const restSegments = withoutLocale.slice(2);
-  return { restSegments, tagSlug };
+  return {
+    tagSlug: withoutLocale[1],
+    restSegments: withoutLocale.slice(2),
+  };
 }
 
-/**
- * Compute language switch overrides for tag archive pages where localized slugs differ.
- */
-export async function getTagSwitchOverride(
-  Astro: AstroGlobal
-): Promise<OverrideMap> {
-  const override: OverrideMap = {};
-  const currentLocale = getCurrentLocale(Astro);
-  const { search, hash, pathname } = Astro.url;
+async function buildTagSlugSet(locale: BlogLocale): Promise<Set<string>> {
+  const collection = locale === "en" ? "blog-en" : "blog";
+  const posts = (await getCollection(collection)).filter(postFilter);
+  const slugSet = new Set<string>();
 
-  const { tagSlug, restSegments } = normalizeSegments(pathname, currentLocale);
+  for (const post of posts) {
+    for (const tag of post.data.tags ?? []) {
+      const slug = slugifyStr(tag);
+      if (slug) {
+        slugSet.add(slug);
+      }
+    }
+  }
 
-  if (!tagSlug) return override;
+  return slugSet;
+}
 
-  if (currentLocale === "zh-CN") {
-    const zhPosts = (await getCollection("blog")).filter(postFilter);
-    const taggedZhPosts = zhPosts.filter(post =>
-      slugifyAll(post.data.tags).includes(tagSlug)
-    );
+function getTagSlugSet(locale: BlogLocale): Promise<Set<string>> {
+  const cached = tagSlugSetCache.get(locale);
+  if (cached) {
+    return cached;
+  }
 
-    if (taggedZhPosts.length === 0) return override;
+  const promise = buildTagSlugSet(locale);
+  tagSlugSetCache.set(locale, promise);
+  return promise;
+}
 
-    const enPosts = (await getCollection("blog-en")).filter(postFilter);
-    const enByOriginalTitle = new Map<string, BlogEnEntry>();
-    for (const entry of enPosts) {
-      if (entry.data.originalTitle) {
-        enByOriginalTitle.set(entry.data.originalTitle, entry);
+function addMappingCandidate(
+  counter: Map<string, Map<string, number>>,
+  sourceSlug: string,
+  targetSlug: string
+) {
+  if (!sourceSlug || !targetSlug || sourceSlug === targetSlug) {
+    return;
+  }
+
+  const targetCounts = counter.get(sourceSlug) ?? new Map<string, number>();
+  targetCounts.set(targetSlug, (targetCounts.get(targetSlug) ?? 0) + 1);
+  counter.set(sourceSlug, targetCounts);
+}
+
+function getBestMappings(
+  counter: Map<string, Map<string, number>>
+): Map<string, string> {
+  const resolved = new Map<string, string>();
+
+  for (const [sourceSlug, targetCounts] of counter.entries()) {
+    let bestTarget: string | undefined;
+    let bestCount = 0;
+
+    for (const [targetSlug, count] of targetCounts.entries()) {
+      if (count > bestCount) {
+        bestTarget = targetSlug;
+        bestCount = count;
       }
     }
 
-    const targetSlug = resolveCounterpartSlug({
-      sourceTaggedPosts: taggedZhPosts,
-      matchPair: sourcePost => enByOriginalTitle.get(sourcePost.data.title),
-    });
-
-    if (!targetSlug) return override;
-
-    override["en"] = buildTargetUrl(
-      "en",
-      targetSlug,
-      restSegments,
-      search,
-      hash
-    );
-    return override;
+    if (bestTarget) {
+      resolved.set(sourceSlug, bestTarget);
+    }
   }
 
-  if (currentLocale === "en") {
-    const enPosts = (await getCollection("blog-en")).filter(postFilter);
-    const taggedEnPosts = enPosts.filter(post =>
-      slugifyAll(post.data.tags).includes(tagSlug)
-    );
+  return resolved;
+}
 
-    if (taggedEnPosts.length === 0) return override;
+function getLcsAnchors(source: string[], target: string[]): string[] {
+  const dp = Array.from({ length: source.length + 1 }, () =>
+    Array<number>(target.length + 1).fill(0)
+  );
 
-    const zhPosts = (await getCollection("blog")).filter(postFilter);
-    const zhByTitle = new Map<string, BlogEntry>();
-    for (const entry of zhPosts) {
-      zhByTitle.set(entry.data.title, entry);
+  for (let i = source.length - 1; i >= 0; i--) {
+    for (let j = target.length - 1; j >= 0; j--) {
+      dp[i][j] =
+        source[i] === target[j]
+          ? dp[i + 1][j + 1] + 1
+          : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+
+  const anchors: string[] = [];
+  let i = 0;
+  let j = 0;
+
+  while (i < source.length && j < target.length) {
+    if (source[i] === target[j]) {
+      anchors.push(source[i]);
+      i++;
+      j++;
+      continue;
     }
 
-    const targetSlug = resolveCounterpartSlug({
-      sourceTaggedPosts: taggedEnPosts,
-      matchPair: sourcePost => {
-        const originalTitle = sourcePost.data.originalTitle;
-        if (!originalTitle) return undefined;
-        return zhByTitle.get(originalTitle);
-      },
-    });
+    if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i++;
+    } else {
+      j++;
+    }
+  }
 
-    if (!targetSlug) return override;
+  return anchors;
+}
 
-    override["zh-CN"] = buildTargetUrl(
-      "zh-CN",
-      targetSlug,
+function alignTagSegments(sourceTags: string[], targetTags: string[]) {
+  const anchors = getLcsAnchors(sourceTags, targetTags);
+  const pairs: Array<[string, string]> = [];
+
+  let sourceStart = 0;
+  let targetStart = 0;
+
+  for (const anchor of [...anchors, undefined]) {
+    const sourceEnd =
+      anchor === undefined
+        ? sourceTags.length
+        : sourceTags.indexOf(anchor, sourceStart);
+    const targetEnd =
+      anchor === undefined
+        ? targetTags.length
+        : targetTags.indexOf(anchor, targetStart);
+
+    const sourceChunk = sourceTags.slice(sourceStart, sourceEnd);
+    const targetChunk = targetTags.slice(targetStart, targetEnd);
+    const pairCount = Math.min(sourceChunk.length, targetChunk.length);
+
+    for (let index = 0; index < pairCount; index++) {
+      pairs.push([sourceChunk[index], targetChunk[index]]);
+    }
+
+    if (anchor === undefined) {
+      break;
+    }
+
+    sourceStart = sourceEnd + 1;
+    targetStart = targetEnd + 1;
+  }
+
+  return pairs;
+}
+
+function getSlugTags(entry: BlogEntry | BlogEnEntry): string[] {
+  return (entry.data.tags ?? []).map(tag => slugifyStr(tag)).filter(Boolean);
+}
+
+async function buildBilingualTagMaps(): Promise<BilingualTagMaps> {
+  const zhPosts = (await getCollection("blog")).filter(postFilter);
+  const enPosts = (await getCollection("blog-en")).filter(postFilter);
+
+  const enByOriginalTitle = new Map<string, BlogEnEntry>();
+  for (const post of enPosts) {
+    if (post.data.originalTitle) {
+      enByOriginalTitle.set(post.data.originalTitle, post);
+    }
+  }
+
+  const zhToEnCandidates = new Map<string, Map<string, number>>();
+  const enToZhCandidates = new Map<string, Map<string, number>>();
+
+  for (const zhPost of zhPosts) {
+    const enPost = enByOriginalTitle.get(zhPost.data.title);
+    if (!enPost) {
+      continue;
+    }
+
+    const zhTags = getSlugTags(zhPost);
+    const enTags = getSlugTags(enPost);
+
+    for (const [zhSlug, enSlug] of alignTagSegments(zhTags, enTags)) {
+      addMappingCandidate(zhToEnCandidates, zhSlug, enSlug);
+      addMappingCandidate(enToZhCandidates, enSlug, zhSlug);
+    }
+  }
+
+  return {
+    zhToEn: getBestMappings(zhToEnCandidates),
+    enToZh: getBestMappings(enToZhCandidates),
+  };
+}
+
+async function getMappedTargetSlug(
+  currentLocale: BlogLocale,
+  tagSlug: string
+): Promise<string | undefined> {
+  bilingualTagMapsPromise ??= buildBilingualTagMaps();
+  const bilingualTagMaps = await bilingualTagMapsPromise;
+
+  return currentLocale === "zh-CN"
+    ? bilingualTagMaps.zhToEn.get(tagSlug)
+    : bilingualTagMaps.enToZh.get(tagSlug);
+}
+
+export async function getTagSwitchOverride(
+  Astro: AstroGlobal
+): Promise<TagSwitchConfig> {
+  const currentLocale = getCurrentLocale(Astro);
+
+  if (currentLocale !== "zh-CN" && currentLocale !== "en") {
+    return {
+      switchOverride: {},
+      alternateURLs: {},
+      disableAutoAlternates: false,
+    };
+  }
+
+  const { pathname, search, hash } = Astro.url;
+  const { tagSlug, restSegments } = normalizeSegments(pathname, currentLocale);
+
+  if (!tagSlug) {
+    return {
+      switchOverride: {},
+      alternateURLs: {},
+      disableAutoAlternates: false,
+    };
+  }
+
+  const targetLocale: BlogLocale = currentLocale === "zh-CN" ? "en" : "zh-CN";
+  const targetTagSlugs = await getTagSlugSet(targetLocale);
+  const switchOverride: OverrideMap = {};
+  const alternateURLs: OverrideMap = {};
+  const mappedTargetSlug = targetTagSlugs.has(tagSlug)
+    ? tagSlug
+    : await getMappedTargetSlug(currentLocale, tagSlug);
+
+  if (mappedTargetSlug && targetTagSlugs.has(mappedTargetSlug)) {
+    switchOverride[targetLocale] = buildTagPath(
+      targetLocale,
+      mappedTargetSlug,
       restSegments,
       search,
       hash
     );
-    return override;
+    alternateURLs[targetLocale] = buildTagPath(
+      targetLocale,
+      mappedTargetSlug,
+      restSegments
+    );
+  } else {
+    switchOverride[targetLocale] = buildTagIndexPath(
+      targetLocale,
+      search,
+      hash
+    );
   }
 
-  return override;
+  return {
+    switchOverride,
+    alternateURLs,
+    disableAutoAlternates: true,
+  };
 }
