@@ -29,6 +29,7 @@ export interface Props {
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
   alternateURLs?: Record<string, string | undefined>;
+  disableAutoAlternates?: boolean;
 }
 
 const {
@@ -42,6 +43,7 @@ const {
   modDatetime,
   scrollSmooth = false,
   alternateURLs = {},
+  disableAutoAlternates = false,
 } = Astro.props;
 
 const canonicalURL = ensureTrailingSlash(
@@ -85,7 +87,7 @@ const alternateUrlByLocale = SUPPORTED_LOCALES.reduce<Record<string, string>>(
       return acc;
     }
 
-    if (!isPostPage) {
+    if (!isPostPage && !disableAutoAlternates) {
       const localizedPath =
         locale === DEFAULT_LOCALE ? basePath : `/${locale}${basePath}`;
       acc[locale] = new URL(localizedPath, Astro.site).href;

@@ -18,14 +18,20 @@ interface Props extends BlogTagPaginatedPageProps {
 const { page, tag, tagName } = Astro.props;
 
 const currentLocale = normalizeBlogLocale(getCurrentLocale(Astro));
-const switchOverride = await getTagSwitchOverride(Astro);
+const { switchOverride, alternateURLs, disableAutoAlternates } =
+  await getTagSwitchOverride(Astro);
 const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
 const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}`;
 const layoutTitle = `${pageTitle} | ${getLocalizedSiteTitle(currentLocale)}`;
 const pageEntries = page.data;
 ---
 
-<Layout title={layoutTitle} description={pageDescription}>
+<Layout
+  title={layoutTitle}
+  description={pageDescription}
+  alternateURLs={alternateURLs}
+  disableAutoAlternates={disableAutoAlternates}
+>
   <Header switchOverride={switchOverride} />
   <Main
     pageTitle={[`${t(Astro, "tags.title")}:`, `${tagName}`]}
