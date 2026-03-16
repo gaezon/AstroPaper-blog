@@ -5,7 +5,7 @@ This file provides concise, repository-specific guidance for coding agents.
 ## Project Overview
 
 - Personal bilingual blog for `blog.gaazeon.com`
-- Built on AstroPaper with Astro + TypeScript + Tailwind CSS
+- Built on AstroPaper with Astro 6 + TypeScript + Tailwind CSS
 - Chinese-first content, English companion content for SEO
 
 ## Package and Runtime Requirements
@@ -14,6 +14,7 @@ This file provides concise, repository-specific guidance for coding agents.
 - pnpm: `>=10 <11`
 - Package manager: pnpm only
 - `.node-version` is committed with `24` so compatible Node version managers can auto-select the project runtime
+- If the active shell resolves to another Node version, run `fnm use` before `pnpm` commands
 
 ## Common Commands
 

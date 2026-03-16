@@ -1,10 +1,16 @@
 # AstroPaper Blog (Gaazeon)
 
+[![Astro](https://img.shields.io/badge/Astro-6-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
+[![Node.js](https://img.shields.io/badge/Node.js-24.x-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-10.x-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
+
 Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing with English companion content for SEO.
 
 ## What this repo includes
 
-- Astro + TypeScript + Tailwind CSS blog site
+- Astro 6 + TypeScript + Tailwind CSS blog site
 - Chinese (`zh-CN`) and English (`en`) routes
 - Build-time bilingual post mapping for unified comments
 - Build-time Mermaid rendering in GitHub Actions
@@ -23,6 +29,7 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 - Recommended for personal use: manage project Node with `fnm` and use Node `24.x` in this repo.
 - Keep a system Node installation for external tools that invoke `node`/`npx` globally (for example, MCP helpers).
 - Before running project commands, verify `node -v` is `24.x` in this repository.
+- If your shell still resolves to another global Node version, run `fnm use` before `pnpm` commands.
 
 ## Quick start
 

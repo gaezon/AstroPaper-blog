@@ -10,11 +10,7 @@
 import type { Root, Element } from "hast";
 import { visit } from "unist-util-visit";
 import imageSizes from "./generated/imageSizes.json";
-import {
-  MARKDOWN_IMAGE_SCOPE_ATTR,
-  MARKDOWN_IMAGE_SCOPE_VALUE,
-  MAX_ARTICLE_IMAGE_WIDTH,
-} from "./image-constants";
+import { MAX_ARTICLE_IMAGE_WIDTH } from "./image-constants";
 
 interface ImageSize {
   width: number;
@@ -174,8 +170,6 @@ const rehypeImageSize = () => {
       const renderedSize = sourceSize
         ? getRenderedDimensions(sourceSize)
         : null;
-
-      nextProps[MARKDOWN_IMAGE_SCOPE_ATTR] = MARKDOWN_IMAGE_SCOPE_VALUE;
 
       if (props.loading == null) {
         nextProps.loading = isPriorityImage ? "eager" : "lazy";

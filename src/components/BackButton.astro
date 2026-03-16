@@ -26,18 +26,71 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 <script>
   import { sanitizePath } from "@/utils/url";
 
+  function getBackUrl(backButton: HTMLAnchorElement | null) {
+    const storedBackUrl = sessionStorage.getItem("backUrl");
+
+    if (storedBackUrl) {
+      return sanitizePath(storedBackUrl);
+    }
+
+    return backButton?.getAttribute("href") ?? "/";
+  }
+
   /* Update back button URL from session storage */
   function updateGoBackUrl() {
     const backButton: HTMLAnchorElement | null =
       document.querySelector("#back-button");
 
-    const storedBackUrl = sessionStorage.getItem("backUrl");
-
-    if (storedBackUrl && backButton) {
-      backButton.href = sanitizePath(storedBackUrl);
+    if (backButton) {
+      backButton.href = getBackUrl(backButton);
     }
   }
 
-  document.addEventListener("astro:page-load", updateGoBackUrl);
+  function handleBackButtonClick(event: MouseEvent) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    const backButton = event.currentTarget;
+
+    if (!(backButton instanceof HTMLAnchorElement)) {
+      return;
+    }
+
+    const targetUrl = getBackUrl(backButton);
+
+    if (backButton.href.endsWith(targetUrl)) {
+      return;
+    }
+
+    event.preventDefault();
+    window.location.assign(targetUrl);
+  }
+
+  function bindBackButtonClick() {
+    const backButton: HTMLAnchorElement | null =
+      document.querySelector("#back-button");
+
+    if (!backButton || backButton.dataset.backButtonBound === "true") {
+      return;
+    }
+
+    backButton.dataset.backButtonBound = "true";
+    backButton.addEventListener("click", handleBackButtonClick);
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    bindBackButtonClick();
+    updateGoBackUrl();
+  });
+
+  bindBackButtonClick();
   updateGoBackUrl();
 </script>

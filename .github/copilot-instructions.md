@@ -1,6 +1,6 @@
 # GitHub Copilot：仓库自定义指令（Repository Instructions）
 
-你正在协助维护一个基于 **Astro + TypeScript + TailwindCSS** 的双语博客站点（中文 `zh-CN` / English `en`），并使用 **Playwright** 做端到端测试。请在生成代码、修改建议、测试、以及文档/PR 文案时遵循以下约定。
+你正在协助维护一个基于 **Astro 6 + TypeScript + TailwindCSS** 的双语博客站点（中文 `zh-CN` / English `en`），并使用 **Playwright** 做端到端测试。请在生成代码、修改建议、测试、以及文档/PR 文案时遵循以下约定。
 
 ## 总体原则
 
@@ -31,6 +31,7 @@
 - 双语映射：`pnpm generate:bilingual-mapping`
 - 英文草稿：`pnpm i18n:scaffold-en`
 - OG 预览：`pnpm og:preview`
+- 如当前 shell 未自动切到 `.node-version` 指定的 Node `24.x`，先执行 `fnm use`
 
 ## 代码风格与约束
 
