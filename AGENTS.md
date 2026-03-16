@@ -1,159 +1,87 @@
 # Repository Guidelines
 
+## Purpose
+
+- `README.md` is the primary entry for setup and command usage
+- This file focuses on repository conventions, architecture boundaries, testing expectations, and change hygiene
+
 ## Project Structure & Module Organization
 
-- `src/pages/` hosts route-level Astro files; co-locate page-specific assets under matching directories.
-- `src/components/` and `src/layouts/` hold reusable UI fragments, while `src/styles/` centralizes global Tailwind and CSS utilities.
-- `src/scripts/` holds Astro-processed browser runtime modules that should be bundled from `src/` instead of copied from `public/`.
-- Content, metadata, and bilingual mapping live under `src/content.config.ts`, `src/data/`, and `public/`. Use `scripts/` helpers for i18n scaffolding and OpenGraph assets.
-- Automated Playwright specs live in `tests/`; artifacts land in `test-results/`. Keep fixtures small and clear.
+- `src/pages/` hosts route-level Astro files; co-locate page-specific assets under matching directories
+- `src/components/` and `src/layouts/` hold reusable UI fragments; `src/styles/` centralizes global styles and Tailwind utilities
+- `src/scripts/` holds Astro-processed browser runtime modules that should be bundled from `src/` instead of copied from `public/`
+- Content, metadata, and bilingual mapping live under `src/content.config.ts`, `src/data/`, and `public/`; use `scripts/` helpers for i18n scaffolding and OpenGraph assets
+- Automated Playwright specs live in `tests/`; artifacts land in `test-results/`
 
-### New Module Additions
-- `src/components/LanguageSwitcher/` - Refactored language switcher sub-components
-- `src/components/HomePage.astro` - Shared localized home page renderer
-- `src/components/PostListPage.astro` - Shared localized posts pagination renderer
-- `src/components/ArchivesPage.astro` - Shared localized archives renderer
-- `src/components/TagsPage.astro` - Shared localized tags index renderer
-- `src/components/TagPostsPage.astro` - Shared localized tag posts renderer
-- `src/types/pagination.ts` - Shared pagination contracts for paginated routes and components
-- `src/utils/blog-locale.ts` - Strict blog locale helpers and normalization guard
-- `src/utils/i18n-pages.ts` - Shared locale-aware page and pagination helpers
-- `src/utils/i18n-api.ts` - Shared locale-aware RSS and OG endpoint helpers
-- `src/utils/generated/` - Auto-generated bilingual mapping files
-- `src/utils/og-templates/` - OpenGraph image templates
-- `src/utils/transformers/` - Shiki syntax highlighting transformers
-- `src/scripts/toggle-theme.ts` - Deferred theme runtime; keep first-paint theme boot inline in `src/layouts/Layout.astro`
-- `.github/workflows/` - CI and deployment workflows
+## Key Shared Modules
 
-## Build, Test, and Development Commands
+- `src/components/LanguageSwitcher/` - language switcher sub-components
+- `src/components/HomePage.astro` - shared localized home page renderer
+- `src/components/PostListPage.astro` - shared localized posts pagination renderer
+- `src/components/ArchivesPage.astro` - shared localized archives renderer
+- `src/components/TagsPage.astro` - shared localized tags index renderer
+- `src/components/TagPostsPage.astro` - shared localized tag posts renderer
+- `src/types/pagination.ts` - shared pagination contracts
+- `src/utils/blog-locale.ts` - strict locale helpers and normalization guard
+- `src/utils/i18n-pages.ts` - locale-aware page and pagination helpers
+- `src/utils/i18n-api.ts` - locale-aware RSS and OG endpoint helpers
+- `src/utils/generated/` - auto-generated bilingual mapping files
 
-> **Note:** This project uses **pnpm-only** package management. Do not use npm, yarn, or bun. All commands must be run with pnpm.
+## Runtime & Tooling Constraints
 
-- `pnpm dev` launches the Astro dev server with hot reload.
-- `pnpm build` runs a fast local build (no type check): generates bilingual mappings, builds the site, patches Vercel prebuilt output routes, and prepares Pagefind search assets.
-- `pnpm build:strict` runs the full CI-equivalent build with `astro check` + site build + Vercel prebuilt route patch + Pagefind.
-- `pnpm preview` serves the production build locally.
-- `pnpm lint`, `pnpm format`, and `pnpm format:check` enforce ESLint and Prettier rules.
-- `pnpm exec playwright test` runs the end-to-end suite; append `--headed` for debug runs.
-- `pnpm validate:meta` verifies SEO meta descriptions across posts.
+- Use pnpm only; do not use npm, yarn, or bun
+- Use Node.js `24.x` and pnpm `>=10 <11`
+- `.node-version` is committed with `24`; if the shell resolves another version, run `fnm use`
+- For exact commands, prefer `README.md`
 
-### Package Management Requirements
+## Coding Style & Naming
 
-- **Node.js:** 24.x (defined in `package.json` `engines.node`)
-- **pnpm:** >=10 <11 (defined in `package.json` `engines.pnpm`)
-- `.node-version` is committed with `24` so compatible Node version managers can auto-select the project runtime
-- No `package-lock.json` is maintained; use `pnpm-lock.yaml` only
+- Favor TypeScript across new modules; keep strict typings in shared utils and shared type modules
+- Use PascalCase for components/layouts, camelCase for helpers, and kebab-case for slugs and filenames
+- Tailwind classes should roughly group by layout -> spacing -> color
+- Keep zh/en route wrappers thin; push shared behavior into locale-aware components or helpers
 
-### Enhanced Commands
-- `pnpm i18n:scaffold-en` - Create English drafts from Chinese posts
-- `pnpm generate:bilingual-mapping` - Generate automatic bilingual post mappings for comment system
-- `pnpm og:preview` - Preview OpenGraph images locally
-- `pnpm sync` - Generate TypeScript types for Astro modules
+## Internationalization Conventions
 
-## Coding Style & Naming Conventions
+- English routes use `/en/`; Chinese routes use no locale prefix
+- Use `originalTitle` to link bilingual posts
+- Locale-aware features should support both `zh-CN` and `en`
+- After changing bilingual content or pairing logic, regenerate mappings and verify localized navigation
 
-- Prettier (with Astro and Tailwind plugins) enforces 2-space indentation, trailing commas, and quote consistency.
-- Favor TypeScript across new modules; keep strict typings in shared utils (`src/utils/`) and shared type modules (`src/types.ts`, `src/types/`).
-- Use PascalCase for components/layouts, camelCase for functions and helpers, and kebab-case for content slugs and filenames.
-- Tailwind classes should group by layout → spacing → color; avoid unused utilities to keep CSS lean.
+## Testing Expectations
 
-### Internationalization Conventions
-- Prefix English routes with `/en/` (e.g., `/en/posts/slug/`)
-- Chinese routes use no prefix (e.g., `/posts/slug/`)
-- Use `originalTitle` field in frontmatter to link bilingual posts
-- Locale-aware components should handle both `zh-CN` and `en` locales
-- Prefer thin zh/en route wrappers that reuse shared page components or locale helpers instead of duplicating mirrored route logic
+- Run the smallest relevant verification for the change, then expand to broader checks when risk is higher
+- Update or add Playwright coverage when changing navigation, language switching, TOC, Mermaid, OG generation, pagination, or other cross-page behavior
+- Include accessibility and i18n assertions when altering interactive or localized UI
+- Prefer targeted Vitest runs for isolated utility changes; use Playwright for end-to-end user flows
 
-## Testing Guidelines
+## Key Test Areas
 
-- Write Playwright specs alongside features in `tests/feature-name.spec.ts`; mirror the user flow under test.
-- Include accessibility and i18n assertions when altering navigation, TOC, or localized content.
-- Run `pnpm exec playwright test --reporter=line` before opening PRs; capture updated screenshots only when UI changes intentionally.
+- `tests/mermaid-rendering.spec.ts` - Mermaid `<picture>` output and theme behavior
+- `tests/language-switcher.spec.ts` - switcher interaction and listener cleanup
+- `tests/post-navigation.spec.ts` - article navigation boundaries
+- `tests/comment-lazy-load.spec.ts` - comment loading behavior
+- `tests/og-text-normalization.spec.ts` - OG image generation
+- `tests/toc-animation-optimization.spec.ts` - TOC behavior and animation
+- `tests/i18n.spec.ts` - localized routing and locale behavior
+- `tests/pagination-locale.spec.ts` - locale prefixes and pagination boundaries
 
-### Key Test Areas
-- **Mermaid Build-time Rendering**: `tests/mermaid-rendering.spec.ts` - Tests `<picture>` element generation and dark mode
-- **Language Switching**: `tests/language-switcher.spec.ts` - Tests switcher interaction and listener cleanup
-- **Post Navigation**: `tests/post-navigation.spec.ts` - Tests article navigation boundaries
-- **Comments Lazy Load**: `tests/comment-lazy-load.spec.ts` - Tests comment loading behavior
-- **OpenGraph Images**: `tests/og-text-normalization.spec.ts` - Tests OG image generation
-- **Table of Contents**: `tests/toc-animation-optimization.spec.ts` - Tests TOC behavior and animation
-- **Internationalization**: `tests/i18n.spec.ts` - Tests i18n routes and locale behavior
-- **Pagination Locale Guards**: `tests/pagination-locale.spec.ts` - Tests paginated route prefixes and pagination boundary behavior
+## Accessibility & Performance
 
-### Test Best Practices
-- Use `test.describe()` blocks to organize related tests
-- Include `test.beforeEach()` for common setup
-- Test both Chinese and English versions of bilingual features
-- Verify `<picture>` elements contain both light and dark SVG sources
-- Test `prefers-color-scheme` media query handling
-- For targeted Vitest runs, prefer `pnpm exec vitest run tests/unit/<file>.spec.ts`
+- All interactive elements must have appropriate ARIA labels
+- Mermaid diagrams should expose `role="img"` and descriptive labels
+- Theme and language controls should expose current state and intent
+- Keep fonts lean, images optimized, and client-side runtime minimal where build-time output is viable
 
-## Commit & Pull Request Guidelines
-
-- Follow Conventional Commits seen in history (`feat`, `fix`, `chore`, `docs`), adding scopes when helpful (e.g., `feat(toc): ...`).
-- Keep messages imperative and ≤72 characters; elaborate in the body if context is non-obvious.
-- PRs should summarize changes, list testing performed, and link issues or discussions. Attach before/after screenshots for visual updates.
-- Ensure `pnpm build:strict`, `pnpm lint`, and required Playwright checks pass locally before requesting review.
-
-### Pull Request Checklist
-- [ ] Ensure Node.js 24.x is installed (`engines.node` defined in package.json)
-- [ ] Run `pnpm build:strict` and verify no errors
-- [ ] Run `pnpm lint` and `pnpm format:check`
-- [ ] Run `pnpm exec playwright test` for affected features
-- [ ] Update documentation if needed (CLAUDE.md, AGENTS.md, or feature docs)
-- [ ] Verify bilingual functionality if applicable
-- [ ] Test both dark and light themes
-- [ ] Check mobile responsiveness
-
-## Content & Localization Tips
-
-- Use `pnpm i18n:scaffold-en` or `scripts/create-english-drafts.ts` to seed bilingual articles, then edit drafts under `src/data/blog/en/`.
-- Regenerate OpenGraph previews with `pnpm og:preview` after changing layouts or typography tokens.
-
-### Bilingual Content Management
-1. **Chinese Posts**: Store in `src/data/blog/` with `locale: "zh-CN"`
-2. **English Posts**: Store in `src/data/blog/en/` with `locale: "en"`
-3. **Cross-Linking**: Use matching `originalTitle` fields in both versions
-4. **Mapping Generation**: Run `pnpm generate:bilingual-mapping` after adding bilingual content
-5. **Validation**: Use `pnpm validate:meta` to check SEO descriptions
-
-### OpenGraph Image Workflow
-- Custom OG images: Place in `public/images/og/`
-- Auto-generated OG images: Templates in `src/utils/og-templates/`
-- Preview: `pnpm og:preview` to test locally
-- Regenerate after font or layout changes
-
-## Performance & Optimization Guidelines
-
-- **Mermaid Diagrams**: Rendered at build time as inline SVG; no client-side JS needed
-- **Search**: Pagefind index generated at build time; keep searchable content minimal
-- **Images**: Use responsive images with `astro:image`; optimize with sharp
-- **Fonts**: Load only necessary weights; use font-display: swap
-- **CSS**: Tree-shake unused Tailwind classes; minify in production
-
-## Accessibility Standards
-
-- All interactive elements must have proper ARIA labels
-- Mermaid diagrams should have `role="img"` and descriptive labels
-- Theme toggle should announce current theme and change intent
-- Language switcher should indicate current language
-- Table of contents should be keyboard navigable
-
-## Deployment & CI/CD
+## Deployment Notes
 
 - Build output is produced via Astro static build and Vercel prebuilt artifacts under `.vercel/output/`
-- `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` deploys serve localized zh/en 404 pages correctly
-- Pagefind index is generated during build against `.vercel/output/static`
-- **GitHub Actions Deployment**:
-  - `ci.yml` - Runs lint, format, and build on PRs
-  - `deploy-preview.yml` - Deploys feature branches to Vercel preview
-   - `vercel.json` skips Vercel build (uses pre-built artifacts from CI)
+- `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` serves localized zh/en 404 pages correctly
+- Pagefind index generation targets `.vercel/output/static`
 
 ## Documentation Maintenance
 
-- Update `CLAUDE.md` when adding new commands or changing architecture
-- Update `AGENTS.md` when adding new guidelines or best practices
-- Add feature documentation in `docs/` directory
-- Include setup instructions for new contributors
-- Document bilingual workflows and content management
-- Update package management documentation when changing dependency strategy (pnpm-only, Node version requirements)
+- Update `README.md` when setup or commands change
+- Update `WRITING.md` when author workflow or frontmatter conventions change
+- Update this file when repository conventions, testing expectations, or architecture boundaries change
+- Keep tool-specific instruction files concise and aligned with these shared facts

@@ -85,7 +85,6 @@ docs/                 Feature and maintenance docs
 
 ## Documentation
 
-- Docs index: `docs/README.md`
 - Writing guide: `WRITING.md`
 - i18n language switcher: `docs/i18n-language-switcher.md`
 - Bilingual comment mapping: `docs/bilingual-comment-system.md`
