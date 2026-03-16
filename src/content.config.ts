@@ -1,11 +1,12 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection, type SchemaContext } from "astro:content";
+import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 import { SITE } from "@/config";
 
 export const BLOG_PATH = "src/data/blog";
 
 function createBlogSchema(localeDefault: string) {
-  return ({ image }: { image: () => z.ZodType }) =>
+  return ({ image }: SchemaContext) =>
     z.object({
       author: z.string().default(SITE.author),
       pubDatetime: z.date(),

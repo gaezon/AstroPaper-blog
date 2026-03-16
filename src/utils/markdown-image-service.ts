@@ -1,10 +1,6 @@
 import type { ImageTransform, LocalImageService } from "astro";
 import sharpService from "astro/assets/services/sharp";
-import {
-  MARKDOWN_IMAGE_SCOPE_ATTR,
-  MARKDOWN_IMAGE_SCOPE_VALUE,
-  MAX_ARTICLE_IMAGE_WIDTH,
-} from "./image-constants";
+import { MAX_ARTICLE_IMAGE_WIDTH } from "./image-constants";
 
 const MARKDOWN_IMAGE_HOST = "img.gaazeon.com";
 
@@ -18,13 +14,6 @@ function parsePositiveTransformDimension(value: unknown): number | null {
 
 function isTargetMarkdownImage(options: ImageTransform): boolean {
   if (typeof options.src !== "string") {
-    return false;
-  }
-
-  if (
-    (options as Record<string, unknown>)[MARKDOWN_IMAGE_SCOPE_ATTR] !==
-    MARKDOWN_IMAGE_SCOPE_VALUE
-  ) {
     return false;
   }
 
@@ -81,8 +70,6 @@ const markdownImageService: LocalImageService = {
     if (isTargetMarkdownImage(validated)) {
       clampResponsiveOptions(validated);
     }
-
-    delete (validated as Record<string, unknown>)[MARKDOWN_IMAGE_SCOPE_ATTR];
 
     return validated;
   },
