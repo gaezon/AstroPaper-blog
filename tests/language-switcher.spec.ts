@@ -112,3 +112,29 @@ test.describe("Language Switcher View Transitions", () => {
     await expect(dropdown).toHaveAttribute("data-open", "true");
   });
 });
+
+test.describe("Language Switcher Accessibility", () => {
+  test("button accessible name should contain visible language label (zh-CN)", async ({
+    page,
+  }) => {
+    await page.goto("/posts/");
+
+    const button = page
+      .locator(".language-switcher-dropdown [data-dropdown-toggle]")
+      .first();
+
+    await expect(button).toHaveAccessibleName(/中文.*选择语言/u);
+  });
+
+  test("button accessible name should contain visible language label (en)", async ({
+    page,
+  }) => {
+    await page.goto("/en/");
+
+    const button = page
+      .locator(".language-switcher-dropdown [data-dropdown-toggle]")
+      .first();
+
+    await expect(button).toHaveAccessibleName(/English.*Select Language/);
+  });
+});
