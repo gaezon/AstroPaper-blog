@@ -24,7 +24,6 @@ const tr = (key: string, params?: Record<string, string | number>) =>
   <button
     type="button"
     class="lang-dropdown-btn focus-outline"
-    aria-label={tr("language.selectLanguage")}
     aria-expanded="false"
     aria-haspopup="menu"
     data-dropdown-toggle
@@ -46,6 +45,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     <span class="current-lang">
       {currentLocaleInfo?.profile.label || currentLocaleInfo?.name}
     </span>
+    <span class="sr-only">{tr("language.selectLanguage")}</span>
     <svg
       class="chevron-icon"
       fill="none"
