@@ -63,9 +63,14 @@ function updateThemeButtonLabel() {
   const themeBtn = document.querySelector<HTMLButtonElement>("#theme-btn");
   if (!themeBtn) return;
 
+  const labelLight =
+    themeBtn.getAttribute("data-label-light") ?? "Switch to light theme";
+  const labelDark =
+    themeBtn.getAttribute("data-label-dark") ?? "Switch to dark theme";
+
   themeBtn.setAttribute(
     "aria-label",
-    themeValue === "dark" ? "Switch to light theme" : "Switch to dark theme"
+    themeValue === "dark" ? labelLight : labelDark
   );
 }
 
