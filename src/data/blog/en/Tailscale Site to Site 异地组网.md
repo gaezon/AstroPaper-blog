@@ -27,8 +27,6 @@ However, to achieve true P2P direct connections: **you must open UDP port `41641
 
 Additionally, you need to enable **subnet routes** for both OpenWrt nodes in the Tailscale admin console.
 
-## Table of contents
-
 ## Why I needed this
 
 I had two OpenWrt routers (home and campus) and wanted both LANs to reach each other without installing the Tailscale client on every single device. Most guides I found were incomplete or simply wrong, so here’s a minimal setup that actually works.

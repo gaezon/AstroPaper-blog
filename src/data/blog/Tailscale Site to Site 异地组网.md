@@ -11,8 +11,6 @@ tags:
 originalTitle: Tailscale Site to Site 点对点两台 OpenWrt 异地组网教程
 ---
 
-## Table of contents
-
 ## 前言
 
 因为家里和学校同时放了 2 台 OpenWrt 路由，需要相互组网方便在子网中每一个路由下的客户端不需要下载 tailscale 客户端便能相互访问，参考了网上做法都不对，于是自己写了这个教程。

@@ -16,8 +16,6 @@ slug: is-ibkr-drip-really-commission-free
 originalTitle: IBKR 股息再投资 (DRIP) 是零佣金吗？美股盈透证券佣金小数点后的收费规则
 ---
 
-## Table of contents
-
 ## TL;DR
 
 **IBKR 的 DRIP 并非真正免佣，只是佣金微小到被四舍五入显示为 $0.00。**

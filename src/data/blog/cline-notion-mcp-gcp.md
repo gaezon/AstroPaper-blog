@@ -12,8 +12,6 @@ tags:
 originalTitle: Cline + Notion MCP 用自然语言为 Notion 数据库增加记录 —— 以管理个人订阅服务 notion 数据库为例
 ---
 
-## Table of contents
-
 ## 前言
 
 本人一直使用 Notion 作为订阅服务的管理工具，但过去每次都需要手动添加、维护订阅记录，既繁琐又容易遗漏。

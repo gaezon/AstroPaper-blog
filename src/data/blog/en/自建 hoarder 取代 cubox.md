@@ -19,8 +19,6 @@ originalTitle: 自建 Karakeep（原 Hoarder）剪藏服务取代 Cubox：解决
 slug: self-host-hoarder-replace-cubox
 ---
 
-## Table of contents
-
 ## Prologue
 
 > **Update (2025-12-15)**: The project has evolved. _Hoarder_ is now officially **Karakeep** (server-side), with a beautiful third-party iOS/Safari companion named **Karakeeper**. This post has been fully aligned with the new image names, configuration patterns, and a critical deep-dive into the security setting `CRAWLER_ALLOWED_INTERNAL_HOSTNAMES`—a must-know for anyone behind a complex network setup.

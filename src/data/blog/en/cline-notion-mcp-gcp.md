@@ -15,8 +15,6 @@ locale: en
 originalTitle: Cline + Notion MCP 用自然语言为 Notion 数据库增加记录 —— 以管理个人订阅服务 notion 数据库为例
 ---
 
-## Table of contents
-
 ## Introduction
 
 I've been using Notion as my subscription service management tool for quite some time. However, manually adding and maintaining subscription records has always been tedious and error-prone, making it easy to overlook important renewals.

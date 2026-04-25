@@ -15,25 +15,6 @@ originalTitle: OBS 直播踩坑：20秒 安播延迟为何炸音频？双机 OBS
 slug: obs-live-streaming-safe-broadcast-delay-pitfalls
 ---
 
-## Table of contents
-
-- [Background: why 'safe broadcast' is required](#background-why-safe-broadcast-is-required)
-- [A costly failure: the 20-second test](#a-costly-failure-the-20-second-test)
-- [First attempt: assuming a filter could do it all](#first-attempt-assuming-a-filter-could-do-it-all)
-- [How I tried to delay the audio](#how-i-tried-to-delay-the-audio)
-- [Root cause: where the distortion comes from](#root-cause-where-the-distortion-comes-from)
-- [Lesson learned: fix the layer, not the knob](#lesson-learned-fix-the-layer-not-the-knob)
-- [Engineering takeaways](#engineering-takeaways)
-- [A pragmatic dual-OBS 'safe broadcast' architecture](#a-pragmatic-dual-obs-safe-broadcast-architecture)
-- [Concrete setup](#concrete-setup)
-- [Minimal OBS-only setup: no plugins, make OBS the server](#minimal-obs-only-setup-no-plugins-make-obs-the-server)
-- [Option 1: RTMP — Media Source + listen=1](#option-1-rtmp--media-source--listen1)
-- [Option 2: SRT — built into OBS 25+, lower latency](#option-2-srt---built-into-obs-25-lower-latency)
-- [FAQ](#faq)
-- [High-risk words (examples)](#high-risk-words-examples)
-- [High-risk visuals](#high-risk-visuals)
-- [Footnotes](#footnotes)
-
 ## Background: why 'safe broadcast' is required
 
 On Chinese platforms like Douyin, Kuaishou and Taobao Live, streams are reviewed by both AI and human moderators. A single slip can get a room suspended instantly. To mitigate risk, most teams keep a delay of at least **20 seconds** so operators have time to `DUMP/MUTE`. Top esports broadcasts sometimes go as high as 2 minutes. Viewers may complain about latency, but for businesses, giving the last‑mile moderator enough time to react is far more important than shaving a few seconds off the delay.
