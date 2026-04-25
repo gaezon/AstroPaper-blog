@@ -27,7 +27,9 @@ function setDropdownState(dropdown: Element, isOpen: boolean) {
 }
 
 function closeDropdowns() {
-  const dropdowns = document.querySelectorAll(".language-switcher-dropdown");
+  const dropdowns = document.querySelectorAll<HTMLElement>(
+    ".language-switcher-dropdown"
+  );
   dropdowns.forEach(dropdown => {
     if (dropdown.getAttribute("data-open") === "true") {
       setDropdownState(dropdown, false);
@@ -70,6 +72,27 @@ export function initLanguageSwitcher() {
   cleanupFns.length = 0;
 
   const dropdowns = document.querySelectorAll(".language-switcher-dropdown");
+  let pointerDownDropdown: Element | null = null;
+
+  const resetPointerDownDropdown = () => {
+    if (pointerDownDropdown) {
+      const dropdown = pointerDownDropdown;
+      pointerDownDropdown = null;
+      if (
+        dropdown.getAttribute("data-open") === "true" &&
+        !dropdown.contains(document.activeElement)
+      ) {
+        setDropdownState(dropdown, false);
+      }
+    }
+  };
+
+  document.addEventListener("pointerup", resetPointerDownDropdown);
+  document.addEventListener("pointercancel", resetPointerDownDropdown);
+  cleanupFns.push(() => {
+    document.removeEventListener("pointerup", resetPointerDownDropdown);
+    document.removeEventListener("pointercancel", resetPointerDownDropdown);
+  });
 
   dropdowns.forEach(dropdown => {
     preserveCurrentUrlParts(dropdown);
@@ -114,9 +137,17 @@ export function initLanguageSwitcher() {
 
     const focusoutHandler = (e: FocusEvent) => {
       const nextFocused = e.relatedTarget as Node | null;
+      if (pointerDownDropdown === dropdown) return;
       if (!nextFocused || !dropdown.contains(nextFocused)) {
         setDropdownState(dropdown, false);
       }
+    };
+
+    const pointerdownHandler: EventListener = e => {
+      const pointerEvent = e as PointerEvent;
+      const target = pointerEvent.target as Node | null;
+      pointerDownDropdown =
+        target && dropdown.contains(target) ? dropdown : null;
     };
 
     const keydownHandler = (e: Event) => {
@@ -131,9 +162,11 @@ export function initLanguageSwitcher() {
       }
     };
 
+    dropdown.addEventListener("pointerdown", pointerdownHandler);
     dropdown.addEventListener("focusout", focusoutHandler as EventListener);
     dropdown.addEventListener("keydown", keydownHandler as EventListener);
     cleanupFns.push(() => {
+      dropdown.removeEventListener("pointerdown", pointerdownHandler);
       dropdown.removeEventListener(
         "focusout",
         focusoutHandler as EventListener
