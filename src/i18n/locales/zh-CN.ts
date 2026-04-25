@@ -113,6 +113,8 @@ export default {
   // Theme switcher
   theme: {
     toggle: "切换主题",
+    switchToLight: "切换到浅色主题",
+    switchToDark: "切换到深色主题",
     light: "浅色主题",
     dark: "深色主题",
     system: "跟随系统",

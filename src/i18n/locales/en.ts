@@ -114,6 +114,8 @@ export default {
   // Theme switching
   theme: {
     toggle: "Toggle Theme",
+    switchToLight: "Switch to light theme",
+    switchToDark: "Switch to dark theme",
     light: "Light Mode",
     dark: "Dark Mode",
     system: "System Default",
