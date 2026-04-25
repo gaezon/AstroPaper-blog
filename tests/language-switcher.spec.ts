@@ -138,3 +138,30 @@ test.describe("Language Switcher Accessibility", () => {
     await expect(button).toHaveAccessibleName(/English.*Select Language/);
   });
 });
+
+test.describe("Language Switcher Mobile Navigation", () => {
+  test.use({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+  });
+
+  test("mobile menu language link should navigate before focusout closes dropdown", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("preferred-locale", "zh-CN");
+    });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: "菜单" }).click();
+
+    const dropdown = page.locator(".lang-switcher-mobile");
+    await dropdown.getByRole("button", { name: /中文.*选择语言/u }).click();
+
+    const englishLink = dropdown.getByRole("menuitem", { name: "English" });
+    await expect(englishLink).toHaveAttribute("href", "/en/");
+
+    await Promise.all([page.waitForURL("**/en/"), englishLink.tap()]);
+  });
+});
