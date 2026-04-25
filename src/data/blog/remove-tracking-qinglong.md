@@ -15,8 +15,6 @@ originalTitle: 修改 docker-compose 配置移除青龙面板 sentry.io 跟踪 j
 
 修改 docker-compose 配置以移除青龙面板的 sentry.io 跟踪 JS 代码。青龙面板有跟踪参数，AdGuardHome 频繁拦截 o1098464.ingest.sentry.io 的域名。本文将教你如何通过修改 docker-compose 配置和 sh 脚本来阻止青龙面板发送跟踪请求。
 
-## Table of contents
-
 ## 前言
 
 青龙面板（截止本文 20240915 青龙面板的最新版本号为 `2.17.11`）使用 Sentry 来跟踪错误日志，但作者未提供让用户自行选择关闭的选项，导致家里的 AdGuardHome 总是拦截 o1098464.ingest.sentry.io，使其在拦截排行中位居首位，显得不太美观。同时，频繁的 DNS 请求也会消耗小主机的性能。

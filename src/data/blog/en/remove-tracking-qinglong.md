@@ -16,8 +16,6 @@ originalTitle: 修改 docker-compose 配置移除青龙面板 sentry.io 跟踪 j
 
 Qinglong embeds Sentry for error telemetry, which triggers constant requests to `o1098464.ingest.sentry.io`. Here’s a simple way to block that by replacing the container entrypoint with a tiny shell script that disables the Sentry loader.
 
-## Table of contents
-
 ## Why
 
 As of 2024‑09‑15 (Qinglong `2.17.11`), there’s no built‑in switch to opt out of Sentry. On my network, AdGuardHome’s blocklist spammed entries for `o1098464.ingest.sentry.io`, and the extra DNS traffic is unnecessary.

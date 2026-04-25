@@ -20,8 +20,6 @@ originalTitle: 使用 git 升级更新 Astropaper theme 主题
 
 以下内容参考翻译自 Astropaper 主题作者 [satnaing](https://github.com/satnaing) 的文章 [How to update dependencies of AstroPaper](<https://astro-paper.pages.dev/posts/[how-to-update-dependencies](https://astro-paper.pages.dev/posts/how-to-update-dependencies/)/>)，仅翻译成中文并增加相关注释，版权归原作者所有
 
-## Table of contents
-
 ## 需要注意的文件和目录
 
 更新时需要特别注意的文件和目录包括（因为你可能已经自定义过其中某些博客样式文件）：

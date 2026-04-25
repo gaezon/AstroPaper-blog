@@ -16,8 +16,6 @@ locale: en
 originalTitle: IBKR 股息再投资 (DRIP) 是零佣金吗？美股盈透证券佣金小数点后的收费规则
 ---
 
-## Table of contents
-
 ## TL;DR
 
 IBKR’s DRIP isn’t literally fee‑free — the commission is so small that it’s rounded to $0.00 in reports.

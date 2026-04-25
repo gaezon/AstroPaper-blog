@@ -18,8 +18,6 @@ description: 详细教程：如何通过 Docker 自建开源的 Hoarder 剪藏�
 slug: hoarder-app-replace-cubox
 ---
 
-## Table of contents
-
 ## 前言
 
 > 2025-12-15 更新：Hoarder 项目已更名为 Karakeep（服务端），另外也有名为 Karakeeper 的第三方 iOS/Safari 客户端。本文已同步更新镜像名、配置示例，并补充一个容易踩坑的安全相关配置（`CRAWLER_ALLOWED_INTERNAL_HOSTNAMES`）。
