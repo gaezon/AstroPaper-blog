@@ -1,6 +1,14 @@
 const PREFERRED_LOCALE_KEY = "preferred-locale";
 const cleanupFns: (() => void)[] = [];
 
+function scheduleMicrotask(callback: () => void): void {
+  if (typeof queueMicrotask === "function") {
+    queueMicrotask(callback);
+  } else {
+    Promise.resolve().then(callback);
+  }
+}
+
 if (typeof window !== "undefined") {
   document.addEventListener("astro:before-swap", () => {
     cleanupFns.forEach(fn => fn());
@@ -78,12 +86,16 @@ export function initLanguageSwitcher() {
     if (pointerDownDropdown) {
       const dropdown = pointerDownDropdown;
       pointerDownDropdown = null;
-      if (
-        dropdown.getAttribute("data-open") === "true" &&
-        !dropdown.contains(document.activeElement)
-      ) {
-        setDropdownState(dropdown, false);
-      }
+      // Delay close to microtask so that the link's click handler
+      // (and default navigation) fires before the dropdown is hidden.
+      scheduleMicrotask(() => {
+        if (
+          dropdown.getAttribute("data-open") === "true" &&
+          !dropdown.contains(document.activeElement)
+        ) {
+          setDropdownState(dropdown, false);
+        }
+      });
     }
   };
 

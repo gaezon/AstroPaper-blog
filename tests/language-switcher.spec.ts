@@ -165,3 +165,25 @@ test.describe("Language Switcher Mobile Navigation", () => {
     await Promise.all([page.waitForURL("**/en/"), englishLink.tap()]);
   });
 });
+
+test.describe("Language Switcher Mobile Click", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("navigate with click on mobile viewport", async ({ page }) => {
+    await page.goto("/en/");
+
+    await page.locator("#menu-btn").click();
+
+    const dropdown = page.locator(".lang-switcher-mobile");
+    await dropdown
+      .getByRole("button", { name: /English.*Select Language/u })
+      .click();
+
+    const zhLink = dropdown.getByRole("menuitem", { name: "简体中文" });
+    await expect(zhLink).toHaveAttribute("href", "/");
+    await Promise.all([
+      page.waitForURL((url: URL) => url.pathname === "/" && !url.hash),
+      zhLink.click(),
+    ]);
+  });
+});
