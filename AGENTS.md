@@ -76,7 +76,7 @@
 ## Deployment Notes
 
 - Build output is produced via Astro static build and Vercel prebuilt artifacts under `.vercel/output/`
-- `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` serves localized zh/en 404 pages correctly
+- `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` serves localized zh/en 404 pages and security response headers correctly
 - Pagefind index generation targets `.vercel/output/static`
 
 ## Documentation Maintenance

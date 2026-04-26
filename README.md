@@ -95,4 +95,4 @@ docs/                 Feature and maintenance docs
 
 - CI and deploy workflows are under `.github/workflows/`.
 - Production and preview deployments are prebuilt in GitHub Actions and deployed to Vercel with `--prebuilt`.
-- `pnpm build` and `pnpm build:strict` also patch `.vercel/output/config.json` so Vercel prebuilt deployments serve localized zh/en 404 pages.
+- `pnpm build` and `pnpm build:strict` also patch `.vercel/output/config.json` so Vercel prebuilt deployments serve localized zh/en 404 pages and security response headers.
