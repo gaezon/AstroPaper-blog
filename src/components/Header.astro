@@ -87,7 +87,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       id="top-nav-wrap"
       class="relative flex w-full items-center justify-between bg-background p-4 sm:py-4"
     >
-      <div class="flex items-center">
+      <div class="flex w-full items-center justify-between sm:w-auto">
         <a
           href={localeUrl("/")}
           class="flex items-center"
@@ -95,132 +95,156 @@ const tr = (key: string, params?: Record<string, string | number>) =>
         >
           <DummyLogo class="h-auto w-[45px] sm:w-[50px]" />
         </a>
+        <button
+          id="menu-btn"
+          type="button"
+          class="focus-outline rounded-md p-2 sm:hidden"
+          aria-label={tr("ui.menu")}
+          aria-expanded="false"
+          aria-controls="nav-menu"
+        >
+          <IconMenuDeep id="menu-icon" />
+        </button>
       </div>
       <nav
         id="nav-menu"
-        class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
+        class="sm:backdrop-blur-0 fixed inset-0 z-[70] hidden items-center justify-center bg-background/80 px-4 py-8 backdrop-blur-3xl sm:static sm:z-auto sm:ms-2 sm:flex sm:w-auto sm:justify-end sm:bg-transparent sm:p-0"
       >
-        <button
-          id="menu-btn"
-          class="focus-outline self-end p-2 sm:hidden"
-          aria-label={tr("ui.menu")}
-          aria-expanded="false"
-          aria-controls="menu-items"
+        <div
+          id="menu-panel"
+          class="w-full max-w-xs rounded-lg border border-border/70 bg-background p-4 shadow-2xl shadow-foreground/20 sm:flex sm:w-auto sm:max-w-none sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none"
         >
-          <IconX id="close-icon" class="hidden" />
-          <IconMenuDeep id="menu-icon" />
-        </button>
-        <ul
-          id="menu-items"
-          class:list={[
-            "mt-4 grid w-44 grid-cols-2 place-content-center gap-2",
-            "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
-            "hidden",
-            "sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
-          ]}
-        >
-          <li class="col-span-2">
-            <a
-              href={localeUrl("/posts")}
-              class:list={{ "active-nav": isActive("/posts") }}
+          <div class="mb-4 flex items-center justify-between sm:hidden">
+            <span
+              id="menu-panel-title"
+              class="text-sm font-semibold tracking-wide text-foreground/70"
             >
-              {tr("nav.blog")}
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a
-              href={localeUrl("/tags")}
-              class:list={{ "active-nav": isActive("/tags") }}
+              {tr("ui.menu")}
+            </span>
+            <button
+              id="menu-close"
+              type="button"
+              class="focus-outline rounded-md p-2 text-foreground/80 transition-colors hover:bg-muted/50 hover:text-foreground"
+              aria-label={tr("ui.close")}
             >
-              {tr("nav.tags")}
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a
-              href={localeUrl("/about")}
-              class:list={{ "active-nav": isActive("/about") }}
-            >
-              {tr("nav.about")}
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a
-              href={localeUrl("/milestones")}
-              class:list={{ "active-nav": isActive("/milestones") }}
-            >
-              {tr("nav.milestones")}
-            </a>
-          </li>
-          {
-            SITE.showArchives && (
-              <li class="col-span-2">
-                <LinkButton
-                  href={localeUrl("/archives")}
-                  class:list={[
-                    "focus-outline flex justify-center p-3 sm:p-1",
-                    {
-                      "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                    },
-                  ]}
-                  aria-label={tr("nav.archives")}
-                  title={tr("nav.archives")}
-                >
-                  <IconArchive
-                    class="hidden sm:inline-block"
-                    aria-hidden="true"
-                  />
-                  <span class="sm:sr-only">{tr("nav.archives")}</span>
-                </LinkButton>
-              </li>
-            )
-          }
-          <li class="col-span-1 flex items-center justify-center">
-            <LinkButton
-              href={localeUrl("/search")}
-              class:list={[
-                "focus-outline flex p-3 sm:p-1",
-                { "[&>svg]:stroke-accent": isActive("/search") },
-              ]}
-              aria-label={tr("nav.search")}
-              title={tr("nav.search")}
-            >
-              <IconSearch aria-hidden="true" />
-              <span class="sr-only">{tr("nav.search")}</span>
-            </LinkButton>
-          </li>
-          {
-            SITE.lightAndDarkMode && (
-              <li class="col-span-1 flex items-center justify-center">
-                <button
-                  id="theme-btn"
-                  class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
-                  title={tr("theme.toggle")}
-                  aria-label={tr("theme.toggle")}
-                  aria-live="polite"
-                  data-label-light={tr("theme.switchToLight")}
-                  data-label-dark={tr("theme.switchToDark")}
-                >
-                  <IconMoon
-                    class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
-                    aria-hidden="true"
-                  />
-                  <IconSunHigh
-                    class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
-                    aria-hidden="true"
-                  />
-                  <span class="sr-only">{tr("theme.toggle")}</span>
-                </button>
-              </li>
-            )
-          }
-        </ul>
-        <!-- Language switcher - desktop and mobile -->
-        <div class="lang-switcher-container hidden sm:flex">
-          <LanguageSwitcher override={switchOverride} />
-        </div>
-        <!-- Mobile language switcher (show full label) -->
-        <div class="lang-switcher-mobile hidden">
-          <LanguageSwitcher override={switchOverride} class="mobile-dropdown" />
+              <IconX />
+            </button>
+          </div>
+          <ul
+            id="menu-items"
+            class:list={[
+              "grid w-full grid-cols-2 gap-2",
+              "[&>li>a]:block [&>li>a]:rounded-md [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:bg-muted/50 [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1 sm:[&>li>a]:hover:bg-transparent",
+              "sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
+            ]}
+          >
+            <li class="col-span-2">
+              <a
+                href={localeUrl("/posts")}
+                class:list={{ "active-nav": isActive("/posts") }}
+              >
+                {tr("nav.blog")}
+              </a>
+            </li>
+            <li class="col-span-2">
+              <a
+                href={localeUrl("/tags")}
+                class:list={{ "active-nav": isActive("/tags") }}
+              >
+                {tr("nav.tags")}
+              </a>
+            </li>
+            <li class="col-span-2">
+              <a
+                href={localeUrl("/about")}
+                class:list={{ "active-nav": isActive("/about") }}
+              >
+                {tr("nav.about")}
+              </a>
+            </li>
+            <li class="col-span-2">
+              <a
+                href={localeUrl("/milestones")}
+                class:list={{ "active-nav": isActive("/milestones") }}
+              >
+                {tr("nav.milestones")}
+              </a>
+            </li>
+            {
+              SITE.showArchives && (
+                <li class="col-span-2">
+                  <LinkButton
+                    href={localeUrl("/archives")}
+                    class:list={[
+                      "focus-outline flex justify-center p-3 sm:p-1",
+                      {
+                        "active-nav [&>svg]:stroke-accent":
+                          isActive("/archives"),
+                      },
+                    ]}
+                    aria-label={tr("nav.archives")}
+                    title={tr("nav.archives")}
+                  >
+                    <IconArchive
+                      class="hidden sm:inline-block"
+                      aria-hidden="true"
+                    />
+                    <span class="sm:sr-only">{tr("nav.archives")}</span>
+                  </LinkButton>
+                </li>
+              )
+            }
+            <li class="col-span-1 flex items-center justify-center">
+              <LinkButton
+                href={localeUrl("/search")}
+                class:list={[
+                  "focus-outline flex p-3 sm:p-1",
+                  { "[&>svg]:stroke-accent": isActive("/search") },
+                ]}
+                aria-label={tr("nav.search")}
+                title={tr("nav.search")}
+              >
+                <IconSearch aria-hidden="true" />
+                <span class="sr-only">{tr("nav.search")}</span>
+              </LinkButton>
+            </li>
+            {
+              SITE.lightAndDarkMode && (
+                <li class="col-span-1 flex items-center justify-center">
+                  <button
+                    id="theme-btn"
+                    class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
+                    title={tr("theme.toggle")}
+                    aria-label={tr("theme.toggle")}
+                    aria-live="polite"
+                    data-label-light={tr("theme.switchToLight")}
+                    data-label-dark={tr("theme.switchToDark")}
+                  >
+                    <IconMoon
+                      class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
+                      aria-hidden="true"
+                    />
+                    <IconSunHigh
+                      class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
+                      aria-hidden="true"
+                    />
+                    <span class="sr-only">{tr("theme.toggle")}</span>
+                  </button>
+                </li>
+              )
+            }
+          </ul>
+          <!-- Language switcher - desktop and mobile -->
+          <div class="lang-switcher-container hidden sm:flex">
+            <LanguageSwitcher override={switchOverride} />
+          </div>
+          <!-- Mobile language switcher (show full label) -->
+          <div class="lang-switcher-mobile sm:hidden">
+            <LanguageSwitcher
+              override={switchOverride}
+              class="mobile-dropdown"
+            />
+          </div>
         </div>
       </nav>
     </div>
@@ -234,26 +258,209 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 >
   function toggleNav() {
     const menuBtn = document.querySelector("#menu-btn");
-    const menuItems = document.querySelector("#menu-items");
-    const langSwitcher = document.querySelector(".lang-switcher-mobile");
-    const menuIcon = document.querySelector("#menu-icon");
-    const closeIcon = document.querySelector("#close-icon");
+    const menuNav = document.querySelector("#nav-menu");
+    const menuPanel = document.querySelector("#menu-panel");
+    const menuClose = document.querySelector("#menu-close");
 
-    if (!menuBtn || !menuItems || !menuIcon || !closeIcon) return;
+    if (!menuBtn || !menuNav || !menuPanel || !menuClose) return;
 
-    menuBtn.addEventListener("click", () => {
-      const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
+    menuNav.__headerNavCleanup?.();
 
-      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? menuLabel : closeLabel);
+    const mobileQuery = window.matchMedia("(max-width: 639px)");
+    let restoreFocus = false;
+    const focusableSelector = [
+      "a[href]",
+      "button:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(", ");
 
-      menuItems.classList.toggle("hidden");
-      if (langSwitcher) {
-        langSwitcher.classList.toggle("hidden");
+    const setClosedMobileA11y = () => {
+      menuNav.setAttribute("aria-hidden", "true");
+      menuNav.setAttribute("inert", "");
+      menuNav.removeAttribute("role");
+      menuNav.removeAttribute("aria-modal");
+      menuNav.removeAttribute("aria-labelledby");
+    };
+
+    const setOpenMobileA11y = () => {
+      menuNav.setAttribute("role", "dialog");
+      menuNav.setAttribute("aria-modal", "true");
+      menuNav.setAttribute("aria-labelledby", "menu-panel-title");
+      menuNav.setAttribute("aria-hidden", "false");
+      menuNav.removeAttribute("inert");
+    };
+
+    const unlockScroll = () => {
+      document.documentElement.classList.remove("overflow-hidden");
+    };
+
+    const openMenu = () => {
+      if (!mobileQuery.matches) return;
+
+      restoreFocus = true;
+      setOpenMobileA11y();
+      menuNav.classList.remove("hidden");
+      menuNav.classList.add("flex");
+      document.documentElement.classList.add("overflow-hidden");
+      menuBtn.setAttribute("aria-expanded", "true");
+      menuBtn.setAttribute("aria-label", closeLabel);
+      menuClose.focus({ preventScroll: true });
+    };
+
+    const closeMenu = () => {
+      menuNav.classList.add("hidden");
+      menuNav.classList.remove("flex");
+      unlockScroll();
+      menuBtn.setAttribute("aria-expanded", "false");
+      menuBtn.setAttribute("aria-label", menuLabel);
+      setClosedMobileA11y();
+
+      if (restoreFocus) {
+        restoreFocus = false;
+        menuBtn.focus({ preventScroll: true });
       }
-      menuIcon.classList.toggle("hidden");
-      closeIcon.classList.toggle("hidden");
-    });
+    };
+
+    const syncViewport = () => {
+      if (mobileQuery.matches) {
+        if (menuBtn.getAttribute("aria-expanded") === "true") {
+          setOpenMobileA11y();
+          menuNav.classList.remove("hidden");
+          menuNav.classList.add("flex");
+        } else {
+          closeMenu();
+        }
+        return;
+      }
+
+      restoreFocus = false;
+      unlockScroll();
+      menuNav.classList.remove("hidden", "flex");
+      menuNav.removeAttribute("aria-hidden");
+      menuNav.removeAttribute("inert");
+      menuNav.removeAttribute("role");
+      menuNav.removeAttribute("aria-modal");
+      menuNav.removeAttribute("aria-labelledby");
+      menuBtn.setAttribute("aria-expanded", "false");
+      menuBtn.setAttribute("aria-label", menuLabel);
+    };
+
+    const handleMenuButtonClick = () => {
+      const isOpen = menuBtn.getAttribute("aria-expanded") === "true";
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    };
+
+    const handleOverlayClick = event => {
+      if (
+        mobileQuery.matches &&
+        menuBtn.getAttribute("aria-expanded") === "true" &&
+        event.target === menuNav
+      ) {
+        closeMenu();
+      }
+    };
+
+    const isVisibleFocusable = element => {
+      if (!(element instanceof HTMLElement)) return false;
+      if (
+        element.hasAttribute("disabled") ||
+        element.getAttribute("aria-hidden") === "true"
+      ) {
+        return false;
+      }
+
+      if (typeof element.checkVisibility === "function") {
+        return element.checkVisibility({
+          checkOpacity: false,
+          checkVisibilityCSS: true,
+        });
+      }
+
+      const style = window.getComputedStyle(element);
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        element.getClientRects().length > 0
+      );
+    };
+
+    const getFocusableElements = () =>
+      Array.from(menuPanel.querySelectorAll(focusableSelector)).filter(
+        isVisibleFocusable
+      );
+
+    const isMenuOpen = () =>
+      mobileQuery.matches && menuBtn.getAttribute("aria-expanded") === "true";
+
+    const trapMenuFocus = event => {
+      if (event.key !== "Tab") return;
+
+      const focusableElements = getFocusableElements();
+      if (!focusableElements.length) {
+        event.preventDefault();
+        menuClose.focus({ preventScroll: true });
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey) {
+        if (
+          activeElement === firstElement ||
+          !menuPanel.contains(activeElement)
+        ) {
+          event.preventDefault();
+          lastElement.focus({ preventScroll: true });
+        }
+        return;
+      }
+
+      if (activeElement === lastElement || !menuPanel.contains(activeElement)) {
+        event.preventDefault();
+        firstElement.focus({ preventScroll: true });
+      }
+    };
+
+    const handleKeydown = event => {
+      if (!isMenuOpen()) return;
+
+      if (event.key === "Escape") {
+        closeMenu();
+        return;
+      }
+
+      trapMenuFocus(event);
+    };
+
+    const handleMediaChange = () => {
+      syncViewport();
+    };
+
+    menuBtn.addEventListener("click", handleMenuButtonClick);
+    menuClose.addEventListener("click", closeMenu);
+    menuNav.addEventListener("click", handleOverlayClick);
+    document.addEventListener("keydown", handleKeydown);
+    mobileQuery.addEventListener("change", handleMediaChange);
+
+    syncViewport();
+
+    menuNav.__headerNavCleanup = () => {
+      menuBtn.removeEventListener("click", handleMenuButtonClick);
+      menuClose.removeEventListener("click", closeMenu);
+      menuNav.removeEventListener("click", handleOverlayClick);
+      document.removeEventListener("keydown", handleKeydown);
+      mobileQuery.removeEventListener("change", handleMediaChange);
+      unlockScroll();
+    };
   }
 
   toggleNav();
@@ -268,7 +475,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     display: none;
   }
 
-  @media (min-width: 641px) {
+  @media (min-width: 640px) {
     .lang-switcher-container {
       display: flex;
       align-items: center;
@@ -281,7 +488,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     display: none;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 639px) {
     .lang-switcher-mobile {
       display: block;
       margin-top: 1.25rem;
@@ -314,6 +521,18 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       left: 0;
       right: 0;
       width: 100%;
+    }
+
+    #nav-menu {
+      background: color-mix(in srgb, var(--background) 30%, transparent);
+      backdrop-filter: blur(8px) saturate(1.06);
+      -webkit-backdrop-filter: blur(8px) saturate(1.06);
+    }
+
+    #menu-panel {
+      background: var(--background);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
   }
 </style>
