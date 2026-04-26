@@ -31,12 +31,12 @@ This file provides concise, repository-specific guidance for coding agents.
 - Bilingual article pairing uses `originalTitle` in frontmatter
 - First-paint theme boot stays inline in `src/layouts/Layout.astro`; deferred theme behavior lives in `src/scripts/toggle-theme.ts`
 - Mermaid rendering is build-time in GitHub Actions and left as code blocks outside CI
-- Vercel prebuilt output is patched after build so localized zh/en 404 routing works correctly
+- Vercel prebuilt output is patched after build so localized zh/en 404 routing and security response headers work correctly
 
 ## High-signal file areas
 
 - `src/content.config.ts` - content schema and collection rules
 - `astro.config.ts` - Astro, integrations, markdown, and Vercel config
-- `scripts/apply-vercel-routes.ts` - localized Vercel route patching
+- `scripts/apply-vercel-routes.ts` - localized Vercel route and security response header patching
 - `scripts/auto-discover-bilingual.ts` - bilingual mapping generation
 - `tests/` - Playwright and targeted validation coverage for major user flows
