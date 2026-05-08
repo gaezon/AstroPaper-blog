@@ -124,7 +124,11 @@ export default {
   // Footer
   footer: {
     copyright: "© {{year}} {{author}}. All rights reserved.",
-    poweredBy: "Powered by {{framework}}",
+    builtWithPrefix: "Built with ",
+    builtWithSuffix: "",
+    themeCreditPrefix: "Refined from ",
+    themeCreditSuffix: "",
+    openSourceThanks: "Thanks to open source.",
   },
 
   // Common UI text

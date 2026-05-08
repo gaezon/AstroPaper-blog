@@ -123,7 +123,11 @@ export default {
   // Footer
   footer: {
     copyright: "© {{year}} {{author}}. 保留所有权利。",
-    poweredBy: "基于 {{framework}} 构建",
+    builtWithPrefix: "由 ",
+    builtWithSuffix: " 驱动",
+    themeCreditPrefix: "基于 ",
+    themeCreditSuffix: " 打磨",
+    openSourceThanks: "感谢开源社区。",
   },
 
   // Generic UI copy
