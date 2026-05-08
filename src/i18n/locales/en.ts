@@ -127,7 +127,7 @@ export default {
     builtWithPrefix: "Built with ",
     builtWithSuffix: "",
     themeCreditPrefix: "Refined from ",
-    themeCreditSuffix: "",
+    themeCreditSuffix: " theme",
     openSourceThanks: "Thanks to open source.",
   },
 
@@ -162,7 +162,7 @@ export default {
     expandToc: "Expand Table of Contents",
     collapseToc: "Collapse Table of Contents",
     collapse: "Collapse",
-    socialLinks: "Connect with us:",
+    socialLinks: "Contact me:",
     sharePostOn: "Share this article on:",
     cookie: {
       consentText:

@@ -126,7 +126,7 @@ export default {
     builtWithPrefix: "由 ",
     builtWithSuffix: " 驱动",
     themeCreditPrefix: "基于 ",
-    themeCreditSuffix: " 打磨",
+    themeCreditSuffix: " 主题打磨",
     openSourceThanks: "感谢开源社区。",
   },
 
@@ -161,7 +161,7 @@ export default {
     expandToc: "展开目录",
     collapseToc: "收起目录",
     collapse: "收起",
-    socialLinks: "关注我：",
+    socialLinks: "联系我：",
     sharePostOn: "分享至：",
     cookie: {
       consentText: "我们使用 Cookies 来改善体验。查看",
