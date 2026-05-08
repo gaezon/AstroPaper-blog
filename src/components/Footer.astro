@@ -22,15 +22,44 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 
 <footer class:list={["w-full", { "mt-auto": !noMarginTop }]}>
   <Hr noPadding />
-  <div class="flex flex-col items-center py-6 sm:py-4">
-    <Socials centered />
-    <div class="copyright-wrapper mt-4 text-center">
-      <span
-        >{
-          tr("footer.copyright", { year: currentYear, author: "Gaazeon" })
-        }</span
-      >
-      <span class="separator">&nbsp;|&nbsp;</span>
+  <div
+    class="flex flex-col items-center gap-5 py-8 text-center text-sm text-foreground/75 sm:py-6"
+  >
+    <div class="flex flex-col items-center gap-4">
+      <p class="max-w-2xl leading-relaxed">
+        <span>
+          {tr("footer.builtWithPrefix")}
+          <a
+            class="hover:text-skin-accent font-medium text-foreground underline decoration-dashed underline-offset-4"
+            href="https://astro.build/"
+            target="_blank"
+            rel="noopener noreferrer">Astro</a
+          >
+          {tr("footer.builtWithSuffix")}
+        </span>
+        <span class="mx-2 text-foreground/40" aria-hidden="true">|</span>
+        <span>
+          {tr("footer.themeCreditPrefix")}
+          <a
+            class="hover:text-skin-accent font-medium text-foreground underline decoration-dashed underline-offset-4"
+            href="https://github.com/satnaing/astro-paper"
+            target="_blank"
+            rel="noopener noreferrer">AstroPaper</a
+          >
+          {tr("footer.themeCreditSuffix")}
+        </span>
+        <span class="mx-2 text-foreground/40" aria-hidden="true">|</span>
+        <span>{tr("footer.openSourceThanks")}</span>
+      </p>
+      <Socials centered />
+    </div>
+    <div
+      class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs"
+    >
+      <span>
+        {tr("footer.copyright", { year: currentYear, author: "Gaazeon" })}
+      </span>
+      <span class="text-foreground/35" aria-hidden="true">|</span>
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
         href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
@@ -39,10 +68,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       >
         CC BY-NC-SA 4.0
       </a>
-    </div>
-    <div
-      class="legal-links mt-2 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
-    >
+      <span class="text-foreground/35" aria-hidden="true">|</span>
       <a
         class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
         href={localeUrl("/contact")}
