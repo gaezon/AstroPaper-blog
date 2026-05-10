@@ -1,0 +1,251 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Gaazeon's Blog Public Content Discovery",
+    "version": "1.0.0",
+    "description": "Public read-only discovery resources for Gaazeon's Blog. The site is a static technical blog with no authentication, write API, account system, payment flow, or private resources."
+  },
+  "servers": [
+    {
+      "url": "https://blog.gaazeon.com",
+      "description": "Production blog origin"
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "Discovery",
+      "description": "Public static resources for crawlers, readers, and AI agents."
+    }
+  ],
+  "paths": {
+    "/llms.txt": {
+      "get": {
+        "operationId": "getLlmsTxt",
+        "tags": ["Discovery"],
+        "summary": "Get compact LLM-oriented site overview",
+        "responses": {
+          "200": {
+            "description": "Markdown text overview.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms-full.txt": {
+      "get": {
+        "operationId": "getLlmsFullTxt",
+        "tags": ["Discovery"],
+        "summary": "Get fuller LLM-oriented site context",
+        "responses": {
+          "200": {
+            "description": "Markdown text context.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agents.md": {
+      "get": {
+        "operationId": "getAgentInstructions",
+        "tags": ["Discovery"],
+        "summary": "Get AI agent usage instructions",
+        "responses": {
+          "200": {
+            "description": "Markdown agent instructions.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/index.md": {
+      "get": {
+        "operationId": "getMarkdownIndex",
+        "tags": ["Discovery"],
+        "summary": "Get Markdown site index",
+        "responses": {
+          "200": {
+            "description": "Markdown site index.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pricing.md": {
+      "get": {
+        "operationId": "getPricingAndAccessModel",
+        "tags": ["Discovery"],
+        "summary": "Get pricing and access model",
+        "responses": {
+          "200": {
+            "description": "Markdown description of free public access.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/api-catalog": {
+      "get": {
+        "operationId": "getApiCatalog",
+        "tags": ["Discovery"],
+        "summary": "Get API catalog linkset",
+        "responses": {
+          "200": {
+            "description": "JSON linkset for public discovery resources.",
+            "content": {
+              "application/linkset+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent-skills": {
+      "get": {
+        "operationId": "getAgentSkills",
+        "tags": ["Discovery"],
+        "summary": "Get agent skills manifest",
+        "responses": {
+          "200": {
+            "description": "JSON manifest describing public agent capabilities and constraints.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sitemap-index.xml": {
+      "get": {
+        "operationId": "getSitemapIndex",
+        "tags": ["Discovery"],
+        "summary": "Get sitemap index",
+        "responses": {
+          "200": {
+            "description": "XML sitemap index.",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schemamap.xml": {
+      "get": {
+        "operationId": "getSchemaMap",
+        "tags": ["Discovery"],
+        "summary": "Get schema map",
+        "responses": {
+          "200": {
+            "description": "XML schema map for structured public resources.",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rss.xml": {
+      "get": {
+        "operationId": "getChineseRssFeed",
+        "tags": ["Discovery"],
+        "summary": "Get Chinese RSS feed",
+        "responses": {
+          "200": {
+            "description": "RSS feed for Chinese posts.",
+            "content": {
+              "application/rss+xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rss.en.xml": {
+      "get": {
+        "operationId": "getEnglishRssFeed",
+        "tags": ["Discovery"],
+        "summary": "Get English RSS feed",
+        "responses": {
+          "200": {
+            "description": "RSS feed for English posts.",
+            "content": {
+              "application/rss+xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pagefind/pagefind-entry.json": {
+      "get": {
+        "operationId": "getPagefindEntry",
+        "tags": ["Discovery"],
+        "summary": "Get static Pagefind search entry metadata",
+        "responses": {
+          "200": {
+            "description": "Pagefind static search entry metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

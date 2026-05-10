@@ -1,0 +1,45 @@
+{
+  "$schema": "https://blog.gaazeon.com/.well-known/agent-skills.schema.json",
+  "version": "0.2.0",
+  "name": "Gaazeon's Blog",
+  "description": "Public bilingual technical blog for practical software development, web frontend, self-hosted services, automation, and developer workflow notes.",
+  "url": "https://blog.gaazeon.com/",
+  "resources": [
+    {
+      "type": "llms.txt",
+      "url": "https://blog.gaazeon.com/llms.txt"
+    },
+    {
+      "type": "llms-full.txt",
+      "url": "https://blog.gaazeon.com/llms-full.txt"
+    },
+    {
+      "type": "agent-instructions",
+      "url": "https://blog.gaazeon.com/agents.md"
+    },
+    {
+      "type": "sitemap",
+      "url": "https://blog.gaazeon.com/sitemap-index.xml"
+    },
+    {
+      "type": "rss",
+      "url": "https://blog.gaazeon.com/rss.xml",
+      "language": "zh-CN"
+    },
+    {
+      "type": "rss",
+      "url": "https://blog.gaazeon.com/rss.en.xml",
+      "language": "en"
+    }
+  ],
+  "capabilities": [
+    "public-content-discovery",
+    "article-citation",
+    "bilingual-technical-content",
+    "static-search-index"
+  ],
+  "authentication": {
+    "required": false,
+    "description": "All supported resources are public and read-only."
+  }
+}

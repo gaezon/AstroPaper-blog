@@ -53,28 +53,34 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       </p>
       <Socials centered />
     </div>
-    <div
-      class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs"
-    >
+    <div class="grid justify-items-center gap-2 text-xs">
       <span>
         {tr("footer.copyright", { year: currentYear, author: "Gaazeon" })}
       </span>
-      <span class="text-foreground/35" aria-hidden="true">|</span>
-      <a
-        class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
-        href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        CC BY-NC-SA 4.0
-      </a>
-      <span class="text-foreground/35" aria-hidden="true">|</span>
-      <a
-        class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
-        href={localeUrl("/contact")}
-      >
-        {tr("ui.contact")}
-      </a>
+      <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+        <a
+          class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
+          href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          CC BY-NC-SA 4.0
+        </a>
+        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <a
+          class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
+          href={localeUrl("/contact")}
+        >
+          {tr("ui.contact")}
+        </a>
+        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <a
+          class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
+          href={localeUrl("/privacy")}
+        >
+          {tr("ui.privacyPolicy")}
+        </a>
+      </div>
     </div>
   </div>
 </footer>
