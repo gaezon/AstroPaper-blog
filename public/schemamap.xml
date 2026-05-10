@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemaMap xmlns="https://blog.gaazeon.com/schema-map">
+  <site url="https://blog.gaazeon.com/" type="https://schema.org/Blog">
+    <resource url="https://blog.gaazeon.com/" schemaType="https://schema.org/WebSite" />
+    <resource url="https://blog.gaazeon.com/posts/" schemaType="https://schema.org/Blog" />
+    <resource url="https://blog.gaazeon.com/sitemap-index.xml" schemaType="https://schema.org/SiteNavigationElement" />
+    <resource url="https://blog.gaazeon.com/rss.xml" schemaType="https://schema.org/DataFeed" inLanguage="zh-CN" />
+    <resource url="https://blog.gaazeon.com/rss.en.xml" schemaType="https://schema.org/DataFeed" inLanguage="en" />
+  </site>
+</schemaMap>

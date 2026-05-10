@@ -38,10 +38,19 @@ const CONTENT_SECURITY_POLICY = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+const DISCOVERY_LINK_HEADER = [
+  '</sitemap-index.xml>; rel="sitemap"; type="application/xml"',
+  '</llms.txt>; rel="describedby"; type="text/markdown"',
+  '</index.md>; rel="alternate"; type="text/markdown"',
+  '</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
+  '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+].join(", ");
+
 export const SECURITY_HEADERS_ROUTE = {
   src: "^/(.*)$",
   headers: {
     "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+    Link: DISCOVERY_LINK_HEADER,
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "X-Content-Type-Options": "nosniff",
     "Permissions-Policy":
@@ -50,8 +59,38 @@ export const SECURITY_HEADERS_ROUTE = {
   continue: true,
 } as const satisfies VercelRoute;
 
+export const API_CATALOG_HEADERS_ROUTE = {
+  src: "^/\\.well-known/api-catalog$",
+  headers: {
+    "Content-Type": "application/linkset+json; charset=utf-8",
+  },
+  continue: true,
+} as const satisfies VercelRoute;
+
+export const AGENT_SKILLS_HEADERS_ROUTE = {
+  src: "^/\\.well-known/agent-skills$",
+  headers: {
+    "Content-Type": "application/json; charset=utf-8",
+  },
+  continue: true,
+} as const satisfies VercelRoute;
+
 const SECURITY_HEADER_KEYS = new Set(
   Object.keys(SECURITY_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const SECURITY_ROUTE_ID_HEADERS = Object.fromEntries(
+  Object.entries(SECURITY_HEADERS_ROUTE.headers).filter(
+    ([key]) => key !== "Link"
+  )
+);
+
+const API_CATALOG_HEADER_KEYS = new Set(
+  Object.keys(API_CATALOG_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const AGENT_SKILLS_HEADER_KEYS = new Set(
+  Object.keys(AGENT_SKILLS_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
 );
 
 const DEFAULT_NOT_FOUND_ROUTE = {
@@ -117,6 +156,31 @@ const mergeSecurityHeadersRoute = (route?: VercelRoute): VercelRoute => {
   };
 };
 
+const isSecurityHeadersRoute = (route: VercelRoute) =>
+  route.src === SECURITY_HEADERS_ROUTE.src &&
+  route.continue === SECURITY_HEADERS_ROUTE.continue &&
+  hasSameHeaders(route.headers, SECURITY_ROUTE_ID_HEADERS);
+
+const mergeHeadersRoute = (
+  expectedRoute: VercelRoute,
+  forcedHeaderKeys: Set<string>,
+  route?: VercelRoute
+): VercelRoute => {
+  const extraHeaders = Object.fromEntries(
+    Object.entries(route?.headers ?? {}).filter(
+      ([key]) => !forcedHeaderKeys.has(key.toLowerCase())
+    )
+  );
+
+  return {
+    ...expectedRoute,
+    headers: {
+      ...extraHeaders,
+      ...expectedRoute.headers,
+    },
+  };
+};
+
 export function applyLocalized404Routes(config: VercelConfig): VercelConfig {
   const routes = config.routes.filter(
     route => !hasSameRouteShape(route, ENGLISH_NOT_FOUND_ROUTE)
@@ -140,11 +204,9 @@ export function applyLocalized404Routes(config: VercelConfig): VercelConfig {
 
 export function applySecurityHeaders(config: VercelConfig): VercelConfig {
   const existingSecurityHeadersRoute = config.routes.find(route =>
-    hasSameRouteShape(route, SECURITY_HEADERS_ROUTE)
+    isSecurityHeadersRoute(route)
   );
-  const routes = config.routes.filter(
-    route => !hasSameRouteShape(route, SECURITY_HEADERS_ROUTE)
-  );
+  const routes = config.routes.filter(route => !isSecurityHeadersRoute(route));
 
   return {
     ...config,
@@ -155,8 +217,54 @@ export function applySecurityHeaders(config: VercelConfig): VercelConfig {
   };
 }
 
+export function applyApiCatalogHeaders(config: VercelConfig): VercelConfig {
+  const existingApiCatalogHeadersRoute = config.routes.find(route =>
+    hasSameRouteShape(route, API_CATALOG_HEADERS_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, API_CATALOG_HEADERS_ROUTE)
+  );
+
+  return {
+    ...config,
+    routes: [
+      mergeHeadersRoute(
+        API_CATALOG_HEADERS_ROUTE,
+        API_CATALOG_HEADER_KEYS,
+        existingApiCatalogHeadersRoute
+      ),
+      ...routes,
+    ],
+  };
+}
+
+export function applyAgentSkillsHeaders(config: VercelConfig): VercelConfig {
+  const existingAgentSkillsHeadersRoute = config.routes.find(route =>
+    hasSameRouteShape(route, AGENT_SKILLS_HEADERS_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, AGENT_SKILLS_HEADERS_ROUTE)
+  );
+
+  return {
+    ...config,
+    routes: [
+      mergeHeadersRoute(
+        AGENT_SKILLS_HEADERS_ROUTE,
+        AGENT_SKILLS_HEADER_KEYS,
+        existingAgentSkillsHeadersRoute
+      ),
+      ...routes,
+    ],
+  };
+}
+
 export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
-  return applyLocalized404Routes(applySecurityHeaders(config));
+  return applyLocalized404Routes(
+    applyAgentSkillsHeaders(
+      applyApiCatalogHeaders(applySecurityHeaders(config))
+    )
+  );
 }
 
 async function main() {

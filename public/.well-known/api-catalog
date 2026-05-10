@@ -1,0 +1,47 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://blog.gaazeon.com/",
+      "item": [
+        {
+          "href": "https://blog.gaazeon.com/openapi.json",
+          "rel": "service-desc",
+          "type": "application/vnd.oai.openapi+json",
+          "title": "OpenAPI description for public blog discovery resources"
+        },
+        {
+          "href": "https://blog.gaazeon.com/llms.txt",
+          "rel": "describedby",
+          "type": "text/markdown",
+          "title": "Compact LLM overview"
+        },
+        {
+          "href": "https://blog.gaazeon.com/index.md",
+          "rel": "alternate",
+          "type": "text/markdown",
+          "title": "Markdown site index"
+        },
+        {
+          "href": "https://blog.gaazeon.com/sitemap-index.xml",
+          "rel": "sitemap",
+          "type": "application/xml",
+          "title": "Sitemap index"
+        },
+        {
+          "href": "https://blog.gaazeon.com/rss.xml",
+          "rel": "alternate",
+          "type": "application/rss+xml",
+          "hreflang": "zh-CN",
+          "title": "Chinese RSS feed"
+        },
+        {
+          "href": "https://blog.gaazeon.com/rss.en.xml",
+          "rel": "alternate",
+          "type": "application/rss+xml",
+          "hreflang": "en",
+          "title": "English RSS feed"
+        }
+      ]
+    }
+  ]
+}

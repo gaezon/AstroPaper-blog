@@ -1,0 +1,47 @@
+# Gaazeon's Blog
+
+> A bilingual personal technical blog about practical software development, web frontend engineering, self-hosted services, automation tools, and developer workflow notes.
+
+Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publishes original technical notes in Chinese and selected English translations. The site is free to read, does not require authentication, and exposes public discovery files for crawlers and AI agents.
+
+## Primary Entry Points
+
+- [Home](https://blog.gaazeon.com/)
+- [English Home](https://blog.gaazeon.com/en/)
+- [All Chinese posts](https://blog.gaazeon.com/posts/)
+- [All English posts](https://blog.gaazeon.com/en/posts/)
+- [Archives](https://blog.gaazeon.com/archives/)
+- [Tags](https://blog.gaazeon.com/tags/)
+- [Search](https://blog.gaazeon.com/search/)
+- [About](https://blog.gaazeon.com/about/)
+- [Contact](https://blog.gaazeon.com/contact/)
+
+## Machine-Readable Resources
+
+- [Full LLM context](https://blog.gaazeon.com/llms-full.txt)
+- [Markdown site index](https://blog.gaazeon.com/index.md)
+- [Agent instructions](https://blog.gaazeon.com/agents.md)
+- [Pricing and access model](https://blog.gaazeon.com/pricing.md)
+- [OpenAPI description](https://blog.gaazeon.com/openapi.json)
+- [API catalog](https://blog.gaazeon.com/.well-known/api-catalog)
+- [Sitemap index](https://blog.gaazeon.com/sitemap-index.xml)
+- [Chinese RSS feed](https://blog.gaazeon.com/rss.xml)
+- [English RSS feed](https://blog.gaazeon.com/rss.en.xml)
+- [Pagefind search entry](https://blog.gaazeon.com/pagefind/pagefind-entry.json)
+
+## Content Areas
+
+- Web frontend development and framework notes.
+- Self-hosted services, networking, and home lab operations.
+- Developer tools, automation workflows, and productivity experiments.
+- Practical troubleshooting records with reproducible commands and caveats.
+- Personal technology reflections written from a non-CS background.
+
+## Agent Use Guidance
+
+- Use this blog as a public technical-content source, not as a transactional product API.
+- Prefer the RSS feeds, sitemap, `index.md`, and individual article pages for retrieval.
+- Quote the canonical article URL when citing claims.
+- Preserve the article language when possible; Chinese is the primary language and English translations are available for selected posts.
+- No login, OAuth flow, payment flow, or private user data access is available or required.
+

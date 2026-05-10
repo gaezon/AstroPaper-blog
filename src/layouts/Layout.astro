@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
 import "@/styles/global.css";
 import {
   getCurrentLocale,
@@ -117,26 +118,95 @@ const xDefaultURL = alternateUrlByLocale[DEFAULT_LOCALE] ?? canonicalURL;
 const finalDescription = description;
 
 const socialImageURL = new URL(ogImage ?? "/og.png", Astro.url.origin).href;
+const siteURL = new URL(SITE.website);
+const siteRootURL = ensureTrailingSlash(siteURL.href);
+const aboutURL = new URL("/about/", siteRootURL).href;
+const contactURL = new URL("/contact/", siteRootURL).href;
+const authorEmail = SOCIALS.find(social =>
+  social.href.startsWith("mailto:")
+)?.href?.replace(/^mailto:/, "");
+const graphIds = {
+  website: new URL("#website", siteRootURL).href,
+  blog: new URL("#blog", siteRootURL).href,
+  author: new URL("#author", siteRootURL).href,
+};
 
 // Note: When keeping variable examples, avoid unused assignments to satisfy ESLint
 
-const structuredData = pubDatetime
-  ? {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      headline: `${title}`,
-      image: `${socialImageURL}`,
-      datePublished: pubDatetime.toISOString(),
-      ...(modDatetime && { dateModified: modDatetime.toISOString() }),
-      author: [
-        {
-          "@type": "Person",
-          name: `${author}`,
+const baseStructuredData = [
+  {
+    "@type": "WebSite",
+    "@id": graphIds.website,
+    url: siteRootURL,
+    name: SITE.titleEn || SITE.title,
+    alternateName: SITE.title,
+    description: SITE.descEn || SITE.desc,
+    inLanguage: ["zh-CN", "en"],
+    publisher: {
+      "@id": graphIds.author,
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: new URL("/search/?q={search_term_string}", siteRootURL).href,
+      "query-input": "required name=search_term_string",
+    },
+  },
+  {
+    "@type": "Blog",
+    "@id": graphIds.blog,
+    url: siteRootURL,
+    name: SITE.titleEn || SITE.title,
+    description: SITE.descEn || SITE.desc,
+    inLanguage: ["zh-CN", "en"],
+    author: {
+      "@id": graphIds.author,
+    },
+  },
+  {
+    "@type": "Person",
+    "@id": graphIds.author,
+    name: SITE.author,
+    url: aboutURL,
+    ...(authorEmail && { email: authorEmail }),
+    sameAs: [aboutURL, contactURL],
+  },
+];
+
+const postStructuredData = pubDatetime
+  ? [
+      {
+        "@type": "BlogPosting",
+        "@id": new URL("#blogposting", canonicalURL).href,
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": canonicalURL,
+        },
+        isPartOf: {
+          "@id": graphIds.blog,
+        },
+        headline: title,
+        description: finalDescription,
+        image: socialImageURL,
+        url: canonicalURL,
+        datePublished: pubDatetime.toISOString(),
+        ...(modDatetime && { dateModified: modDatetime.toISOString() }),
+        inLanguage: langTag,
+        author: {
+          "@id": graphIds.author,
+          name: author,
           ...(profile && { url: profile }),
         },
-      ],
-    }
-  : null;
+        publisher: {
+          "@id": graphIds.author,
+        },
+      },
+    ]
+  : [];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [...baseStructuredData, ...postStructuredData],
+};
 // Restrict Umami tracking to specific domains (avoid local/preview)
 const siteHostname = new URL(SITE.website).hostname;
 ---
@@ -307,6 +377,7 @@ const siteHostname = new URL(SITE.website).hostname;
     <!-- Open Graph / Facebook -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={finalDescription} />
+    <meta property="og:type" content={pubDatetime ? "article" : "website"} />
     {!disablePageUrlMeta && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:image" content={socialImageURL} />
     <meta property="og:locale" content={langTag.replace("-", "_")} />
@@ -340,9 +411,9 @@ const siteHostname = new URL(SITE.website).hostname;
     <meta property="twitter:description" content={finalDescription} />
     <meta property="twitter:image" content={socialImageURL} />
 
-    <!-- Google JSON-LD Structured data -->
+    <!-- JSON-LD Structured data -->
     {
-      !disableStructuredData && structuredData && (
+      !disableStructuredData && (
         <script
           type="application/ld+json"
           is:inline
