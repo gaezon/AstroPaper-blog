@@ -22,6 +22,12 @@
           "title": "Markdown site index"
         },
         {
+          "href": "https://blog.gaazeon.com/agent-integration.md",
+          "rel": "describedby",
+          "type": "text/markdown",
+          "title": "Agent integration guide for OpenAPI, MCP-style discovery, Markdown negotiation, and JSON errors"
+        },
+        {
           "href": "https://blog.gaazeon.com/.well-known/agent-card.json",
           "rel": "service-desc",
           "type": "application/json",

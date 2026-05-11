@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Gaazeon's Blog Public Content Discovery",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Public read-only discovery resources for Gaazeon's Blog. The site is a static technical blog with no authentication, write API, account system, payment flow, or private resources."
   },
   "servers": [
@@ -23,6 +23,34 @@
     }
   ],
   "paths": {
+    "/index.md": {
+      "get": {
+        "operationId": "getMarkdownIndex",
+        "tags": ["Discovery"],
+        "summary": "Get Markdown site index",
+        "responses": {
+          "200": {
+            "description": "Markdown site index.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkdownDocument"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
     "/llms.txt": {
       "get": {
         "operationId": "getLlmsTxt",
@@ -107,14 +135,14 @@
         }
       }
     },
-    "/index.md": {
+    "/agent-integration.md": {
       "get": {
-        "operationId": "getMarkdownIndex",
-        "tags": ["Discovery"],
-        "summary": "Get Markdown site index",
+        "operationId": "getAgentIntegrationGuide",
+        "tags": ["Agent Metadata"],
+        "summary": "Get agent integration guide",
         "responses": {
           "200": {
-            "description": "Markdown site index.",
+            "description": "Markdown guide for agent integration, discovery, content negotiation, JSON errors, and unsupported workflows.",
             "content": {
               "text/markdown": {
                 "schema": {
@@ -135,102 +163,18 @@
         }
       }
     },
-    "/pricing.md": {
+    "/.well-known/agent-card.json": {
       "get": {
-        "operationId": "getPricingAndAccessModelMarkdown",
-        "tags": ["Discovery"],
-        "summary": "Get Markdown pricing and access model",
+        "operationId": "getAgentCard",
+        "tags": ["Agent Metadata"],
+        "summary": "Get A2A-compatible agent card",
         "responses": {
           "200": {
-            "description": "Markdown description of free public access.",
+            "description": "Agent card for static public blog discovery.",
             "content": {
-              "text/markdown": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MarkdownDocument"
-                }
-              }
-            }
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimited"
-          },
-          "500": {
-            "$ref": "#/components/responses/ServerError"
-          }
-        }
-      }
-    },
-    "/pricing/": {
-      "get": {
-        "operationId": "getPricingAndAccessPage",
-        "tags": ["Discovery"],
-        "summary": "Get human-readable pricing and access page (Chinese)",
-        "responses": {
-          "200": {
-            "description": "HTML page documenting free public access.",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "$ref": "#/components/schemas/HtmlDocument"
-                }
-              }
-            }
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimited"
-          },
-          "500": {
-            "$ref": "#/components/responses/ServerError"
-          }
-        }
-      }
-    },
-    "/en/pricing/": {
-      "get": {
-        "operationId": "getEnglishPricingAndAccessPage",
-        "tags": ["Discovery"],
-        "summary": "Get human-readable pricing and access page (English)",
-        "responses": {
-          "200": {
-            "description": "HTML page documenting free public access in English.",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "$ref": "#/components/schemas/HtmlDocument"
-                }
-              }
-            }
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimited"
-          },
-          "500": {
-            "$ref": "#/components/responses/ServerError"
-          }
-        }
-      }
-    },
-    "/.well-known/api-catalog": {
-      "get": {
-        "operationId": "getApiCatalog",
-        "tags": ["Discovery"],
-        "summary": "Get API catalog linkset",
-        "responses": {
-          "200": {
-            "description": "JSON linkset for public discovery resources.",
-            "content": {
-              "application/linkset+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiCatalog"
+                  "$ref": "#/components/schemas/AgentCard"
                 }
               }
             }
@@ -275,18 +219,46 @@
         }
       }
     },
-    "/.well-known/agent-card.json": {
+    "/.well-known/ai-plugin.json": {
       "get": {
-        "operationId": "getAgentCard",
+        "operationId": "getOpenAiPluginManifest",
         "tags": ["Agent Metadata"],
-        "summary": "Get A2A-compatible agent card",
+        "summary": "Get OpenAI plugin manifest compatibility document",
         "responses": {
           "200": {
-            "description": "Agent card for static public blog discovery.",
+            "description": "OpenAI plugin manifest compatibility document for public discovery.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AgentCard"
+                  "$ref": "#/components/schemas/OpenAiPluginManifest"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/.well-known/api-catalog": {
+      "get": {
+        "operationId": "getApiCatalog",
+        "tags": ["Discovery"],
+        "summary": "Get API catalog linkset",
+        "responses": {
+          "200": {
+            "description": "JSON linkset for public discovery resources.",
+            "content": {
+              "application/linkset+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiCatalog"
                 }
               }
             }
@@ -359,18 +331,83 @@
         }
       }
     },
-    "/.well-known/ai-plugin.json": {
+    "/api": {
       "get": {
-        "operationId": "getOpenAiPluginManifest",
+        "operationId": "getUnsupportedApiRoot",
         "tags": ["Agent Metadata"],
-        "summary": "Get OpenAI plugin manifest compatibility document",
+        "summary": "Get JSON error for bare /api path",
+        "description": "The bare /api path returns the same structured JSON 404 as any /api/* sub-path. Agents should stop probing and use the documented static discovery resources instead.",
+        "responses": {
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/{path}": {
+      "get": {
+        "operationId": "getUnsupportedApiPath",
+        "tags": ["Agent Metadata"],
+        "summary": "Get JSON error for unsupported API paths",
+        "description": "Unsupported /api/* paths intentionally return a structured JSON 404 that points agents back to canonical public discovery resources. The bare /api path is also covered (see /api).",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "description": "Unsupported API path segment.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/en/pricing/": {
+      "get": {
+        "operationId": "getEnglishPricingAndAccessPage",
+        "tags": ["Discovery"],
+        "summary": "Get human-readable pricing and access page (English)",
         "responses": {
           "200": {
-            "description": "OpenAI plugin manifest compatibility document for public discovery.",
+            "description": "HTML page documenting free public access in English.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/pagefind/pagefind-entry.json": {
+      "get": {
+        "operationId": "getPagefindEntry",
+        "tags": ["Discovery"],
+        "summary": "Get static Pagefind search entry metadata",
+        "responses": {
+          "200": {
+            "description": "Pagefind static search entry metadata.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OpenAiPluginManifest"
+                  "$ref": "#/components/schemas/PagefindEntry"
                 }
               }
             }
@@ -387,18 +424,18 @@
         }
       }
     },
-    "/sitemap-index.xml": {
+    "/pricing.md": {
       "get": {
-        "operationId": "getSitemapIndex",
+        "operationId": "getPricingAndAccessModelMarkdown",
         "tags": ["Discovery"],
-        "summary": "Get sitemap index",
+        "summary": "Get Markdown pricing and access model",
         "responses": {
           "200": {
-            "description": "XML sitemap index.",
+            "description": "Markdown description of free public access.",
             "content": {
-              "application/xml": {
+              "text/markdown": {
                 "schema": {
-                  "$ref": "#/components/schemas/XmlDocument"
+                  "$ref": "#/components/schemas/MarkdownDocument"
                 }
               }
             }
@@ -415,16 +452,44 @@
         }
       }
     },
-    "/schemamap.xml": {
+    "/pricing/": {
       "get": {
-        "operationId": "getSchemaMap",
+        "operationId": "getPricingAndAccessPage",
         "tags": ["Discovery"],
-        "summary": "Get schema map",
+        "summary": "Get human-readable pricing and access page (Chinese)",
         "responses": {
           "200": {
-            "description": "XML schema map for structured public resources.",
+            "description": "HTML page documenting free public access.",
             "content": {
-              "application/xml": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/rss.en.xml": {
+      "get": {
+        "operationId": "getEnglishRssFeed",
+        "tags": ["Discovery"],
+        "summary": "Get English RSS feed",
+        "responses": {
+          "200": {
+            "description": "RSS feed for English posts.",
+            "content": {
+              "application/rss+xml": {
                 "schema": {
                   "$ref": "#/components/schemas/XmlDocument"
                 }
@@ -471,16 +536,16 @@
         }
       }
     },
-    "/rss.en.xml": {
+    "/schemamap.xml": {
       "get": {
-        "operationId": "getEnglishRssFeed",
+        "operationId": "getSchemaMap",
         "tags": ["Discovery"],
-        "summary": "Get English RSS feed",
+        "summary": "Get schema map",
         "responses": {
           "200": {
-            "description": "RSS feed for English posts.",
+            "description": "XML schema map for structured public resources.",
             "content": {
-              "application/rss+xml": {
+              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/XmlDocument"
                 }
@@ -499,18 +564,18 @@
         }
       }
     },
-    "/pagefind/pagefind-entry.json": {
+    "/sitemap-index.xml": {
       "get": {
-        "operationId": "getPagefindEntry",
+        "operationId": "getSitemapIndex",
         "tags": ["Discovery"],
-        "summary": "Get static Pagefind search entry metadata",
+        "summary": "Get sitemap index",
         "responses": {
           "200": {
-            "description": "Pagefind static search entry metadata.",
+            "description": "XML sitemap index.",
             "content": {
-              "application/json": {
+              "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagefindEntry"
+                  "$ref": "#/components/schemas/XmlDocument"
                 }
               }
             }
@@ -764,10 +829,16 @@
         "required": [
           "name",
           "description",
+          "protocol",
+          "protocolVersion",
           "serverCardUrl",
+          "documentationUrl",
           "transport",
+          "liveHandshake",
           "authentication",
-          "resources"
+          "capabilities",
+          "resources",
+          "errorHandling"
         ],
         "properties": {
           "name": {
@@ -784,20 +855,58 @@
             "type": "string"
           },
           "authentication": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["required"],
-            "properties": {
-              "required": {
-                "type": "boolean"
-              }
-            }
+            "$ref": "#/components/schemas/AuthenticationSummary"
           },
           "resources": {
             "type": "array",
             "items": {
               "type": "string",
               "format": "uri"
+            }
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "protocolVersion": {
+            "type": "string"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "liveHandshake": {
+            "type": "boolean"
+          },
+          "capabilities": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["tools", "resources", "prompts", "streaming"],
+            "properties": {
+              "tools": {
+                "type": "boolean"
+              },
+              "resources": {
+                "type": "boolean"
+              },
+              "prompts": {
+                "type": "boolean"
+              },
+              "streaming": {
+                "type": "boolean"
+              }
+            }
+          },
+          "errorHandling": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["notFound", "fallback"],
+            "properties": {
+              "notFound": {
+                "type": "string"
+              },
+              "fallback": {
+                "type": "string"
+              }
             }
           }
         }
@@ -811,7 +920,9 @@
           "version",
           "serverUrl",
           "documentationUrl",
+          "protocol",
           "authentication",
+          "errorHandling",
           "tools",
           "resources"
         ],
@@ -839,13 +950,45 @@
           "tools": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/McpTool"
             }
           },
           "resources": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/McpResource"
+            }
+          },
+          "protocol": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["transport", "liveHandshake", "description"],
+            "properties": {
+              "transport": {
+                "type": "string"
+              },
+              "liveHandshake": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "errorHandling": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["notFound", "retry", "unsupported"],
+            "properties": {
+              "notFound": {
+                "type": "string"
+              },
+              "retry": {
+                "type": "string"
+              },
+              "unsupported": {
+                "type": "string"
+              }
             }
           }
         }
@@ -928,6 +1071,121 @@
         "type": "object",
         "additionalProperties": true,
         "description": "Pagefind-generated search entry metadata."
+      },
+      "ApiErrorDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "message",
+          "status",
+          "documentationUrl",
+          "availableResources"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["not_found"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "integer",
+            "enum": [404]
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "availableResources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "ApiErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ApiErrorDetail"
+          }
+        }
+      },
+      "McpTool": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "name",
+          "description",
+          "inputSchema",
+          "outputSchema",
+          "annotations",
+          "url"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 4
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20
+          },
+          "inputSchema": {
+            "type": "object"
+          },
+          "outputSchema": {
+            "type": "object"
+          },
+          "annotations": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["readOnlyHint", "destructiveHint"],
+            "properties": {
+              "readOnlyHint": {
+                "type": "boolean"
+              },
+              "destructiveHint": {
+                "type": "boolean"
+              },
+              "idempotentHint": {
+                "type": "boolean"
+              },
+              "openWorldHint": {
+                "type": "boolean"
+              }
+            }
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "McpResource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["uri", "name", "mimeType"],
+        "properties": {
+          "uri": {
+            "type": "string",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          }
+        }
       }
     },
     "responses": {
@@ -971,6 +1229,16 @@
             }
           },
           "text/html": {}
+        }
+      },
+      "ApiNotFound": {
+        "description": "Unsupported public API path. Agents should stop probing this path and use the documented static discovery resources instead.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorResponse"
+            }
+          }
         }
       }
     }

@@ -22,6 +22,7 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 
 - [Full LLM context](https://blog.gaazeon.com/llms-full.txt)
 - [Markdown site index](https://blog.gaazeon.com/index.md)
+- [Agent integration guide](https://blog.gaazeon.com/agent-integration.md)
 - [Agent instructions](https://blog.gaazeon.com/agents.md)
 - [A2A agent card](https://blog.gaazeon.com/.well-known/agent-card.json)
 - [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
@@ -51,4 +52,5 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - Quote the canonical article URL when citing claims.
 - Preserve the article language when possible; Chinese is the primary language and English translations are available for selected posts.
 - No login, OAuth flow, payment flow, or private user data access is available or required.
+- Unsupported `/api/*` paths return JSON 404 responses with canonical discovery links.
 - If a public discovery endpoint returns `404`, retry the canonical URL once with a trailing slash where appropriate, then fall back to `llms-full.txt`, `index.md`, RSS feeds, and the sitemap. Do not invent paid plans, API keys, or private endpoints.

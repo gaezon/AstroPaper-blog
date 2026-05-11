@@ -3,6 +3,7 @@ import {
   AGENT_CARD_HEADERS_ROUTE,
   AGENT_SKILLS_HEADERS_ROUTE,
   AI_PLUGIN_HEADERS_ROUTE,
+  API_JSON_NOT_FOUND_ROUTE,
   API_CATALOG_HEADERS_ROUTE,
   applyLocalized404Routes,
   applyVercelRoutesConfig,
@@ -77,6 +78,7 @@ describe("applyVercelRoutesConfig", () => {
       API_CATALOG_HEADERS_ROUTE,
       SECURITY_HEADERS_ROUTE,
       MCP_WELL_KNOWN_ROUTE,
+      API_JSON_NOT_FOUND_ROUTE,
       MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
       astroCacheRoute,
@@ -97,6 +99,7 @@ describe("applyVercelRoutesConfig", () => {
         API_CATALOG_HEADERS_ROUTE,
         parsedSecurityHeadersRoute,
         MCP_WELL_KNOWN_ROUTE,
+        API_JSON_NOT_FOUND_ROUTE,
         MARKDOWN_INDEX_NEGOTIATION_ROUTE,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -136,6 +139,7 @@ describe("applyVercelRoutesConfig", () => {
         },
       },
       MCP_WELL_KNOWN_ROUTE,
+      API_JSON_NOT_FOUND_ROUTE,
       MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -245,6 +249,7 @@ describe("applyVercelRoutesConfig", () => {
         },
       },
       MCP_WELL_KNOWN_ROUTE,
+      API_JSON_NOT_FOUND_ROUTE,
       MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -289,6 +294,26 @@ describe("applyVercelRoutesConfig", () => {
 
     expect(mcpIndex).toBeGreaterThanOrEqual(0);
     expect(mcpIndex).toBeLessThan(fsIndex);
+  });
+
+  it("inserts the API JSON 404 route before filesystem routing", () => {
+    const config = {
+      version: 3,
+      routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
+    };
+    const routes = applyVercelRoutesConfig(config).routes;
+
+    expect(routes).toContainEqual(API_JSON_NOT_FOUND_ROUTE);
+
+    const apiNotFoundIndex = routes.findIndex(
+      route =>
+        route.src === API_JSON_NOT_FOUND_ROUTE.src &&
+        route.dest === API_JSON_NOT_FOUND_ROUTE.dest
+    );
+    const fsIndex = routes.findIndex(route => route.handle === "filesystem");
+
+    expect(apiNotFoundIndex).toBeGreaterThanOrEqual(0);
+    expect(apiNotFoundIndex).toBeLessThan(fsIndex);
   });
 
   it("preserves extra headers on the Markdown negotiation route", () => {
@@ -367,6 +392,7 @@ describe("applyVercelRoutesConfig", () => {
       routes: [
         markdownRouteWithExtra,
         mcpRouteWithExtra,
+        API_JSON_NOT_FOUND_ROUTE,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
       ],
