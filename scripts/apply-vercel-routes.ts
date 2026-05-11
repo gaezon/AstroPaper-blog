@@ -47,6 +47,7 @@ const DISCOVERY_LINK_HEADER = [
   '</sitemap-index.xml>; rel="sitemap"; type="application/xml"',
   '</llms.txt>; rel="describedby"; type="text/markdown"',
   '</index.md>; rel="alternate"; type="text/markdown"',
+  '</agent-integration.md>; rel="describedby"; type="text/markdown"',
   '</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
   '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
   '</.well-known/agent-card.json>; rel="service-desc"; type="application/json"',
@@ -107,6 +108,15 @@ export const MCP_WELL_KNOWN_ROUTE = {
   },
 } as const satisfies VercelRoute;
 
+export const API_JSON_NOT_FOUND_ROUTE = {
+  src: "^/api(?:/.*)?$",
+  dest: "/api-error.json",
+  status: 404,
+  headers: {
+    "Content-Type": "application/json; charset=utf-8",
+  },
+} as const satisfies VercelRoute;
+
 export const MARKDOWN_INDEX_NEGOTIATION_ROUTE = {
   src: "^/$",
   has: [
@@ -151,6 +161,10 @@ const AI_PLUGIN_HEADER_KEYS = new Set(
 
 const MCP_WELL_KNOWN_HEADER_KEYS = new Set(
   Object.keys(MCP_WELL_KNOWN_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const API_JSON_NOT_FOUND_HEADER_KEYS = new Set(
+  Object.keys(API_JSON_NOT_FOUND_ROUTE.headers).map(key => key.toLowerCase())
 );
 
 const MARKDOWN_INDEX_NEGOTIATION_HEADER_KEYS = new Set(
@@ -457,6 +471,37 @@ export function applyMcpWellKnownRoute(config: VercelConfig): VercelConfig {
   };
 }
 
+export function applyApiJsonNotFoundRoute(config: VercelConfig): VercelConfig {
+  const existingApiJsonNotFoundRoute = config.routes.find(route =>
+    hasSameRouteShape(route, API_JSON_NOT_FOUND_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, API_JSON_NOT_FOUND_ROUTE)
+  );
+  const filesystemIndex = routes.findIndex(
+    route => route.handle === "filesystem"
+  );
+
+  if (filesystemIndex === -1) {
+    throw new Error("Could not find Vercel filesystem route.");
+  }
+
+  routes.splice(
+    filesystemIndex,
+    0,
+    mergeHeadersRoute(
+      API_JSON_NOT_FOUND_ROUTE,
+      API_JSON_NOT_FOUND_HEADER_KEYS,
+      existingApiJsonNotFoundRoute
+    )
+  );
+
+  return {
+    ...config,
+    routes,
+  };
+}
+
 export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
   const steps = [
     applySecurityHeaders,
@@ -465,6 +510,7 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
     applyAgentCardHeaders,
     applyAiPluginHeaders,
     applyMcpWellKnownRoute,
+    applyApiJsonNotFoundRoute,
     applyMarkdownIndexNegotiation,
     applyLocalized404Routes,
   ];

@@ -1,17 +1,33 @@
 {
   "name": "Gaazeon's Blog public discovery",
-  "description": "Static discovery metadata for Gaazeon's public technical blog. No live MCP protocol endpoint is exposed by the static site.",
+  "description": "Public read-only discovery metadata for Gaazeon's technical blog. The static site exposes machine-readable resources for agents and clearly marks live tool invocation as unsupported.",
+  "protocol": "model-context-protocol",
+  "protocolVersion": "static-discovery-v1",
   "serverCardUrl": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
+  "documentationUrl": "https://blog.gaazeon.com/agent-integration.md",
   "transport": "static-discovery",
+  "liveHandshake": false,
   "authentication": {
-    "required": false
+    "required": false,
+    "description": "All listed resources are public and read-only. No OAuth, API key, or user session is required."
+  },
+  "capabilities": {
+    "tools": false,
+    "resources": true,
+    "prompts": false,
+    "streaming": false
   },
   "resources": [
     "https://blog.gaazeon.com/llms.txt",
     "https://blog.gaazeon.com/llms-full.txt",
+    "https://blog.gaazeon.com/agent-integration.md",
     "https://blog.gaazeon.com/agents.md",
     "https://blog.gaazeon.com/index.md",
     "https://blog.gaazeon.com/openapi.json",
     "https://blog.gaazeon.com/sitemap-index.xml"
-  ]
+  ],
+  "errorHandling": {
+    "notFound": "Unsupported /api/* paths return a JSON 404 body with canonical discovery resources.",
+    "fallback": "If a discovery URL fails, retry the exact canonical URL once, then fall back to llms-full.txt, index.md, RSS, and sitemap files."
+  }
 }

@@ -23,6 +23,7 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - English RSS: <https://blog.gaazeon.com/rss.en.xml>
 - LLM overview: <https://blog.gaazeon.com/llms.txt>
 - Full LLM context: <https://blog.gaazeon.com/llms-full.txt>
+- Agent integration guide: <https://blog.gaazeon.com/agent-integration.md>
 - Agent instructions: <https://blog.gaazeon.com/agents.md>
 - A2A agent card: <https://blog.gaazeon.com/.well-known/agent-card.json>
 - MCP server card: <https://blog.gaazeon.com/.well-known/mcp/server-card.json>
@@ -30,10 +31,13 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - Pricing and access model: <https://blog.gaazeon.com/pricing.md>
 - OpenAPI description: <https://blog.gaazeon.com/openapi.json>
 - API catalog: <https://blog.gaazeon.com/.well-known/api-catalog>
+- JSON API error response body: <https://blog.gaazeon.com/api-error.json> (static template; any `/api/*` request returns this with HTTP 404)
 
 ## Access Model
 
 The site is free to read and does not require authentication. There are no paid plans, OAuth flows, private APIs, purchase flows, or user-account resources.
+
+Unsupported `/api/*` paths return JSON 404 responses with links to the canonical public discovery resources.
 
 ## When To Use
 
