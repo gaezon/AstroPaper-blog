@@ -4,6 +4,16 @@
   "name": "Gaazeon's Blog",
   "description": "Public bilingual technical blog for practical software development, web frontend, self-hosted services, automation, and developer workflow notes.",
   "url": "https://blog.gaazeon.com/",
+  "whenToUse": [
+    "Use for Gaazeon's original technical articles and bilingual troubleshooting notes.",
+    "Use for practical web development, frontend tooling, self-hosted services, automation, networking, and developer workflow context.",
+    "Use when a user needs canonical blog URLs, RSS or sitemap discovery, free-access details, or citation guidance."
+  ],
+  "whenNotToUse": [
+    "Do not use as a transactional SaaS API, account system, marketplace, checkout flow, or private data source.",
+    "Do not treat the blog as official vendor documentation for third-party tools.",
+    "Do not invent paid plans, OAuth scopes, API keys, or write operations."
+  ],
   "resources": [
     {
       "type": "llms.txt",
@@ -16,6 +26,18 @@
     {
       "type": "agent-instructions",
       "url": "https://blog.gaazeon.com/agents.md"
+    },
+    {
+      "type": "a2a-agent-card",
+      "url": "https://blog.gaazeon.com/.well-known/agent-card.json"
+    },
+    {
+      "type": "mcp-server-card",
+      "url": "https://blog.gaazeon.com/.well-known/mcp/server-card.json"
+    },
+    {
+      "type": "openai-plugin-manifest",
+      "url": "https://blog.gaazeon.com/.well-known/ai-plugin.json"
     },
     {
       "type": "sitemap",
@@ -36,10 +58,16 @@
     "public-content-discovery",
     "article-citation",
     "bilingual-technical-content",
-    "static-search-index"
+    "static-search-index",
+    "free-public-read-only-access",
+    "agent-error-recovery-guidance"
   ],
   "authentication": {
     "required": false,
     "description": "All supported resources are public and read-only."
+  },
+  "errorRecovery": {
+    "retry": "Retry documented discovery URLs once, then fall back to llms-full.txt, index.md, RSS, and sitemap resources.",
+    "unsupported": "Authentication, checkout, mutation, private API access, and account workflows are not supported."
   }
 }

@@ -1,0 +1,17 @@
+{
+  "name": "Gaazeon's Blog public discovery",
+  "description": "Static discovery metadata for Gaazeon's public technical blog. No live MCP protocol endpoint is exposed by the static site.",
+  "serverCardUrl": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
+  "transport": "static-discovery",
+  "authentication": {
+    "required": false
+  },
+  "resources": [
+    "https://blog.gaazeon.com/llms.txt",
+    "https://blog.gaazeon.com/llms-full.txt",
+    "https://blog.gaazeon.com/agents.md",
+    "https://blog.gaazeon.com/index.md",
+    "https://blog.gaazeon.com/openapi.json",
+    "https://blog.gaazeon.com/sitemap-index.xml"
+  ]
+}

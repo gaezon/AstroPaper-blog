@@ -14,6 +14,7 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - About: <https://blog.gaazeon.com/about/>
 - Contact: <https://blog.gaazeon.com/contact/>
 - Privacy: <https://blog.gaazeon.com/privacy/>
+- Pricing and access: <https://blog.gaazeon.com/pricing/>
 
 ## Feeds And Discovery
 
@@ -23,6 +24,9 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - LLM overview: <https://blog.gaazeon.com/llms.txt>
 - Full LLM context: <https://blog.gaazeon.com/llms-full.txt>
 - Agent instructions: <https://blog.gaazeon.com/agents.md>
+- A2A agent card: <https://blog.gaazeon.com/.well-known/agent-card.json>
+- MCP server card: <https://blog.gaazeon.com/.well-known/mcp/server-card.json>
+- OpenAI plugin manifest: <https://blog.gaazeon.com/.well-known/ai-plugin.json>
 - Pricing and access model: <https://blog.gaazeon.com/pricing.md>
 - OpenAPI description: <https://blog.gaazeon.com/openapi.json>
 - API catalog: <https://blog.gaazeon.com/.well-known/api-catalog>
@@ -30,6 +34,10 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 ## Access Model
 
 The site is free to read and does not require authentication. There are no paid plans, OAuth flows, private APIs, purchase flows, or user-account resources.
+
+## When To Use
+
+Use this site for Gaazeon's original practical notes about web development, frontend tooling, self-hosted services, automation, networking, and developer operations. Do not treat it as a SaaS control plane, commerce endpoint, vendor-owned documentation site, or private data API.
 
 ## Content Topics
 

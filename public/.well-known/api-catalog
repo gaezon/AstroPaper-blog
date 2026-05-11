@@ -22,6 +22,24 @@
           "title": "Markdown site index"
         },
         {
+          "href": "https://blog.gaazeon.com/.well-known/agent-card.json",
+          "rel": "service-desc",
+          "type": "application/json",
+          "title": "A2A-compatible agent card"
+        },
+        {
+          "href": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
+          "rel": "service-desc",
+          "type": "application/json",
+          "title": "MCP static discovery server card"
+        },
+        {
+          "href": "https://blog.gaazeon.com/.well-known/ai-plugin.json",
+          "rel": "service-desc",
+          "type": "application/json",
+          "title": "OpenAI plugin manifest compatibility document"
+        },
+        {
           "href": "https://blog.gaazeon.com/sitemap-index.xml",
           "rel": "sitemap",
           "type": "application/xml",
