@@ -8,6 +8,11 @@ type VercelRoute = {
   status?: number;
   handle?: string;
   continue?: boolean;
+  has?: Array<{
+    type: "header";
+    key: string;
+    value?: string;
+  }>;
   headers?: Record<string, string>;
 };
 
@@ -44,6 +49,9 @@ const DISCOVERY_LINK_HEADER = [
   '</index.md>; rel="alternate"; type="text/markdown"',
   '</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
   '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+  '</.well-known/agent-card.json>; rel="service-desc"; type="application/json"',
+  '</.well-known/mcp/server-card.json>; rel="service-desc"; type="application/json"',
+  '</.well-known/ai-plugin.json>; rel="service-desc"; type="application/json"',
 ].join(", ");
 
 export const SECURITY_HEADERS_ROUTE = {
@@ -75,6 +83,46 @@ export const AGENT_SKILLS_HEADERS_ROUTE = {
   continue: true,
 } as const satisfies VercelRoute;
 
+export const AGENT_CARD_HEADERS_ROUTE = {
+  src: "^/\\.well-known/agent-card\\.json$",
+  headers: {
+    "Content-Type": "application/json; charset=utf-8",
+  },
+  continue: true,
+} as const satisfies VercelRoute;
+
+export const AI_PLUGIN_HEADERS_ROUTE = {
+  src: "^/\\.well-known/ai-plugin\\.json$",
+  headers: {
+    "Content-Type": "application/json; charset=utf-8",
+  },
+  continue: true,
+} as const satisfies VercelRoute;
+
+export const MCP_WELL_KNOWN_ROUTE = {
+  src: "^/\\.well-known/mcp$",
+  dest: "/.well-known/mcp.json",
+  headers: {
+    "Content-Type": "application/json; charset=utf-8",
+  },
+} as const satisfies VercelRoute;
+
+export const MARKDOWN_INDEX_NEGOTIATION_ROUTE = {
+  src: "^/$",
+  has: [
+    {
+      type: "header",
+      key: "accept",
+      value: ".*text/markdown.*",
+    },
+  ],
+  dest: "/index.md",
+  headers: {
+    "Content-Type": "text/markdown; charset=utf-8",
+    Vary: "Accept",
+  },
+} as const satisfies VercelRoute;
+
 const SECURITY_HEADER_KEYS = new Set(
   Object.keys(SECURITY_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
 );
@@ -91,6 +139,24 @@ const API_CATALOG_HEADER_KEYS = new Set(
 
 const AGENT_SKILLS_HEADER_KEYS = new Set(
   Object.keys(AGENT_SKILLS_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const AGENT_CARD_HEADER_KEYS = new Set(
+  Object.keys(AGENT_CARD_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const AI_PLUGIN_HEADER_KEYS = new Set(
+  Object.keys(AI_PLUGIN_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const MCP_WELL_KNOWN_HEADER_KEYS = new Set(
+  Object.keys(MCP_WELL_KNOWN_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const MARKDOWN_INDEX_NEGOTIATION_HEADER_KEYS = new Set(
+  Object.keys(MARKDOWN_INDEX_NEGOTIATION_ROUTE.headers).map(key =>
+    key.toLowerCase()
+  )
 );
 
 const DEFAULT_NOT_FOUND_ROUTE = {
@@ -128,6 +194,23 @@ const hasSameHeaders = (
   );
 };
 
+const hasSameHasConditions = (
+  routeHas: VercelRoute["has"],
+  expectedHas: VercelRoute["has"]
+): boolean => {
+  if (!routeHas || !expectedHas) return routeHas === expectedHas;
+  if (routeHas.length !== expectedHas.length) return false;
+
+  return expectedHas.every((expected, index) => {
+    const actual = routeHas[index];
+    return (
+      actual.type === expected.type &&
+      actual.key.toLowerCase() === expected.key.toLowerCase() &&
+      actual.value === expected.value
+    );
+  });
+};
+
 const hasSameRouteShape = (
   route: VercelRoute,
   expected: Partial<VercelRoute>
@@ -135,6 +218,10 @@ const hasSameRouteShape = (
   Object.entries(expected).every(([key, value]) => {
     if (key === "headers") {
       return hasSameHeaders(route.headers, value as Record<string, string>);
+    }
+
+    if (key === "has") {
+      return hasSameHasConditions(route.has, value as VercelRoute["has"]);
     }
 
     return route[key as keyof VercelRoute] === value;
@@ -259,12 +346,130 @@ export function applyAgentSkillsHeaders(config: VercelConfig): VercelConfig {
   };
 }
 
-export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
-  return applyLocalized404Routes(
-    applyAgentSkillsHeaders(
-      applyApiCatalogHeaders(applySecurityHeaders(config))
+export function applyAgentCardHeaders(config: VercelConfig): VercelConfig {
+  const existingAgentCardHeadersRoute = config.routes.find(route =>
+    hasSameRouteShape(route, AGENT_CARD_HEADERS_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, AGENT_CARD_HEADERS_ROUTE)
+  );
+
+  return {
+    ...config,
+    routes: [
+      mergeHeadersRoute(
+        AGENT_CARD_HEADERS_ROUTE,
+        AGENT_CARD_HEADER_KEYS,
+        existingAgentCardHeadersRoute
+      ),
+      ...routes,
+    ],
+  };
+}
+
+export function applyAiPluginHeaders(config: VercelConfig): VercelConfig {
+  const existingAiPluginHeadersRoute = config.routes.find(route =>
+    hasSameRouteShape(route, AI_PLUGIN_HEADERS_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, AI_PLUGIN_HEADERS_ROUTE)
+  );
+
+  return {
+    ...config,
+    routes: [
+      mergeHeadersRoute(
+        AI_PLUGIN_HEADERS_ROUTE,
+        AI_PLUGIN_HEADER_KEYS,
+        existingAiPluginHeadersRoute
+      ),
+      ...routes,
+    ],
+  };
+}
+
+export function applyMarkdownIndexNegotiation(
+  config: VercelConfig
+): VercelConfig {
+  const existingMarkdownIndexNegotiationRoute = config.routes.find(route =>
+    hasSameRouteShape(route, MARKDOWN_INDEX_NEGOTIATION_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, MARKDOWN_INDEX_NEGOTIATION_ROUTE)
+  );
+  const filesystemIndex = routes.findIndex(
+    route => route.handle === "filesystem"
+  );
+
+  if (filesystemIndex === -1) {
+    throw new Error("Could not find Vercel filesystem route.");
+  }
+
+  routes.splice(
+    filesystemIndex,
+    0,
+    mergeHeadersRoute(
+      MARKDOWN_INDEX_NEGOTIATION_ROUTE,
+      MARKDOWN_INDEX_NEGOTIATION_HEADER_KEYS,
+      existingMarkdownIndexNegotiationRoute
     )
   );
+
+  return {
+    ...config,
+    routes,
+  };
+}
+
+export function applyMcpWellKnownRoute(config: VercelConfig): VercelConfig {
+  const existingMcpWellKnownRoute = config.routes.find(route =>
+    hasSameRouteShape(route, MCP_WELL_KNOWN_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, MCP_WELL_KNOWN_ROUTE)
+  );
+  const wellKnownBlockIndex = routes.findIndex(
+    route => route.src === "^/\\.well-known(?:/.*)?$"
+  );
+  const filesystemIndex = routes.findIndex(
+    route => route.handle === "filesystem"
+  );
+  const insertionIndex =
+    wellKnownBlockIndex === -1 ? filesystemIndex : wellKnownBlockIndex;
+
+  if (insertionIndex === -1) {
+    throw new Error("Could not find Vercel filesystem route.");
+  }
+
+  routes.splice(
+    insertionIndex,
+    0,
+    mergeHeadersRoute(
+      MCP_WELL_KNOWN_ROUTE,
+      MCP_WELL_KNOWN_HEADER_KEYS,
+      existingMcpWellKnownRoute
+    )
+  );
+
+  return {
+    ...config,
+    routes,
+  };
+}
+
+export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
+  const steps = [
+    applySecurityHeaders,
+    applyApiCatalogHeaders,
+    applyAgentSkillsHeaders,
+    applyAgentCardHeaders,
+    applyAiPluginHeaders,
+    applyMcpWellKnownRoute,
+    applyMarkdownIndexNegotiation,
+    applyLocalized404Routes,
+  ];
+
+  return steps.reduce((cfg, step) => step(cfg), config);
 }
 
 async function main() {

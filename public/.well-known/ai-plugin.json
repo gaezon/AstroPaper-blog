@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Gaazeon's Blog",
+  "name_for_model": "gaazeon_blog",
+  "description_for_human": "Free public discovery for Gaazeon's bilingual technical blog.",
+  "description_for_model": "Use this free, unauthenticated, read-only technical blog source to discover Gaazeon's articles, RSS feeds, sitemap files, Markdown context, and citation guidance. Do not use it for purchases, account management, private data, or write operations.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://blog.gaazeon.com/openapi.json",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://blog.gaazeon.com/favicon.svg",
+  "contact_email": "gaazeon@gaazeon.com",
+  "legal_info_url": "https://blog.gaazeon.com/privacy/"
+}

@@ -122,18 +122,42 @@ const siteURL = new URL(SITE.website);
 const siteRootURL = ensureTrailingSlash(siteURL.href);
 const aboutURL = new URL("/about/", siteRootURL).href;
 const contactURL = new URL("/contact/", siteRootURL).href;
+const pricingURL = new URL("/pricing/", siteRootURL).href;
+const githubRepositoryURL = "https://github.com/gz4zzxc/AstroPaper-blog";
 const authorEmail = SOCIALS.find(social =>
   social.href.startsWith("mailto:")
 )?.href?.replace(/^mailto:/, "");
 const graphIds = {
   website: new URL("#website", siteRootURL).href,
+  webpage: new URL("#webpage", canonicalURL).href,
   blog: new URL("#blog", siteRootURL).href,
+  organization: new URL("#organization", siteRootURL).href,
   author: new URL("#author", siteRootURL).href,
+  softwareApplication: new URL("#agent-discovery-application", siteRootURL)
+    .href,
+  freeOffer: new URL("#free-access-offer", siteRootURL).href,
 };
+
+const entitySameAs = [githubRepositoryURL];
 
 // Note: When keeping variable examples, avoid unused assignments to satisfy ESLint
 
 const baseStructuredData = [
+  {
+    "@type": "WebPage",
+    "@id": graphIds.webpage,
+    url: canonicalURL,
+    name: title,
+    description: finalDescription,
+    inLanguage: langTag,
+    isPartOf: {
+      "@id": graphIds.website,
+    },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["main h1", "main h2", "main p"],
+    },
+  },
   {
     "@type": "WebSite",
     "@id": graphIds.website,
@@ -143,8 +167,9 @@ const baseStructuredData = [
     description: SITE.descEn || SITE.desc,
     inLanguage: ["zh-CN", "en"],
     publisher: {
-      "@id": graphIds.author,
+      "@id": graphIds.organization,
     },
+    sameAs: entitySameAs,
     potentialAction: {
       "@type": "SearchAction",
       target: new URL("/search/?q={search_term_string}", siteRootURL).href,
@@ -161,6 +186,26 @@ const baseStructuredData = [
     author: {
       "@id": graphIds.author,
     },
+    publisher: {
+      "@id": graphIds.organization,
+    },
+    isAccessibleForFree: true,
+    sameAs: entitySameAs,
+  },
+  {
+    "@type": "Organization",
+    "@id": graphIds.organization,
+    name: SITE.titleEn || SITE.title,
+    url: siteRootURL,
+    logo: socialImageURL,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "editorial",
+      url: contactURL,
+      ...(authorEmail && { email: authorEmail }),
+      availableLanguage: ["zh-CN", "en"],
+    },
+    sameAs: entitySameAs,
   },
   {
     "@type": "Person",
@@ -168,7 +213,47 @@ const baseStructuredData = [
     name: SITE.author,
     url: aboutURL,
     ...(authorEmail && { email: authorEmail }),
-    sameAs: [aboutURL, contactURL],
+    affiliation: {
+      "@id": graphIds.organization,
+    },
+  },
+  {
+    "@type": "Offer",
+    "@id": graphIds.freeOffer,
+    name: "Free public access",
+    url: pricingURL,
+    price: "0",
+    priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
+    category: "free public technical content",
+  },
+  {
+    "@type": "SoftwareApplication",
+    "@id": graphIds.softwareApplication,
+    name: "Gaazeon's Blog public agent discovery interface",
+    applicationCategory: "ReferenceApplication",
+    operatingSystem: "Any",
+    url: siteRootURL,
+    description:
+      "Public read-only discovery interface for Gaazeon's bilingual technical blog, including llms.txt, OpenAPI, RSS, sitemap, Markdown index, and agent instructions.",
+    creator: {
+      "@id": graphIds.author,
+    },
+    publisher: {
+      "@id": graphIds.organization,
+    },
+    isAccessibleForFree: true,
+    offers: {
+      "@id": graphIds.freeOffer,
+    },
+    featureList: [
+      "Bilingual technical article discovery",
+      "Markdown index for AI retrieval",
+      "OpenAPI description of public static resources",
+      "RSS and sitemap discovery",
+      "Agent usage guidance",
+    ],
+    sameAs: entitySameAs,
   },
 ];
 
@@ -183,6 +268,10 @@ const postStructuredData = pubDatetime
         },
         isPartOf: {
           "@id": graphIds.blog,
+        },
+        speakable: {
+          "@type": "SpeakableSpecification",
+          cssSelector: ["main h1", "main h2", "main p"],
         },
         headline: title,
         description: finalDescription,

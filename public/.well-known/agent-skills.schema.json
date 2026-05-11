@@ -10,9 +10,12 @@
     "name",
     "description",
     "url",
+    "whenToUse",
+    "whenNotToUse",
     "resources",
     "capabilities",
-    "authentication"
+    "authentication",
+    "errorRecovery"
   ],
   "properties": {
     "$schema": {
@@ -33,6 +36,22 @@
     "url": {
       "type": "string",
       "format": "uri"
+    },
+    "whenToUse": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "whenNotToUse": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "resources": {
       "type": "array",
@@ -74,6 +93,21 @@
           "type": "boolean"
         },
         "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "errorRecovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retry", "unsupported"],
+      "properties": {
+        "retry": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unsupported": {
           "type": "string",
           "minLength": 1
         }

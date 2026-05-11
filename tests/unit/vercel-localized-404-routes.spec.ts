@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  AGENT_CARD_HEADERS_ROUTE,
   AGENT_SKILLS_HEADERS_ROUTE,
+  AI_PLUGIN_HEADERS_ROUTE,
   API_CATALOG_HEADERS_ROUTE,
   applyLocalized404Routes,
   applyVercelRoutesConfig,
   LOCALIZED_NOT_FOUND_ROUTES,
+  MARKDOWN_INDEX_NEGOTIATION_ROUTE,
+  MCP_WELL_KNOWN_ROUTE,
   SECURITY_HEADERS_ROUTE,
 } from "../../scripts/apply-vercel-routes";
 
@@ -67,9 +71,13 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes).toEqual([
+      AI_PLUGIN_HEADERS_ROUTE,
+      AGENT_CARD_HEADERS_ROUTE,
       AGENT_SKILLS_HEADERS_ROUTE,
       API_CATALOG_HEADERS_ROUTE,
       SECURITY_HEADERS_ROUTE,
+      MCP_WELL_KNOWN_ROUTE,
+      MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
       astroCacheRoute,
       ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -83,9 +91,13 @@ describe("applyVercelRoutesConfig", () => {
     const config = {
       version: 3,
       routes: [
+        AI_PLUGIN_HEADERS_ROUTE,
+        AGENT_CARD_HEADERS_ROUTE,
         AGENT_SKILLS_HEADERS_ROUTE,
         API_CATALOG_HEADERS_ROUTE,
         parsedSecurityHeadersRoute,
+        MCP_WELL_KNOWN_ROUTE,
+        MARKDOWN_INDEX_NEGOTIATION_ROUTE,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
       ],
@@ -112,6 +124,8 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes).toEqual([
+      AI_PLUGIN_HEADERS_ROUTE,
+      AGENT_CARD_HEADERS_ROUTE,
       AGENT_SKILLS_HEADERS_ROUTE,
       API_CATALOG_HEADERS_ROUTE,
       {
@@ -121,6 +135,8 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      MCP_WELL_KNOWN_ROUTE,
+      MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);
@@ -133,14 +149,34 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes[0]).toEqual(
-      AGENT_SKILLS_HEADERS_ROUTE
+      AI_PLUGIN_HEADERS_ROUTE
     );
     expect(applyVercelRoutesConfig(config).routes[1]).toEqual(
+      AGENT_CARD_HEADERS_ROUTE
+    );
+    expect(applyVercelRoutesConfig(config).routes[2]).toEqual(
+      AGENT_SKILLS_HEADERS_ROUTE
+    );
+    expect(applyVercelRoutesConfig(config).routes[3]).toEqual(
       API_CATALOG_HEADERS_ROUTE
     );
   });
 
   it("preserves extra headers on well-known discovery URL routes", () => {
+    const aiPluginRoute = {
+      ...AI_PLUGIN_HEADERS_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...AI_PLUGIN_HEADERS_ROUTE.headers,
+      },
+    };
+    const agentCardRoute = {
+      ...AGENT_CARD_HEADERS_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...AGENT_CARD_HEADERS_ROUTE.headers,
+      },
+    };
     const agentSkillsRoute = {
       ...AGENT_SKILLS_HEADERS_ROUTE,
       headers: {
@@ -160,12 +196,16 @@ describe("applyVercelRoutesConfig", () => {
       routes: [
         apiCatalogRoute,
         agentSkillsRoute,
+        agentCardRoute,
+        aiPluginRoute,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
       ],
     };
 
-    expect(applyVercelRoutesConfig(config).routes.slice(0, 2)).toEqual([
+    expect(applyVercelRoutesConfig(config).routes.slice(0, 4)).toEqual([
+      aiPluginRoute,
+      agentCardRoute,
       agentSkillsRoute,
       apiCatalogRoute,
     ]);
@@ -193,6 +233,8 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes).toEqual([
+      AI_PLUGIN_HEADERS_ROUTE,
+      AGENT_CARD_HEADERS_ROUTE,
       AGENT_SKILLS_HEADERS_ROUTE,
       API_CATALOG_HEADERS_ROUTE,
       {
@@ -202,8 +244,138 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      MCP_WELL_KNOWN_ROUTE,
+      MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);
+  });
+
+  it("inserts Markdown content negotiation before filesystem routing", () => {
+    const config = {
+      version: 3,
+      routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
+    };
+    const routes = applyVercelRoutesConfig(config).routes;
+
+    expect(routes).toContainEqual(MARKDOWN_INDEX_NEGOTIATION_ROUTE);
+
+    const mdIndex = routes.findIndex(
+      route =>
+        route.src === MARKDOWN_INDEX_NEGOTIATION_ROUTE.src &&
+        route.dest === MARKDOWN_INDEX_NEGOTIATION_ROUTE.dest
+    );
+    const fsIndex = routes.findIndex(route => route.handle === "filesystem");
+
+    expect(mdIndex).toBeGreaterThanOrEqual(0);
+    expect(mdIndex).toBeLessThan(fsIndex);
+  });
+
+  it("inserts the exact MCP well-known route before filesystem routing", () => {
+    const config = {
+      version: 3,
+      routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
+    };
+    const routes = applyVercelRoutesConfig(config).routes;
+
+    expect(routes).toContainEqual(MCP_WELL_KNOWN_ROUTE);
+
+    const mcpIndex = routes.findIndex(
+      route =>
+        route.src === MCP_WELL_KNOWN_ROUTE.src &&
+        route.dest === MCP_WELL_KNOWN_ROUTE.dest
+    );
+    const fsIndex = routes.findIndex(route => route.handle === "filesystem");
+
+    expect(mcpIndex).toBeGreaterThanOrEqual(0);
+    expect(mcpIndex).toBeLessThan(fsIndex);
+  });
+
+  it("preserves extra headers on the Markdown negotiation route", () => {
+    const markdownRouteWithExtra = {
+      ...MARKDOWN_INDEX_NEGOTIATION_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...MARKDOWN_INDEX_NEGOTIATION_ROUTE.headers,
+      },
+    };
+    const config = {
+      version: 3,
+      routes: [
+        markdownRouteWithExtra,
+        { handle: "filesystem" },
+        ...LOCALIZED_NOT_FOUND_ROUTES,
+      ],
+    };
+
+    const routes = applyVercelRoutesConfig(config).routes;
+
+    expect(routes).toContainEqual({
+      ...MARKDOWN_INDEX_NEGOTIATION_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...MARKDOWN_INDEX_NEGOTIATION_ROUTE.headers,
+      },
+    });
+  });
+
+  it("preserves extra headers on the MCP well-known route", () => {
+    const mcpRouteWithExtra = {
+      ...MCP_WELL_KNOWN_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...MCP_WELL_KNOWN_ROUTE.headers,
+      },
+    };
+    const config = {
+      version: 3,
+      routes: [
+        mcpRouteWithExtra,
+        { handle: "filesystem" },
+        ...LOCALIZED_NOT_FOUND_ROUTES,
+      ],
+    };
+
+    const routes = applyVercelRoutesConfig(config).routes;
+
+    expect(routes).toContainEqual({
+      ...MCP_WELL_KNOWN_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...MCP_WELL_KNOWN_ROUTE.headers,
+      },
+    });
+  });
+
+  it("stays idempotent when Markdown and MCP routes carry extra headers", () => {
+    const markdownRouteWithExtra = {
+      ...MARKDOWN_INDEX_NEGOTIATION_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...MARKDOWN_INDEX_NEGOTIATION_ROUTE.headers,
+      },
+    };
+    const mcpRouteWithExtra = {
+      ...MCP_WELL_KNOWN_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...MCP_WELL_KNOWN_ROUTE.headers,
+      },
+    };
+    const config = {
+      version: 3,
+      routes: [
+        markdownRouteWithExtra,
+        mcpRouteWithExtra,
+        { handle: "filesystem" },
+        ...LOCALIZED_NOT_FOUND_ROUTES,
+      ],
+    };
+
+    const firstResult = applyVercelRoutesConfig(config);
+
+    expect(applyVercelRoutesConfig(firstResult).routes).toEqual(
+      firstResult.routes
+    );
   });
 });

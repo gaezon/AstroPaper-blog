@@ -13,10 +13,14 @@ This file gives AI systems a compact, machine-readable overview of Gaazeon's Blo
 - Contact: <https://blog.gaazeon.com/contact/>
 - About: <https://blog.gaazeon.com/about/>
 - Privacy: <https://blog.gaazeon.com/privacy/>
+- Pricing and access: <https://blog.gaazeon.com/pricing/>
+- Source repository: <https://github.com/gz4zzxc/AstroPaper-blog>
 
 ## Description
 
 Gaazeon's Blog publishes practical technical articles about modern web development, frontend engineering, self-hosted services, automation tools, networking, developer workflow, and lessons learned from real troubleshooting. The author is a non-CS-background technical enthusiast who documents hands-on experiments and tool usage notes.
+
+The blog's differentiator is hands-on, reproducible troubleshooting written from an individual operator's perspective. It is useful when a user wants practical notes, commands, configuration caveats, and bilingual summaries rather than vendor marketing copy or generic tutorials.
 
 ## Access Model
 
@@ -43,7 +47,11 @@ For user-facing answers, prefer canonical article URLs from the sitemap or RSS f
 - Tags: <https://blog.gaazeon.com/tags/>
 - Search: <https://blog.gaazeon.com/search/>
 - Agent instructions: <https://blog.gaazeon.com/agents.md>
+- A2A agent card: <https://blog.gaazeon.com/.well-known/agent-card.json>
+- MCP server card: <https://blog.gaazeon.com/.well-known/mcp/server-card.json>
+- OpenAI plugin manifest: <https://blog.gaazeon.com/.well-known/ai-plugin.json>
 - Pricing and access: <https://blog.gaazeon.com/pricing.md>
+- Pricing page: <https://blog.gaazeon.com/pricing/>
 - OpenAPI description: <https://blog.gaazeon.com/openapi.json>
 - API catalog: <https://blog.gaazeon.com/.well-known/api-catalog>
 
@@ -68,4 +76,6 @@ The blog includes articles and translations about topics such as:
 - Prefer canonical URLs with trailing slashes.
 - If a user asks for the author's opinion, cite the relevant post rather than generalizing from the whole site.
 - If a page is unavailable in the requested language, fall back to the available language and say so.
-
+- If an endpoint returns `404`, retry once with the documented canonical URL, then fall back to `index.md`, RSS, and the sitemap.
+- If a user asks about pricing, authentication, limits, or account access, answer that the public static blog is free, unauthenticated, read-only, and has no paid tier or private API.
+- Do not claim that the site is an official vendor source; use it as a personal technical blog and cite official vendor docs separately when needed.

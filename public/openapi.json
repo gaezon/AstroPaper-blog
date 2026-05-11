@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Gaazeon's Blog Public Content Discovery",
-    "version": "1.0.0",
+    "version": "1.1.1",
     "description": "Public read-only discovery resources for Gaazeon's Blog. The site is a static technical blog with no authentication, write API, account system, payment flow, or private resources."
   },
   "servers": [
@@ -16,6 +16,10 @@
     {
       "name": "Discovery",
       "description": "Public static resources for crawlers, readers, and AI agents."
+    },
+    {
+      "name": "Agent Metadata",
+      "description": "Machine-readable agent, MCP, and plugin compatibility documents."
     }
   ],
   "paths": {
@@ -30,10 +34,19 @@
             "content": {
               "text/markdown": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MarkdownDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -49,10 +62,19 @@
             "content": {
               "text/markdown": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MarkdownDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -68,10 +90,19 @@
             "content": {
               "text/markdown": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MarkdownDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -87,29 +118,103 @@
             "content": {
               "text/markdown": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MarkdownDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
     },
     "/pricing.md": {
       "get": {
-        "operationId": "getPricingAndAccessModel",
+        "operationId": "getPricingAndAccessModelMarkdown",
         "tags": ["Discovery"],
-        "summary": "Get pricing and access model",
+        "summary": "Get Markdown pricing and access model",
         "responses": {
           "200": {
             "description": "Markdown description of free public access.",
             "content": {
               "text/markdown": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MarkdownDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/pricing/": {
+      "get": {
+        "operationId": "getPricingAndAccessPage",
+        "tags": ["Discovery"],
+        "summary": "Get human-readable pricing and access page (Chinese)",
+        "responses": {
+          "200": {
+            "description": "HTML page documenting free public access.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/en/pricing/": {
+      "get": {
+        "operationId": "getEnglishPricingAndAccessPage",
+        "tags": ["Discovery"],
+        "summary": "Get human-readable pricing and access page (English)",
+        "responses": {
+          "200": {
+            "description": "HTML page documenting free public access in English.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -125,10 +230,19 @@
             "content": {
               "application/linkset+json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/ApiCatalog"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -136,7 +250,7 @@
     "/.well-known/agent-skills": {
       "get": {
         "operationId": "getAgentSkills",
-        "tags": ["Discovery"],
+        "tags": ["Agent Metadata"],
         "summary": "Get agent skills manifest",
         "responses": {
           "200": {
@@ -144,10 +258,131 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/AgentSkills"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/.well-known/agent-card.json": {
+      "get": {
+        "operationId": "getAgentCard",
+        "tags": ["Agent Metadata"],
+        "summary": "Get A2A-compatible agent card",
+        "responses": {
+          "200": {
+            "description": "Agent card for static public blog discovery.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentCard"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/.well-known/mcp": {
+      "get": {
+        "operationId": "getMcpWellKnown",
+        "tags": ["Agent Metadata"],
+        "summary": "Get MCP static discovery metadata",
+        "responses": {
+          "200": {
+            "description": "Static MCP discovery metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/McpWellKnown"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/.well-known/mcp/server-card.json": {
+      "get": {
+        "operationId": "getMcpServerCard",
+        "tags": ["Agent Metadata"],
+        "summary": "Get MCP static server card",
+        "responses": {
+          "200": {
+            "description": "MCP-oriented static server card.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/McpServerCard"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/.well-known/ai-plugin.json": {
+      "get": {
+        "operationId": "getOpenAiPluginManifest",
+        "tags": ["Agent Metadata"],
+        "summary": "Get OpenAI plugin manifest compatibility document",
+        "responses": {
+          "200": {
+            "description": "OpenAI plugin manifest compatibility document for public discovery.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenAiPluginManifest"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -163,10 +398,19 @@
             "content": {
               "application/xml": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/XmlDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -182,10 +426,19 @@
             "content": {
               "application/xml": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/XmlDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -201,10 +454,19 @@
             "content": {
               "application/rss+xml": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/XmlDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -220,10 +482,19 @@
             "content": {
               "application/rss+xml": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/XmlDocument"
                 }
               }
             }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -239,11 +510,467 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PagefindEntry"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MarkdownDocument": {
+        "type": "string",
+        "minLength": 1,
+        "contentMediaType": "text/markdown",
+        "description": "Markdown document body."
+      },
+      "HtmlDocument": {
+        "type": "string",
+        "minLength": 1,
+        "contentMediaType": "text/html",
+        "description": "HTML document body."
+      },
+      "XmlDocument": {
+        "type": "string",
+        "minLength": 1,
+        "description": "XML document body."
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["error", "message"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": ["not_found", "rate_limited", "server_error"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "retryAfter": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "description": "Seconds to wait before retrying, or null when no retry delay is advertised. Typically present only for rate-limited responses."
+          }
+        }
+      },
+      "ApiCatalog": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["linkset"],
+        "properties": {
+          "linkset": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["anchor", "item"],
+              "properties": {
+                "anchor": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "item": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LinksetItem"
+                  }
                 }
               }
             }
           }
+        }
+      },
+      "LinksetItem": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["href", "rel", "type", "title"],
+        "properties": {
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "rel": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "hreflang": {
+            "type": "string"
+          }
+        }
+      },
+      "AgentSkills": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "name",
+          "description",
+          "url",
+          "whenToUse",
+          "whenNotToUse",
+          "resources",
+          "capabilities",
+          "authentication",
+          "errorRecovery"
+        ],
+        "properties": {
+          "$schema": {
+            "type": "string",
+            "format": "uri"
+          },
+          "version": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "whenToUse": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "whenNotToUse": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentResource"
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "authentication": {
+            "$ref": "#/components/schemas/AuthenticationSummary"
+          },
+          "errorRecovery": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["retry", "unsupported"],
+            "properties": {
+              "retry": {
+                "type": "string"
+              },
+              "unsupported": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "AgentResource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "url"],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "language": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthenticationSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["required", "description"],
+        "properties": {
+          "required": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "AgentCard": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "protocolVersion",
+          "name",
+          "description",
+          "url",
+          "version",
+          "skills"
+        ],
+        "properties": {
+          "protocolVersion": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "version": {
+            "type": "string"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "McpWellKnown": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "description",
+          "serverCardUrl",
+          "transport",
+          "authentication",
+          "resources"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "serverCardUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "transport": {
+            "type": "string"
+          },
+          "authentication": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["required"],
+            "properties": {
+              "required": {
+                "type": "boolean"
+              }
+            }
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      },
+      "McpServerCard": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "description",
+          "version",
+          "serverUrl",
+          "documentationUrl",
+          "authentication",
+          "tools",
+          "resources"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "serverUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "authentication": {
+            "$ref": "#/components/schemas/AuthenticationSummary"
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "OpenAiPluginManifest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "name_for_human",
+          "name_for_model",
+          "description_for_human",
+          "description_for_model",
+          "auth",
+          "api",
+          "logo_url",
+          "contact_email",
+          "legal_info_url"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "name_for_human": {
+            "type": "string"
+          },
+          "name_for_model": {
+            "type": "string"
+          },
+          "description_for_human": {
+            "type": "string"
+          },
+          "description_for_model": {
+            "type": "string"
+          },
+          "auth": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["none"]
+              }
+            }
+          },
+          "api": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "url", "is_user_authenticated"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["openapi"]
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "is_user_authenticated": {
+                "type": "boolean"
+              }
+            }
+          },
+          "logo_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "contact_email": {
+            "type": "string",
+            "format": "email"
+          },
+          "legal_info_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "PagefindEntry": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Pagefind-generated search entry metadata."
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "The requested public discovery resource was not found. Retry the documented canonical URL once, then fall back to llms-full.txt, index.md, RSS, and sitemap resources. The JSON body is optional: these discovery URLs are static assets, so the platform may instead deliver an opaque HTML error page, and agents MUST handle that HTML fallback.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          },
+          "text/html": {}
+        }
+      },
+      "RateLimited": {
+        "description": "The client should slow down repeated public discovery requests and retry later. The JSON body is optional: these discovery URLs are static assets, so the platform may instead deliver an opaque HTML error page, and agents MUST handle that HTML fallback.",
+        "headers": {
+          "Retry-After": {
+            "description": "Seconds to wait before retrying when provided.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          },
+          "text/html": {}
+        }
+      },
+      "ServerError": {
+        "description": "Unexpected server error. Retry later, then fall back to cached RSS, sitemap, or Markdown discovery files. The JSON body is optional: these discovery URLs are static assets, so the platform may instead deliver an opaque HTML error page, and agents MUST handle that HTML fallback.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          },
+          "text/html": {}
         }
       }
     }

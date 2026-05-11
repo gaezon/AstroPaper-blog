@@ -1,0 +1,36 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "Gaazeon's Blog Discovery Agent",
+  "description": "A public read-only discovery card for Gaazeon's bilingual technical blog. It helps agents find articles, RSS feeds, sitemap files, Markdown context, and citation guidance.",
+  "url": "https://blog.gaazeon.com/",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "Gaazeon's Blog",
+    "url": "https://blog.gaazeon.com/about/"
+  },
+  "documentationUrl": "https://blog.gaazeon.com/agents.md",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "securitySchemes": {},
+  "security": [],
+  "defaultInputModes": ["text/plain", "text/markdown"],
+  "defaultOutputModes": ["text/plain", "text/markdown", "application/json"],
+  "skills": [
+    {
+      "id": "discover-blog-content",
+      "name": "Discover blog content",
+      "description": "Find canonical article URLs, RSS feeds, sitemap entries, tags, archives, and Markdown context for Gaazeon's Blog.",
+      "tags": ["blog", "technical-writing", "discovery", "citation"],
+      "examples": [
+        "Find Gaazeon's posts about self-hosted services.",
+        "Get citation-ready URLs for Gaazeon's OBS troubleshooting notes.",
+        "Summarize available English translations."
+      ],
+      "inputModes": ["text/plain", "text/markdown"],
+      "outputModes": ["text/plain", "text/markdown", "application/json"]
+    }
+  ]
+}

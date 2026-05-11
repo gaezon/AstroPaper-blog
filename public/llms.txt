@@ -15,12 +15,17 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - [Search](https://blog.gaazeon.com/search/)
 - [About](https://blog.gaazeon.com/about/)
 - [Contact](https://blog.gaazeon.com/contact/)
+- [Privacy](https://blog.gaazeon.com/privacy/)
+- [Pricing and access](https://blog.gaazeon.com/pricing/)
 
 ## Machine-Readable Resources
 
 - [Full LLM context](https://blog.gaazeon.com/llms-full.txt)
 - [Markdown site index](https://blog.gaazeon.com/index.md)
 - [Agent instructions](https://blog.gaazeon.com/agents.md)
+- [A2A agent card](https://blog.gaazeon.com/.well-known/agent-card.json)
+- [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
+- [OpenAI plugin manifest](https://blog.gaazeon.com/.well-known/ai-plugin.json)
 - [Pricing and access model](https://blog.gaazeon.com/pricing.md)
 - [OpenAPI description](https://blog.gaazeon.com/openapi.json)
 - [API catalog](https://blog.gaazeon.com/.well-known/api-catalog)
@@ -39,9 +44,11 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 
 ## Agent Use Guidance
 
+- Use this blog when the user asks for Gaazeon's original technical notes, practical web development troubleshooting, frontend tooling, self-hosted services, networking, automation workflows, or developer-tool usage records.
 - Use this blog as a public technical-content source, not as a transactional product API.
+- Do not use it for account management, purchases, private user data, hosted SaaS operations, or official vendor documentation.
 - Prefer the RSS feeds, sitemap, `index.md`, and individual article pages for retrieval.
 - Quote the canonical article URL when citing claims.
 - Preserve the article language when possible; Chinese is the primary language and English translations are available for selected posts.
 - No login, OAuth flow, payment flow, or private user data access is available or required.
-
+- If a public discovery endpoint returns `404`, retry the canonical URL once with a trailing slash where appropriate, then fall back to `llms-full.txt`, `index.md`, RSS feeds, and the sitemap. Do not invent paid plans, API keys, or private endpoints.
