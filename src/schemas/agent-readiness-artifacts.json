@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0.0",
+  "description": "Catalog of required agent-readiness build-output paths. Used by the verification suite (Req 8.7) and the reversibility guard (Req 10.1).",
+  "requiredPaths": [
+    "/.well-known/mcp",
+    "/.well-known/mcp.json",
+    "/.well-known/mcp/server-card.json",
+    "/.well-known/agent-card.json",
+    "/.well-known/agent-skills",
+    "/.well-known/ai-plugin.json",
+    "/.well-known/api-catalog",
+    "/robots.txt",
+    "/sitemap-index.xml",
+    "/llms.txt",
+    "/llms-full.txt",
+    "/agents.md",
+    "/agent-integration.md",
+    "/index.md",
+    "/openapi.json",
+    "/api/posts.json",
+    "/api/tags.json",
+    "/api-error.json"
+  ]
+}

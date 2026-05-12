@@ -4,6 +4,7 @@
   "protocol": "model-context-protocol",
   "protocolVersion": "static-discovery-v1",
   "serverCardUrl": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
+  "handshakeUrl": "https://blog.gaazeon.com/.well-known/mcp/",
   "documentationUrl": "https://blog.gaazeon.com/agent-integration.md",
   "transport": "static-discovery",
   "liveHandshake": false,

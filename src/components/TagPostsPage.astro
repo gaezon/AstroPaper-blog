@@ -10,6 +10,8 @@ import { getCurrentLocale, t } from "@/i18n/utils";
 import { normalizeBlogLocale } from "@/utils/blog-locale";
 import { getTagSwitchOverride } from "@/utils/getTagSwitchOverride";
 import { getLocalizedSiteTitle } from "@/utils/i18n-pages";
+import { buildBreadcrumbs } from "@/utils/breadcrumbs";
+import { SITE } from "@/config";
 
 interface Props extends BlogTagPaginatedPageProps {
   tag: string;
@@ -24,6 +26,13 @@ const pageTitle = `${t(Astro, "tags.title")}: ${tagName}`;
 const pageDescription = `${t(Astro, "tags.postsWithTag")} ${tagName}`;
 const layoutTitle = `${pageTitle} | ${getLocalizedSiteTitle(currentLocale)}`;
 const pageEntries = page.data;
+const crumbs = buildBreadcrumbs({
+  locale: currentLocale as "zh-CN" | "en",
+  pathname: Astro.url.pathname,
+  pageTitle: tagName,
+  tagName,
+  siteOrigin: SITE.website,
+});
 ---
 
 <Layout
@@ -31,6 +40,7 @@ const pageEntries = page.data;
   description={pageDescription}
   alternateURLs={alternateURLs}
   disableAutoAlternates={disableAutoAlternates}
+  breadcrumbs={crumbs}
 >
   <Header switchOverride={switchOverride} />
   <Main

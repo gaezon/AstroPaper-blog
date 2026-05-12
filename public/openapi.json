@@ -279,10 +279,10 @@
       "get": {
         "operationId": "getMcpWellKnown",
         "tags": ["Agent Metadata"],
-        "summary": "Get MCP static discovery metadata",
+        "summary": "Get MCP live handshake response",
         "responses": {
           "200": {
-            "description": "Static MCP discovery metadata.",
+            "description": "MCP live handshake response with protocol version, server info, capabilities, and resource list. Static metadata is available at /.well-known/mcp.json.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1079,7 +1079,7 @@
           "code",
           "message",
           "status",
-          "documentationUrl",
+          "documentation_url",
           "availableResources"
         ],
         "properties": {
@@ -1095,7 +1095,7 @@
             "type": "integer",
             "enum": [404]
           },
-          "documentationUrl": {
+          "documentation_url": {
             "type": "string",
             "format": "uri"
           },

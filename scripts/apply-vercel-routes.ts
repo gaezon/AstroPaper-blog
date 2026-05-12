@@ -100,14 +100,6 @@ export const AI_PLUGIN_HEADERS_ROUTE = {
   continue: true,
 } as const satisfies VercelRoute;
 
-export const MCP_WELL_KNOWN_ROUTE = {
-  src: "^/\\.well-known/mcp$",
-  dest: "/.well-known/mcp.json",
-  headers: {
-    "Content-Type": "application/json; charset=utf-8",
-  },
-} as const satisfies VercelRoute;
-
 export const API_JSON_NOT_FOUND_ROUTE = {
   src: "^/api(?:/.*)?$",
   dest: "/api-error.json",
@@ -157,10 +149,6 @@ const AGENT_CARD_HEADER_KEYS = new Set(
 
 const AI_PLUGIN_HEADER_KEYS = new Set(
   Object.keys(AI_PLUGIN_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
-);
-
-const MCP_WELL_KNOWN_HEADER_KEYS = new Set(
-  Object.keys(MCP_WELL_KNOWN_ROUTE.headers).map(key => key.toLowerCase())
 );
 
 const API_JSON_NOT_FOUND_HEADER_KEYS = new Set(
@@ -435,42 +423,6 @@ export function applyMarkdownIndexNegotiation(
   };
 }
 
-export function applyMcpWellKnownRoute(config: VercelConfig): VercelConfig {
-  const existingMcpWellKnownRoute = config.routes.find(route =>
-    hasSameRouteShape(route, MCP_WELL_KNOWN_ROUTE)
-  );
-  const routes = config.routes.filter(
-    route => !hasSameRouteShape(route, MCP_WELL_KNOWN_ROUTE)
-  );
-  const wellKnownBlockIndex = routes.findIndex(
-    route => route.src === "^/\\.well-known(?:/.*)?$"
-  );
-  const filesystemIndex = routes.findIndex(
-    route => route.handle === "filesystem"
-  );
-  const insertionIndex =
-    wellKnownBlockIndex === -1 ? filesystemIndex : wellKnownBlockIndex;
-
-  if (insertionIndex === -1) {
-    throw new Error("Could not find Vercel filesystem route.");
-  }
-
-  routes.splice(
-    insertionIndex,
-    0,
-    mergeHeadersRoute(
-      MCP_WELL_KNOWN_ROUTE,
-      MCP_WELL_KNOWN_HEADER_KEYS,
-      existingMcpWellKnownRoute
-    )
-  );
-
-  return {
-    ...config,
-    routes,
-  };
-}
-
 export function applyApiJsonNotFoundRoute(config: VercelConfig): VercelConfig {
   const existingApiJsonNotFoundRoute = config.routes.find(route =>
     hasSameRouteShape(route, API_JSON_NOT_FOUND_ROUTE)
@@ -487,7 +439,7 @@ export function applyApiJsonNotFoundRoute(config: VercelConfig): VercelConfig {
   }
 
   routes.splice(
-    filesystemIndex,
+    filesystemIndex + 1,
     0,
     mergeHeadersRoute(
       API_JSON_NOT_FOUND_ROUTE,
@@ -509,7 +461,6 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
     applyAgentSkillsHeaders,
     applyAgentCardHeaders,
     applyAiPluginHeaders,
-    applyMcpWellKnownRoute,
     applyApiJsonNotFoundRoute,
     applyMarkdownIndexNegotiation,
     applyLocalized404Routes,

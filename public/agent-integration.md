@@ -41,7 +41,7 @@ Unsupported `/api/*` paths return JSON rather than the HTML 404 page. Agents sho
     "code": "not_found",
     "message": "No public API endpoint exists at this path. Gaazeon's Blog exposes read-only static discovery resources only.",
     "status": 404,
-    "documentationUrl": "https://blog.gaazeon.com/agent-integration.md",
+    "documentation_url": "https://blog.gaazeon.com/agent-integration.md",
     "availableResources": [
       "https://blog.gaazeon.com/agent-integration.md",
       "https://blog.gaazeon.com/openapi.json",
@@ -85,3 +85,27 @@ Do not attempt:
 - Treating the blog as official vendor documentation.
 
 When a user needs authoritative vendor behavior, cite the relevant blog post only for Gaazeon's experience and consult the vendor's official documentation separately.
+
+## Streaming
+
+### zh-CN
+
+本站声明 `capabilities.streaming: false`。不提供 Server-Sent Events 或实时流式传输端点。
+
+如需获取内容，请使用以下静态回退路径：
+
+- 单篇文章 JSON：`https://blog.gaazeon.com/api/posts/{locale}/{slug}.json`
+- 中文 RSS 订阅：`https://blog.gaazeon.com/rss.xml`
+- 英文 RSS 订阅：`https://blog.gaazeon.com/rss.en.xml`
+- 完整 LLM 上下文：`https://blog.gaazeon.com/llms-full.txt`
+
+### en
+
+This site declares `capabilities.streaming: false`. No Server-Sent Events or real-time streaming endpoints are available.
+
+To retrieve content, use the following static fallback paths:
+
+- Per-post JSON: `https://blog.gaazeon.com/api/posts/{locale}/{slug}.json`
+- Chinese RSS feed: `https://blog.gaazeon.com/rss.xml`
+- English RSS feed: `https://blog.gaazeon.com/rss.en.xml`
+- Full LLM context: `https://blog.gaazeon.com/llms-full.txt`

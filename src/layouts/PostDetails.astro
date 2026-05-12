@@ -19,6 +19,7 @@ import { SITE } from "@/config";
 import { getPath } from "@/utils/getPath";
 import { getCurrentLocale } from "@/i18n/utils";
 import { t } from "@/i18n/utils";
+import { buildBreadcrumbs } from "@/utils/breadcrumbs";
 
 type PostEntry = CollectionEntry<"blog" | "blog-en">;
 
@@ -115,6 +116,13 @@ try {
   }
 } catch {}
 
+const crumbs = buildBreadcrumbs({
+  locale: currentLocale as "zh-CN" | "en",
+  pathname: Astro.url.pathname,
+  pageTitle: post.data.title,
+  siteOrigin: SITE.website,
+});
+
 const layoutProps = {
   title: `${title} | ${SITE.title}`,
   author,
@@ -125,6 +133,7 @@ const layoutProps = {
   ogImage,
   scrollSmooth: true,
   alternateURLs: switchOverride,
+  breadcrumbs: crumbs,
 };
 ---
 

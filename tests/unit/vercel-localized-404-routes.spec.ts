@@ -9,7 +9,6 @@ import {
   applyVercelRoutesConfig,
   LOCALIZED_NOT_FOUND_ROUTES,
   MARKDOWN_INDEX_NEGOTIATION_ROUTE,
-  MCP_WELL_KNOWN_ROUTE,
   SECURITY_HEADERS_ROUTE,
 } from "../../scripts/apply-vercel-routes";
 
@@ -77,10 +76,9 @@ describe("applyVercelRoutesConfig", () => {
       AGENT_SKILLS_HEADERS_ROUTE,
       API_CATALOG_HEADERS_ROUTE,
       SECURITY_HEADERS_ROUTE,
-      MCP_WELL_KNOWN_ROUTE,
-      API_JSON_NOT_FOUND_ROUTE,
       MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
+      API_JSON_NOT_FOUND_ROUTE,
       astroCacheRoute,
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);
@@ -98,10 +96,9 @@ describe("applyVercelRoutesConfig", () => {
         AGENT_SKILLS_HEADERS_ROUTE,
         API_CATALOG_HEADERS_ROUTE,
         parsedSecurityHeadersRoute,
-        MCP_WELL_KNOWN_ROUTE,
-        API_JSON_NOT_FOUND_ROUTE,
         MARKDOWN_INDEX_NEGOTIATION_ROUTE,
         { handle: "filesystem" },
+        API_JSON_NOT_FOUND_ROUTE,
         ...LOCALIZED_NOT_FOUND_ROUTES,
       ],
     };
@@ -138,10 +135,9 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
-      MCP_WELL_KNOWN_ROUTE,
-      API_JSON_NOT_FOUND_ROUTE,
       MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
+      API_JSON_NOT_FOUND_ROUTE,
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);
   });
@@ -248,10 +244,9 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
-      MCP_WELL_KNOWN_ROUTE,
-      API_JSON_NOT_FOUND_ROUTE,
       MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       { handle: "filesystem" },
+      API_JSON_NOT_FOUND_ROUTE,
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);
   });
@@ -276,27 +271,7 @@ describe("applyVercelRoutesConfig", () => {
     expect(mdIndex).toBeLessThan(fsIndex);
   });
 
-  it("inserts the exact MCP well-known route before filesystem routing", () => {
-    const config = {
-      version: 3,
-      routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
-    };
-    const routes = applyVercelRoutesConfig(config).routes;
-
-    expect(routes).toContainEqual(MCP_WELL_KNOWN_ROUTE);
-
-    const mcpIndex = routes.findIndex(
-      route =>
-        route.src === MCP_WELL_KNOWN_ROUTE.src &&
-        route.dest === MCP_WELL_KNOWN_ROUTE.dest
-    );
-    const fsIndex = routes.findIndex(route => route.handle === "filesystem");
-
-    expect(mcpIndex).toBeGreaterThanOrEqual(0);
-    expect(mcpIndex).toBeLessThan(fsIndex);
-  });
-
-  it("inserts the API JSON 404 route before filesystem routing", () => {
+  it("inserts the API JSON 404 route after filesystem routing", () => {
     const config = {
       version: 3,
       routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
@@ -312,8 +287,7 @@ describe("applyVercelRoutesConfig", () => {
     );
     const fsIndex = routes.findIndex(route => route.handle === "filesystem");
 
-    expect(apiNotFoundIndex).toBeGreaterThanOrEqual(0);
-    expect(apiNotFoundIndex).toBeLessThan(fsIndex);
+    expect(apiNotFoundIndex).toBeGreaterThan(fsIndex);
   });
 
   it("preserves extra headers on the Markdown negotiation route", () => {
@@ -344,35 +318,7 @@ describe("applyVercelRoutesConfig", () => {
     });
   });
 
-  it("preserves extra headers on the MCP well-known route", () => {
-    const mcpRouteWithExtra = {
-      ...MCP_WELL_KNOWN_ROUTE,
-      headers: {
-        "Cache-Control": "public, max-age=300",
-        ...MCP_WELL_KNOWN_ROUTE.headers,
-      },
-    };
-    const config = {
-      version: 3,
-      routes: [
-        mcpRouteWithExtra,
-        { handle: "filesystem" },
-        ...LOCALIZED_NOT_FOUND_ROUTES,
-      ],
-    };
-
-    const routes = applyVercelRoutesConfig(config).routes;
-
-    expect(routes).toContainEqual({
-      ...MCP_WELL_KNOWN_ROUTE,
-      headers: {
-        "Cache-Control": "public, max-age=300",
-        ...MCP_WELL_KNOWN_ROUTE.headers,
-      },
-    });
-  });
-
-  it("stays idempotent when Markdown and MCP routes carry extra headers", () => {
+  it("stays idempotent when Markdown routes carry extra headers", () => {
     const markdownRouteWithExtra = {
       ...MARKDOWN_INDEX_NEGOTIATION_ROUTE,
       headers: {
@@ -380,18 +326,10 @@ describe("applyVercelRoutesConfig", () => {
         ...MARKDOWN_INDEX_NEGOTIATION_ROUTE.headers,
       },
     };
-    const mcpRouteWithExtra = {
-      ...MCP_WELL_KNOWN_ROUTE,
-      headers: {
-        "Cache-Control": "public, max-age=300",
-        ...MCP_WELL_KNOWN_ROUTE.headers,
-      },
-    };
     const config = {
       version: 3,
       routes: [
         markdownRouteWithExtra,
-        mcpRouteWithExtra,
         API_JSON_NOT_FOUND_ROUTE,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,

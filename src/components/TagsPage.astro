@@ -9,6 +9,8 @@ import getUniqueTags from "@/utils/getUniqueTags";
 import { getCurrentLocale, t } from "@/i18n/utils";
 import { normalizeBlogLocale } from "@/utils/blog-locale";
 import { getLocalizedSiteTitle } from "@/utils/i18n-pages";
+import { buildBreadcrumbs } from "@/utils/breadcrumbs";
+import { SITE } from "@/config";
 
 interface Props {
   posts: CollectionEntry<"blog" | "blog-en">[];
@@ -21,9 +23,15 @@ const tags = getUniqueTags(posts);
 const pageTitle = t(Astro, "tags.title");
 const pageDescription = t(Astro, "tags.description");
 const layoutTitle = `${pageTitle} | ${getLocalizedSiteTitle(currentLocale)}`;
+const crumbs = buildBreadcrumbs({
+  locale: currentLocale as "zh-CN" | "en",
+  pathname: Astro.url.pathname,
+  pageTitle,
+  siteOrigin: SITE.website,
+});
 ---
 
-<Layout title={layoutTitle} description={pageDescription}>
+<Layout title={layoutTitle} description={pageDescription} breadcrumbs={crumbs}>
   <Header />
   <Main pageTitle={pageTitle} pageDesc={t(Astro, "tags.allTags")}>
     <ul>
