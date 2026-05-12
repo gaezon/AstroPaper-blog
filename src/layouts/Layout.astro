@@ -13,6 +13,24 @@ import {
 } from "@/i18n/utils";
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/i18n/config";
 import { ensureTrailingSlash } from "@/utils/url";
+import {
+  toBreadcrumbListJsonLd,
+  type BreadcrumbItem,
+} from "@/utils/breadcrumbs";
+import { unifiedCommentPaths } from "@/utils/generated/bilingualMapping";
+import { toOgLocale } from "@/utils/og-locale";
+
+const bilingualPostMap = new Map<string, { zh: string; en: string }>();
+for (const entry of Object.values(unifiedCommentPaths)) {
+  bilingualPostMap.set(entry.zhPath.replace(/\/$/, ""), {
+    zh: entry.zhPath,
+    en: entry.enPath,
+  });
+  bilingualPostMap.set(entry.enPath.replace(/\/$/, ""), {
+    zh: entry.zhPath,
+    en: entry.enPath,
+  });
+}
 
 // I18n variables
 const currentLocale = getCurrentLocale(Astro);
@@ -35,6 +53,7 @@ export interface Props {
   disablePageUrlMeta?: boolean;
   disableStructuredData?: boolean;
   robots?: string;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 const {
@@ -53,6 +72,7 @@ const {
   disablePageUrlMeta = false,
   disableStructuredData = false,
   robots,
+  breadcrumbs = [],
 } = Astro.props;
 
 const canonicalURL = ensureTrailingSlash(
@@ -258,43 +278,75 @@ const baseStructuredData = [
 ];
 
 const postStructuredData = pubDatetime
-  ? [
-      {
-        "@type": "BlogPosting",
-        "@id": new URL("#blogposting", canonicalURL).href,
-        mainEntityOfPage: {
-          "@type": "WebPage",
-          "@id": canonicalURL,
+  ? (() => {
+      // Look up bilingual counterpart for sameAs / translationOfWork
+      // Use URL.pathname for robust path extraction (handles external canonicals, query/hash)
+      const canonicalPathname = new URL(canonicalURL).pathname.replace(
+        /\/$/,
+        ""
+      );
+      const counterpartMapping = bilingualPostMap.get(canonicalPathname);
+      const siteBase = SITE.website.replace(/\/$/, "");
+      const counterpartUrl = counterpartMapping
+        ? canonicalPathname === counterpartMapping.zh.replace(/\/$/, "")
+          ? siteBase + counterpartMapping.en
+          : siteBase + counterpartMapping.zh
+        : undefined;
+
+      return [
+        {
+          "@type": "BlogPosting",
+          "@id": new URL("#blogposting", canonicalURL).href,
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": canonicalURL,
+          },
+          isPartOf: {
+            "@id": graphIds.blog,
+          },
+          speakable: {
+            "@type": "SpeakableSpecification",
+            cssSelector: ["main h1", "main h2", "main p"],
+          },
+          headline: title,
+          description: finalDescription,
+          image: socialImageURL,
+          url: canonicalURL,
+          datePublished: pubDatetime.toISOString(),
+          dateModified: modDatetime
+            ? modDatetime.toISOString()
+            : pubDatetime.toISOString(),
+          inLanguage: langTag,
+          author: {
+            "@id": graphIds.author,
+            name: author,
+            ...(profile && { url: profile }),
+          },
+          publisher: {
+            "@id": graphIds.author,
+          },
+          ...(counterpartUrl && {
+            sameAs: [counterpartUrl],
+            translationOfWork: {
+              "@type": "CreativeWork",
+              "@id": counterpartUrl,
+            },
+          }),
         },
-        isPartOf: {
-          "@id": graphIds.blog,
-        },
-        speakable: {
-          "@type": "SpeakableSpecification",
-          cssSelector: ["main h1", "main h2", "main p"],
-        },
-        headline: title,
-        description: finalDescription,
-        image: socialImageURL,
-        url: canonicalURL,
-        datePublished: pubDatetime.toISOString(),
-        ...(modDatetime && { dateModified: modDatetime.toISOString() }),
-        inLanguage: langTag,
-        author: {
-          "@id": graphIds.author,
-          name: author,
-          ...(profile && { url: profile }),
-        },
-        publisher: {
-          "@id": graphIds.author,
-        },
-      },
-    ]
+      ];
+    })()
   : [];
+
+const breadcrumbStructuredData =
+  breadcrumbs.length > 0 ? [toBreadcrumbListJsonLd(breadcrumbs)] : [];
 
 const structuredData = {
   "@context": "https://schema.org",
-  "@graph": [...baseStructuredData, ...postStructuredData],
+  "@graph": [
+    ...baseStructuredData,
+    ...postStructuredData,
+    ...breadcrumbStructuredData,
+  ],
 };
 // Restrict Umami tracking to specific domains (avoid local/preview)
 const siteHostname = new URL(SITE.website).hostname;
@@ -469,7 +521,16 @@ const siteHostname = new URL(SITE.website).hostname;
     <meta property="og:type" content={pubDatetime ? "article" : "website"} />
     {!disablePageUrlMeta && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:image" content={socialImageURL} />
-    <meta property="og:locale" content={langTag.replace("-", "_")} />
+    <meta property="og:locale" content={toOgLocale(langTag)} />
+    {
+      !disableHreflangAlternates &&
+        hreflangLinks
+          .filter(link => link.locale !== currentLocale && link.href)
+          .map(link => {
+            const ogLocale = toOgLocale(link.locale);
+            return <meta property="og:locale:alternate" content={ogLocale} />;
+          })
+    }
 
     <!-- Article Published/Modified time -->
     {

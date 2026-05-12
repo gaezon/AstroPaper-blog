@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://blog.gaazeon.com/schemas/error-envelope.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "API Error Envelope",
+  "description": "Canonical JSON error shape returned by every Static_Content_API path (including 404) and by the MCP endpoint on 400/405.",
+  "type": "object",
+  "required": ["error"],
+  "properties": {
+    "error": {
+      "type": "object",
+      "required": ["code", "message", "status", "documentation_url"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "status": {
+          "type": "integer",
+          "minimum": 400,
+          "maximum": 599
+        },
+        "documentation_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "availableResources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
