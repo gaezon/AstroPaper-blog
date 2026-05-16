@@ -271,6 +271,81 @@ describe("applyVercelRoutesConfig", () => {
     expect(mdIndex).toBeLessThan(fsIndex);
   });
 
+  it("keeps the Vercel well-known block from shadowing the MCP filesystem function", () => {
+    const wellKnownBlockRoute = { src: "^/\\.well-known(?:/.*)?$" };
+    const mcpSafeWellKnownBlockRoute = {
+      src: "^/\\.well-known(?:/(?!mcp(?:/|$)).*)?$",
+    };
+    const extensionlessRedirectRoute = {
+      src: "^/((?:[^/]+/)*[^/\\.]+)$",
+      headers: {
+        Location: "/$1/",
+      },
+      status: 308,
+    };
+    const config = {
+      version: 3,
+      routes: [
+        wellKnownBlockRoute,
+        extensionlessRedirectRoute,
+        { handle: "filesystem" },
+        {
+          src: "^/\\.well-known/mcp/$",
+          dest: "_render",
+        },
+        ...LOCALIZED_NOT_FOUND_ROUTES,
+      ],
+    };
+    const routes = applyVercelRoutesConfig(config).routes;
+    const mcpSafeWellKnownBlockRegex = new RegExp(
+      mcpSafeWellKnownBlockRoute.src
+    );
+
+    const wellKnownBlockIndex = routes.findIndex(
+      route => route.src === mcpSafeWellKnownBlockRoute.src
+    );
+    const filesystemIndex = routes.findIndex(
+      route => route.handle === "filesystem"
+    );
+
+    expect(wellKnownBlockIndex).toBeGreaterThanOrEqual(0);
+    expect(wellKnownBlockIndex).toBeLessThan(filesystemIndex);
+    expect(routes).not.toContainEqual(wellKnownBlockRoute);
+    expect(routes).not.toContainEqual({ src: "^/\\.well-known/mcp$" });
+    expect("/.well-known/mcp/").not.toMatch(mcpSafeWellKnownBlockRegex);
+    expect("/.well-known/mcp/server-card.json").not.toMatch(
+      mcpSafeWellKnownBlockRegex
+    );
+    expect("/.well-known/api-catalog").toMatch(mcpSafeWellKnownBlockRegex);
+    expect(routes).not.toContainEqual(extensionlessRedirectRoute);
+    expect(routes).toContainEqual({
+      ...extensionlessRedirectRoute,
+      src: "^/(?!\\.well-known/mcp$)((?:[^/]+/)*[^/\\.]+)$",
+    });
+  });
+
+  it("removes stale extensionless MCP route variants so filesystem can serve the function", () => {
+    const config = {
+      version: 3,
+      routes: [
+        {
+          src: "^/\\.well-known/mcp$",
+          status: 308,
+          headers: {
+            Location: "/.well-known/mcp/",
+          },
+        },
+        { handle: "filesystem" },
+        ...LOCALIZED_NOT_FOUND_ROUTES,
+      ],
+    };
+    const routes = applyVercelRoutesConfig(config).routes;
+
+    expect(
+      routes.filter(route => route.src === "^/\\.well-known/mcp$")
+    ).toEqual([]);
+  });
+
   it("inserts the API JSON 404 route after filesystem routing", () => {
     const config = {
       version: 3,
