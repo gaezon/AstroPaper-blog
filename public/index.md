@@ -15,6 +15,8 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - Contact: <https://blog.gaazeon.com/contact/>
 - Privacy: <https://blog.gaazeon.com/privacy/>
 - Pricing and access: <https://blog.gaazeon.com/pricing/>
+- Agent and developer resources: <https://blog.gaazeon.com/docs/>
+- Webhook alternatives: <https://blog.gaazeon.com/webhooks/>
 
 ## Feeds And Discovery
 
@@ -23,8 +25,10 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - English RSS: <https://blog.gaazeon.com/rss.en.xml>
 - LLM overview: <https://blog.gaazeon.com/llms.txt>
 - Full LLM context: <https://blog.gaazeon.com/llms-full.txt>
+- Agent and developer resources: <https://blog.gaazeon.com/docs.md>
 - Agent integration guide: <https://blog.gaazeon.com/agent-integration.md>
 - Agent instructions: <https://blog.gaazeon.com/agents.md>
+- Webhook alternatives: <https://blog.gaazeon.com/webhooks.md>
 - A2A agent card: <https://blog.gaazeon.com/.well-known/agent-card.json>
 - MCP server card: <https://blog.gaazeon.com/.well-known/mcp/server-card.json>
 - OpenAI plugin manifest: <https://blog.gaazeon.com/.well-known/ai-plugin.json>
@@ -38,6 +42,8 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 The site is free to read and does not require authentication. There are no paid plans, OAuth flows, private APIs, purchase flows, or user-account resources.
 
 Unsupported `/api/*` paths return JSON 404 responses with links to the canonical public discovery resources.
+
+Webhooks, event callbacks, and mutation endpoints are not supported. Use RSS, sitemap files, and public JSON indexes for incremental updates.
 
 ## When To Use
 

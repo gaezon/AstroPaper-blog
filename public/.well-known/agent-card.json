@@ -8,7 +8,7 @@
     "organization": "Gaazeon's Blog",
     "url": "https://blog.gaazeon.com/about/"
   },
-  "documentationUrl": "https://blog.gaazeon.com/agents.md",
+  "documentationUrl": "https://blog.gaazeon.com/docs.md",
   "capabilities": {
     "streaming": false,
     "pushNotifications": false,
@@ -28,6 +28,19 @@
         "Find Gaazeon's posts about self-hosted services.",
         "Get citation-ready URLs for Gaazeon's OBS troubleshooting notes.",
         "Summarize available English translations."
+      ],
+      "inputModes": ["text/plain", "text/markdown"],
+      "outputModes": ["text/plain", "text/markdown", "application/json"]
+    },
+    {
+      "id": "understand-static-integrations",
+      "name": "Understand static integrations",
+      "description": "Read the public resource docs, OpenAPI description, MCP discovery adapter, and webhook alternatives for the static blog.",
+      "tags": ["static-site", "openapi", "mcp", "webhooks", "rss"],
+      "examples": [
+        "Find the documented read-only JSON entry points.",
+        "Explain how agents should handle unsupported webhook requests.",
+        "Find the canonical fallback resources after a JSON 404."
       ],
       "inputModes": ["text/plain", "text/markdown"],
       "outputModes": ["text/plain", "text/markdown", "application/json"]

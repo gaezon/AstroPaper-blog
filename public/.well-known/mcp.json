@@ -6,7 +6,7 @@
   "protocolVersion": "2024-11-05",
   "serverCardUrl": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
   "handshakeUrl": "https://blog.gaazeon.com/.well-known/mcp",
-  "documentationUrl": "https://blog.gaazeon.com/agent-integration.md",
+  "documentationUrl": "https://blog.gaazeon.com/docs.md",
   "transport": "http-json-rpc",
   "liveHandshake": true,
   "authentication": {
@@ -31,6 +31,8 @@
     "https://blog.gaazeon.com/llms-full.txt",
     "https://blog.gaazeon.com/agent-integration.md",
     "https://blog.gaazeon.com/agents.md",
+    "https://blog.gaazeon.com/docs.md",
+    "https://blog.gaazeon.com/webhooks.md",
     "https://blog.gaazeon.com/index.md",
     "https://blog.gaazeon.com/openapi.json",
     "https://blog.gaazeon.com/pricing.md",

@@ -11,6 +11,10 @@ Gaazeon's Blog is a public static technical blog. This guide is the canonical ma
 - [MCP discovery document](https://blog.gaazeon.com/.well-known/mcp)
 - [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
 - [Agent instructions](https://blog.gaazeon.com/agents.md)
+- [Agent and developer resources](https://blog.gaazeon.com/docs.md)
+- [Human-readable agent resources](https://blog.gaazeon.com/docs/)
+- [Webhook alternatives](https://blog.gaazeon.com/webhooks.md)
+- [Human-readable webhook alternatives](https://blog.gaazeon.com/webhooks/)
 - [LLM overview](https://blog.gaazeon.com/llms.txt)
 - [Full LLM context](https://blog.gaazeon.com/llms-full.txt)
 - [Markdown home index](https://blog.gaazeon.com/index.md)
@@ -140,6 +144,7 @@ Do not attempt:
 - Checkout, payment, or subscription flows.
 - Mutation, writeback, comments, or private user data access.
 - Server-sent event streaming or write-capable MCP tools.
+- Webhook registration, event callbacks, or subscription APIs.
 - Treating the blog as official vendor documentation.
 
 When a user needs authoritative vendor behavior, cite the relevant blog post only for Gaazeon's experience and consult the vendor's official documentation separately.
@@ -167,3 +172,25 @@ To retrieve content, use the following static fallback paths:
 - Chinese RSS feed: `https://blog.gaazeon.com/rss.xml`
 - English RSS feed: `https://blog.gaazeon.com/rss.en.xml`
 - Full LLM context: `https://blog.gaazeon.com/llms-full.txt`
+
+## Webhooks
+
+### zh-CN
+
+本站不提供 webhook、事件订阅、回调注册或写入 API。需要增量更新时，请使用 RSS、sitemap 和公开 JSON 索引。
+
+- Webhook 替代方案：`https://blog.gaazeon.com/webhooks/`
+- Markdown 说明：`https://blog.gaazeon.com/webhooks.md`
+- 中文 RSS：`https://blog.gaazeon.com/rss.xml`
+- 英文 RSS：`https://blog.gaazeon.com/rss.en.xml`
+- 站点地图：`https://blog.gaazeon.com/sitemap-index.xml`
+
+### en
+
+This site does not provide webhooks, event subscriptions, callback registration, or write APIs. For incremental updates, use RSS, sitemap files, and public JSON indexes.
+
+- Webhook alternatives: `https://blog.gaazeon.com/webhooks/`
+- Markdown guide: `https://blog.gaazeon.com/webhooks.md`
+- Chinese RSS: `https://blog.gaazeon.com/rss.xml`
+- English RSS: `https://blog.gaazeon.com/rss.en.xml`
+- Sitemap index: `https://blog.gaazeon.com/sitemap-index.xml`

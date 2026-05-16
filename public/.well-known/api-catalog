@@ -22,10 +22,22 @@
           "title": "Markdown site index"
         },
         {
+          "href": "https://blog.gaazeon.com/docs.md",
+          "rel": "describedby",
+          "type": "text/markdown",
+          "title": "Agent and developer resource index"
+        },
+        {
           "href": "https://blog.gaazeon.com/agent-integration.md",
           "rel": "describedby",
           "type": "text/markdown",
           "title": "Agent integration guide for OpenAPI, read-only MCP JSON-RPC discovery, Markdown negotiation, and JSON errors"
+        },
+        {
+          "href": "https://blog.gaazeon.com/webhooks.md",
+          "rel": "describedby",
+          "type": "text/markdown",
+          "title": "Webhook alternatives for static publishing"
         },
         {
           "href": "https://blog.gaazeon.com/.well-known/agent-card.json",

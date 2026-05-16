@@ -29,6 +29,8 @@ Schemamap: ${new URL("schemamap.xml", origin).href}
 # LLM overview: ${new URL("llms.txt", origin).href}
 # Full LLM context: ${new URL("llms-full.txt", origin).href}
 # Agent instructions: ${new URL("agents.md", origin).href}
+# Agent and developer resources: ${new URL("docs.md", origin).href}
+# Webhook alternatives: ${new URL("webhooks.md", origin).href}
 # API catalog: ${new URL(".well-known/api-catalog", origin).href}
 `;
 };
