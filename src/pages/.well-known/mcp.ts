@@ -13,9 +13,8 @@ export const GET: APIRoute = ({ request }) => {
 };
 
 /**
- * POST /.well-known/mcp — handles JSON-RPC 2.0 `initialize` method.
- * Satisfies Req 1.3 (valid initialize → 200 JSON-RPC response) and
- * Req 1.7 (invalid JSON or non-initialize method → 400 Error_Envelope).
+ * POST /.well-known/mcp — handles read-only JSON-RPC 2.0 MCP methods:
+ * initialize, resources/list, resources/read, tools/list, and tools/call.
  */
 export const POST: APIRoute = ({ request }) => {
   return handleMcpEndpointRequest(request);

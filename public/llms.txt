@@ -25,6 +25,7 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - [Agent integration guide](https://blog.gaazeon.com/agent-integration.md)
 - [Agent instructions](https://blog.gaazeon.com/agents.md)
 - [A2A agent card](https://blog.gaazeon.com/.well-known/agent-card.json)
+- [MCP JSON-RPC discovery](https://blog.gaazeon.com/.well-known/mcp)
 - [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
 - [OpenAI plugin manifest](https://blog.gaazeon.com/.well-known/ai-plugin.json)
 - [Pricing and access model](https://blog.gaazeon.com/pricing.md)
@@ -53,4 +54,5 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - Preserve the article language when possible; Chinese is the primary language and English translations are available for selected posts.
 - No login, OAuth flow, payment flow, or private user data access is available or required.
 - Unsupported `/api/*` paths return JSON 404 responses with canonical discovery links.
+- `/.well-known/mcp` supports read-only JSON-RPC methods for `initialize`, `resources/list`, `resources/read`, `tools/list`, and `tools/call`.
 - If a public discovery endpoint returns `404`, retry the canonical URL once with a trailing slash where appropriate, then fall back to `llms-full.txt`, `index.md`, RSS feeds, and the sitemap. Do not invent paid plans, API keys, or private endpoints.

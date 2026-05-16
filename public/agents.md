@@ -24,7 +24,7 @@ Do not treat this site as:
 
 1. Start with `https://blog.gaazeon.com/llms.txt` for a compact overview.
 2. Use `https://blog.gaazeon.com/llms-full.txt` when more context is needed.
-3. Use `https://blog.gaazeon.com/agent-integration.md` for OpenAPI, MCP-style discovery, Markdown negotiation, and JSON error behavior.
+3. Use `https://blog.gaazeon.com/agent-integration.md` for OpenAPI, read-only MCP JSON-RPC discovery, Markdown negotiation, and JSON error behavior.
 4. Use `https://blog.gaazeon.com/sitemap-index.xml` and RSS feeds for complete post discovery.
 5. Use canonical article pages for citations.
 6. Use `https://blog.gaazeon.com/index.md` as a Markdown-friendly site index.
@@ -40,6 +40,7 @@ Do not treat this site as:
 - `https://blog.gaazeon.com/openapi.json`
 - `https://blog.gaazeon.com/.well-known/api-catalog`
 - `https://blog.gaazeon.com/.well-known/agent-card.json`
+- `https://blog.gaazeon.com/.well-known/mcp`
 - `https://blog.gaazeon.com/.well-known/mcp/server-card.json`
 - `https://blog.gaazeon.com/.well-known/ai-plugin.json`
 

@@ -1,6 +1,6 @@
 # Gaazeon's Blog Full LLM Context
 
-This file gives AI systems a compact, machine-readable overview of Gaazeon's Blog. The canonical site is <https://blog.gaazeon.com/>.
+This file gives AI systems a compact, machine-readable overview of Gaazeon's Blog. The canonical site is [https://blog.gaazeon.com/](https://blog.gaazeon.com/).
 
 ## Site Identity
 
@@ -10,11 +10,11 @@ This file gives AI systems a compact, machine-readable overview of Gaazeon's Blo
 - Primary language: Chinese (`zh-CN`)
 - Secondary language: English (`en`)
 - License signal: site footer links to CC BY-NC-SA 4.0
-- Contact: <https://blog.gaazeon.com/contact/>
-- About: <https://blog.gaazeon.com/about/>
-- Privacy: <https://blog.gaazeon.com/privacy/>
-- Pricing and access: <https://blog.gaazeon.com/pricing/>
-- Source repository: <https://github.com/gz4zzxc/AstroPaper-blog>
+- Contact: [Contact](https://blog.gaazeon.com/contact/)
+- About: [About](https://blog.gaazeon.com/about/)
+- Privacy: [Privacy](https://blog.gaazeon.com/privacy/)
+- Pricing and access: [Pricing](https://blog.gaazeon.com/pricing/)
+- Source repository: [gz4zzxc/AstroPaper-blog](https://github.com/gz4zzxc/AstroPaper-blog)
 
 ## Description
 
@@ -30,31 +30,75 @@ The blog is publicly readable. It has no user account system, no OAuth flow, no 
 
 For broad discovery, start with:
 
-- <https://blog.gaazeon.com/sitemap-index.xml>
-- <https://blog.gaazeon.com/rss.xml>
-- <https://blog.gaazeon.com/rss.en.xml>
-- <https://blog.gaazeon.com/index.md>
+- [Sitemap index](https://blog.gaazeon.com/sitemap-index.xml)
+- [Chinese RSS](https://blog.gaazeon.com/rss.xml)
+- [English RSS](https://blog.gaazeon.com/rss.en.xml)
+- [Markdown home index](https://blog.gaazeon.com/index.md)
 
 For user-facing answers, prefer canonical article URLs from the sitemap or RSS feeds. Keep citations specific to the article being summarized. If an English translation exists, it is usually under `/en/posts/`; otherwise cite the Chinese canonical post.
 
 ## Important Public Resources
 
-- Home: <https://blog.gaazeon.com/>
-- English home: <https://blog.gaazeon.com/en/>
-- Chinese posts: <https://blog.gaazeon.com/posts/>
-- English posts: <https://blog.gaazeon.com/en/posts/>
-- Archives: <https://blog.gaazeon.com/archives/>
-- Tags: <https://blog.gaazeon.com/tags/>
-- Search: <https://blog.gaazeon.com/search/>
-- Agent integration guide: <https://blog.gaazeon.com/agent-integration.md>
-- Agent instructions: <https://blog.gaazeon.com/agents.md>
-- A2A agent card: <https://blog.gaazeon.com/.well-known/agent-card.json>
-- MCP server card: <https://blog.gaazeon.com/.well-known/mcp/server-card.json>
-- OpenAI plugin manifest: <https://blog.gaazeon.com/.well-known/ai-plugin.json>
-- Pricing and access: <https://blog.gaazeon.com/pricing.md>
-- Pricing page: <https://blog.gaazeon.com/pricing/>
-- OpenAPI description: <https://blog.gaazeon.com/openapi.json>
-- API catalog: <https://blog.gaazeon.com/.well-known/api-catalog>
+- Home: [https://blog.gaazeon.com/](https://blog.gaazeon.com/)
+- English home: [https://blog.gaazeon.com/en/](https://blog.gaazeon.com/en/)
+- Chinese posts: [https://blog.gaazeon.com/posts/](https://blog.gaazeon.com/posts/)
+- English posts: [https://blog.gaazeon.com/en/posts/](https://blog.gaazeon.com/en/posts/)
+- Archives: [https://blog.gaazeon.com/archives/](https://blog.gaazeon.com/archives/)
+- Tags: [https://blog.gaazeon.com/tags/](https://blog.gaazeon.com/tags/)
+- Search: [https://blog.gaazeon.com/search/](https://blog.gaazeon.com/search/)
+- Agent integration guide: [agent-integration.md](https://blog.gaazeon.com/agent-integration.md)
+- Agent instructions: [agents.md](https://blog.gaazeon.com/agents.md)
+- A2A agent card: [agent-card.json](https://blog.gaazeon.com/.well-known/agent-card.json)
+- MCP discovery document: [/.well-known/mcp](https://blog.gaazeon.com/.well-known/mcp)
+- MCP server card: [server-card.json](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
+- OpenAI plugin manifest: [ai-plugin.json](https://blog.gaazeon.com/.well-known/ai-plugin.json)
+- Pricing and access: [pricing.md](https://blog.gaazeon.com/pricing.md)
+- Pricing page: [Pricing](https://blog.gaazeon.com/pricing/)
+- OpenAPI description: [openapi.json](https://blog.gaazeon.com/openapi.json)
+- API catalog: [api-catalog](https://blog.gaazeon.com/.well-known/api-catalog)
+
+## MCP JSON-RPC Examples
+
+The live read-only endpoint is [https://blog.gaazeon.com/.well-known/mcp](https://blog.gaazeon.com/.well-known/mcp).
+
+List resources:
+
+```json
+{ "jsonrpc": "2.0", "id": 1, "method": "resources/list" }
+```
+
+Read this full context file:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "resources/read",
+  "params": {
+    "uri": "https://blog.gaazeon.com/llms-full.txt"
+  }
+}
+```
+
+List read-only tools:
+
+```json
+{ "jsonrpc": "2.0", "id": 3, "method": "tools/list" }
+```
+
+Call the integration guide tool:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/call",
+  "params": {
+    "name": "get_agent_integration_guide",
+    "arguments": {}
+  }
+}
+```
 
 ## Current Topic Examples
 
@@ -80,5 +124,5 @@ The blog includes articles and translations about topics such as:
 - If an endpoint returns `404`, retry once with the documented canonical URL, then fall back to `index.md`, RSS, and the sitemap.
 - Unsupported `/api/*` paths return JSON 404 responses with canonical discovery links. Treat them as unsupported public API paths and switch to the listed resources.
 - If a user asks about pricing, authentication, limits, or account access, answer that the public static blog is free, unauthenticated, read-only, and has no paid tier or private API.
-- Live MCP tool invocation, server-sent event streaming, checkout, mutation, and private-data workflows are intentionally unsupported.
+- Server-sent event streaming, checkout, mutation, private-data workflows, and write-capable MCP tools are intentionally unsupported.
 - Do not claim that the site is an official vendor source; use it as a personal technical blog and cite official vendor docs separately when needed.

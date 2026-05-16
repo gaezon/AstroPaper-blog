@@ -1,7 +1,17 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { buildErrorEnvelope, buildHandshake } from "../src/utils/mcp";
+import {
+  buildErrorEnvelope,
+  buildHandshake,
+  buildMcpResourcesList,
+  buildMcpToolsList,
+} from "../src/utils/mcp";
+import {
+  AGENT_DISCOVERY_TOOLS,
+  absoluteSiteUrl,
+  getAgentResourceById,
+} from "../src/utils/agent-discovery";
 
 type VercelRoute = {
   src?: string;
@@ -511,17 +521,17 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
 
 function buildMcpWellKnownFunctionSource(): string {
   const handshake = buildHandshake({ liveHandshake: true });
-  const invalidJson = buildErrorEnvelope({
-    code: "invalid_json",
-    message: "Request body is not valid JSON.",
-    status: 400,
-  });
-  const unsupportedMethod = buildErrorEnvelope({
-    code: "unsupported_method",
-    message:
-      'Only the MCP "initialize" method is supported. Provide a JSON-RPC 2.0 body with method: "initialize".',
-    status: 400,
-  });
+  const resourcesList = buildMcpResourcesList();
+  const toolsList = buildMcpToolsList();
+  const resourceByUri = Object.fromEntries(
+    resourcesList.resources.map(resource => [resource.uri, resource])
+  );
+  const toolResourceUriByName = Object.fromEntries(
+    AGENT_DISCOVERY_TOOLS.map(tool => {
+      const resource = getAgentResourceById(tool.resourceId);
+      return [tool.name, resource ? absoluteSiteUrl(resource.path) : null];
+    })
+  );
   const methodNotAllowed = buildErrorEnvelope({
     code: "method_not_allowed",
     message: "Only GET and POST are supported on the MCP discovery endpoint.",
@@ -529,9 +539,18 @@ function buildMcpWellKnownFunctionSource(): string {
   });
 
   return `const handshake = ${JSON.stringify(handshake, null, 2)};
-const invalidJson = ${JSON.stringify(invalidJson, null, 2)};
-const unsupportedMethod = ${JSON.stringify(unsupportedMethod, null, 2)};
+const resourcesList = ${JSON.stringify(resourcesList, null, 2)};
+const toolsList = ${JSON.stringify(toolsList, null, 2)};
+const resourceByUri = ${JSON.stringify(resourceByUri, null, 2)};
+const toolResourceUriByName = ${JSON.stringify(toolResourceUriByName, null, 2)};
 const methodNotAllowed = ${JSON.stringify(methodNotAllowed, null, 2)};
+const supportedMethods = [
+  "initialize",
+  "resources/list",
+  "resources/read",
+  "tools/list",
+  "tools/call",
+];
 
 function json(status, body) {
   return new Response(JSON.stringify(body), {
@@ -540,14 +559,160 @@ function json(status, body) {
   });
 }
 
-function isInitializeRequest(body) {
+function requestId(body) {
+  if (typeof body === "object" && body !== null && "id" in body) {
+    return body.id;
+  }
+  return null;
+}
+
+function jsonRpcResult(id, result) {
+  return {
+    jsonrpc: "2.0",
+    id,
+    result,
+  };
+}
+
+function jsonRpcError(id, code, message, data) {
+  return {
+    jsonrpc: "2.0",
+    id,
+    error: {
+      code,
+      message,
+      ...(data !== undefined ? { data } : {}),
+    },
+  };
+}
+
+function isJsonRpcRequest(body) {
   return (
     typeof body === "object" &&
     body !== null &&
     body.jsonrpc === "2.0" &&
-    "id" in body &&
-    body.method === "initialize"
+    typeof body.method === "string"
   );
+}
+
+function objectParams(body) {
+  if (
+    typeof body.params === "object" &&
+    body.params !== null &&
+    !Array.isArray(body.params)
+  ) {
+    return body.params;
+  }
+  return undefined;
+}
+
+async function readCanonicalResource(uri) {
+  const resource = resourceByUri[uri];
+  if (!resource) {
+    return {
+      error: jsonRpcError(null, -32602, "Unknown resource URI.", { uri }),
+    };
+  }
+
+  let response;
+  try {
+    response = await fetch(uri);
+  } catch (error) {
+    return {
+      error: jsonRpcError(null, -32000, "Resource fetch failed.", {
+        uri,
+        cause: error instanceof Error ? error.message : String(error),
+      }),
+    };
+  }
+
+  if (!response.ok) {
+    return {
+      error: jsonRpcError(null, -32000, "Resource fetch failed.", {
+        uri,
+        status: response.status,
+      }),
+    };
+  }
+
+  return {
+    resource,
+    text: await response.text(),
+  };
+}
+
+async function handleJsonRpcMethod(body) {
+  const id = requestId(body);
+
+  switch (body.method) {
+    case "initialize":
+      return jsonRpcResult(id, handshake);
+
+    case "resources/list":
+      return jsonRpcResult(id, resourcesList);
+
+    case "resources/read": {
+      const params = objectParams(body);
+      if (typeof params?.uri !== "string") {
+        return jsonRpcError(id, -32602, 'Invalid params: "uri" must be a string.');
+      }
+
+      const result = await readCanonicalResource(params.uri);
+      if ("error" in result) {
+        return { ...result.error, id };
+      }
+
+      return jsonRpcResult(id, {
+        contents: [
+          {
+            uri: params.uri,
+            mimeType: result.resource.mimeType,
+            text: result.text,
+          },
+        ],
+      });
+    }
+
+    case "tools/list":
+      return jsonRpcResult(id, toolsList);
+
+    case "tools/call": {
+      const params = objectParams(body);
+      if (typeof params?.name !== "string") {
+        return jsonRpcError(id, -32602, 'Invalid params: "name" must be a string.');
+      }
+
+      const uri = toolResourceUriByName[params.name];
+      if (!uri) {
+        return jsonRpcError(id, -32602, "Unknown tool name.", {
+          name: params.name,
+        });
+      }
+
+      const result = await readCanonicalResource(uri);
+      if ("error" in result) {
+        return { ...result.error, id };
+      }
+
+      return jsonRpcResult(id, {
+        content: [
+          {
+            type: "text",
+            text: result.text,
+          },
+        ],
+        structuredContent: {
+          source: uri,
+          mimeType: result.resource.mimeType,
+        },
+      });
+    }
+
+    default:
+      return jsonRpcError(id, -32601, "Method not found.", {
+        supportedMethods,
+      });
+  }
 }
 
 export default {
@@ -561,18 +726,21 @@ export default {
         try {
           body = await request.json();
         } catch {
-          return json(400, invalidJson);
+          return json(400, jsonRpcError(null, -32700, "Parse error."));
         }
 
-        if (!isInitializeRequest(body)) {
-          return json(400, unsupportedMethod);
+        if (!isJsonRpcRequest(body)) {
+          return json(
+            400,
+            jsonRpcError(
+              requestId(body),
+              -32600,
+              'Invalid Request. Provide a JSON-RPC 2.0 object with a string "method".'
+            )
+          );
         }
 
-        return json(200, {
-          jsonrpc: "2.0",
-          id: body.id,
-          result: handshake,
-        });
+        return json(200, await handleJsonRpcMethod(body));
       }
 
       default:

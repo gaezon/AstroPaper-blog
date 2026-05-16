@@ -4,20 +4,20 @@ Gaazeon's Blog is a public static technical blog. This guide is the canonical ma
 
 ## Supported Agent Surfaces
 
-- OpenAPI description: <https://blog.gaazeon.com/openapi.json>
-- API catalog: <https://blog.gaazeon.com/.well-known/api-catalog>
-- OpenAI plugin manifest: <https://blog.gaazeon.com/.well-known/ai-plugin.json>
-- A2A agent card: <https://blog.gaazeon.com/.well-known/agent-card.json>
-- MCP discovery document: <https://blog.gaazeon.com/.well-known/mcp>
-- MCP server card: <https://blog.gaazeon.com/.well-known/mcp/server-card.json>
-- Agent instructions: <https://blog.gaazeon.com/agents.md>
-- LLM overview: <https://blog.gaazeon.com/llms.txt>
-- Full LLM context: <https://blog.gaazeon.com/llms-full.txt>
-- Markdown home index: <https://blog.gaazeon.com/index.md>
-- Pricing and access model: <https://blog.gaazeon.com/pricing.md>
-- Sitemap index: <https://blog.gaazeon.com/sitemap-index.xml>
-- Chinese RSS: <https://blog.gaazeon.com/rss.xml>
-- English RSS: <https://blog.gaazeon.com/rss.en.xml>
+- [OpenAPI description](https://blog.gaazeon.com/openapi.json)
+- [API catalog](https://blog.gaazeon.com/.well-known/api-catalog)
+- [OpenAI plugin manifest](https://blog.gaazeon.com/.well-known/ai-plugin.json)
+- [A2A agent card](https://blog.gaazeon.com/.well-known/agent-card.json)
+- [MCP discovery document](https://blog.gaazeon.com/.well-known/mcp)
+- [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
+- [Agent instructions](https://blog.gaazeon.com/agents.md)
+- [LLM overview](https://blog.gaazeon.com/llms.txt)
+- [Full LLM context](https://blog.gaazeon.com/llms-full.txt)
+- [Markdown home index](https://blog.gaazeon.com/index.md)
+- [Pricing and access model](https://blog.gaazeon.com/pricing.md)
+- [Sitemap index](https://blog.gaazeon.com/sitemap-index.xml)
+- [Chinese RSS](https://blog.gaazeon.com/rss.xml)
+- [English RSS](https://blog.gaazeon.com/rss.en.xml)
 
 ## Markdown Content Negotiation
 
@@ -57,14 +57,72 @@ Unsupported `/api/*` paths return JSON rather than the HTML 404 page. Agents sho
 
 For public Markdown, JSON, RSS, or sitemap resources, retry the exact canonical URL once. For article pages, retry once with the trailing slash form from the sitemap. If the resource is still unavailable, fall back to `llms-full.txt`, `index.md`, RSS, and the sitemap.
 
-## MCP-Style Discovery
+## MCP JSON-RPC Discovery
 
-The blog exposes static MCP-oriented discovery documents for agent bootstrap:
+The blog exposes a minimal read-only MCP JSON-RPC endpoint for agent bootstrap:
 
-- `/.well-known/mcp` summarizes public resources, authentication, capabilities, and fallback behavior.
-- `/.well-known/mcp/server-card.json` lists read-only discovery tools and resource URLs.
+- `GET /.well-known/mcp` returns a live handshake with public resources and capability flags.
+- `POST /.well-known/mcp` accepts JSON-RPC 2.0 requests for `initialize`, `resources/list`, `resources/read`, `tools/list`, and `tools/call`.
+- `/.well-known/mcp/server-card.json` lists the same read-only discovery tools and resource URLs for static clients.
 
-The static site does not expose live JSON-RPC tool invocation, mutation, subscription, or streaming MCP transport. Agents should call the listed HTTPS resources directly and treat every tool as read-only, idempotent, and public.
+All tools are read-only, idempotent, public, and unauthenticated. The site does not expose mutation, subscription, prompts, or streaming MCP transport.
+
+### Initialize
+
+```http
+POST /.well-known/mcp HTTP/2
+Host: blog.gaazeon.com
+Content-Type: application/json
+
+{"jsonrpc":"2.0","id":1,"method":"initialize"}
+```
+
+### List Resources
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "resources/list"
+}
+```
+
+### Read A Resource
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "resources/read",
+  "params": {
+    "uri": "https://blog.gaazeon.com/llms-full.txt"
+  }
+}
+```
+
+### List Tools
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/list"
+}
+```
+
+### Call A Read-Only Tool
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "method": "tools/call",
+  "params": {
+    "name": "get_agent_integration_guide",
+    "arguments": {}
+  }
+}
+```
 
 ## OpenAI And ChatGPT Compatibility
 
@@ -81,7 +139,7 @@ Do not attempt:
 - OAuth, API key, or account creation.
 - Checkout, payment, or subscription flows.
 - Mutation, writeback, comments, or private user data access.
-- Live MCP tool invocation or server-sent event streaming.
+- Server-sent event streaming or write-capable MCP tools.
 - Treating the blog as official vendor documentation.
 
 When a user needs authoritative vendor behavior, cite the relevant blog post only for Gaazeon's experience and consult the vendor's official documentation separately.
