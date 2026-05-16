@@ -5,6 +5,8 @@ export type AgentResourceId =
   | "llm-full-context"
   | "agent-integration-guide"
   | "agent-instructions"
+  | "developer-resource-docs"
+  | "webhook-alternatives"
   | "markdown-index"
   | "openapi-description"
   | "pricing-access-model"
@@ -63,6 +65,22 @@ export const AGENT_DISCOVERY_RESOURCES = [
     mimeType: "text/markdown",
   },
   {
+    id: "developer-resource-docs",
+    path: "docs.md",
+    name: "Agent and developer resources",
+    description:
+      "Public static resource index for AI agents, crawlers, search systems, and developer tools consuming the blog.",
+    mimeType: "text/markdown",
+  },
+  {
+    id: "webhook-alternatives",
+    path: "webhooks.md",
+    name: "Webhook alternatives",
+    description:
+      "Static publishing alternatives to webhooks, including RSS, sitemap files, and read-only JSON indexes.",
+    mimeType: "text/markdown",
+  },
+  {
     id: "markdown-index",
     path: "index.md",
     name: "Markdown home index",
@@ -108,6 +126,20 @@ export const AGENT_DISCOVERY_TOOLS = [
     description:
       "Read the canonical integration guide for OpenAPI, MCP, Markdown negotiation, JSON errors, and unsupported workflows.",
     resourceId: "agent-integration-guide",
+    outputMimeType: "text/markdown",
+  },
+  {
+    name: "get_developer_resource_docs",
+    description:
+      "Read the public static resource index for agents and developer tools, including RSS, sitemap, Markdown, OpenAPI, MCP, and read-only JSON entry points.",
+    resourceId: "developer-resource-docs",
+    outputMimeType: "text/markdown",
+  },
+  {
+    name: "get_webhook_alternatives",
+    description:
+      "Read why webhooks are unsupported for the static blog and which RSS, sitemap, and JSON resources agents should use for incremental updates.",
+    resourceId: "webhook-alternatives",
     outputMimeType: "text/markdown",
   },
   {

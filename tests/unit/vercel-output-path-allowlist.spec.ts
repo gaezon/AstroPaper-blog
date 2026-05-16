@@ -27,8 +27,9 @@ function walkAll(dir: string, base = dir): string[] {
 // Allowed prefixes for new paths introduced by this feature
 const ALLOWED_PREFIXES = ["/api/", "/.well-known/"];
 
-// Known pre-existing top-level files that are NOT new (existed before this feature)
-const PRE_EXISTING_TOP_LEVEL = new Set([
+// Known intentional top-level static files. New entries here should be reviewed
+// alongside the discovery artifacts they expose.
+const ALLOWED_TOP_LEVEL_FILES = new Set([
   "/.DS_Store",
   "/404.html",
   "/ads.txt",
@@ -36,6 +37,7 @@ const PRE_EXISTING_TOP_LEVEL = new Set([
   "/agents.md",
   "/api-error.json",
   "/astropaper-og.jpg",
+  "/docs.md",
   "/dummy-logo.svg",
   "/favicon.svg",
   "/index.html",
@@ -51,6 +53,7 @@ const PRE_EXISTING_TOP_LEVEL = new Set([
   "/schemamap.xml",
   "/sitemap-0.xml",
   "/sitemap-index.xml",
+  "/webhooks.md",
 ]);
 
 describe.skipIf(!existsSync(STATIC_DIR))(
@@ -75,7 +78,7 @@ describe.skipIf(!existsSync(STATIC_DIR))(
       const otherPaths = allPaths.filter(
         p =>
           !ALLOWED_PREFIXES.some(prefix => p.startsWith(prefix)) &&
-          !PRE_EXISTING_TOP_LEVEL.has(p)
+          !ALLOWED_TOP_LEVEL_FILES.has(p)
       );
 
       // These should all be under known pre-existing directory structures

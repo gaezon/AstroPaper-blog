@@ -48,6 +48,10 @@ For user-facing answers, prefer canonical article URLs from the sitemap or RSS f
 - Search: [https://blog.gaazeon.com/search/](https://blog.gaazeon.com/search/)
 - Agent integration guide: [agent-integration.md](https://blog.gaazeon.com/agent-integration.md)
 - Agent instructions: [agents.md](https://blog.gaazeon.com/agents.md)
+- Agent and developer resources: [docs.md](https://blog.gaazeon.com/docs.md)
+- Agent resources page: [Docs](https://blog.gaazeon.com/docs/)
+- Webhook alternatives: [webhooks.md](https://blog.gaazeon.com/webhooks.md)
+- Webhook alternatives page: [Webhooks](https://blog.gaazeon.com/webhooks/)
 - A2A agent card: [agent-card.json](https://blog.gaazeon.com/.well-known/agent-card.json)
 - MCP discovery document: [/.well-known/mcp](https://blog.gaazeon.com/.well-known/mcp)
 - MCP server card: [server-card.json](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
@@ -79,6 +83,14 @@ Read this full context file:
   }
 }
 ```
+
+## Static Agent Task Examples
+
+- Find new posts: read [rss.xml](https://blog.gaazeon.com/rss.xml), [rss.en.xml](https://blog.gaazeon.com/rss.en.xml), or [sitemap-index.xml](https://blog.gaazeon.com/sitemap-index.xml).
+- Retrieve structured metadata: call `/api/posts.json` and `/api/tags.json`.
+- Retrieve one article as JSON: call `/api/posts/{locale}/{slug}.json`, where `locale` is `zh-CN` or `en`.
+- Understand unsupported workflows: read [webhooks.md](https://blog.gaazeon.com/webhooks.md) and [pricing.md](https://blog.gaazeon.com/pricing.md).
+- Recover from an unsupported `/api/*` path: use [agent-integration.md](https://blog.gaazeon.com/agent-integration.md), then fall back to [index.md](https://blog.gaazeon.com/index.md), RSS, and sitemap resources.
 
 List read-only tools:
 
@@ -124,5 +136,6 @@ The blog includes articles and translations about topics such as:
 - If an endpoint returns `404`, retry once with the documented canonical URL, then fall back to `index.md`, RSS, and the sitemap.
 - Unsupported `/api/*` paths return JSON 404 responses with canonical discovery links. Treat them as unsupported public API paths and switch to the listed resources.
 - If a user asks about pricing, authentication, limits, or account access, answer that the public static blog is free, unauthenticated, read-only, and has no paid tier or private API.
+- If a user asks about webhooks or event callbacks, answer that the static blog does not support them and use RSS, sitemap files, and public JSON indexes instead.
 - Server-sent event streaming, checkout, mutation, private-data workflows, and write-capable MCP tools are intentionally unsupported.
 - Do not claim that the site is an official vendor source; use it as a personal technical blog and cite official vendor docs separately when needed.

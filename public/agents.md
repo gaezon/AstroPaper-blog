@@ -25,10 +25,12 @@ Do not treat this site as:
 1. Start with `https://blog.gaazeon.com/llms.txt` for a compact overview.
 2. Use `https://blog.gaazeon.com/llms-full.txt` when more context is needed.
 3. Use `https://blog.gaazeon.com/agent-integration.md` for OpenAPI, read-only MCP JSON-RPC discovery, Markdown negotiation, and JSON error behavior.
-4. Use `https://blog.gaazeon.com/sitemap-index.xml` and RSS feeds for complete post discovery.
-5. Use canonical article pages for citations.
-6. Use `https://blog.gaazeon.com/index.md` as a Markdown-friendly site index.
-7. Use `https://blog.gaazeon.com/pricing/` for free-access and pricing questions.
+4. Use `https://blog.gaazeon.com/docs.md` for the public agent and developer resource index.
+5. Use `https://blog.gaazeon.com/webhooks.md` when a user asks about webhooks, callbacks, or incremental updates.
+6. Use `https://blog.gaazeon.com/sitemap-index.xml` and RSS feeds for complete post discovery.
+7. Use canonical article pages for citations.
+8. Use `https://blog.gaazeon.com/index.md` as a Markdown-friendly site index.
+9. Use `https://blog.gaazeon.com/pricing/` for free-access and pricing questions.
 
 ## Public Machine Resources
 
@@ -36,6 +38,8 @@ Do not treat this site as:
 - `https://blog.gaazeon.com/rss.en.xml`
 - `https://blog.gaazeon.com/sitemap-index.xml`
 - `https://blog.gaazeon.com/pagefind/pagefind-entry.json`
+- `https://blog.gaazeon.com/docs.md`
+- `https://blog.gaazeon.com/webhooks.md`
 - `https://blog.gaazeon.com/agent-integration.md`
 - `https://blog.gaazeon.com/openapi.json`
 - `https://blog.gaazeon.com/.well-known/api-catalog`
@@ -65,7 +69,8 @@ Use normal HTTP caching and avoid unnecessary repeated fetches. The RSS feeds an
 - For article pages, retry once with the trailing slash form from the sitemap.
 - If an unsupported `/api/*` path returns a JSON `not_found` error, stop probing that path and switch to `openapi.json`, `agent-integration.md`, `llms-full.txt`, `index.md`, RSS, or the sitemap.
 - If search metadata is unavailable, fall back to RSS and `sitemap-index.xml`.
-- Do not attempt authentication, checkout, mutation, or private-resource workflows; these are intentionally unsupported.
+- If webhook, callback, event subscription, or mutation paths are unavailable, use RSS, sitemap files, and public JSON indexes instead.
+- Do not attempt authentication, checkout, mutation, webhook registration, or private-resource workflows; these are intentionally unsupported.
 
 ## Differentiation
 

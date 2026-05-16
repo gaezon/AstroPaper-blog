@@ -28,6 +28,14 @@
       "url": "https://blog.gaazeon.com/agents.md"
     },
     {
+      "type": "agent-developer-docs",
+      "url": "https://blog.gaazeon.com/docs.md"
+    },
+    {
+      "type": "webhook-alternatives",
+      "url": "https://blog.gaazeon.com/webhooks.md"
+    },
+    {
       "type": "a2a-agent-card",
       "url": "https://blog.gaazeon.com/.well-known/agent-card.json"
     },
@@ -60,7 +68,8 @@
     "bilingual-technical-content",
     "static-search-index",
     "free-public-read-only-access",
-    "agent-error-recovery-guidance"
+    "agent-error-recovery-guidance",
+    "webhook-alternative-guidance"
   ],
   "authentication": {
     "required": false,
@@ -68,6 +77,6 @@
   },
   "errorRecovery": {
     "retry": "Retry documented discovery URLs once, then fall back to llms-full.txt, index.md, RSS, and sitemap resources.",
-    "unsupported": "Authentication, checkout, mutation, private API access, and account workflows are not supported."
+    "unsupported": "Authentication, checkout, mutation, webhook registration, private API access, and account workflows are not supported."
   }
 }
