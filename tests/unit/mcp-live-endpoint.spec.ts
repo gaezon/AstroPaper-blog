@@ -15,6 +15,10 @@ vi.mock("@/utils/mcp", async () => {
   return await vi.importActual("../../src/utils/mcp");
 });
 
+vi.mock("@/utils/mcp-endpoint", async () => {
+  return await vi.importActual("../../src/utils/mcp-endpoint");
+});
+
 import {
   GET,
   POST,
@@ -24,6 +28,7 @@ import {
   OPTIONS,
   HEAD,
 } from "../../src/pages/.well-known/mcp";
+import { handleMcpEndpointRequest } from "../../src/utils/mcp-endpoint";
 import handshakeSchema from "../../src/schemas/mcp-handshake.schema.json" with { type: "json" };
 import envelopeSchema from "../../src/schemas/error-envelope.schema.json" with { type: "json" };
 
@@ -48,6 +53,22 @@ describe("MCP live endpoint — direct handler invocation", () => {
       const response = await GET(
         makeContext(new Request("https://blog.gaazeon.com/.well-known/mcp/"))
       );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Content-Type")).toMatch(
+        /^application\/json/
+      );
+
+      const body = await response.json();
+      const valid = validateHandshake(body);
+      expect(valid, JSON.stringify(validateHandshake.errors)).toBe(true);
+      expect(body.liveHandshake).toBe(true);
+    });
+
+    it("serves the documented extensionless URL before trailing-slash routing", async () => {
+      const response = await handleMcpEndpointRequest(
+        new Request("https://blog.gaazeon.com/.well-known/mcp")
+      );
+
       expect(response.status).toBe(200);
       expect(response.headers.get("Content-Type")).toMatch(
         /^application\/json/

@@ -1,4 +1,4 @@
-import { SITE } from "@/config";
+import { SITE } from "../config";
 
 /**
  * MCP wire protocol version exposed through the handshake. Kept in lockstep

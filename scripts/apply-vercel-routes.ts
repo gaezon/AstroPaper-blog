@@ -1,6 +1,7 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { buildErrorEnvelope, buildHandshake } from "../src/utils/mcp";
 
 type VercelRoute = {
   src?: string;
@@ -22,6 +23,14 @@ type VercelConfig = {
 };
 
 const CONFIG_PATH = ".vercel/output/config.json";
+const MCP_WELL_KNOWN_FUNCTION_DIR =
+  ".vercel/output/functions/.well-known/mcp.func";
+const VERCEL_WELL_KNOWN_BLOCK_ROUTE_SRC = "^/\\.well-known(?:/.*)?$";
+const MCP_SAFE_WELL_KNOWN_BLOCK_ROUTE_SRC =
+  "^/\\.well-known(?:/(?!mcp(?:/|$)).*)?$";
+const VERCEL_EXTENSIONLESS_REDIRECT_ROUTE_SRC = "^/((?:[^/]+/)*[^/\\.]+)$";
+const MCP_SAFE_EXTENSIONLESS_REDIRECT_ROUTE_SRC =
+  "^/(?!\\.well-known/mcp$)((?:[^/]+/)*[^/\\.]+)$";
 // Keep this deployable with the current site runtime:
 // - inline scripts/styles are still used for first paint, comments, and search UI;
 // - Pagefind loads WebAssembly at runtime and requires wasm-unsafe-eval.
@@ -423,6 +432,36 @@ export function applyMarkdownIndexNegotiation(
   };
 }
 
+export function applyMcpWellKnownRoute(config: VercelConfig): VercelConfig {
+  const routes = config.routes.filter(
+    route => route.src !== "^/\\.well-known/mcp$"
+  );
+  const wellKnownBlockIndex = routes.findIndex(
+    route =>
+      route.src === VERCEL_WELL_KNOWN_BLOCK_ROUTE_SRC ||
+      route.src === MCP_SAFE_WELL_KNOWN_BLOCK_ROUTE_SRC
+  );
+
+  if (wellKnownBlockIndex !== -1) {
+    routes[wellKnownBlockIndex] = {
+      ...routes[wellKnownBlockIndex],
+      src: MCP_SAFE_WELL_KNOWN_BLOCK_ROUTE_SRC,
+    };
+  }
+
+  const mcpSafeRoutes = routes.map(route =>
+    route.src === VERCEL_EXTENSIONLESS_REDIRECT_ROUTE_SRC ||
+    route.src === MCP_SAFE_EXTENSIONLESS_REDIRECT_ROUTE_SRC
+      ? { ...route, src: MCP_SAFE_EXTENSIONLESS_REDIRECT_ROUTE_SRC }
+      : route
+  );
+
+  return {
+    ...config,
+    routes: mcpSafeRoutes,
+  };
+}
+
 export function applyApiJsonNotFoundRoute(config: VercelConfig): VercelConfig {
   const existingApiJsonNotFoundRoute = config.routes.find(route =>
     hasSameRouteShape(route, API_JSON_NOT_FOUND_ROUTE)
@@ -461,6 +500,7 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
     applyAgentSkillsHeaders,
     applyAgentCardHeaders,
     applyAiPluginHeaders,
+    applyMcpWellKnownRoute,
     applyApiJsonNotFoundRoute,
     applyMarkdownIndexNegotiation,
     applyLocalized404Routes,
@@ -469,19 +509,124 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
   return steps.reduce((cfg, step) => step(cfg), config);
 }
 
+function buildMcpWellKnownFunctionSource(): string {
+  const handshake = buildHandshake({ liveHandshake: true });
+  const invalidJson = buildErrorEnvelope({
+    code: "invalid_json",
+    message: "Request body is not valid JSON.",
+    status: 400,
+  });
+  const unsupportedMethod = buildErrorEnvelope({
+    code: "unsupported_method",
+    message:
+      'Only the MCP "initialize" method is supported. Provide a JSON-RPC 2.0 body with method: "initialize".',
+    status: 400,
+  });
+  const methodNotAllowed = buildErrorEnvelope({
+    code: "method_not_allowed",
+    message: "Only GET and POST are supported on the MCP discovery endpoint.",
+    status: 405,
+  });
+
+  return `const handshake = ${JSON.stringify(handshake, null, 2)};
+const invalidJson = ${JSON.stringify(invalidJson, null, 2)};
+const unsupportedMethod = ${JSON.stringify(unsupportedMethod, null, 2)};
+const methodNotAllowed = ${JSON.stringify(methodNotAllowed, null, 2)};
+
+function json(status, body) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
+}
+
+function isInitializeRequest(body) {
+  return (
+    typeof body === "object" &&
+    body !== null &&
+    body.jsonrpc === "2.0" &&
+    "id" in body &&
+    body.method === "initialize"
+  );
+}
+
+export default {
+  async fetch(request) {
+    switch (request.method) {
+      case "GET":
+        return json(200, handshake);
+
+      case "POST": {
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json(400, invalidJson);
+        }
+
+        if (!isInitializeRequest(body)) {
+          return json(400, unsupportedMethod);
+        }
+
+        return json(200, {
+          jsonrpc: "2.0",
+          id: body.id,
+          result: handshake,
+        });
+      }
+
+      default:
+        return json(405, methodNotAllowed);
+    }
+  },
+};
+`;
+}
+
+async function writeMcpWellKnownFunction(): Promise<void> {
+  await mkdir(MCP_WELL_KNOWN_FUNCTION_DIR, { recursive: true });
+  await writeFile(
+    `${MCP_WELL_KNOWN_FUNCTION_DIR}/package.json`,
+    `${JSON.stringify({ type: "module" }, null, 2)}\n`,
+    "utf8"
+  );
+  await writeFile(
+    `${MCP_WELL_KNOWN_FUNCTION_DIR}/.vc-config.json`,
+    `${JSON.stringify(
+      {
+        runtime: "nodejs24.x",
+        handler: "index.mjs",
+        launcherType: "Nodejs",
+      },
+      null,
+      2
+    )}\n`,
+    "utf8"
+  );
+  await writeFile(
+    `${MCP_WELL_KNOWN_FUNCTION_DIR}/index.mjs`,
+    buildMcpWellKnownFunctionSource(),
+    "utf8"
+  );
+}
+
 async function main() {
   const rawConfig = await readFile(CONFIG_PATH, "utf8");
   const currentConfig = JSON.parse(rawConfig) as VercelConfig;
   const nextConfig = applyVercelRoutesConfig(currentConfig);
   const formattedConfig = `${JSON.stringify(nextConfig, null, 2)}\n`;
 
+  await writeMcpWellKnownFunction();
+
   if (rawConfig === formattedConfig) {
-    console.log("Vercel routes config already applied.");
+    console.log("Vercel routes config and MCP function already applied.");
     return;
   }
 
   await writeFile(CONFIG_PATH, formattedConfig, "utf8");
-  console.log("Applied Vercel routes config to .vercel/output/config.json.");
+  console.log(
+    "Applied Vercel routes config and MCP function to .vercel/output."
+  );
 }
 
 const entryScriptPath = process.argv[1];

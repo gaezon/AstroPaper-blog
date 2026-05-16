@@ -30,14 +30,21 @@ function pathExistsAsFunction(p: string): boolean {
   if (!existsSync(CONFIG_PATH)) return false;
   const config = JSON.parse(readFileSync(CONFIG_PATH, "utf-8"));
   const routes = config.routes || [];
-  // Check if any route's src pattern could match this path
-  // The MCP endpoint is registered as ^/\.well-known/mcp/$
-  const normalizedPath = p.endsWith("/") ? p : p + "/";
+  // Check whether any route can serve the required path exactly. Do not
+  // normalize missing trailing slashes here; scanners probe the documented URL.
   return routes.some((route: Record<string, unknown>) => {
-    if (typeof route.src !== "string" || !route.dest) return false;
+    if (typeof route.src !== "string") return false;
+    const hasRouteTarget =
+      Boolean(route.dest) ||
+      (typeof route.status === "number" &&
+        route.status >= 300 &&
+        route.status < 400 &&
+        typeof (route.headers as Record<string, unknown> | undefined)
+          ?.Location === "string");
+    if (!hasRouteTarget) return false;
     try {
       const regex = new RegExp(route.src);
-      return regex.test(p) || regex.test(normalizedPath);
+      return regex.test(p);
     } catch {
       return false;
     }
