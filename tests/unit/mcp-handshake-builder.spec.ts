@@ -50,7 +50,7 @@ function assertHandshakeInvariants(result: ReturnType<typeof buildHandshake>) {
   expect(result.serverInfo.name).toBe(MCP_SERVER_NAME);
   expect(result.serverInfo.version).toBe(MCP_SERVER_VERSION);
 
-  // Capability flags are locked per design (no streaming, no tools, no prompts).
+  // Capability flags are locked per design (read-only tools/resources, no streaming/prompts).
   expect(result.capabilities.streaming).toBe(false);
 
   // Minimum five canonical resources per schema (Req 1.3).
@@ -131,7 +131,7 @@ describe("buildHandshake (P1/P4)", () => {
     // Validates: Requirements 1.4, 8.8
     const result = buildHandshake({ liveHandshake: true });
     expect(result.capabilities).toStrictEqual({
-      tools: false,
+      tools: true,
       resources: true,
       prompts: false,
       streaming: false,

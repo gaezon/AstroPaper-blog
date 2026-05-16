@@ -1,4 +1,15 @@
-import { SITE } from "../config";
+import {
+  AGENT_DISCOVERY_RESOURCES,
+  AGENT_DISCOVERY_TOOLS,
+  absoluteSiteUrl,
+  getAgentResourceById,
+  getAgentResourceByUri,
+  getAgentTool,
+  toMcpResource,
+  toMcpTool,
+  type AgentDiscoveryResource,
+  type AgentDiscoveryTool,
+} from "./agent-discovery";
 
 /**
  * MCP wire protocol version exposed through the handshake. Kept in lockstep
@@ -66,15 +77,36 @@ export interface ErrorEnvelope {
   };
 }
 
+export interface McpJsonRpcRequest {
+  jsonrpc: "2.0";
+  id?: unknown;
+  method: string;
+  params?: unknown;
+}
+
+export interface McpJsonRpcSuccess {
+  jsonrpc: "2.0";
+  id: unknown;
+  result: unknown;
+}
+
+export interface McpJsonRpcFailure {
+  jsonrpc: "2.0";
+  id: unknown;
+  error: {
+    code: number;
+    message: string;
+    data?: unknown;
+  };
+}
+
+export type McpJsonRpcResponse = McpJsonRpcSuccess | McpJsonRpcFailure;
+
 const ERROR_CODE_PATTERN = /^[a-z][a-z0-9_]*$/;
 const MESSAGE_MIN_LENGTH = 1;
 const MESSAGE_MAX_LENGTH = 500;
 const STATUS_MIN = 400;
 const STATUS_MAX = 599;
-
-function absoluteUrl(path: string): string {
-  return new URL(path, SITE.website).href;
-}
 
 /**
  * Build the MCP handshake payload served by the live discovery endpoint.
@@ -84,7 +116,7 @@ function absoluteUrl(path: string): string {
  * per invocation.
  */
 export function buildHandshake(opts: { liveHandshake: boolean }): MCPHandshake {
-  const documentationUrl = absoluteUrl("agent-integration.md");
+  const documentationUrl = absoluteSiteUrl("agent-integration.md");
 
   return {
     schemaVersion: MCP_SCHEMA_VERSION,
@@ -94,40 +126,105 @@ export function buildHandshake(opts: { liveHandshake: boolean }): MCPHandshake {
       version: MCP_SERVER_VERSION,
     },
     capabilities: {
-      tools: false,
+      tools: true,
       resources: true,
       prompts: false,
       streaming: false,
     },
     liveHandshake: opts.liveHandshake,
-    resources: [
+    resources: AGENT_DISCOVERY_RESOURCES.map(resource => {
+      const { uri, name, mimeType } = toMcpResource(resource);
+      return { uri, name, mimeType };
+    }),
+    documentationUrl,
+  };
+}
+
+export function buildMcpResourcesList() {
+  return {
+    resources: AGENT_DISCOVERY_RESOURCES.map(toMcpResource),
+  };
+}
+
+export function buildMcpToolsList() {
+  return {
+    tools: AGENT_DISCOVERY_TOOLS.map(toMcpTool),
+  };
+}
+
+export function buildMcpResourceReadResult(
+  resource: AgentDiscoveryResource,
+  text: string
+) {
+  return {
+    contents: [
       {
-        uri: absoluteUrl("llms.txt"),
-        name: "LLM overview",
-        mimeType: "text/markdown",
-      },
-      {
-        uri: absoluteUrl("llms-full.txt"),
-        name: "Full LLM context",
-        mimeType: "text/markdown",
-      },
-      {
-        uri: documentationUrl,
-        name: "Agent integration guide",
-        mimeType: "text/markdown",
-      },
-      {
-        uri: absoluteUrl("openapi.json"),
-        name: "OpenAPI description",
-        mimeType: "application/vnd.oai.openapi+json",
-      },
-      {
-        uri: absoluteUrl("sitemap-index.xml"),
-        name: "Sitemap index",
-        mimeType: "application/xml",
+        uri: absoluteSiteUrl(resource.path),
+        mimeType: resource.mimeType,
+        text,
       },
     ],
-    documentationUrl,
+  };
+}
+
+export function buildMcpToolCallResult(tool: AgentDiscoveryTool, text: string) {
+  const resource = getAgentResourceById(tool.resourceId);
+
+  return {
+    content: [
+      {
+        type: "text",
+        text,
+      },
+    ],
+    structuredContent: {
+      source: resource ? absoluteSiteUrl(resource.path) : undefined,
+      mimeType: tool.outputMimeType,
+    },
+  };
+}
+
+export function getMcpResourceByUri(uri: string) {
+  return getAgentResourceByUri(uri);
+}
+
+export function getMcpToolByName(name: string) {
+  return getAgentTool(name);
+}
+
+export function getMcpResourceForTool(tool: AgentDiscoveryTool) {
+  return getAgentResourceById(tool.resourceId);
+}
+
+export function getMcpResourceUri(resource: AgentDiscoveryResource) {
+  return absoluteSiteUrl(resource.path);
+}
+
+export function buildMcpJsonRpcResult(
+  id: unknown,
+  result: unknown
+): McpJsonRpcSuccess {
+  return {
+    jsonrpc: "2.0",
+    id,
+    result,
+  };
+}
+
+export function buildMcpJsonRpcError(args: {
+  id: unknown;
+  code: number;
+  message: string;
+  data?: unknown;
+}): McpJsonRpcFailure {
+  return {
+    jsonrpc: "2.0",
+    id: args.id,
+    error: {
+      code: args.code,
+      message: args.message,
+      ...(args.data !== undefined ? { data: args.data } : {}),
+    },
   };
 }
 
@@ -200,7 +297,7 @@ export function buildErrorEnvelope(args: {
     code,
     message,
     status,
-    documentation_url: absoluteUrl("agent-integration.md"),
+    documentation_url: absoluteSiteUrl("agent-integration.md"),
     ...(availableResources !== undefined ? { availableResources } : {}),
   };
 

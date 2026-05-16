@@ -25,7 +25,7 @@
           "href": "https://blog.gaazeon.com/agent-integration.md",
           "rel": "describedby",
           "type": "text/markdown",
-          "title": "Agent integration guide for OpenAPI, MCP-style discovery, Markdown negotiation, and JSON errors"
+          "title": "Agent integration guide for OpenAPI, read-only MCP JSON-RPC discovery, Markdown negotiation, and JSON errors"
         },
         {
           "href": "https://blog.gaazeon.com/.well-known/agent-card.json",
@@ -34,10 +34,16 @@
           "title": "A2A-compatible agent card"
         },
         {
+          "href": "https://blog.gaazeon.com/.well-known/mcp",
+          "rel": "service-desc",
+          "type": "application/json",
+          "title": "MCP read-only JSON-RPC discovery endpoint"
+        },
+        {
           "href": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
           "rel": "service-desc",
           "type": "application/json",
-          "title": "MCP static discovery server card"
+          "title": "MCP read-only tool and resource server card"
         },
         {
           "href": "https://blog.gaazeon.com/.well-known/ai-plugin.json",

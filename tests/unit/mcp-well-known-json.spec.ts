@@ -26,7 +26,21 @@ describe("public/.well-known/mcp.json (Req 8.1)", () => {
     expect(content.capabilities).toHaveProperty("resources");
     expect(content.capabilities).toHaveProperty("prompts");
     expect(content.capabilities).toHaveProperty("streaming");
+    expect(content.capabilities.tools).toBe(true);
     expect(content.capabilities.streaming).toBe(false);
+  });
+
+  it("contains an icon URL and read-only JSON-RPC methods", () => {
+    expect(content.icon).toBe("https://blog.gaazeon.com/favicon.svg");
+    expect(content.methods).toEqual(
+      expect.arrayContaining([
+        "initialize",
+        "resources/list",
+        "resources/read",
+        "tools/list",
+        "tools/call",
+      ])
+    );
   });
 
   it("contains resources array", () => {
@@ -38,7 +52,7 @@ describe("public/.well-known/mcp.json (Req 8.1)", () => {
   it("contains handshakeUrl pointing at the live endpoint", () => {
     expect(content).toHaveProperty("handshakeUrl");
     expect(content.handshakeUrl).toBe(
-      "https://blog.gaazeon.com/.well-known/mcp/"
+      "https://blog.gaazeon.com/.well-known/mcp"
     );
   });
 });

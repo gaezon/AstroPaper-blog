@@ -1,6 +1,6 @@
 // Feature: agent-readiness-optimization, Property 1/2/3: MCP live endpoint behavior
 // Tests import the serverless handlers directly (no HTTP server needed).
-import { describe, it, expect, vi } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 import fc from "fast-check";
 import Ajv2020 from "ajv/dist/2020";
 import addFormats from "ajv-formats";
@@ -37,6 +37,10 @@ const ajv = new Ajv2020({ strict: false });
 addFormats(ajv);
 const validateHandshake = ajv.compile(handshakeSchema);
 const validateEnvelope = ajv.compile(envelopeSchema);
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 /**
  * Build a minimal APIContext with only the `request` field populated.
@@ -128,6 +132,189 @@ describe("MCP live endpoint — direct handler invocation", () => {
     });
   });
 
+  describe("P1 — POST supports read-only MCP resources and tools", () => {
+    it("lists canonical resources", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "resources",
+              method: "resources/list",
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body.jsonrpc).toBe("2.0");
+      expect(body.id).toBe("resources");
+      expect(body.result.resources.length).toBeGreaterThanOrEqual(5);
+      expect(body.result.resources).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            uri: "https://blog.gaazeon.com/llms-full.txt",
+            mimeType: "text/markdown",
+          }),
+        ])
+      );
+    });
+
+    it("reads a canonical resource", async () => {
+      const fetchMock = vi.fn(async () => new Response("# Full context"));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "read",
+              method: "resources/read",
+              params: {
+                uri: "https://blog.gaazeon.com/llms-full.txt",
+              },
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://blog.gaazeon.com/llms-full.txt"
+      );
+
+      const body = await response.json();
+      expect(body.result.contents).toEqual([
+        {
+          uri: "https://blog.gaazeon.com/llms-full.txt",
+          mimeType: "text/markdown",
+          text: "# Full context",
+        },
+      ]);
+    });
+
+    it("lists read-only tools with input schemas", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "tools",
+              method: "tools/list",
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body.result.tools).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: "get_agent_integration_guide",
+            inputSchema: expect.objectContaining({
+              type: "object",
+              additionalProperties: false,
+            }),
+            annotations: expect.objectContaining({
+              readOnlyHint: true,
+              idempotentHint: true,
+            }),
+          }),
+        ])
+      );
+    });
+
+    it("calls a read-only tool and returns text content", async () => {
+      const fetchMock = vi.fn(async () => new Response("# Agent guide"));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "call",
+              method: "tools/call",
+              params: {
+                name: "get_agent_integration_guide",
+                arguments: {},
+              },
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://blog.gaazeon.com/agent-integration.md"
+      );
+
+      const body = await response.json();
+      expect(body.result.content).toEqual([
+        {
+          type: "text",
+          text: "# Agent guide",
+        },
+      ]);
+      expect(body.result.structuredContent).toMatchObject({
+        source: "https://blog.gaazeon.com/agent-integration.md",
+        mimeType: "text/markdown",
+      });
+    });
+
+    it("returns a JSON-RPC error when resource fetch fails", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => {
+          throw new Error("network down");
+        })
+      );
+
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "failure",
+              method: "resources/read",
+              params: {
+                uri: "https://blog.gaazeon.com/llms-full.txt",
+              },
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body).toMatchObject({
+        jsonrpc: "2.0",
+        id: "failure",
+        error: {
+          code: -32000,
+          message: "Resource fetch failed.",
+          data: {
+            uri: "https://blog.gaazeon.com/llms-full.txt",
+            cause: "network down",
+          },
+        },
+      });
+    });
+  });
+
   describe("P2 — non-GET/POST methods return 405 + schema-valid envelope", () => {
     it("PUT, DELETE, PATCH, OPTIONS, HEAD all return 405 (100 runs)", async () => {
       // Validates: Requirements 1.6, 8.8
@@ -159,30 +346,19 @@ describe("MCP live endpoint — direct handler invocation", () => {
     });
   });
 
-  describe("P3 — malformed POST returns 400 + schema-valid envelope", () => {
-    it("invalid JSON and non-initialize methods return 400 (100 runs)", async () => {
+  describe("P3 — malformed POST returns JSON-RPC errors", () => {
+    it("invalid JSON returns parse error (100 runs)", async () => {
       // Validates: Requirements 1.7, 8.8
       await fc.assert(
         fc.asyncProperty(
-          fc.oneof(
-            // Non-parseable JSON strings
-            fc.string().filter(s => {
-              try {
-                JSON.parse(s);
-                return false;
-              } catch {
-                return true;
-              }
-            }),
-            // Valid JSON but with a method other than "initialize"
-            fc
-              .record({
-                jsonrpc: fc.constant("2.0"),
-                id: fc.integer(),
-                method: fc.string().filter(m => m !== "initialize"),
-              })
-              .map(o => JSON.stringify(o))
-          ),
+          fc.string().filter(s => {
+            try {
+              JSON.parse(s);
+              return false;
+            } catch {
+              return true;
+            }
+          }),
           async bodyStr => {
             const request = new Request(
               "https://blog.gaazeon.com/.well-known/mcp/",
@@ -197,15 +373,63 @@ describe("MCP live endpoint — direct handler invocation", () => {
             expect(response.status).toBe(400);
 
             const body = await response.json();
-            const valid = validateEnvelope(body);
-            expect(valid, JSON.stringify(validateEnvelope.errors)).toBe(true);
-            expect(["invalid_json", "unsupported_method"]).toContain(
-              body.error.code
-            );
+            expect(body).toMatchObject({
+              jsonrpc: "2.0",
+              id: null,
+              error: {
+                code: -32700,
+                message: "Parse error.",
+              },
+            });
           }
         ),
         { numRuns: 100 }
       );
+    });
+
+    it("invalid JSON-RPC shape returns invalid request", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1 }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(400);
+      const body = await response.json();
+      expect(body.error.code).toBe(-32600);
+    });
+
+    it("unknown methods return method-not-found JSON-RPC errors", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "unknown",
+              method: "unknown/method",
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body).toMatchObject({
+        jsonrpc: "2.0",
+        id: "unknown",
+        error: {
+          code: -32601,
+          message: "Method not found.",
+        },
+      });
+      expect(body.error.data.supportedMethods).toContain("resources/list");
+      expect(body.error.data.supportedMethods).toContain("tools/list");
     });
   });
 });

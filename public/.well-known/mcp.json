@@ -1,23 +1,31 @@
 {
   "name": "Gaazeon's Blog public discovery",
-  "description": "Public read-only discovery metadata for Gaazeon's technical blog. The static site exposes machine-readable resources for agents and clearly marks live tool invocation as unsupported.",
+  "description": "Public read-only MCP discovery metadata for Gaazeon's technical blog. The endpoint exposes machine-readable resources and read-only JSON-RPC tools for agents.",
+  "icon": "https://blog.gaazeon.com/favicon.svg",
   "protocol": "model-context-protocol",
-  "protocolVersion": "static-discovery-v1",
+  "protocolVersion": "2024-11-05",
   "serverCardUrl": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
-  "handshakeUrl": "https://blog.gaazeon.com/.well-known/mcp/",
+  "handshakeUrl": "https://blog.gaazeon.com/.well-known/mcp",
   "documentationUrl": "https://blog.gaazeon.com/agent-integration.md",
-  "transport": "static-discovery",
-  "liveHandshake": false,
+  "transport": "http-json-rpc",
+  "liveHandshake": true,
   "authentication": {
     "required": false,
     "description": "All listed resources are public and read-only. No OAuth, API key, or user session is required."
   },
   "capabilities": {
-    "tools": false,
+    "tools": true,
     "resources": true,
     "prompts": false,
     "streaming": false
   },
+  "methods": [
+    "initialize",
+    "resources/list",
+    "resources/read",
+    "tools/list",
+    "tools/call"
+  ],
   "resources": [
     "https://blog.gaazeon.com/llms.txt",
     "https://blog.gaazeon.com/llms-full.txt",
@@ -25,6 +33,7 @@
     "https://blog.gaazeon.com/agents.md",
     "https://blog.gaazeon.com/index.md",
     "https://blog.gaazeon.com/openapi.json",
+    "https://blog.gaazeon.com/pricing.md",
     "https://blog.gaazeon.com/sitemap-index.xml"
   ],
   "errorHandling": {
