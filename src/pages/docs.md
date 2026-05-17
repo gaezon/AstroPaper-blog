@@ -30,6 +30,7 @@ description: "Gaazeon 博客面向 AI agents、爬虫和开发者工具的公开
 - A2A agent card：[/.well-known/agent-card.json](/.well-known/agent-card.json)
 - MCP discovery：[/.well-known/mcp](/.well-known/mcp)
 - MCP server card：[/.well-known/mcp/server-card.json](/.well-known/mcp/server-card.json)
+- MCP Apps resource widget：`ui://widget/resource-index.html`
 - OpenAI plugin manifest：[/.well-known/ai-plugin.json](/.well-known/ai-plugin.json)
 
 ## 只读 JSON 入口
@@ -52,3 +53,5 @@ description: "Gaazeon 博客面向 AI agents、爬虫和开发者工具的公开
 ## 不支持的工作流
 
 本站不提供用户账号、OAuth、API key、付费套餐、结账流程、写入 API、webhook、订阅回调或私有资源。需要增量更新时，请使用 RSS、sitemap 和公开 JSON 索引。
+
+MCP Apps widget 只用于只读展示公开资源索引，不代表本站支持登录、结账、写入、webhook 注册或私有内容访问。

@@ -1,4 +1,5 @@
 import {
+  AGENT_RESOURCE_WIDGET_URI,
   AGENT_DISCOVERY_RESOURCES,
   AGENT_DISCOVERY_TOOLS,
   absoluteSiteUrl,
@@ -10,6 +11,25 @@ import {
   type AgentDiscoveryResource,
   type AgentDiscoveryTool,
 } from "./agent-discovery";
+
+const UNSUPPORTED_WORKFLOWS = [
+  "User accounts",
+  "OAuth login",
+  "API keys",
+  "Payment or checkout",
+  "Write APIs",
+  "Webhook registration",
+  "Event callbacks",
+  "Private resources",
+] as const;
+
+const MCP_APP_RESOURCE = {
+  uri: AGENT_RESOURCE_WIDGET_URI,
+  name: "Agent resource index widget",
+  description:
+    "Read-only MCP Apps UI resource that renders the blog's public agent resources, unsupported workflows, and fallback paths.",
+  mimeType: "text/html+skybridge",
+} as const;
 
 /**
  * MCP wire protocol version exposed through the handshake. Kept in lockstep
@@ -57,6 +77,18 @@ export interface MCPHandshake {
     mimeType: string;
   }>;
   documentationUrl?: string;
+}
+
+export function buildAgentResourceIndexStructuredContent(args?: {
+  source?: string;
+  mimeType?: string;
+}) {
+  return {
+    source: args?.source ?? absoluteSiteUrl("docs.md"),
+    mimeType: args?.mimeType ?? "text/markdown",
+    resources: AGENT_DISCOVERY_RESOURCES.map(toMcpResource),
+    unsupportedWorkflows: [...UNSUPPORTED_WORKFLOWS],
+  };
 }
 
 /**
@@ -132,8 +164,8 @@ export function buildHandshake(opts: { liveHandshake: boolean }): MCPHandshake {
       streaming: false,
     },
     liveHandshake: opts.liveHandshake,
-    resources: AGENT_DISCOVERY_RESOURCES.map(resource => {
-      const { uri, name, mimeType } = toMcpResource(resource);
+    resources: buildMcpResourcesList().resources.map(resource => {
+      const { uri, name, mimeType } = resource;
       return { uri, name, mimeType };
     }),
     documentationUrl,
@@ -142,7 +174,10 @@ export function buildHandshake(opts: { liveHandshake: boolean }): MCPHandshake {
 
 export function buildMcpResourcesList() {
   return {
-    resources: AGENT_DISCOVERY_RESOURCES.map(toMcpResource),
+    resources: [
+      ...AGENT_DISCOVERY_RESOURCES.map(toMcpResource),
+      MCP_APP_RESOURCE,
+    ],
   };
 }
 
@@ -169,6 +204,8 @@ export function buildMcpResourceReadResult(
 
 export function buildMcpToolCallResult(tool: AgentDiscoveryTool, text: string) {
   const resource = getAgentResourceById(tool.resourceId);
+  const source = resource ? absoluteSiteUrl(resource.path) : undefined;
+  const mimeType = resource?.mimeType ?? tool.outputMimeType;
 
   return {
     content: [
@@ -177,11 +214,151 @@ export function buildMcpToolCallResult(tool: AgentDiscoveryTool, text: string) {
         text,
       },
     ],
-    structuredContent: {
-      source: resource ? absoluteSiteUrl(resource.path) : undefined,
-      mimeType: tool.outputMimeType,
+    structuredContent: buildAgentResourceIndexStructuredContent({
+      source,
+      mimeType,
+    }),
+    _meta: {
+      ui: {
+        resourceUri: AGENT_RESOURCE_WIDGET_URI,
+      },
     },
   };
+}
+
+export function isMcpAppResourceUri(uri: string) {
+  return uri === AGENT_RESOURCE_WIDGET_URI;
+}
+
+export function buildMcpAppResourceReadResult() {
+  return {
+    contents: [
+      {
+        uri: MCP_APP_RESOURCE.uri,
+        mimeType: MCP_APP_RESOURCE.mimeType,
+        text: buildMcpAppResourceHtml(),
+        _meta: {
+          ui: {
+            prefersBorder: true,
+            csp: {
+              connectDomains: [],
+              resourceDomains: [],
+              frameDomains: [],
+            },
+          },
+          "openai/widgetDescription":
+            "A read-only index of public blog resources for AI agents and developer tools.",
+          "openai/widgetPrefersBorder": true,
+          "openai/widgetCSP": {
+            connect_domains: [],
+            resource_domains: [],
+            frame_domains: [],
+            redirect_domains: ["https://blog.gaazeon.com"],
+          },
+        },
+      },
+    ],
+  };
+}
+
+function buildMcpAppResourceHtml() {
+  const structured = buildAgentResourceIndexStructuredContent();
+  const resources = structured.resources
+    .map(
+      resource => `<li>
+        <a href="${resource.uri}" target="_blank" rel="noopener noreferrer">${escapeHtml(resource.name)}</a>
+        <span>${escapeHtml(resource.mimeType)}</span>
+        <p>${escapeHtml(resource.description)}</p>
+      </li>`
+    )
+    .join("");
+  const unsupported = structured.unsupportedWorkflows
+    .map(item => `<li>${escapeHtml(item)}</li>`)
+    .join("");
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gaazeon's Blog Agent Resources</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        background: Canvas;
+        color: CanvasText;
+      }
+      main {
+        display: grid;
+        gap: 16px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.15rem;
+        line-height: 1.3;
+      }
+      p {
+        margin: 4px 0 0;
+        color: color-mix(in srgb, CanvasText 72%, transparent);
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+      ul {
+        display: grid;
+        gap: 10px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      li {
+        border: 1px solid color-mix(in srgb, CanvasText 16%, transparent);
+        border-radius: 8px;
+        padding: 10px;
+      }
+      a {
+        color: LinkText;
+        font-weight: 650;
+        text-decoration-thickness: 0.08em;
+        text-underline-offset: 0.18em;
+      }
+      span {
+        display: block;
+        margin-top: 4px;
+        font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+        font-size: 0.78rem;
+        color: color-mix(in srgb, CanvasText 62%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Gaazeon's Blog Agent Resources</h1>
+        <p>Read-only public resources for RSS polling, sitemap discovery, Markdown retrieval, OpenAPI inspection, and MCP tool calls.</p>
+      </header>
+      <section aria-labelledby="resources-title">
+        <h2 id="resources-title">Public resources</h2>
+        <ul>${resources}</ul>
+      </section>
+      <section aria-labelledby="unsupported-title">
+        <h2 id="unsupported-title">Unsupported workflows</h2>
+        <ul>${unsupported}</ul>
+      </section>
+    </main>
+  </body>
+</html>`;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
 export function getMcpResourceByUri(uri: string) {

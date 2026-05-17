@@ -21,6 +21,7 @@ Gaazeon's Blog is a static public technical blog. This document indexes the real
 - [agent-card.json](https://blog.gaazeon.com/.well-known/agent-card.json)
 - [MCP discovery](https://blog.gaazeon.com/.well-known/mcp)
 - [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
+- MCP Apps resource widget: `ui://widget/resource-index.html`
 - [ai-plugin.json](https://blog.gaazeon.com/.well-known/ai-plugin.json)
 
 ## Content Feeds
@@ -40,3 +41,5 @@ Gaazeon's Blog is a static public technical blog. This document indexes the real
 The blog does not provide user accounts, OAuth, API keys, paid plans, checkout flows, write APIs, webhooks, subscription callbacks, or private resources.
 
 For incremental updates, use RSS, sitemap files, and public JSON indexes. Unsupported `/api/*` paths return JSON 404 responses with canonical discovery links.
+
+The MCP Apps widget is read-only and only renders the public resource index. It does not enable login, checkout, write actions, webhook registration, or private content access.

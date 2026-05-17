@@ -26,6 +26,12 @@
     "tools/list",
     "tools/call"
   ],
+  "mcpApps": {
+    "uiResource": "ui://widget/resource-index.html",
+    "outputTemplate": "ui://widget/resource-index.html",
+    "widgetMimeType": "text/html+skybridge",
+    "description": "Read-only MCP Apps UI resource for rendering the public agent resource index. It does not add authentication, write actions, payments, or private data access."
+  },
   "resources": [
     "https://blog.gaazeon.com/llms.txt",
     "https://blog.gaazeon.com/llms-full.txt",
@@ -36,7 +42,8 @@
     "https://blog.gaazeon.com/index.md",
     "https://blog.gaazeon.com/openapi.json",
     "https://blog.gaazeon.com/pricing.md",
-    "https://blog.gaazeon.com/sitemap-index.xml"
+    "https://blog.gaazeon.com/sitemap-index.xml",
+    "ui://widget/resource-index.html"
   ],
   "errorHandling": {
     "notFound": "Unsupported /api/* paths return a JSON 404 body with canonical discovery resources.",

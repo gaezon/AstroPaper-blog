@@ -22,6 +22,7 @@ export interface AgentDiscoveryResource {
 
 export interface AgentDiscoveryTool {
   name: string;
+  title: string;
   description: string;
   resourceId: AgentResourceId;
   outputMimeType: string;
@@ -116,6 +117,7 @@ export const AGENT_DISCOVERY_RESOURCES = [
 export const AGENT_DISCOVERY_TOOLS = [
   {
     name: "get_agent_instructions",
+    title: "Get Agent Instructions",
     description:
       "Read agent usage guidance, retrieval order, citation guidance, unsupported workflows, and error recovery notes.",
     resourceId: "agent-instructions",
@@ -123,6 +125,7 @@ export const AGENT_DISCOVERY_TOOLS = [
   },
   {
     name: "get_agent_integration_guide",
+    title: "Get Agent Integration Guide",
     description:
       "Read the canonical integration guide for OpenAPI, MCP, Markdown negotiation, JSON errors, and unsupported workflows.",
     resourceId: "agent-integration-guide",
@@ -130,6 +133,7 @@ export const AGENT_DISCOVERY_TOOLS = [
   },
   {
     name: "get_developer_resource_docs",
+    title: "Get Developer Resource Docs",
     description:
       "Read the public static resource index for agents and developer tools, including RSS, sitemap, Markdown, OpenAPI, MCP, and read-only JSON entry points.",
     resourceId: "developer-resource-docs",
@@ -137,6 +141,7 @@ export const AGENT_DISCOVERY_TOOLS = [
   },
   {
     name: "get_webhook_alternatives",
+    title: "Get Webhook Alternatives",
     description:
       "Read why webhooks are unsupported for the static blog and which RSS, sitemap, and JSON resources agents should use for incremental updates.",
     resourceId: "webhook-alternatives",
@@ -144,6 +149,7 @@ export const AGENT_DISCOVERY_TOOLS = [
   },
   {
     name: "get_markdown_index",
+    title: "Get Markdown Index",
     description:
       "Read the Markdown site index for public links, access model, and content topics.",
     resourceId: "markdown-index",
@@ -151,6 +157,7 @@ export const AGENT_DISCOVERY_TOOLS = [
   },
   {
     name: "get_openapi_description",
+    title: "Get OpenAPI Description",
     description:
       "Read the OpenAPI description for public static discovery resources.",
     resourceId: "openapi-description",
@@ -158,12 +165,54 @@ export const AGENT_DISCOVERY_TOOLS = [
   },
   {
     name: "get_pricing_access_model",
+    title: "Get Pricing Access Model",
     description:
       "Read the free access and pricing model for the public static blog, including the absence of paid tiers, OAuth, accounts, and private APIs.",
     resourceId: "pricing-access-model",
     outputMimeType: "text/markdown",
   },
 ] as const satisfies readonly AgentDiscoveryTool[];
+
+export const AGENT_RESOURCE_WIDGET_URI = "ui://widget/resource-index.html";
+
+export const AGENT_TOOL_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["source", "mimeType", "resources", "unsupportedWorkflows"],
+  properties: {
+    source: {
+      type: "string",
+      format: "uri",
+      description: "Canonical URL for the resource returned by this tool.",
+    },
+    mimeType: {
+      type: "string",
+      description: "MIME type for the returned resource content.",
+    },
+    resources: {
+      type: "array",
+      description:
+        "Public read-only resources available to agents and developer tools.",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["name", "uri", "mimeType", "description"],
+        properties: {
+          name: { type: "string" },
+          uri: { type: "string" },
+          mimeType: { type: "string" },
+          description: { type: "string" },
+        },
+      },
+    },
+    unsupportedWorkflows: {
+      type: "array",
+      description:
+        "Workflows intentionally unsupported by the static public blog.",
+      items: { type: "string" },
+    },
+  },
+} as const;
 
 export function toMcpResource(resource: AgentDiscoveryResource) {
   return {
@@ -177,17 +226,28 @@ export function toMcpResource(resource: AgentDiscoveryResource) {
 export function toMcpTool(tool: AgentDiscoveryTool) {
   return {
     name: tool.name,
+    title: tool.title,
     description: tool.description,
     inputSchema: {
       type: "object",
       additionalProperties: false,
       properties: {},
     },
+    outputSchema: AGENT_TOOL_OUTPUT_SCHEMA,
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
+    },
+    _meta: {
+      ui: {
+        resourceUri: AGENT_RESOURCE_WIDGET_URI,
+        visibility: ["model", "app"],
+      },
+      "openai/outputTemplate": AGENT_RESOURCE_WIDGET_URI,
+      "openai/toolInvocation/invoking": "Reading public resources",
+      "openai/toolInvocation/invoked": "Resources ready",
     },
   };
 }

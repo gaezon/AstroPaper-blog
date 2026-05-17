@@ -68,8 +68,11 @@ The blog exposes a minimal read-only MCP JSON-RPC endpoint for agent bootstrap:
 - `GET /.well-known/mcp` returns a live handshake with public resources and capability flags.
 - `POST /.well-known/mcp` accepts JSON-RPC 2.0 requests for `initialize`, `resources/list`, `resources/read`, `tools/list`, and `tools/call`.
 - `/.well-known/mcp/server-card.json` lists the same read-only discovery tools and resource URLs for static clients.
+- `resources/list` also exposes `ui://widget/resource-index.html`, a `text/html+skybridge` MCP Apps UI resource for rendering the public resource index.
 
 All tools are read-only, idempotent, public, and unauthenticated. The site does not expose mutation, subscription, prompts, or streaming MCP transport.
+
+MCP Apps clients can use each tool's `openai/outputTemplate` metadata to render the same `ui://widget/resource-index.html` resource. Tool results also include structured content with the canonical source URL, MIME type, public resources, and intentionally unsupported workflows.
 
 ### Initialize
 
@@ -130,7 +133,7 @@ Content-Type: application/json
 
 ## OpenAI And ChatGPT Compatibility
 
-`/.well-known/ai-plugin.json` advertises a no-auth OpenAPI manifest for ChatGPT-style tool discovery. The manifest is read-only and points to the public OpenAPI description. The blog does not provide account actions, purchases, private data, or an embedded OpenAI Apps SDK UI.
+`/.well-known/ai-plugin.json` advertises a no-auth OpenAPI manifest for ChatGPT-style tool discovery. The manifest is read-only and points to the public OpenAPI description. The MCP endpoint additionally exposes a read-only MCP Apps UI resource at `ui://widget/resource-index.html` for clients that support `text/html+skybridge` widgets. The blog does not provide account actions, purchases, private data, or write-capable Apps SDK flows.
 
 ## Rate Limits And Crawl Courtesy
 

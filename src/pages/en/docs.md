@@ -30,6 +30,7 @@ This page is the public resource index for AI agents, crawlers, search systems, 
 - A2A agent card: [/.well-known/agent-card.json](/.well-known/agent-card.json)
 - MCP discovery: [/.well-known/mcp](/.well-known/mcp)
 - MCP server card: [/.well-known/mcp/server-card.json](/.well-known/mcp/server-card.json)
+- MCP Apps resource widget: `ui://widget/resource-index.html`
 - OpenAI plugin manifest: [/.well-known/ai-plugin.json](/.well-known/ai-plugin.json)
 
 ## Read-Only JSON Entry Points
@@ -52,3 +53,5 @@ If an agent requests an unsupported `/api/*` path, the site returns a JSON 404 b
 ## Unsupported Workflows
 
 The site does not provide user accounts, OAuth, API keys, paid plans, checkout flows, write APIs, webhooks, subscription callbacks, or private resources. For incremental updates, use RSS, sitemap files, and public JSON indexes.
+
+The MCP Apps widget only renders the public resource index in read-only clients. It does not add login, checkout, write actions, webhook registration, or private content access.
