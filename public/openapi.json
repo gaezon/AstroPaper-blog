@@ -347,10 +347,10 @@
       "get": {
         "operationId": "getMcpWellKnown",
         "tags": ["Agent Metadata"],
-        "summary": "Get MCP live handshake response",
+        "summary": "Get MCP discovery response",
         "responses": {
           "200": {
-            "description": "MCP live handshake response with protocol version, server info, capabilities, and resource list. Static metadata is available at /.well-known/mcp.json.",
+            "description": "MCP discovery response with protocol version, server info, capabilities, and resource list. JSON-RPC initialize returns the standard MCP InitializeResult.",
             "content": {
               "application/json": {
                 "schema": {
@@ -373,8 +373,8 @@
       "post": {
         "operationId": "postMcpJsonRpc",
         "tags": ["Agent Metadata"],
-        "summary": "Call read-only MCP JSON-RPC discovery methods",
-        "description": "Supports initialize, resources/list, resources/read, tools/list, and tools/call. All methods are public, unauthenticated, and read-only.",
+        "summary": "Call read-only MCP Streamable HTTP JSON-RPC methods",
+        "description": "Supports initialize, notifications/initialized, resources/list, resources/read, tools/list, and tools/call. All methods are public, unauthenticated, and read-only.",
         "requestBody": {
           "required": true,
           "content": {
@@ -417,6 +417,9 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "Accepted JSON-RPC notification with no response body."
           },
           "400": {
             "description": "Malformed JSON or invalid JSON-RPC envelope.",
@@ -1339,6 +1342,7 @@
           "icon",
           "protocol",
           "protocolVersion",
+          "protocolVersions",
           "serverCardUrl",
           "handshakeUrl",
           "documentationUrl",
@@ -1347,6 +1351,7 @@
           "authentication",
           "capabilities",
           "methods",
+          "mcpApps",
           "resources",
           "errorHandling"
         ],
@@ -1388,6 +1393,13 @@
           "protocolVersion": {
             "type": "string"
           },
+          "protocolVersions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
           "documentationUrl": {
             "type": "string",
             "format": "uri"
@@ -1420,6 +1432,7 @@
               "type": "string",
               "enum": [
                 "initialize",
+                "notifications/initialized",
                 "resources/list",
                 "resources/read",
                 "tools/list",
@@ -1437,6 +1450,30 @@
                 "type": "string"
               },
               "fallback": {
+                "type": "string"
+              }
+            }
+          },
+          "mcpApps": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "uiResource",
+              "outputTemplate",
+              "widgetMimeType",
+              "description"
+            ],
+            "properties": {
+              "uiResource": {
+                "type": "string"
+              },
+              "outputTemplate": {
+                "type": "string"
+              },
+              "widgetMimeType": {
+                "type": "string"
+              },
+              "description": {
                 "type": "string"
               }
             }
@@ -1668,6 +1705,7 @@
             "type": "string",
             "enum": [
               "initialize",
+              "notifications/initialized",
               "resources/list",
               "resources/read",
               "tools/list",
@@ -1693,7 +1731,7 @@
             "type": ["string", "number", "null"]
           },
           "result": {
-            "description": "Method-specific MCP result for initialize, resources/list, resources/read, tools/list, or tools/call."
+            "description": "Method-specific MCP result for initialize, resources/list, resources/read, tools/list, or tools/call. Initialize returns the standard MCP InitializeResult with object-shaped tools and resources capabilities."
           },
           "error": {
             "type": "object",

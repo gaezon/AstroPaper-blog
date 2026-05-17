@@ -85,7 +85,7 @@ describe("MCP live endpoint — direct handler invocation", () => {
     });
   });
 
-  describe("P1 — POST echoes arbitrary id types and returns schema-valid handshake", () => {
+  describe("P1 — POST initialize returns standard MCP InitializeResult", () => {
     it("echoes string, integer, null, and float id values (100 runs)", async () => {
       // Validates: Requirements 1.2, 1.3
       await fc.assert(
@@ -106,6 +106,14 @@ describe("MCP live endpoint — direct handler invocation", () => {
                   jsonrpc: "2.0",
                   id,
                   method: "initialize",
+                  params: {
+                    protocolVersion: "2025-03-26",
+                    capabilities: {},
+                    clientInfo: {
+                      name: "test-client",
+                      version: "1.0.0",
+                    },
+                  },
                 }),
               }
             );
@@ -122,13 +130,98 @@ describe("MCP live endpoint — direct handler invocation", () => {
             // id echoed verbatim — use JSON round-trip comparison for float precision
             expect(JSON.stringify(body.id)).toBe(JSON.stringify(id));
 
-            // result validates against handshake schema
-            const valid = validateHandshake(body.result);
-            expect(valid, JSON.stringify(validateHandshake.errors)).toBe(true);
+            expect(body.result).toMatchObject({
+              protocolVersion: "2025-03-26",
+              capabilities: {
+                tools: {},
+                resources: {},
+              },
+              serverInfo: {
+                name: expect.any(String),
+                version: expect.any(String),
+              },
+              instructions: expect.stringContaining("Read-only"),
+            });
           }
         ),
         { numRuns: 100 }
       );
+    });
+
+    it("accepts MCP-Protocol-Version header for streamable HTTP clients", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json, text/event-stream",
+              "MCP-Protocol-Version": "2025-03-26",
+            },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "init",
+              method: "initialize",
+              params: {
+                capabilities: {},
+                clientInfo: {
+                  name: "ora-compatible-client",
+                  version: "1.0.0",
+                },
+              },
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body.result.capabilities).toStrictEqual({
+        tools: {},
+        resources: {},
+      });
+      expect(body.result.protocolVersion).toBe("2025-03-26");
+    });
+
+    it("keeps legacy initialize compatibility for 2024-11-05 clients", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "MCP-Protocol-Version": "2024-11-05",
+            },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "legacy-init",
+              method: "initialize",
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+      const body = await response.json();
+      expect(body.result.protocolVersion).toBe("2024-11-05");
+    });
+
+    it("accepts initialized notifications without a JSON-RPC response body", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              method: "notifications/initialized",
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(202);
+      expect(await response.text()).toBe("");
     });
   });
 
@@ -424,6 +517,22 @@ describe("MCP live endpoint — direct handler invocation", () => {
         }),
         { numRuns: 100 }
       );
+    });
+
+    it("GET with text/event-stream Accept is rejected because server-initiated SSE is unsupported", async () => {
+      const response = await GET(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            headers: { Accept: "text/event-stream" },
+          })
+        )
+      );
+
+      expect(response.status).toBe(405);
+      const body = await response.json();
+      const valid = validateEnvelope(body);
+      expect(valid, JSON.stringify(validateEnvelope.errors)).toBe(true);
+      expect(body.error.code).toBe("method_not_allowed");
     });
   });
 

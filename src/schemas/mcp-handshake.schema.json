@@ -3,7 +3,7 @@
   "$id": "https://blog.gaazeon.com/schemas/mcp-handshake.schema.json",
   "schemaVersion": "1.0.0",
   "title": "MCP Handshake Response",
-  "description": "Shape returned by the /.well-known/mcp live endpoint on GET and inside the JSON-RPC `result` on POST initialize.",
+  "description": "Discovery shape returned by the /.well-known/mcp live endpoint on GET. JSON-RPC initialize returns the standard MCP InitializeResult instead.",
   "type": "object",
   "required": [
     "schemaVersion",

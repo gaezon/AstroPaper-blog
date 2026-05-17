@@ -63,14 +63,16 @@ For public Markdown, JSON, RSS, or sitemap resources, retry the exact canonical 
 
 ## MCP JSON-RPC Discovery
 
-The blog exposes a minimal read-only MCP JSON-RPC endpoint for agent bootstrap:
+The blog exposes a minimal read-only MCP Streamable HTTP endpoint for agent bootstrap:
 
 - `GET /.well-known/mcp` returns a live handshake with public resources and capability flags.
-- `POST /.well-known/mcp` accepts JSON-RPC 2.0 requests for `initialize`, `resources/list`, `resources/read`, `tools/list`, and `tools/call`.
+- `POST /.well-known/mcp` accepts JSON-RPC 2.0 requests for `initialize`, `notifications/initialized`, `resources/list`, `resources/read`, `tools/list`, and `tools/call`.
 - `/.well-known/mcp/server-card.json` lists the same read-only discovery tools and resource URLs for static clients.
 - `resources/list` also exposes `ui://widget/resource-index.html`, a `text/html+skybridge` MCP Apps UI resource for rendering the public resource index.
 
-All tools are read-only, idempotent, public, and unauthenticated. The site does not expose mutation, subscription, prompts, or streaming MCP transport.
+All tools are read-only, idempotent, public, and unauthenticated. The site does not expose mutation, subscription, prompts, or server-initiated SSE streams.
+
+`initialize` returns a standard MCP `InitializeResult` with object-shaped `tools` and `resources` capabilities. Clients may send `MCP-Protocol-Version: 2025-03-26`; legacy `2024-11-05` initialize requests are accepted for compatibility.
 
 MCP Apps clients can use each tool's `openai/outputTemplate` metadata to render the same `ui://widget/resource-index.html` resource. Tool results also include structured content with the canonical source URL, MIME type, public resources, and intentionally unsupported workflows.
 
@@ -80,8 +82,10 @@ MCP Apps clients can use each tool's `openai/outputTemplate` metadata to render 
 POST /.well-known/mcp HTTP/2
 Host: blog.gaazeon.com
 Content-Type: application/json
+Accept: application/json, text/event-stream
+MCP-Protocol-Version: 2025-03-26
 
-{"jsonrpc":"2.0","id":1,"method":"initialize"}
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"example-agent","version":"1.0.0"}}}
 ```
 
 ### List Resources

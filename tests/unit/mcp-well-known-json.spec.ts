@@ -32,9 +32,15 @@ describe("public/.well-known/mcp.json (Req 8.1)", () => {
 
   it("contains an icon URL and read-only JSON-RPC methods", () => {
     expect(content.icon).toBe("https://blog.gaazeon.com/favicon.svg");
+    expect(content.transport).toBe("streamable-http");
+    expect(content.protocolVersion).toBe("2025-03-26");
+    expect(content.protocolVersions).toEqual(
+      expect.arrayContaining(["2025-03-26", "2024-11-05"])
+    );
     expect(content.methods).toEqual(
       expect.arrayContaining([
         "initialize",
+        "notifications/initialized",
         "resources/list",
         "resources/read",
         "tools/list",
