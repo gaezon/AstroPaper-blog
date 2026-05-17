@@ -2,10 +2,13 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import {
+  buildAgentResourceIndexStructuredContent,
   buildErrorEnvelope,
   buildHandshake,
+  buildMcpAppResourceReadResult,
   buildMcpResourcesList,
   buildMcpToolsList,
+  isMcpAppResourceUri,
 } from "../src/utils/mcp";
 import {
   AGENT_DISCOVERY_TOOLS,
@@ -525,6 +528,8 @@ function buildMcpWellKnownFunctionSource(): string {
   const handshake = buildHandshake({ liveHandshake: true });
   const resourcesList = buildMcpResourcesList();
   const toolsList = buildMcpToolsList();
+  const appResourceReadResult = buildMcpAppResourceReadResult();
+  const structuredResourceIndex = buildAgentResourceIndexStructuredContent();
   const resourceByUri = Object.fromEntries(
     resourcesList.resources.map(resource => [resource.uri, resource])
   );
@@ -543,9 +548,15 @@ function buildMcpWellKnownFunctionSource(): string {
   return `const handshake = ${JSON.stringify(handshake, null, 2)};
 const resourcesList = ${JSON.stringify(resourcesList, null, 2)};
 const toolsList = ${JSON.stringify(toolsList, null, 2)};
+const appResourceReadResult = ${JSON.stringify(appResourceReadResult, null, 2)};
+const structuredResourceIndex = ${JSON.stringify(structuredResourceIndex, null, 2)};
 const resourceByUri = ${JSON.stringify(resourceByUri, null, 2)};
 const toolResourceUriByName = ${JSON.stringify(toolResourceUriByName, null, 2)};
 const methodNotAllowed = ${JSON.stringify(methodNotAllowed, null, 2)};
+const appResourceUri = ${JSON.stringify(
+    resourcesList.resources.find(resource => isMcpAppResourceUri(resource.uri))
+      ?.uri
+  )};
 const supportedMethods = [
   "initialize",
   "resources/list",
@@ -609,6 +620,12 @@ function objectParams(body) {
 }
 
 async function readCanonicalResource(uri) {
+  if (uri === appResourceUri) {
+    return {
+      appResource: appResourceReadResult,
+    };
+  }
+
   const resource = resourceByUri[uri];
   if (!resource) {
     return {
@@ -663,6 +680,9 @@ async function handleJsonRpcMethod(body) {
       if ("error" in result) {
         return { ...result.error, id };
       }
+      if ("appResource" in result) {
+        return jsonRpcResult(id, result.appResource);
+      }
 
       return jsonRpcResult(id, {
         contents: [
@@ -695,6 +715,9 @@ async function handleJsonRpcMethod(body) {
       if ("error" in result) {
         return { ...result.error, id };
       }
+      if ("appResource" in result) {
+        return jsonRpcResult(id, result.appResource);
+      }
 
       return jsonRpcResult(id, {
         content: [
@@ -704,8 +727,14 @@ async function handleJsonRpcMethod(body) {
           },
         ],
         structuredContent: {
+          ...structuredResourceIndex,
           source: uri,
           mimeType: result.resource.mimeType,
+        },
+        _meta: {
+          ui: {
+            resourceUri: appResourceUri,
+          },
         },
       });
     }

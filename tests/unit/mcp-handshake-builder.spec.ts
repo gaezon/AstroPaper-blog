@@ -122,6 +122,15 @@ describe("buildHandshake (P1/P4)", () => {
             `expected a resource with pathname ending in ${suffix}, got: ${JSON.stringify(pathnames)}`
           ).toBe(true);
         }
+
+        expect(result.resources).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              uri: "ui://widget/resource-index.html",
+              mimeType: "text/html+skybridge",
+            }),
+          ])
+        );
       }),
       { numRuns: 100 }
     );

@@ -51,8 +51,14 @@ describe("agent and developer resource discovery docs", () => {
       expect.arrayContaining([
         "https://blog.gaazeon.com/docs.md",
         "https://blog.gaazeon.com/webhooks.md",
+        "ui://widget/resource-index.html",
       ])
     );
+    expect(mcp.mcpApps).toMatchObject({
+      uiResource: "ui://widget/resource-index.html",
+      outputTemplate: "ui://widget/resource-index.html",
+      widgetMimeType: "text/html+skybridge",
+    });
     expect(skills.resources).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

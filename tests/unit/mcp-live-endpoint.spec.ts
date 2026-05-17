@@ -159,8 +159,55 @@ describe("MCP live endpoint — direct handler invocation", () => {
             uri: "https://blog.gaazeon.com/llms-full.txt",
             mimeType: "text/markdown",
           }),
+          expect.objectContaining({
+            uri: "ui://widget/resource-index.html",
+            mimeType: "text/html+skybridge",
+          }),
         ])
       );
+    });
+
+    it("reads the MCP Apps resource index widget", async () => {
+      const response = await POST(
+        makeContext(
+          new Request("https://blog.gaazeon.com/.well-known/mcp/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: "widget",
+              method: "resources/read",
+              params: {
+                uri: "ui://widget/resource-index.html",
+              },
+            }),
+          })
+        )
+      );
+
+      expect(response.status).toBe(200);
+
+      const body = await response.json();
+      expect(body.result.contents).toEqual([
+        expect.objectContaining({
+          uri: "ui://widget/resource-index.html",
+          mimeType: "text/html+skybridge",
+          text: expect.stringContaining("Gaazeon's Blog Agent Resources"),
+          _meta: expect.objectContaining({
+            ui: expect.objectContaining({
+              prefersBorder: true,
+              csp: expect.objectContaining({
+                connectDomains: [],
+                resourceDomains: [],
+              }),
+            }),
+            "openai/widgetDescription": expect.any(String),
+            "openai/widgetCSP": expect.objectContaining({
+              redirect_domains: ["https://blog.gaazeon.com"],
+            }),
+          }),
+        }),
+      ]);
     });
 
     it("reads a canonical resource", async () => {
@@ -224,9 +271,26 @@ describe("MCP live endpoint — direct handler invocation", () => {
               type: "object",
               additionalProperties: false,
             }),
+            outputSchema: expect.objectContaining({
+              type: "object",
+              required: expect.arrayContaining([
+                "source",
+                "resources",
+                "unsupportedWorkflows",
+              ]),
+            }),
             annotations: expect.objectContaining({
               readOnlyHint: true,
               idempotentHint: true,
+            }),
+            _meta: expect.objectContaining({
+              ui: expect.objectContaining({
+                resourceUri: "ui://widget/resource-index.html",
+                visibility: ["model", "app"],
+              }),
+              "openai/outputTemplate": "ui://widget/resource-index.html",
+              "openai/toolInvocation/invoking": expect.any(String),
+              "openai/toolInvocation/invoked": expect.any(String),
             }),
           }),
         ])
@@ -270,6 +334,23 @@ describe("MCP live endpoint — direct handler invocation", () => {
       expect(body.result.structuredContent).toMatchObject({
         source: "https://blog.gaazeon.com/agent-integration.md",
         mimeType: "text/markdown",
+        resources: expect.arrayContaining([
+          expect.objectContaining({
+            uri: "https://blog.gaazeon.com/docs.md",
+          }),
+          expect.objectContaining({
+            uri: "https://blog.gaazeon.com/webhooks.md",
+          }),
+        ]),
+        unsupportedWorkflows: expect.arrayContaining([
+          "Webhook registration",
+          "Write APIs",
+        ]),
+      });
+      expect(body.result._meta).toMatchObject({
+        ui: {
+          resourceUri: "ui://widget/resource-index.html",
+        },
       });
     });
 

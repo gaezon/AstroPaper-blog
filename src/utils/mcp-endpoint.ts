@@ -1,5 +1,6 @@
 import {
   buildErrorEnvelope,
+  buildMcpAppResourceReadResult,
   buildHandshake,
   buildMcpJsonRpcError,
   buildMcpJsonRpcResult,
@@ -11,6 +12,7 @@ import {
   getMcpResourceForTool,
   getMcpResourceUri,
   getMcpToolByName,
+  isMcpAppResourceUri,
   type McpJsonRpcRequest,
 } from "./mcp";
 
@@ -53,6 +55,12 @@ function objectParams(
 }
 
 async function readCanonicalResource(uri: string) {
+  if (isMcpAppResourceUri(uri)) {
+    return {
+      appResource: buildMcpAppResourceReadResult(),
+    };
+  }
+
   const resource = getMcpResourceByUri(uri);
 
   if (!resource) {
@@ -125,6 +133,9 @@ async function handleJsonRpcMethod(request: McpJsonRpcRequest) {
       if ("error" in result) {
         return { ...result.error, id };
       }
+      if ("appResource" in result) {
+        return buildMcpJsonRpcResult(id, result.appResource);
+      }
 
       return buildMcpJsonRpcResult(
         id,
@@ -160,6 +171,9 @@ async function handleJsonRpcMethod(request: McpJsonRpcRequest) {
       const result = await readCanonicalResource(getMcpResourceUri(resource));
       if ("error" in result) {
         return { ...result.error, id };
+      }
+      if ("appResource" in result) {
+        return buildMcpJsonRpcResult(id, result.appResource);
       }
 
       return buildMcpJsonRpcResult(
