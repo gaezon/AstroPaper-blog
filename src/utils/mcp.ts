@@ -35,7 +35,8 @@ const MCP_APP_RESOURCE = {
  * MCP wire protocol version exposed through the handshake. Kept in lockstep
  * with the upstream Model Context Protocol specification.
  */
-export const MCP_PROTOCOL_VERSION = "2024-11-05";
+export const MCP_PROTOCOL_VERSION = "2025-03-26";
+export const MCP_LEGACY_PROTOCOL_VERSION = "2024-11-05";
 
 /**
  * Human-readable server name surfaced in `serverInfo.name`.
@@ -54,8 +55,8 @@ export const MCP_SERVER_VERSION = "1.0.0";
 export const MCP_SCHEMA_VERSION = "1.0.0";
 
 /**
- * Shape returned by the /.well-known/mcp live endpoint on GET and inside the
- * JSON-RPC `result` on POST initialize. Mirrors `mcp-handshake.schema.json`.
+ * Discovery shape returned by the /.well-known/mcp live endpoint on GET.
+ * JSON-RPC initialize returns a standard MCP InitializeResult instead.
  */
 export interface MCPHandshake {
   schemaVersion: string;
@@ -77,6 +78,43 @@ export interface MCPHandshake {
     mimeType: string;
   }>;
   documentationUrl?: string;
+}
+
+export interface McpInitializeResult {
+  protocolVersion: string;
+  capabilities: {
+    tools: Record<string, never>;
+    resources: Record<string, never>;
+  };
+  serverInfo: {
+    name: string;
+    version: string;
+  };
+  instructions: string;
+}
+
+export function buildMcpInitializeResult(opts?: {
+  requestedProtocolVersion?: string;
+}): McpInitializeResult {
+  const requested = opts?.requestedProtocolVersion;
+  const protocolVersion =
+    requested === MCP_LEGACY_PROTOCOL_VERSION
+      ? MCP_LEGACY_PROTOCOL_VERSION
+      : MCP_PROTOCOL_VERSION;
+
+  return {
+    protocolVersion,
+    capabilities: {
+      tools: {},
+      resources: {},
+    },
+    serverInfo: {
+      name: MCP_SERVER_NAME,
+      version: MCP_SERVER_VERSION,
+    },
+    instructions:
+      "Read-only public discovery server for Gaazeon's Blog. Use resources/list, resources/read, tools/list, and tools/call to retrieve public Markdown, OpenAPI, sitemap, and MCP Apps resource metadata. No authentication, writes, prompts, streaming, payments, or private data are supported.",
+  };
 }
 
 export function buildAgentResourceIndexStructuredContent(args?: {

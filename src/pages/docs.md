@@ -31,6 +31,7 @@ description: "Gaazeon 博客面向 AI agents、爬虫和开发者工具的公开
 - MCP discovery：[/.well-known/mcp](/.well-known/mcp)
 - MCP server card：[/.well-known/mcp/server-card.json](/.well-known/mcp/server-card.json)
 - MCP Apps resource widget：`ui://widget/resource-index.html`
+- MCP transport：Streamable HTTP over JSON-RPC POST，支持 `2025-03-26` initialize。
 - OpenAI plugin manifest：[/.well-known/ai-plugin.json](/.well-known/ai-plugin.json)
 
 ## 只读 JSON 入口

@@ -2,6 +2,7 @@ import {
   buildErrorEnvelope,
   buildMcpAppResourceReadResult,
   buildHandshake,
+  buildMcpInitializeResult,
   buildMcpJsonRpcError,
   buildMcpJsonRpcResult,
   buildMcpResourceReadResult,
@@ -13,14 +14,22 @@ import {
   getMcpResourceUri,
   getMcpToolByName,
   isMcpAppResourceUri,
+  MCP_PROTOCOL_VERSION,
   type McpJsonRpcRequest,
 } from "./mcp";
 
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "MCP-Protocol-Version": MCP_PROTOCOL_VERSION,
+    },
   });
+}
+
+function empty(status: number): Response {
+  return new Response(null, { status });
 }
 
 function isJsonRpcRequest(body: unknown): body is McpJsonRpcRequest {
@@ -52,6 +61,15 @@ function objectParams(
     return request.params as Record<string, unknown>;
   }
   return undefined;
+}
+
+function requestedProtocolVersion(
+  request: McpJsonRpcRequest
+): string | undefined {
+  const params = objectParams(request);
+  return typeof params?.protocolVersion === "string"
+    ? params.protocolVersion
+    : undefined;
 }
 
 async function readCanonicalResource(uri: string) {
@@ -108,12 +126,26 @@ async function readCanonicalResource(uri: string) {
   };
 }
 
-async function handleJsonRpcMethod(request: McpJsonRpcRequest) {
+async function handleJsonRpcMethod(
+  request: McpJsonRpcRequest,
+  protocolVersionHeader?: string | null
+) {
   const id = requestId(request);
 
   switch (request.method) {
     case "initialize":
-      return buildMcpJsonRpcResult(id, buildHandshake({ liveHandshake: true }));
+      return buildMcpJsonRpcResult(
+        id,
+        buildMcpInitializeResult({
+          requestedProtocolVersion:
+            requestedProtocolVersion(request) ??
+            protocolVersionHeader ??
+            undefined,
+        })
+      );
+
+    case "notifications/initialized":
+      return undefined;
 
     case "resources/list":
       return buildMcpJsonRpcResult(id, buildMcpResourcesList());
@@ -190,6 +222,7 @@ async function handleJsonRpcMethod(request: McpJsonRpcRequest) {
         data: {
           supportedMethods: [
             "initialize",
+            "notifications/initialized",
             "resources/list",
             "resources/read",
             "tools/list",
@@ -216,6 +249,9 @@ export async function handleMcpEndpointRequest(
 ): Promise<Response> {
   switch (request.method) {
     case "GET":
+      if (request.headers.get("Accept")?.includes("text/event-stream")) {
+        return methodNotAllowed();
+      }
       return json(200, buildHandshake({ liveHandshake: true }));
 
     case "POST": {
@@ -245,7 +281,11 @@ export async function handleMcpEndpointRequest(
         );
       }
 
-      return json(200, await handleJsonRpcMethod(body));
+      const result = await handleJsonRpcMethod(
+        body,
+        request.headers.get("MCP-Protocol-Version")
+      );
+      return result === undefined ? empty(202) : json(200, result);
     }
 
     default:

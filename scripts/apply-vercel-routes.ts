@@ -6,6 +6,7 @@ import {
   buildErrorEnvelope,
   buildHandshake,
   buildMcpAppResourceReadResult,
+  buildMcpInitializeResult,
   buildMcpResourcesList,
   buildMcpToolsList,
   isMcpAppResourceUri,
@@ -526,6 +527,10 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
 
 function buildMcpWellKnownFunctionSource(): string {
   const handshake = buildHandshake({ liveHandshake: true });
+  const defaultInitializeResult = buildMcpInitializeResult();
+  const legacyInitializeResult = buildMcpInitializeResult({
+    requestedProtocolVersion: "2024-11-05",
+  });
   const resourcesList = buildMcpResourcesList();
   const toolsList = buildMcpToolsList();
   const appResourceReadResult = buildMcpAppResourceReadResult();
@@ -546,6 +551,8 @@ function buildMcpWellKnownFunctionSource(): string {
   });
 
   return `const handshake = ${JSON.stringify(handshake, null, 2)};
+const defaultInitializeResult = ${JSON.stringify(defaultInitializeResult, null, 2)};
+const legacyInitializeResult = ${JSON.stringify(legacyInitializeResult, null, 2)};
 const resourcesList = ${JSON.stringify(resourcesList, null, 2)};
 const toolsList = ${JSON.stringify(toolsList, null, 2)};
 const appResourceReadResult = ${JSON.stringify(appResourceReadResult, null, 2)};
@@ -559,6 +566,7 @@ const appResourceUri = ${JSON.stringify(
   )};
 const supportedMethods = [
   "initialize",
+  "notifications/initialized",
   "resources/list",
   "resources/read",
   "tools/list",
@@ -568,8 +576,15 @@ const supportedMethods = [
 function json(status, body) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "MCP-Protocol-Version": "2025-03-26",
+    },
   });
+}
+
+function empty(status) {
+  return new Response(null, { status });
 }
 
 function requestId(body) {
@@ -619,6 +634,20 @@ function objectParams(body) {
   return undefined;
 }
 
+function requestedProtocolVersion(body, request) {
+  const params = objectParams(body);
+  if (typeof params?.protocolVersion === "string") {
+    return params.protocolVersion;
+  }
+  return request.headers.get("MCP-Protocol-Version") ?? undefined;
+}
+
+function initializeResultFor(body, request) {
+  return requestedProtocolVersion(body, request) === "2024-11-05"
+    ? legacyInitializeResult
+    : defaultInitializeResult;
+}
+
 async function readCanonicalResource(uri) {
   if (uri === appResourceUri) {
     return {
@@ -660,12 +689,15 @@ async function readCanonicalResource(uri) {
   };
 }
 
-async function handleJsonRpcMethod(body) {
+async function handleJsonRpcMethod(body, request) {
   const id = requestId(body);
 
   switch (body.method) {
     case "initialize":
-      return jsonRpcResult(id, handshake);
+      return jsonRpcResult(id, initializeResultFor(body, request));
+
+    case "notifications/initialized":
+      return undefined;
 
     case "resources/list":
       return jsonRpcResult(id, resourcesList);
@@ -750,6 +782,9 @@ export default {
   async fetch(request) {
     switch (request.method) {
       case "GET":
+        if (request.headers.get("Accept")?.includes("text/event-stream")) {
+          return json(405, methodNotAllowed);
+        }
         return json(200, handshake);
 
       case "POST": {
@@ -771,7 +806,8 @@ export default {
           );
         }
 
-        return json(200, await handleJsonRpcMethod(body));
+        const result = await handleJsonRpcMethod(body, request);
+        return result === undefined ? empty(202) : json(200, result);
       }
 
       default:

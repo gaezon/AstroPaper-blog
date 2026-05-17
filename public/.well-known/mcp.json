@@ -3,11 +3,12 @@
   "description": "Public read-only MCP discovery metadata for Gaazeon's technical blog. The endpoint exposes machine-readable resources and read-only JSON-RPC tools for agents.",
   "icon": "https://blog.gaazeon.com/favicon.svg",
   "protocol": "model-context-protocol",
-  "protocolVersion": "2024-11-05",
+  "protocolVersion": "2025-03-26",
+  "protocolVersions": ["2025-03-26", "2024-11-05"],
   "serverCardUrl": "https://blog.gaazeon.com/.well-known/mcp/server-card.json",
   "handshakeUrl": "https://blog.gaazeon.com/.well-known/mcp",
   "documentationUrl": "https://blog.gaazeon.com/docs.md",
-  "transport": "http-json-rpc",
+  "transport": "streamable-http",
   "liveHandshake": true,
   "authentication": {
     "required": false,
@@ -21,6 +22,7 @@
   },
   "methods": [
     "initialize",
+    "notifications/initialized",
     "resources/list",
     "resources/read",
     "tools/list",

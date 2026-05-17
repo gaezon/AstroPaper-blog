@@ -31,6 +31,7 @@ This page is the public resource index for AI agents, crawlers, search systems, 
 - MCP discovery: [/.well-known/mcp](/.well-known/mcp)
 - MCP server card: [/.well-known/mcp/server-card.json](/.well-known/mcp/server-card.json)
 - MCP Apps resource widget: `ui://widget/resource-index.html`
+- MCP transport: Streamable HTTP over JSON-RPC POST, with `2025-03-26` initialize support.
 - OpenAI plugin manifest: [/.well-known/ai-plugin.json](/.well-known/ai-plugin.json)
 
 ## Read-Only JSON Entry Points

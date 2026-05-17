@@ -1,10 +1,9 @@
 import type { APIRoute } from "astro";
+import { buildMcpResourcesList } from "../../../utils/mcp";
 import {
-  AGENT_DISCOVERY_RESOURCES,
   AGENT_DISCOVERY_TOOLS,
   absoluteSiteUrl,
   getAgentResourceById,
-  toMcpResource,
   toMcpTool,
 } from "../../../utils/agent-discovery";
 
@@ -32,10 +31,10 @@ export const GET: APIRoute = () =>
         serverUrl: "https://blog.gaazeon.com/",
         documentationUrl: "https://blog.gaazeon.com/agent-integration.md",
         protocol: {
-          transport: "http-json-rpc",
+          transport: "streamable-http",
           liveHandshake: true,
           description:
-            "The endpoint supports read-only JSON-RPC initialize, resources/list, resources/read, tools/list, and tools/call over HTTPS POST.",
+            "The endpoint supports MCP Streamable HTTP over HTTPS POST for initialize, notifications/initialized, resources/list, resources/read, tools/list, and tools/call. Server-initiated SSE streams are intentionally unsupported.",
         },
         authentication: {
           required: false,
@@ -51,7 +50,7 @@ export const GET: APIRoute = () =>
             "Authentication, mutation, checkout, private data, prompts, streaming, and write tools are intentionally unsupported.",
         },
         tools,
-        resources: AGENT_DISCOVERY_RESOURCES.map(toMcpResource),
+        resources: buildMcpResourcesList().resources,
       },
       null,
       2

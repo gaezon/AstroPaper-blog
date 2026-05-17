@@ -22,6 +22,7 @@ Gaazeon's Blog is a static public technical blog. This document indexes the real
 - [MCP discovery](https://blog.gaazeon.com/.well-known/mcp)
 - [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
 - MCP Apps resource widget: `ui://widget/resource-index.html`
+- MCP transport: Streamable HTTP over JSON-RPC POST, with `2025-03-26` initialize support.
 - [ai-plugin.json](https://blog.gaazeon.com/.well-known/ai-plugin.json)
 
 ## Content Feeds
