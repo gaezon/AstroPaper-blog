@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { findFirstJsonLdNodeByType, getJsonLdNodes } from "./helpers/json-ld";
 
 const pages = [
   { url: "/posts/Why-did-I-start-blogging/", expectedItems: 3 },
@@ -13,25 +14,9 @@ test.describe("agent-readiness breadcrumbs (P5)", () => {
       page,
     }) => {
       await page.goto(url, { waitUntil: "domcontentloaded" });
-      const scripts = await page
-        .locator('script[type="application/ld+json"]')
-        .allTextContents();
-      let breadcrumbList: Record<string, unknown> | null = null;
-      for (const s of scripts) {
-        try {
-          const data = JSON.parse(s);
-          const graph = data["@graph"] || [data];
-          const bc = graph.find(
-            (n: Record<string, unknown>) => n["@type"] === "BreadcrumbList"
-          );
-          if (bc) {
-            breadcrumbList = bc;
-            break;
-          }
-        } catch {
-          /* skip */
-        }
-      }
+      const nodes = await getJsonLdNodes(page);
+      const breadcrumbList =
+        findFirstJsonLdNodeByType(nodes, "BreadcrumbList") ?? null;
       expect(
         breadcrumbList,
         "BreadcrumbList should exist in JSON-LD"

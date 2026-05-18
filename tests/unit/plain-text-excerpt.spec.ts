@@ -155,7 +155,7 @@ describe("extractPlainText (P11)", () => {
   it("stripping is idempotent", () => {
     // Validates: Requirements 4.2
     fc.assert(
-      fc.property(fc.string({ minLength: 0, maxLength: 400 }), body => {
+      fc.property(markdownBodyArb, body => {
         const once = extractPlainText(body);
         const twice = extractPlainText(once);
         expect(twice).toBe(once);
