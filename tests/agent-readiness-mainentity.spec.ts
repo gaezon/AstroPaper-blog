@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { getJsonLdNodes } from "./helpers/json-ld";
 
 const indexablePages = [
   {
@@ -17,30 +18,17 @@ test.describe("agent-readiness mainEntityOfPage (P21)", () => {
       page,
     }) => {
       await page.goto(url, { waitUntil: "domcontentloaded" });
-      const scripts = await page
-        .locator('script[type="application/ld+json"]')
-        .allTextContents();
-      const found = scripts.some(s => {
-        try {
-          const data = JSON.parse(s);
-          const graph = data["@graph"] || [data];
-          return graph.some((node: Record<string, unknown>) => {
-            if (node.mainEntityOfPage) {
-              const mepObj = node.mainEntityOfPage as
-                | string
-                | Record<string, unknown>;
-              const mep =
-                typeof mepObj === "string"
-                  ? mepObj
-                  : (mepObj as Record<string, unknown>)["@id"] ||
-                    (mepObj as Record<string, unknown>).url;
-              return mep === canonical;
-            }
-            return false;
-          });
-        } catch {
+      const nodes = await getJsonLdNodes(page);
+      const found = nodes.some(node => {
+        if (!node.mainEntityOfPage) {
           return false;
         }
+        const mepObj = node.mainEntityOfPage as
+          | string
+          | Record<string, unknown>;
+        const mep =
+          typeof mepObj === "string" ? mepObj : mepObj["@id"] || mepObj.url;
+        return mep === canonical;
       });
       expect(found, `Expected mainEntityOfPage === ${canonical}`).toBe(true);
     });

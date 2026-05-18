@@ -3,6 +3,17 @@ import { expect, test, type Page } from "@playwright/test";
 const TEST_POST_PATH = "/posts/hoarder-app-replace-cubox/";
 const SECOND_POST_PATH = "/posts/OBS-safe-broadcast-pitfalls/";
 
+async function clickAndWaitPath(
+  page: Page,
+  click: () => Promise<unknown>,
+  pathname: string
+) {
+  await Promise.all([
+    page.waitForURL(url => url.pathname === pathname),
+    click(),
+  ]);
+}
+
 async function clearTwikooSri(page: Page) {
   await page.evaluate(() => {
     const roots = document.querySelectorAll<HTMLElement>(
@@ -117,14 +128,23 @@ test.describe("Twikoo lazy-load triggers", () => {
 
     await page.goto(TEST_POST_PATH);
 
-    await page.locator("#back-button").click();
-    await expect(page).toHaveURL("/");
+    await clickAndWaitPath(
+      page,
+      () => page.locator("#back-button").click(),
+      "/"
+    );
 
-    await page.locator('a[href="/posts/"]').first().click();
-    await expect(page).toHaveURL("/posts/");
+    await clickAndWaitPath(
+      page,
+      () => page.locator('a[href="/posts/"]').first().click(),
+      "/posts/"
+    );
 
-    await page.locator(`a[href="${SECOND_POST_PATH}"]`).first().click();
-    await expect(page).toHaveURL(SECOND_POST_PATH);
+    await clickAndWaitPath(
+      page,
+      () => page.locator(`a[href="${SECOND_POST_PATH}"]`).first().click(),
+      SECOND_POST_PATH
+    );
 
     const commentRoot = page.locator('[data-comment-root="true"]');
     await expect(commentRoot).toHaveCount(1);
@@ -144,14 +164,22 @@ test.describe("Twikoo lazy-load triggers", () => {
     const twikooMock = await mockTwikooScript(page);
 
     await page.goto("/posts/");
-    await page.locator(`a[href="${TEST_POST_PATH}"]`).first().click();
-    await expect(page).toHaveURL(TEST_POST_PATH);
+    await clickAndWaitPath(
+      page,
+      () => page.locator(`a[href="${TEST_POST_PATH}"]`).first().click(),
+      TEST_POST_PATH
+    );
 
-    await page.locator("#back-button").click();
-    await expect(page).toHaveURL("/posts/");
+    await Promise.all([
+      page.waitForURL(url => url.pathname === "/posts/"),
+      page.goBack(),
+    ]);
 
-    await page.locator(`a[href="${SECOND_POST_PATH}"]`).first().click();
-    await expect(page).toHaveURL(SECOND_POST_PATH);
+    await clickAndWaitPath(
+      page,
+      () => page.locator(`a[href="${SECOND_POST_PATH}"]`).first().click(),
+      SECOND_POST_PATH
+    );
 
     await clearTwikooSri(page);
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { afterAll, beforeAll, describe, it, expect, vi } from "vitest";
 import {
   calculateScrollPercent,
   calculateScrollPosition,
@@ -17,12 +17,81 @@ describe("scroll utilities (unit tests)", () => {
   const globalWithDocument = globalThis as unknown as {
     document?: Document;
   };
+  const globalWithDomConstructors = globalThis as typeof globalThis & {
+    HTMLElement?: typeof HTMLElement;
+    HTMLAnchorElement?: typeof HTMLAnchorElement;
+  };
+  const originalHTMLElementDescriptor = Object.getOwnPropertyDescriptor(
+    globalWithDomConstructors,
+    "HTMLElement"
+  );
+  const originalHTMLAnchorElementDescriptor = Object.getOwnPropertyDescriptor(
+    globalWithDomConstructors,
+    "HTMLAnchorElement"
+  );
+
+  beforeAll(() => {
+    if (!globalWithDomConstructors.HTMLElement) {
+      Object.defineProperty(globalWithDomConstructors, "HTMLElement", {
+        value: class MockHTMLElement {},
+        configurable: true,
+        writable: true,
+      });
+    }
+
+    const baseHTMLElement = globalWithDomConstructors.HTMLElement!;
+    if (!globalWithDomConstructors.HTMLAnchorElement) {
+      Object.defineProperty(globalWithDomConstructors, "HTMLAnchorElement", {
+        value: class MockHTMLAnchorElement extends baseHTMLElement {},
+        configurable: true,
+        writable: true,
+      });
+    }
+  });
+
+  afterAll(() => {
+    if (originalHTMLElementDescriptor) {
+      Object.defineProperty(
+        globalWithDomConstructors,
+        "HTMLElement",
+        originalHTMLElementDescriptor
+      );
+    } else {
+      Reflect.deleteProperty(globalWithDomConstructors, "HTMLElement");
+    }
+
+    if (originalHTMLAnchorElementDescriptor) {
+      Object.defineProperty(
+        globalWithDomConstructors,
+        "HTMLAnchorElement",
+        originalHTMLAnchorElementDescriptor
+      );
+    } else {
+      Reflect.deleteProperty(globalWithDomConstructors, "HTMLAnchorElement");
+    }
+  });
+
+  const asHTMLElement = <T extends object>(element: T): T => {
+    Object.setPrototypeOf(
+      element,
+      globalWithDomConstructors.HTMLElement!.prototype
+    );
+    return element;
+  };
+
+  const asHTMLAnchorElement = <T extends object>(element: T): T => {
+    Object.setPrototypeOf(
+      element,
+      globalWithDomConstructors.HTMLAnchorElement!.prototype
+    );
+    return element;
+  };
 
   const createMockAnchor = (navId: string, href: string, isActive = false) => {
     const classSet = new Set<string>(isActive ? ["active"] : []);
     const attrs: Record<string, string> = { href };
 
-    return {
+    return asHTMLAnchorElement({
       classList: {
         add: (...classes: string[]) => {
           classes.forEach(className => classSet.add(className));
@@ -41,8 +110,10 @@ describe("scroll utilities (unit tests)", () => {
         delete attrs[name];
       },
       closest: (selector: string) =>
-        selector === `#${navId}` ? ({} as HTMLElement) : null,
-    } as unknown as HTMLAnchorElement;
+        selector === `#${navId}`
+          ? (asHTMLElement({}) as unknown as HTMLElement)
+          : null,
+    }) as unknown as HTMLAnchorElement;
   };
 
   const createDocumentStub = ({
@@ -239,7 +310,8 @@ describe("scroll utilities (unit tests)", () => {
       cleanup();
       expect(removeEventListener).toHaveBeenCalledWith(
         "scroll",
-        registeredHandler
+        registeredHandler,
+        { passive: true }
       );
 
       globalWithWindow.window = originalWindow;
@@ -363,10 +435,10 @@ describe("scroll utilities (unit tests)", () => {
       const desktopNew = createMockAnchor(desktopNavId, "#section-1");
       const mobileNew = createMockAnchor(mobileNavId, "#section-1");
 
-      const target = {
+      const target = asHTMLElement({
         id: "section-1",
         getBoundingClientRect: () => ({ top: 200 }),
-      } as HTMLElement;
+      }) as HTMLElement;
 
       globalWithDocument.document = createDocumentStub({
         desktopAnchors: [desktopOld, desktopNew],

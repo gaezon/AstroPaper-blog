@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { getJsonLdNodes, hasJsonLdType } from "./helpers/json-ld";
 
 test.describe("404 SEO", () => {
   for (const pathname of ["/__missing__/", "/en/__missing__/"]) {
@@ -20,15 +21,10 @@ test.describe("404 SEO", () => {
       await expect(page.locator('meta[property="og:url"]')).toHaveCount(0);
       await expect(page.locator('meta[property="twitter:url"]')).toHaveCount(0);
 
-      const structuredDataScripts = await page
-        .locator('script[type="application/ld+json"]')
-        .evaluateAll(elements =>
-          elements.map(element => element.textContent?.trim() ?? "")
-        );
-
-      expect(
-        structuredDataScripts.some(content => content.includes('"BlogPosting"'))
-      ).toBeFalsy();
+      const nodes = await getJsonLdNodes(page);
+      expect(nodes.some(node => hasJsonLdType(node, "BlogPosting"))).toBe(
+        false
+      );
     });
   }
 });

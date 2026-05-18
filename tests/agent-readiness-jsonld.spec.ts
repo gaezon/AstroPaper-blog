@@ -1,4 +1,8 @@
 import { test, expect } from "@playwright/test";
+import {
+  getJsonLdScriptContents,
+  parseJsonLdDocument,
+} from "./helpers/json-ld";
 
 const pages = [
   "/",
@@ -19,11 +23,9 @@ test.describe("agent-readiness JSON-LD validity (P7)", () => {
       page,
     }) => {
       await page.goto(url, { waitUntil: "domcontentloaded" });
-      const scripts = await page
-        .locator('script[type="application/ld+json"]')
-        .allTextContents();
+      const scripts = await getJsonLdScriptContents(page);
       for (const s of scripts) {
-        const parsed = JSON.parse(s); // should not throw
+        const parsed = parseJsonLdDocument(s); // should not throw
         const roundTripped = JSON.parse(JSON.stringify(parsed));
         expect(roundTripped).toEqual(parsed);
       }
