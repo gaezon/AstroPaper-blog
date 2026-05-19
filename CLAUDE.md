@@ -15,6 +15,8 @@ This file provides concise, repository-specific guidance for coding agents.
 - Use `README.md` for setup and command reference
 - Use `AGENTS.md` for repository workflow, testing expectations, and collaboration rules
 - Use `WRITING.md` for authoring workflow and frontmatter conventions
+- Use `docs/ora-agent-readiness-optimization.md` for Agent Readiness, MCP & API optimization context
+- Use `public/agent-integration.md` for AI agent integration specifications
 
 ## Architecture highlights
 
@@ -39,4 +41,7 @@ This file provides concise, repository-specific guidance for coding agents.
 - `astro.config.ts` - Astro, integrations, markdown, and Vercel config
 - `scripts/apply-vercel-routes.ts` - localized Vercel route and security response header patching
 - `scripts/auto-discover-bilingual.ts` - bilingual mapping generation
+- `src/utils/agent-discovery.ts` - MCP tools and API resources definition
+- `src/utils/mcp-endpoint.ts` - JSON-RPC endpoints handler
+- `src/pages/.well-known/mcp.ts` - MCP routing
 - `tests/` - Playwright and targeted validation coverage for major user flows

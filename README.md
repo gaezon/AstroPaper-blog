@@ -86,6 +86,10 @@ docs/                 Feature and maintenance docs
 ## Documentation
 
 - Writing guide: `WRITING.md`
+- Agent integration guide: `public/agent-integration.md`
+- Agent & developer resources index: `public/docs.md` (Served at `/docs/`)
+- Webhook alternatives guide: `public/webhooks.md` (Served at `/webhooks/`)
+- Ora / Agent Readiness optimization review: `docs/ora-agent-readiness-optimization.md`
 - i18n language switcher: `docs/i18n-language-switcher.md`
 - Bilingual comment mapping: `docs/bilingual-comment-system.md`
 - Mermaid rendering: `docs/mermaid-rendering.md`
