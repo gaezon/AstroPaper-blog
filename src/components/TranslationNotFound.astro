@@ -51,16 +51,16 @@ const browseAllText = isMissingEnglish
   </h1>
   {
     isMissingEnglish && (
-      <p class="text-muted-foreground mb-8 text-lg font-medium">暂无英文版本</p>
+      <p class="mb-8 text-lg font-medium text-muted-foreground">暂无英文版本</p>
     )
   }
   {
     isMissingChinese && (
-      <p class="text-muted-foreground mb-8 text-lg font-medium">暂无中文版本</p>
+      <p class="mb-8 text-lg font-medium text-muted-foreground">暂无中文版本</p>
     )
   }
 
-  <div class="text-muted-foreground/80 mb-8 max-w-lg space-y-2">
+  <div class="mb-8 max-w-lg space-y-2 text-muted-foreground/80">
     {
       currentPostTitle && currentPostTitle !== "Article" && (
         <p>
@@ -129,14 +129,14 @@ const browseAllText = isMissingEnglish
       Read in {availableLanguageName}
       {
         isMissingEnglish && (
-          <span class="text-muted-foreground ml-2 text-xs opacity-80">
+          <span class="ml-2 text-xs text-muted-foreground opacity-80">
             (中文版)
           </span>
         )
       }
       {
         isMissingChinese && (
-          <span class="text-muted-foreground ml-2 text-xs opacity-80">
+          <span class="ml-2 text-xs text-muted-foreground opacity-80">
             (English)
           </span>
         )
@@ -145,7 +145,7 @@ const browseAllText = isMissingEnglish
   </div>
 
   <!-- Tertiary: Low-priority navigation option -->
-  <p class="text-muted-foreground mt-10 text-sm">
+  <p class="mt-10 text-sm text-muted-foreground">
     Or{" "}
     <a href={browseAllLink} class="font-medium text-accent hover:underline">
       {browseAllText}

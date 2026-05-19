@@ -68,11 +68,18 @@ const layoutTitle = `${pageTitle} | ${SITE.title}`;
         search.triggerSearch(query);
       }
 
-      // Reset search param if search input is cleared
-      const searchInput = document.querySelector(".pagefind-ui__search-input");
+      // Reset search param if search input is cleared; autofocus when no query
+      const searchInput = document.querySelector<HTMLInputElement>(
+        ".pagefind-ui__search-input"
+      );
       const clearButton = document.querySelector(".pagefind-ui__search-clear");
       searchInput?.addEventListener("input", resetSearchParam);
       clearButton?.addEventListener("click", resetSearchParam);
+
+      // Autofocus the search input when there's no pre-filled query
+      if (searchInput && !query) {
+        searchInput.focus();
+      }
 
       function resetSearchParam(e: Event) {
         if ((e.target as HTMLInputElement)?.value.trim() === "") {
@@ -123,6 +130,8 @@ const layoutTitle = `${pageTitle} | ${SITE.title}`;
       color: var(--accent);
       outline-offset: 1px;
       outline-color: var(--accent);
+      text-decoration-style: dashed;
+      text-underline-offset: 4px;
     }
 
     .pagefind-ui__result-title a:focus-visible,

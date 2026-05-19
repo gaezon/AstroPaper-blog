@@ -26,6 +26,13 @@
 - `src/utils/i18n-pages.ts` - locale-aware page and pagination helpers
 - `src/utils/i18n-api.ts` - locale-aware RSS and OG endpoint helpers
 - `src/utils/generated/` - auto-generated bilingual mapping files
+- `src/utils/agent-discovery.ts` - centralization of read-only MCP tools and API resources
+- `src/utils/agent-api.ts` - read-only JSON API builder helpers
+- `src/utils/mcp.ts` - read-only MCP helper utilities
+- `src/utils/mcp-endpoint.ts` - unified handler for JSON-RPC and MCP requests
+- `src/pages/.well-known/mcp.ts` - MCP GET/POST route wrapper
+- `src/pages/.well-known/mcp/server-card.json.ts` - static client discovery server card
+- `scripts/apply-vercel-routes.ts` - post-build script to patch Vercel prebuilt routes and headers
 
 ## Runtime & Tooling Constraints
 
@@ -65,6 +72,14 @@
 - `tests/toc-animation-optimization.spec.ts` - TOC behavior and animation
 - `tests/i18n.spec.ts` - localized routing and locale behavior
 - `tests/pagination-locale.spec.ts` - locale prefixes and pagination boundaries
+- `tests/unit/mcp-live-endpoint.spec.ts` - validation of read-only MCP JSON-RPC requests
+- `tests/unit/mcp-handshake-builder.spec.ts` - validation of MCP protocol handshake capabilities
+- `tests/unit/mcp-well-known-json.spec.ts` - validation of /.well-known/mcp and server-card.json
+- `tests/unit/mcp-streaming-posture.spec.ts` - validation of server-initiated streaming rejection
+- `tests/unit/agent-docs-discovery.spec.ts` - validation of static agent discovery assets
+- `tests/unit/api-json-schema.spec.ts` - validation of read-only posts and tags JSON API schema
+- `tests/unit/api-json-404.spec.ts` - validation of JSON-formatted 404 recovery envelopes
+- `tests/unit/vercel-localized-404-routes.spec.ts` - validation of prebuilt Vercel config post-processing
 
 ## Accessibility & Performance
 

@@ -1,15 +1,10 @@
 @import "tailwindcss";
+@import "./theme.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --muted: #e6e6e6;
-  --border: #ece9e9;
-
   /* Theme variables for the collapse component */
   --theme-bg: #ffffff;
   --theme-bg-secondary: #f8f9fa;
@@ -22,12 +17,6 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --muted: #343f60;
-  --border: #ab4b08;
-
   /* Theme variables for the collapse component */
   --theme-bg: #1a1f2e;
   --theme-bg-secondary: #212737;
@@ -37,14 +26,6 @@ html[data-theme="dark"] {
   --theme-accent-blue: #4299e1;
   --theme-accent-green: #48bb78;
   --theme-accent: #ff6b01;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
 }
 
 @layer base {
