@@ -16,6 +16,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
+import { isPostFile, stripPostExtension } from "../src/utils/post-extensions";
 
 // Type definitions
 interface ArticleFrontmatter {
@@ -83,6 +84,14 @@ const PROJECT_ROOT = join(import.meta.dirname, "..");
 const BLOG_PATH = join(PROJECT_ROOT, "src", "data", "blog");
 const BLOG_EN_PATH = join(BLOG_PATH, "en");
 
+/** True if this file looks like a template that should not be discovered. */
+function isTemplateFile(name: string): boolean {
+  // Matches _TEMPLATE.md / _TEMPLATE.mdx, case-insensitive on the stem so
+  // _template.md and _Template.mdx are also treated as templates.
+  const stem = stripPostExtension(name);
+  return stem.toUpperCase() === "_TEMPLATE";
+}
+
 /**
  * Extract frontmatter from a Markdown file
  */
@@ -145,8 +154,8 @@ function getArticles(): { zh: Article[]; en: Article[] } {
   // Get Chinese posts
   if (existsSync(BLOG_PATH)) {
     const files = readdirSync(BLOG_PATH, { withFileTypes: true })
-      .filter(dirent => dirent.isFile() && dirent.name.endsWith(".md"))
-      .filter(dirent => dirent.name !== "_TEMPLATE.md")
+      .filter(dirent => dirent.isFile() && isPostFile(dirent.name))
+      .filter(dirent => !isTemplateFile(dirent.name))
       .filter(dirent => !dirent.name.startsWith("_"));
 
     for (const dirent of files) {
@@ -155,7 +164,7 @@ function getArticles(): { zh: Article[]; en: Article[] } {
       articles.zh.push({
         file: dirent.name,
         path: filePath,
-        slug: frontmatter.slug || dirent.name.replace(".md", ""),
+        slug: frontmatter.slug || stripPostExtension(dirent.name),
         title: frontmatter.title || "",
         originalTitle: frontmatter.originalTitle,
         locale: frontmatter.locale || "zh-CN",
@@ -166,7 +175,7 @@ function getArticles(): { zh: Article[]; en: Article[] } {
   // Get English posts
   if (existsSync(BLOG_EN_PATH)) {
     const files = readdirSync(BLOG_EN_PATH, { withFileTypes: true })
-      .filter(dirent => dirent.isFile() && dirent.name.endsWith(".md"))
+      .filter(dirent => dirent.isFile() && isPostFile(dirent.name))
       .filter(dirent => !dirent.name.startsWith("_"));
 
     for (const dirent of files) {
@@ -175,7 +184,7 @@ function getArticles(): { zh: Article[]; en: Article[] } {
       articles.en.push({
         file: dirent.name,
         path: filePath,
-        slug: frontmatter.slug || dirent.name.replace(".md", ""),
+        slug: frontmatter.slug || stripPostExtension(dirent.name),
         title: frontmatter.title || "",
         originalTitle: frontmatter.originalTitle,
         locale: frontmatter.locale || "en",

@@ -2,13 +2,14 @@
 /**
  * 预构建脚本：获取所有远程图片尺寸
  *
- * 扫描所有 Markdown 文件中的远程图片，获取其尺寸并保存到缓存文件
+ * 扫描所有文章（.md / .mdx）中的远程图片，获取其尺寸并保存到缓存文件
  * 构建时 rehype 插件将读取这些缓存的尺寸信息
  */
 
 import fs from "node:fs/promises";
 import path from "node:path";
 import probe from "probe-image-size";
+import { POST_GLOB_EXT } from "../src/utils/post-extensions";
 
 const SCRIPT_DIR = import.meta.dirname;
 const CACHE_FILE = path.join(
@@ -152,12 +153,14 @@ async function scanMarkdownFile(filePath: string): Promise<string[]> {
 }
 
 /**
- * 递归扫描目录中的所有 Markdown 文件
+ * 递归扫描目录中的所有文章文件 (.md / .mdx)
  */
 async function scanDirectory(dir: string): Promise<string[]> {
   const files: string[] = [];
 
-  for await (const relativePath of fs.glob("**/*.md", { cwd: dir })) {
+  for await (const relativePath of fs.glob(`**/*.${POST_GLOB_EXT}`, {
+    cwd: dir,
+  })) {
     files.push(path.join(dir, relativePath));
   }
 
@@ -207,14 +210,14 @@ async function main() {
 
   const isCI = !!process.env.CI || !!process.env.GITHUB_ACTIONS;
 
-  // 扫描所有 Markdown 文件
-  console.log("🔍 扫描 Markdown 文件...");
-  const mdFiles = await scanDirectory(BLOG_DIR);
-  console.log(`   找到 ${mdFiles.length} 个 Markdown 文件\n`);
+  // 扫描所有文章 (.md / .mdx)
+  console.log("🔍 扫描文章文件 (.md / .mdx)...");
+  const postFiles = await scanDirectory(BLOG_DIR);
+  console.log(`   找到 ${postFiles.length} 个文章文件\n`);
 
   // 收集所有唯一的图片 URL
   const allUrls = new Set<string>();
-  for (const file of mdFiles) {
+  for (const file of postFiles) {
     const urls = await scanMarkdownFile(file);
     urls.forEach(url => allUrls.add(url));
   }
@@ -231,15 +234,15 @@ async function main() {
     try {
       const cacheStat = await fs.stat(CACHE_FILE);
       let latestMTimeMs = 0;
-      for (const file of mdFiles) {
+      for (const file of postFiles) {
         const stat = await fs.stat(file);
         latestMTimeMs = Math.max(latestMTimeMs, stat.mtimeMs);
       }
-      const count = mdFiles.length;
+      const count = postFiles.length;
 
       if (count > 0 && latestMTimeMs <= cacheStat.mtimeMs) {
         if (missingCacheEntries.length === 0) {
-          console.log("⏭️  Markdown 未更新，且缓存完整，跳过远程图片尺寸扫描");
+          console.log("⏭️  文章未更新，且缓存完整，跳过远程图片尺寸扫描");
           return;
         }
 

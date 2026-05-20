@@ -9,14 +9,13 @@ import {
 } from "node:fs";
 import { join, relative } from "node:path";
 import YAML from "yaml";
+import { isPostFile } from "../src/utils/post-extensions";
 
 const BLOG_BASE = "src/data/blog";
 const EN_BASE = join(BLOG_BASE, "en");
 const FORCE = process.argv.includes("--force");
 
-function isMarkdown(file: string) {
-  return file.toLowerCase().endsWith(".md");
-}
+const isMarkdown = isPostFile;
 
 function ensureDir(dir: string) {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
