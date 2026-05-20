@@ -1,5 +1,4 @@
 ---
-import Hr from "./Hr.astro";
 import IconX from "@/assets/icons/IconX.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
@@ -249,7 +248,9 @@ const tr = (key: string, params?: Record<string, string | number>) =>
       </nav>
     </div>
   </div>
-  <Hr />
+  <div class="mx-auto max-w-app px-4" aria-hidden="true">
+    <div class="border-b border-border"></div>
+  </div>
 </header>
 
 <script
