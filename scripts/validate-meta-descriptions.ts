@@ -2,6 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { isPostFile } from "../src/utils/post-extensions";
 
 const SCRIPT_DIR = import.meta.dirname;
 
@@ -61,7 +62,7 @@ function checkMarkdownFiles(): boolean {
 
       if (stat.isDirectory()) {
         collectBlogFiles(filePath);
-      } else if (file.endsWith(".md")) {
+      } else if (isPostFile(file)) {
         allFiles.push(filePath);
       }
     }

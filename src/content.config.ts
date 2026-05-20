@@ -2,6 +2,7 @@ import { defineCollection, type SchemaContext } from "astro:content";
 import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 import { SITE } from "@/config";
+import { POST_GLOB_EXT } from "@/utils/post-extensions";
 
 export const BLOG_PATH = "src/data/blog";
 
@@ -27,12 +28,18 @@ function createBlogSchema(localeDefault: string) {
 }
 
 const blog = defineCollection({
-  loader: glob({ pattern: ["**/[^_]*.md", "!en/**"], base: `./${BLOG_PATH}` }),
+  loader: glob({
+    pattern: [`**/[^_]*.${POST_GLOB_EXT}`, "!en/**"],
+    base: `./${BLOG_PATH}`,
+  }),
   schema: createBlogSchema("zh-CN"),
 });
 
 const blogEn = defineCollection({
-  loader: glob({ pattern: "**/[^_]*.md", base: `./${BLOG_PATH}/en` }),
+  loader: glob({
+    pattern: `**/[^_]*.${POST_GLOB_EXT}`,
+    base: `./${BLOG_PATH}/en`,
+  }),
   schema: createBlogSchema("en"),
 });
 
