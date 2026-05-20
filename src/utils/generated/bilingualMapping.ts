@@ -1,6 +1,6 @@
 /**
  * 自动生成的双语文章映射表
- * 生成时间: 2025-10-27T10:07:29.790Z
+ * 生成时间: 2026-05-20T08:56:28.854Z
  *
  * 此文件由脚本自动生成，请勿手动编辑！
  * 如需重新生成，请运行: pnpm run generate:bilingual-mapping
@@ -15,6 +15,7 @@ export const dynamicSlugMapping: Record<string, string> = {
   "ibkr-drip": "is-ibkr-drip-really-commission-free",
   "remove-tracking-qinglong": "remove-tracking-qinglong",
   "why-switch-from-hapigo-to-raycast": "why-switch-from-hapigo-to-raycast",
+  "self-host-hoarder-replace-cubox": "hoarder-app-replace-cubox",
 };
 
 export const unifiedCommentPaths: Record<
@@ -70,7 +71,6 @@ export const unifiedCommentPaths: Record<
     confidence: 1,
     matchType: "originalTitle",
   },
-
   "为什么放弃已经使用两年多的 Hapigo：官方更新停滞与 Raycast 的强大替代": {
     zhPath: "/posts/why-switch-from-hapigo-to-raycast/",
     enPath: "/en/posts/why-switch-from-hapigo-to-raycast/",
@@ -78,12 +78,20 @@ export const unifiedCommentPaths: Record<
     confidence: 1,
     matchType: "originalTitle",
   },
+  "自建 Karakeep（原 Hoarder）剪藏服务取代 Cubox：解决隐私与成本问题": {
+    zhPath: "/posts/hoarder-app-replace-cubox/",
+    enPath: "/en/posts/self-host-hoarder-replace-cubox/",
+    unifiedCommentPath: "/comments/hoarder-app-replace-cubox/",
+    confidence: 1,
+    matchType: "originalTitle",
+  },
 };
 
 export const mappingMetadata = {
-  generatedAt: "2025-12-07T15:29:00.000Z",
-  totalMatches: 7,
+  generatedAt: "2026-05-20T08:56:28.854Z",
+  totalMatches: 8,
   matchTypes: [
+    "originalTitle",
     "originalTitle",
     "originalTitle",
     "originalTitle",

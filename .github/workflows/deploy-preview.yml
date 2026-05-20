@@ -23,6 +23,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Configure APT retries and timeouts
+        run: |
+          sudo printf 'Acquire::Retries "3";\nAcquire::https::Timeout "30";\nAcquire::http::Timeout "30";' | sudo tee /etc/apt/apt.conf.d/99-retries.conf
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
