@@ -1,5 +1,4 @@
 ---
-import Hr from "./Hr.astro";
 import Socials from "./Socials.astro";
 import { getCurrentLocale, t } from "@/i18n/utils";
 import { normalizePathWithLocale } from "@/utils/url";
@@ -21,7 +20,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 ---
 
 <footer class:list={["w-full", { "mt-auto": !noMarginTop }]}>
-  <Hr noPadding />
+  <div class="mx-auto max-w-app border-t border-border"></div>
   <div
     class="flex flex-col items-center gap-5 py-8 text-center text-sm text-foreground/75 sm:py-6"
   >

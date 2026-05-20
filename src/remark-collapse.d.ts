@@ -1,4 +1,4 @@
-declare module 'remark-collapse' {
+declare module "remark-collapse" {
   export interface RemarkCollapseOptions {
     /**
      * Test string or RegExp to match headings that should be collapsible

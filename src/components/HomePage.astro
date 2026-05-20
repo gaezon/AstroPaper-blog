@@ -6,7 +6,6 @@ import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
-import Hr from "@/components/Hr.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 import IconRss from "@/assets/icons/IconRss.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
@@ -77,7 +76,8 @@ const pageDescription = t(Astro, "site.description");
       }
     </section>
 
-    <Hr noPadding={true} />
+    <div class="mx-auto max-w-app border-t border-border" aria-hidden="true">
+    </div>
 
     {
       featuredPosts.length > 0 && (
@@ -95,7 +95,12 @@ const pageDescription = t(Astro, "site.description");
               ))}
             </ul>
           </section>
-          {recentPosts.length > 0 && <Hr noPadding={true} />}
+          {recentPosts.length > 0 && (
+            <div
+              class="mx-auto max-w-app border-t border-border"
+              aria-hidden="true"
+            />
+          )}
         </>
       )
     }
