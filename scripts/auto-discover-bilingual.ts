@@ -253,21 +253,34 @@ function matchByOriginalTitle(
   const matchedEnFiles = new Set<string>();
 
   for (const zh of zhArticles) {
-    if (zh.originalTitle) {
-      const matchingEn = enArticles.find(
-        en =>
-          en.originalTitle === zh.originalTitle && !matchedEnFiles.has(en.file)
-      );
+    const matchingEn = enArticles.find(en => {
+      if (matchedEnFiles.has(en.file)) return false;
 
-      if (matchingEn) {
-        matches.push({
-          zh,
-          en: matchingEn,
-          confidence: 1.0,
-          matchType: "originalTitle",
-        });
-        matchedEnFiles.add(matchingEn.file);
-      }
+      // 1. 英文文章的 originalTitle 指向中文文章的 title
+      if (en.originalTitle && en.originalTitle === zh.title) return true;
+
+      // 2. 中文文章的 originalTitle 指向英文文章的 originalTitle
+      if (
+        zh.originalTitle &&
+        en.originalTitle &&
+        zh.originalTitle === en.originalTitle
+      )
+        return true;
+
+      // 3. 中文文章的 originalTitle 指向英文文章的 title
+      if (zh.originalTitle && zh.originalTitle === en.title) return true;
+
+      return false;
+    });
+
+    if (matchingEn) {
+      matches.push({
+        zh,
+        en: matchingEn,
+        confidence: 1.0,
+        matchType: "originalTitle",
+      });
+      matchedEnFiles.add(matchingEn.file);
     }
   }
 
@@ -332,7 +345,7 @@ function generateDynamicMapping(matches: ArticleMatch[]): DynamicMappingResult {
     const { zh, en, confidence, matchType } = match;
 
     // Use the Chinese slug as identifier, or generate a unified identifier
-    const unifiedId = zh.originalTitle || zh.slug;
+    const unifiedId = zh.originalTitle || zh.title || zh.slug;
     const unifiedPath = `/comments/${zh.slug}/`;
 
     // Store mapping relations

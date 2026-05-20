@@ -36,10 +36,11 @@ const getCommentId = () => {
   if (!post) return null;
 
   // Phase II: Prefer unified path from the dynamic mapping
-  if (unifiedPaths && post.data.originalTitle) {
-    const unifiedPath = unifiedPaths[post.data.originalTitle];
-    if (unifiedPath) {
-      return post.data.originalTitle;
+  const lookupKey = post.data.originalTitle || post.data.title;
+  if (unifiedPaths && lookupKey) {
+    const unifiedInfo = unifiedPaths[lookupKey];
+    if (unifiedInfo) {
+      return lookupKey;
     }
   }
 
@@ -60,8 +61,9 @@ const getCommentPath = () => {
   if (!post) return null;
 
   // Phase II: Use dynamically generated mapping; prefer historical page paths (compatible with old comments)
-  if (unifiedPaths && post.data.originalTitle) {
-    const unifiedInfo = unifiedPaths[post.data.originalTitle];
+  const lookupKey = post.data.originalTitle || post.data.title;
+  if (unifiedPaths && lookupKey) {
+    const unifiedInfo = unifiedPaths[lookupKey];
     if (unifiedInfo) {
       // Compatibility strategy: prefer Chinese path (most existing comments), otherwise English path
       if (unifiedInfo.zhPath) return unifiedInfo.zhPath;
