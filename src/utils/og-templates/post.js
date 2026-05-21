@@ -1,7 +1,13 @@
 import satori from "satori";
 import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
-import { createOgFrame, createPostFooter } from "./shared";
+import {
+  createOgFrame,
+  createPostFooter,
+  DESCENDER_SAFE_LINE_HEIGHT,
+} from "./shared";
+
+export const TITLE_PADDING_BOTTOM = "12px";
 
 const FONT_CONFIG = {
   "zh-CN": "IBM Plex Sans, Noto Sans SC",
@@ -26,7 +32,7 @@ const injectTitleMetadata = (svg, title) => {
     : `${svg}${metadata}`;
 };
 
-const getFontFamily = locale => {
+export const getFontFamily = locale => {
   if (!locale) return FONT_CONFIG.default;
   const rawLocale = locale.toString();
   if (FONT_CONFIG[rawLocale]) {
@@ -42,6 +48,24 @@ const getFontFamily = locale => {
   return FONT_CONFIG.default;
 };
 
+export function createPostTitle(titleText, locale, computedSize) {
+  return {
+    type: "p",
+    props: {
+      style: {
+        fontSize: computedSize,
+        fontWeight: "700",
+        lineHeight: DESCENDER_SAFE_LINE_HEIGHT,
+        paddingBottom: TITLE_PADDING_BOTTOM,
+        maxHeight: "84%",
+        overflow: "hidden",
+        fontFamily: getFontFamily(locale),
+      },
+      children: titleText,
+    },
+  };
+}
+
 export default async post => {
   const locale = (post?.data?.locale || "zh-CN").toString();
 
@@ -55,23 +79,8 @@ export default async post => {
   else if (len > 60) computedSize = 44;
   else if (len > 40) computedSize = 50;
 
-  const titleStyle = {
-    fontSize: computedSize,
-    fontWeight: "700",
-    lineHeight: 1.15,
-    maxHeight: "84%",
-    overflow: "hidden",
-    fontFamily: getFontFamily(locale),
-  };
-
   const mainContent = [
-    {
-      type: "p",
-      props: {
-        style: titleStyle,
-        children: titleText,
-      },
-    },
+    createPostTitle(titleText, locale, computedSize),
     createPostFooter(authorText, siteTitleText),
   ];
 
