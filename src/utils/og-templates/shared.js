@@ -1,3 +1,6 @@
+export const DESCENDER_SAFE_LINE_HEIGHT = 1.3;
+export const DESCENDER_SAFE_PADDING_BOTTOM = "4px";
+
 const SITE_LOGO_SVG = {
   type: "svg",
   props: {
@@ -150,6 +153,7 @@ export function createFooter(siteName) {
         width: "100%",
         marginBottom: "8px",
         fontSize: 28,
+        lineHeight: DESCENDER_SAFE_LINE_HEIGHT,
       },
       children: {
         type: "span",
@@ -159,6 +163,8 @@ export function createFooter(siteName) {
             alignItems: "center",
             overflow: "hidden",
             fontWeight: "bold",
+            lineHeight: DESCENDER_SAFE_LINE_HEIGHT,
+            paddingBottom: DESCENDER_SAFE_PADDING_BOTTOM,
           },
           children: [SITE_LOGO_SVG, siteName],
         },
@@ -177,6 +183,7 @@ export function createPostFooter(authorText, siteNameText) {
         width: "100%",
         marginBottom: "8px",
         fontSize: 28,
+        lineHeight: DESCENDER_SAFE_LINE_HEIGHT,
       },
       children: [
         {
@@ -197,6 +204,8 @@ export function createPostFooter(authorText, siteNameText) {
                   style: {
                     overflow: "hidden",
                     fontWeight: "bold",
+                    lineHeight: DESCENDER_SAFE_LINE_HEIGHT,
+                    paddingBottom: DESCENDER_SAFE_PADDING_BOTTOM,
                   },
                   children: authorText,
                 },
@@ -212,6 +221,8 @@ export function createPostFooter(authorText, siteNameText) {
               alignItems: "center",
               overflow: "hidden",
               fontWeight: "bold",
+              lineHeight: DESCENDER_SAFE_LINE_HEIGHT,
+              paddingBottom: DESCENDER_SAFE_PADDING_BOTTOM,
             },
             children: [SITE_LOGO_SVG, siteNameText],
           },
