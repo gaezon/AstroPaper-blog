@@ -2,7 +2,7 @@
 
 [![Astro](https://img.shields.io/badge/Astro-6-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
 [![Node.js](https://img.shields.io/badge/Node.js-24.x-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![pnpm](https://img.shields.io/badge/pnpm-10.x-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![pnpm](https://img.shields.io/badge/pnpm-11.x-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
 
@@ -20,7 +20,7 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 ## Requirements
 
 - Node.js `24.x`
-- pnpm `>=10 <11`
+- pnpm `>=11 <12` (recommended to install and manage via Homebrew)
 - pnpm-only workflow (no npm/yarn/bun)
 
 ## Local Node Setup (Optional)
