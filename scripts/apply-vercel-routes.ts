@@ -1,21 +1,8 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import {
-  buildAgentResourceIndexStructuredContent,
-  buildErrorEnvelope,
-  buildHandshake,
-  buildMcpAppResourceReadResult,
-  buildMcpInitializeResult,
-  buildMcpResourcesList,
-  buildMcpToolsList,
-  isMcpAppResourceUri,
-} from "../src/utils/mcp";
-import {
-  AGENT_DISCOVERY_TOOLS,
-  absoluteSiteUrl,
-  getAgentResourceById,
-} from "../src/utils/agent-discovery";
+import * as esbuild from "esbuild";
 
 type VercelRoute = {
   src?: string;
@@ -525,297 +512,63 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
   return steps.reduce((cfg, step) => step(cfg), config);
 }
 
-function buildMcpWellKnownFunctionSource(): string {
-  const handshake = buildHandshake({ liveHandshake: true });
-  const defaultInitializeResult = buildMcpInitializeResult();
-  const legacyInitializeResult = buildMcpInitializeResult({
-    requestedProtocolVersion: "2024-11-05",
-  });
-  const resourcesList = buildMcpResourcesList();
-  const toolsList = buildMcpToolsList();
-  const appResourceReadResult = buildMcpAppResourceReadResult();
-  const structuredResourceIndex = buildAgentResourceIndexStructuredContent();
-  const resourceByUri = Object.fromEntries(
-    resourcesList.resources.map(resource => [resource.uri, resource])
-  );
-  const toolResourceUriByName = Object.fromEntries(
-    AGENT_DISCOVERY_TOOLS.map(tool => {
-      const resource = getAgentResourceById(tool.resourceId);
-      return [tool.name, resource ? absoluteSiteUrl(resource.path) : null];
-    })
-  );
-  const methodNotAllowed = buildErrorEnvelope({
-    code: "method_not_allowed",
-    message: "Only GET and POST are supported on the MCP discovery endpoint.",
-    status: 405,
-  });
+/**
+ * Bundle `mcp-endpoint.ts` and its dependency tree into a self-contained ESM
+ * file suitable for the Vercel Node.js serverless runtime (nodejs24.x).
+ *
+ * Strategy:
+ *  1. Write a temporary entry file that re-exports `handleMcpEndpointRequest`
+ *     as the default Vercel fetch handler.
+ *  2. Run `esbuild.build()` with `bundle: true`, `platform: "node"`, targeting
+ *     the same Node.js runtime declared in `.vc-config.json` (nodejs24.x).
+ *  3. Return the bundled text; clean up the temp directory.
+ *
+ * The import specifier in the entry shim uses POSIX forward-slash separators
+ * (via `replaceAll("\\", "/")`) so esbuild can resolve the path on all
+ * platforms, including Windows where `path.join` produces backslashes.
+ */
+export async function buildMcpWellKnownFunctionBundle(): Promise<string> {
+  // Resolve paths relative to the repo root (this script lives in scripts/)
+  const repoRoot = resolve(import.meta.dirname, "..");
+  const endpointSrc = join(repoRoot, "src/utils/mcp-endpoint.ts");
 
-  return `const handshake = ${JSON.stringify(handshake, null, 2)};
-const defaultInitializeResult = ${JSON.stringify(defaultInitializeResult, null, 2)};
-const legacyInitializeResult = ${JSON.stringify(legacyInitializeResult, null, 2)};
-const resourcesList = ${JSON.stringify(resourcesList, null, 2)};
-const toolsList = ${JSON.stringify(toolsList, null, 2)};
-const appResourceReadResult = ${JSON.stringify(appResourceReadResult, null, 2)};
-const structuredResourceIndex = ${JSON.stringify(structuredResourceIndex, null, 2)};
-const resourceByUri = ${JSON.stringify(resourceByUri, null, 2)};
-const toolResourceUriByName = ${JSON.stringify(toolResourceUriByName, null, 2)};
-const methodNotAllowed = ${JSON.stringify(methodNotAllowed, null, 2)};
-const appResourceUri = ${JSON.stringify(
-    resourcesList.resources.find(resource => isMcpAppResourceUri(resource.uri))
-      ?.uri
-  )};
-const supportedMethods = [
-  "initialize",
-  "notifications/initialized",
-  "resources/list",
-  "resources/read",
-  "tools/list",
-  "tools/call",
-];
+  // Use forward slashes so the specifier is valid on all platforms (esbuild
+  // resolves file-system paths, not file:// URLs; POSIX separators work on
+  // Windows too when passed to esbuild's bundler).
+  const endpointPosix = endpointSrc.replaceAll("\\", "/");
 
-function json(status, body) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "MCP-Protocol-Version": "2025-03-26",
-    },
-  });
-}
-
-function empty(status) {
-  return new Response(null, { status });
-}
-
-function requestId(body) {
-  if (typeof body === "object" && body !== null && "id" in body) {
-    return body.id;
-  }
-  return null;
-}
-
-function jsonRpcResult(id, result) {
-  return {
-    jsonrpc: "2.0",
-    id,
-    result,
-  };
-}
-
-function jsonRpcError(id, code, message, data) {
-  return {
-    jsonrpc: "2.0",
-    id,
-    error: {
-      code,
-      message,
-      ...(data !== undefined ? { data } : {}),
-    },
-  };
-}
-
-function isJsonRpcRequest(body) {
-  return (
-    typeof body === "object" &&
-    body !== null &&
-    body.jsonrpc === "2.0" &&
-    typeof body.method === "string"
-  );
-}
-
-function objectParams(body) {
-  if (
-    typeof body.params === "object" &&
-    body.params !== null &&
-    !Array.isArray(body.params)
-  ) {
-    return body.params;
-  }
-  return undefined;
-}
-
-function requestedProtocolVersion(body, request) {
-  const params = objectParams(body);
-  if (typeof params?.protocolVersion === "string") {
-    return params.protocolVersion;
-  }
-  return request.headers.get("MCP-Protocol-Version") ?? undefined;
-}
-
-function initializeResultFor(body, request) {
-  return requestedProtocolVersion(body, request) === "2024-11-05"
-    ? legacyInitializeResult
-    : defaultInitializeResult;
-}
-
-async function readCanonicalResource(uri) {
-  if (uri === appResourceUri) {
-    return {
-      appResource: appResourceReadResult,
-    };
-  }
-
-  const resource = resourceByUri[uri];
-  if (!resource) {
-    return {
-      error: jsonRpcError(null, -32602, "Unknown resource URI.", { uri }),
-    };
-  }
-
-  let response;
-  try {
-    response = await fetch(uri);
-  } catch (error) {
-    return {
-      error: jsonRpcError(null, -32000, "Resource fetch failed.", {
-        uri,
-        cause: error instanceof Error ? error.message : String(error),
-      }),
-    };
-  }
-
-  if (!response.ok) {
-    return {
-      error: jsonRpcError(null, -32000, "Resource fetch failed.", {
-        uri,
-        status: response.status,
-      }),
-    };
-  }
-
-  return {
-    resource,
-    text: await response.text(),
-  };
-}
-
-async function handleJsonRpcMethod(body, request) {
-  const id = requestId(body);
-
-  switch (body.method) {
-    case "initialize":
-      return jsonRpcResult(id, initializeResultFor(body, request));
-
-    case "notifications/initialized":
-      return undefined;
-
-    case "resources/list":
-      return jsonRpcResult(id, resourcesList);
-
-    case "resources/read": {
-      const params = objectParams(body);
-      if (typeof params?.uri !== "string") {
-        return jsonRpcError(id, -32602, 'Invalid params: "uri" must be a string.');
-      }
-
-      const result = await readCanonicalResource(params.uri);
-      if ("error" in result) {
-        return { ...result.error, id };
-      }
-      if ("appResource" in result) {
-        return jsonRpcResult(id, result.appResource);
-      }
-
-      return jsonRpcResult(id, {
-        contents: [
-          {
-            uri: params.uri,
-            mimeType: result.resource.mimeType,
-            text: result.text,
-          },
-        ],
-      });
-    }
-
-    case "tools/list":
-      return jsonRpcResult(id, toolsList);
-
-    case "tools/call": {
-      const params = objectParams(body);
-      if (typeof params?.name !== "string") {
-        return jsonRpcError(id, -32602, 'Invalid params: "name" must be a string.');
-      }
-
-      const uri = toolResourceUriByName[params.name];
-      if (!uri) {
-        return jsonRpcError(id, -32602, "Unknown tool name.", {
-          name: params.name,
-        });
-      }
-
-      const result = await readCanonicalResource(uri);
-      if ("error" in result) {
-        return { ...result.error, id };
-      }
-      if ("appResource" in result) {
-        return jsonRpcResult(id, result.appResource);
-      }
-
-      return jsonRpcResult(id, {
-        content: [
-          {
-            type: "text",
-            text: result.text,
-          },
-        ],
-        structuredContent: {
-          ...structuredResourceIndex,
-          source: uri,
-          mimeType: result.resource.mimeType,
-        },
-        _meta: {
-          ui: {
-            resourceUri: appResourceUri,
-          },
-        },
-      });
-    }
-
-    default:
-      return jsonRpcError(id, -32601, "Method not found.", {
-        supportedMethods,
-      });
-  }
-}
-
-export default {
-  async fetch(request) {
-    switch (request.method) {
-      case "GET":
-        if (request.headers.get("Accept")?.includes("text/event-stream")) {
-          return json(405, methodNotAllowed);
-        }
-        return json(200, handshake);
-
-      case "POST": {
-        let body;
-        try {
-          body = await request.json();
-        } catch {
-          return json(400, jsonRpcError(null, -32700, "Parse error."));
-        }
-
-        if (!isJsonRpcRequest(body)) {
-          return json(
-            400,
-            jsonRpcError(
-              requestId(body),
-              -32600,
-              'Invalid Request. Provide a JSON-RPC 2.0 object with a string "method".'
-            )
-          );
-        }
-
-        const result = await handleJsonRpcMethod(body, request);
-        return result === undefined ? empty(202) : json(200, result);
-      }
-
-      default:
-        return json(405, methodNotAllowed);
-    }
-  },
-};
+  // Wrap the existing handler in the Vercel default-export fetch shape.
+  const entrySource = `import { handleMcpEndpointRequest } from ${JSON.stringify(endpointPosix)};
+export default { fetch: handleMcpEndpointRequest };
 `;
+
+  const tmpDir = await mkdtemp(join(tmpdir(), "mcp-bundle-"));
+  const entryFile = join(tmpDir, "entry.ts");
+
+  try {
+    await writeFile(entryFile, entrySource, "utf8");
+
+    const result = await esbuild.build({
+      entryPoints: [entryFile],
+      bundle: true,
+      format: "esm",
+      // Match the runtime declared in .vc-config.json (nodejs24.x).
+      platform: "node",
+      target: "node24",
+      write: false,
+      minify: false,
+      treeShaking: true,
+      logLevel: "error",
+    });
+
+    const output = result.outputFiles[0];
+    if (!output) {
+      throw new Error("esbuild produced no output files.");
+    }
+    return output.text;
+  } finally {
+    await rm(tmpDir, { recursive: true, force: true });
+  }
 }
 
 async function writeMcpWellKnownFunction(): Promise<void> {
@@ -838,9 +591,10 @@ async function writeMcpWellKnownFunction(): Promise<void> {
     )}\n`,
     "utf8"
   );
+  const bundleSource = await buildMcpWellKnownFunctionBundle();
   await writeFile(
     `${MCP_WELL_KNOWN_FUNCTION_DIR}/index.mjs`,
-    buildMcpWellKnownFunctionSource(),
+    bundleSource,
     "utf8"
   );
 }

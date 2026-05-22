@@ -80,6 +80,7 @@
 - `tests/unit/api-json-schema.spec.ts` - validation of read-only posts and tags JSON API schema
 - `tests/unit/api-json-404.spec.ts` - validation of JSON-formatted 404 recovery envelopes
 - `tests/unit/vercel-localized-404-routes.spec.ts` - validation of prebuilt Vercel config post-processing
+- `tests/unit/mcp-edge-function-bundle.spec.ts` - validation of esbuild bundle output shape and handler executability for the Vercel MCP Edge Function
 
 ## Accessibility & Performance
 
@@ -92,6 +93,7 @@
 
 - Build output is produced via Astro static build and Vercel prebuilt artifacts under `.vercel/output/`
 - `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` serves localized zh/en 404 pages and security response headers correctly
+- `scripts/apply-vercel-routes.ts` also generates `.vercel/output/functions/.well-known/mcp.func/index.mjs` by bundling `src/utils/mcp-endpoint.ts` with esbuild (`platform: "node"`, `target: "node24"`); this replaces the former hand-written JS template and keeps the Vercel Edge Function in sync with the local handler as a single source of truth
 - Pagefind index generation targets `.vercel/output/static`
 
 ## Documentation Maintenance
