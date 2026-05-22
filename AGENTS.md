@@ -37,7 +37,7 @@
 ## Runtime & Tooling Constraints
 
 - Use pnpm only; do not use npm, yarn, or bun
-- Use Node.js `24.x` and pnpm `>=10 <11`
+- Use Node.js `24.x` and pnpm `>=11 <12` (recommended to install and manage via Homebrew)
 - `.node-version` is committed with `24`; if the shell resolves another version, run `fnm use`
 - For exact commands, prefer `README.md`
 
