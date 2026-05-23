@@ -3,6 +3,10 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import * as esbuild from "esbuild";
+import {
+  SECURITY_HEADERS,
+  WELL_KNOWN_CONTENT_TYPES,
+} from "../src/utils/http-headers";
 
 type VercelRoute = {
   src?: string;
@@ -32,58 +36,17 @@ const MCP_SAFE_WELL_KNOWN_BLOCK_ROUTE_SRC =
 const VERCEL_EXTENSIONLESS_REDIRECT_ROUTE_SRC = "^/((?:[^/]+/)*[^/\\.]+)$";
 const MCP_SAFE_EXTENSIONLESS_REDIRECT_ROUTE_SRC =
   "^/(?!\\.well-known/mcp$)((?:[^/]+/)*[^/\\.]+)$";
-// Keep this deployable with the current site runtime:
-// - inline scripts/styles are still used for first paint, comments, and search UI;
-// - Pagefind loads WebAssembly at runtime and requires wasm-unsafe-eval.
-// Tightening these directives should be paired with moving inline code to
-// bundled assets or adding nonces/hashes.
-const CONTENT_SECURITY_POLICY = [
-  "default-src 'self'",
-  "base-uri 'self'",
-  "object-src 'none'",
-  "frame-ancestors 'none'",
-  "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://umami.gaazeon.com https://cdn.jsdelivr.net",
-  "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://umami.gaazeon.com https://comment.gaazeon.com",
-  "worker-src 'self' blob:",
-  "manifest-src 'self'",
-  "upgrade-insecure-requests",
-].join("; ");
-
-const DISCOVERY_LINK_HEADER = [
-  '</sitemap-index.xml>; rel="sitemap"; type="application/xml"',
-  '</llms.txt>; rel="describedby"; type="text/markdown"',
-  '</index.md>; rel="alternate"; type="text/markdown"',
-  '</docs.md>; rel="describedby"; type="text/markdown"',
-  '</agent-integration.md>; rel="describedby"; type="text/markdown"',
-  '</webhooks.md>; rel="describedby"; type="text/markdown"',
-  '</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
-  '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
-  '</.well-known/agent-card.json>; rel="service-desc"; type="application/json"',
-  '</.well-known/mcp/server-card.json>; rel="service-desc"; type="application/json"',
-  '</.well-known/ai-plugin.json>; rel="service-desc"; type="application/json"',
-].join(", ");
 
 export const SECURITY_HEADERS_ROUTE = {
   src: "^/(.*)$",
-  headers: {
-    "Content-Security-Policy": CONTENT_SECURITY_POLICY,
-    Link: DISCOVERY_LINK_HEADER,
-    "Referrer-Policy": "strict-origin-when-cross-origin",
-    "X-Content-Type-Options": "nosniff",
-    "Permissions-Policy":
-      "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()",
-  },
+  headers: SECURITY_HEADERS,
   continue: true,
 } as const satisfies VercelRoute;
 
 export const API_CATALOG_HEADERS_ROUTE = {
   src: "^/\\.well-known/api-catalog$",
   headers: {
-    "Content-Type": "application/linkset+json; charset=utf-8",
+    "Content-Type": WELL_KNOWN_CONTENT_TYPES["/api-catalog"],
   },
   continue: true,
 } as const satisfies VercelRoute;
@@ -91,7 +54,7 @@ export const API_CATALOG_HEADERS_ROUTE = {
 export const AGENT_SKILLS_HEADERS_ROUTE = {
   src: "^/\\.well-known/agent-skills$",
   headers: {
-    "Content-Type": "application/json; charset=utf-8",
+    "Content-Type": WELL_KNOWN_CONTENT_TYPES["/agent-skills"],
   },
   continue: true,
 } as const satisfies VercelRoute;
@@ -99,7 +62,7 @@ export const AGENT_SKILLS_HEADERS_ROUTE = {
 export const AGENT_CARD_HEADERS_ROUTE = {
   src: "^/\\.well-known/agent-card\\.json$",
   headers: {
-    "Content-Type": "application/json; charset=utf-8",
+    "Content-Type": WELL_KNOWN_CONTENT_TYPES["/agent-card.json"],
   },
   continue: true,
 } as const satisfies VercelRoute;
@@ -107,7 +70,15 @@ export const AGENT_CARD_HEADERS_ROUTE = {
 export const AI_PLUGIN_HEADERS_ROUTE = {
   src: "^/\\.well-known/ai-plugin\\.json$",
   headers: {
-    "Content-Type": "application/json; charset=utf-8",
+    "Content-Type": WELL_KNOWN_CONTENT_TYPES["/ai-plugin.json"],
+  },
+  continue: true,
+} as const satisfies VercelRoute;
+
+export const MCP_SERVER_CARD_HEADERS_ROUTE = {
+  src: "^/\\.well-known/mcp/server-card\\.json$",
+  headers: {
+    "Content-Type": WELL_KNOWN_CONTENT_TYPES["/mcp/server-card.json"],
   },
   continue: true,
 } as const satisfies VercelRoute;
@@ -161,6 +132,12 @@ const AGENT_CARD_HEADER_KEYS = new Set(
 
 const AI_PLUGIN_HEADER_KEYS = new Set(
   Object.keys(AI_PLUGIN_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
+);
+
+const MCP_SERVER_CARD_HEADER_KEYS = new Set(
+  Object.keys(MCP_SERVER_CARD_HEADERS_ROUTE.headers).map(key =>
+    key.toLowerCase()
+  )
 );
 
 const API_JSON_NOT_FOUND_HEADER_KEYS = new Set(
@@ -402,6 +379,27 @@ export function applyAiPluginHeaders(config: VercelConfig): VercelConfig {
   };
 }
 
+export function applyMcpServerCardHeaders(config: VercelConfig): VercelConfig {
+  const existingMcpServerCardHeadersRoute = config.routes.find(route =>
+    hasSameRouteShape(route, MCP_SERVER_CARD_HEADERS_ROUTE)
+  );
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, MCP_SERVER_CARD_HEADERS_ROUTE)
+  );
+
+  return {
+    ...config,
+    routes: [
+      mergeHeadersRoute(
+        MCP_SERVER_CARD_HEADERS_ROUTE,
+        MCP_SERVER_CARD_HEADER_KEYS,
+        existingMcpServerCardHeadersRoute
+      ),
+      ...routes,
+    ],
+  };
+}
+
 export function applyMarkdownIndexNegotiation(
   config: VercelConfig
 ): VercelConfig {
@@ -503,6 +501,7 @@ export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
     applyAgentSkillsHeaders,
     applyAgentCardHeaders,
     applyAiPluginHeaders,
+    applyMcpServerCardHeaders,
     applyMcpWellKnownRoute,
     applyApiJsonNotFoundRoute,
     applyMarkdownIndexNegotiation,
