@@ -3,6 +3,7 @@ import {
   AGENT_CARD_HEADERS_ROUTE,
   AGENT_SKILLS_HEADERS_ROUTE,
   AI_PLUGIN_HEADERS_ROUTE,
+  MCP_SERVER_CARD_HEADERS_ROUTE,
   API_JSON_NOT_FOUND_ROUTE,
   API_CATALOG_HEADERS_ROUTE,
   applyLocalized404Routes,
@@ -71,6 +72,7 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes).toEqual([
+      MCP_SERVER_CARD_HEADERS_ROUTE,
       AI_PLUGIN_HEADERS_ROUTE,
       AGENT_CARD_HEADERS_ROUTE,
       AGENT_SKILLS_HEADERS_ROUTE,
@@ -91,6 +93,7 @@ describe("applyVercelRoutesConfig", () => {
     const config = {
       version: 3,
       routes: [
+        MCP_SERVER_CARD_HEADERS_ROUTE,
         AI_PLUGIN_HEADERS_ROUTE,
         AGENT_CARD_HEADERS_ROUTE,
         AGENT_SKILLS_HEADERS_ROUTE,
@@ -124,6 +127,7 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes).toEqual([
+      MCP_SERVER_CARD_HEADERS_ROUTE,
       AI_PLUGIN_HEADERS_ROUTE,
       AGENT_CARD_HEADERS_ROUTE,
       AGENT_SKILLS_HEADERS_ROUTE,
@@ -149,20 +153,30 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes[0]).toEqual(
-      AI_PLUGIN_HEADERS_ROUTE
+      MCP_SERVER_CARD_HEADERS_ROUTE
     );
     expect(applyVercelRoutesConfig(config).routes[1]).toEqual(
-      AGENT_CARD_HEADERS_ROUTE
+      AI_PLUGIN_HEADERS_ROUTE
     );
     expect(applyVercelRoutesConfig(config).routes[2]).toEqual(
-      AGENT_SKILLS_HEADERS_ROUTE
+      AGENT_CARD_HEADERS_ROUTE
     );
     expect(applyVercelRoutesConfig(config).routes[3]).toEqual(
+      AGENT_SKILLS_HEADERS_ROUTE
+    );
+    expect(applyVercelRoutesConfig(config).routes[4]).toEqual(
       API_CATALOG_HEADERS_ROUTE
     );
   });
 
   it("preserves extra headers on well-known discovery URL routes", () => {
+    const mcpServerCardRoute = {
+      ...MCP_SERVER_CARD_HEADERS_ROUTE,
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        ...MCP_SERVER_CARD_HEADERS_ROUTE.headers,
+      },
+    };
     const aiPluginRoute = {
       ...AI_PLUGIN_HEADERS_ROUTE,
       headers: {
@@ -198,12 +212,14 @@ describe("applyVercelRoutesConfig", () => {
         agentSkillsRoute,
         agentCardRoute,
         aiPluginRoute,
+        mcpServerCardRoute,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
       ],
     };
 
-    expect(applyVercelRoutesConfig(config).routes.slice(0, 4)).toEqual([
+    expect(applyVercelRoutesConfig(config).routes.slice(0, 5)).toEqual([
+      mcpServerCardRoute,
       aiPluginRoute,
       agentCardRoute,
       agentSkillsRoute,
@@ -233,6 +249,7 @@ describe("applyVercelRoutesConfig", () => {
     };
 
     expect(applyVercelRoutesConfig(config).routes).toEqual([
+      MCP_SERVER_CARD_HEADERS_ROUTE,
       AI_PLUGIN_HEADERS_ROUTE,
       AGENT_CARD_HEADERS_ROUTE,
       AGENT_SKILLS_HEADERS_ROUTE,

@@ -22,6 +22,7 @@ import {
   lightThemeColors,
 } from "./src/utils/mermaidTheme";
 import { unifiedCommentPaths } from "./src/utils/generated/bilingualMapping";
+import { devParityPlugin } from "./src/utils/vite-dev-parity";
 
 // Create a lookup map for bilingual posts
 // Key: path without trailing slash
@@ -198,7 +199,7 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), devParityPlugin()],
     optimizeDeps: {
       entries: ["src/**/*.{astro,js,ts,jsx,tsx}"],
       exclude: ["@resvg/resvg-js"],
