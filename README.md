@@ -93,7 +93,7 @@ docs/                 Feature and maintenance docs
 - i18n language switcher: `docs/i18n-language-switcher.md`
 - Bilingual comment mapping: `docs/bilingual-comment-system.md`
 - Mermaid rendering: `docs/mermaid-rendering.md`
-- Remark plugins (TOC + collapse): `docs/remark-plugins.md`
+- Remark/Rehype plugins (TOC + collapse + callouts): `docs/remark-plugins.md`
 
 ## Deployment
 

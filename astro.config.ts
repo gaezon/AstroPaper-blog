@@ -15,6 +15,7 @@ import { SITE } from "./src/config";
 import { getI18nCollapseConfig, tocConfig } from "./src/config/remark";
 import vercel from "@astrojs/vercel";
 import rehypeMermaid from "rehype-mermaid";
+import rehypeCallouts from "rehype-callouts";
 import rehypeImageSize from "./src/utils/rehype-image-size";
 import {
   createThemeVariables,
@@ -38,10 +39,15 @@ if (typeof unifiedCommentPaths === "object") {
 }
 
 // https://astro.build/config
-// Enable build-time Mermaid rendering only in GitHub Actions where Playwright browsers are installed.
+// Enable build-time Mermaid rendering only in GitHub Actions where a browser is available.
 // In other environments (e.g., local dev, Vercel), the plugin is skipped and raw mermaid code blocks remain.
 // This repo does not auto-inject a Mermaid client-side renderer by default.
 const shouldRenderMermaidAtBuildTime = !!process.env.GITHUB_ACTIONS;
+const mermaidLaunchOptions = process.env.MERMAID_CHROMIUM_EXECUTABLE_PATH
+  ? ({
+      executablePath: process.env.MERMAID_CHROMIUM_EXECUTABLE_PATH,
+    } as const)
+  : undefined;
 
 type RehypePluginsList = NonNullable<
   NonNullable<Parameters<typeof defineConfig>[0]["markdown"]>["rehypePlugins"]
@@ -58,6 +64,7 @@ const mermaidConfig: RehypePluginsList = shouldRenderMermaidAtBuildTime
             themeVariables: createThemeVariables(darkThemeColors),
           },
           colorScheme: "light",
+          launchOptions: mermaidLaunchOptions,
           mermaidConfig: {
             theme: "base",
             themeVariables: createThemeVariables(lightThemeColors),
@@ -180,6 +187,7 @@ export default defineConfig({
     rehypePlugins: [
       // Build-time Mermaid rendering in GitHub Actions only; otherwise this plugin is skipped.
       ...mermaidConfig,
+      rehypeCallouts,
       // Normalize Markdown image priority and fallback rendering attributes
       rehypeImageSize,
     ],

@@ -97,3 +97,26 @@ for (const path of ARTICLE_PATHS) {
     expect(priorityImageCount).toBe(1);
   });
 }
+
+test("article images open an accessible lightbox", async ({ page }) => {
+  await page.goto(ARTICLE_PATHS[0]);
+
+  const image = page.locator('#article img[role="button"]').first();
+  await expect(image).toBeVisible();
+  await expect(image).toHaveAttribute("tabindex", "0");
+  await expect(image).toHaveAttribute("aria-haspopup", "dialog");
+
+  await image.focus();
+  await page.keyboard.press("Enter");
+
+  const dialog = page.getByRole("dialog", { name: /Image preview/ });
+  await expect(dialog).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Close image preview" })
+  ).toBeFocused();
+
+  await page.keyboard.press("Escape");
+
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(image).toBeFocused();
+});
