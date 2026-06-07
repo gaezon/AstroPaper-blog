@@ -1,5 +1,5 @@
 ---
-import { slugifyStr } from "@/utils/slugify";
+import { toTransitionName } from "@/utils/toTransitionName";
 import { getPath } from "@/utils/getPath";
 import Datetime from "./Datetime.astro";
 import { t } from "@/i18n/utils";
@@ -17,7 +17,7 @@ const { variant = "h2", data, id, filePath } = Astro.props;
 const { title, description, pubDatetime, modDatetime, timezone } = data;
 
 const headerProps = {
-  style: { viewTransitionName: slugifyStr(title) },
+  style: { viewTransitionName: toTransitionName(title) },
   class: "text-lg font-medium decoration-dashed hover:underline",
 };
 ---

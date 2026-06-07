@@ -1,19 +1,21 @@
-# Remark 插件配置文档
+# Remark/Rehype 插件配置文档
 
-本文档描述了项目中使用的 remark 插件及其配置。
+本文档描述了项目中使用的 Markdown 转换插件及其配置。
 
 ## 概述
 
-本博客项目使用 remark 生态系统来处理 Markdown 内容，主要包括以下插件：
+本博客项目使用 remark/rehype 生态系统来处理 Markdown 内容，主要包括以下插件：
 
 - **remark-toc**: 生成目录（Table of Contents）
 - **remark-collapse**: 为目录添加折叠功能
+- **rehype-callouts**: 将 Obsidian 风格 blockquote 转换为语义化 callout
 
 ## 配置文件位置
 
 - **主配置**: `src/config/remark.ts` - 插件配置常量和工具函数
 - **类型定义**: `remark-collapse.d.ts` - remark-collapse 插件的 TypeScript 类型定义
 - **样式文件**: `src/styles/components/toc-collapse.css` - TOC 折叠组件样式
+- **Callout 样式**: `src/styles/global.css` - 引入 `rehype-callouts/theme/obsidian`
 - **Astro 配置**: `astro.config.ts` - 插件在 Astro 中的集成配置
 
 ## remark-toc 配置
@@ -156,6 +158,32 @@ html[data-theme="dark"] {
 
 通过在 Markdown 转换阶段完成语言判断，客户端无需额外脚本即可获得正确的折叠摘要文案。
 
+## rehype-callouts 配置
+
+`rehype-callouts` 在 `astro.config.ts` 的 `markdown.rehypePlugins` 中启用，用于把 Obsidian 风格的引用块转换为 callout HTML。
+
+```markdown
+> [!NOTE]
+> 这是一条普通提示。
+
+> [!TIP]
+> 这里适合放置操作建议。
+
+> [!WARNING]
+> 这里适合放置风险提醒。
+```
+
+### 功能特性
+
+- 支持常见 Obsidian callout 类型，例如 `NOTE`、`TIP`、`WARNING`。
+- 在构建阶段转换，不需要额外客户端脚本。
+- 使用 `rehype-callouts/theme/obsidian` 提供基础样式，并随站点主题样式一起加载。
+
+### 样式配合
+
+- `src/styles/global.css` 负责引入 callout 主题样式。
+- `src/styles/typography.css` 中的 `details` 样式使用 `details:not(.callout)`，避免原有折叠样式误伤 callout 输出。
+
 ## 工具函数
 
 ### 配置验证
@@ -231,6 +259,11 @@ function getI18nCollapseConfig(): RemarkCollapseOptions;
    - 确认主题切换功能正常
    - 验证响应式断点
 
+4. **Callout 没有样式或结构异常**
+   - 确认 Markdown 使用 `> [!TYPE]` 形式书写
+   - 确认 `rehype-callouts` 已在 `astro.config.ts` 的 `rehypePlugins` 中启用
+   - 确认 `src/styles/global.css` 已引入 `rehype-callouts/theme/obsidian`
+
 ### 调试方法
 
 1. 打开浏览器开发者工具
@@ -247,6 +280,7 @@ function getI18nCollapseConfig(): RemarkCollapseOptions;
 - 增强样式系统和主题支持
 - 添加完整的 TypeScript 类型定义
 - 提供配置验证和工具函数
+- 补充 rehype-callouts 说明
 
 ---
 
@@ -257,4 +291,4 @@ function getI18nCollapseConfig(): RemarkCollapseOptions;
 ---
 
 维护者：项目开发团队
-最后更新：2026 年 3 月
+最后更新：2026 年 6 月

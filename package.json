@@ -1,7 +1,7 @@
 {
   "name": "astro-paper",
   "type": "module",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "packageManager": "pnpm@11.2.2",
   "engines": {
     "node": "24.x",
@@ -41,6 +41,7 @@
     "astro": "^6.3.1",
     "lodash.kebabcase": "^4.1.1",
     "probe-image-size": "^7.2.3",
+    "rehype-callouts": "^2.1.2",
     "rehype-mermaid": "^3.0.0",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",

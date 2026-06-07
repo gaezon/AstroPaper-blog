@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const ciChromeChannel = process.env.CI ? ({ channel: "chrome" } as const) : {};
+
 export default defineConfig({
   testDir: "./tests",
   testIgnore: ["**/unit/**", "**/sitemap.spec.ts"], // sitemap 测试需要构建产物，使用 pnpm test:sitemap 运行
@@ -19,7 +21,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], ...ciChromeChannel },
     },
   ],
 });
