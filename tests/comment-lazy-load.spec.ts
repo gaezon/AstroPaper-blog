@@ -24,6 +24,38 @@ async function clearTwikooSri(page: Page) {
   });
 }
 
+async function waitForAnimationFrames(page: Page, frameCount = 2) {
+  await page.evaluate(
+    count =>
+      new Promise<void>(resolve => {
+        let remainingFrames = count;
+
+        const tick = () => {
+          remainingFrames -= 1;
+
+          if (remainingFrames <= 0) {
+            resolve();
+            return;
+          }
+
+          requestAnimationFrame(tick);
+        };
+
+        requestAnimationFrame(tick);
+      }),
+    frameCount
+  );
+}
+
+async function resetScrollBeforeNextPostNavigation(page: Page) {
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+  });
+
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await waitForAnimationFrames(page);
+}
+
 async function scrollUntilTwikooLoads(
   page: Page,
   getRequestCount: () => number
@@ -174,6 +206,8 @@ test.describe("Twikoo lazy-load triggers", () => {
       page.waitForURL(url => url.pathname === "/posts/"),
       page.goBack(),
     ]);
+
+    await resetScrollBeforeNextPostNavigation(page);
 
     await clickAndWaitPath(
       page,
