@@ -42,6 +42,7 @@
 - Use pnpm only; do not use npm, yarn, or bun
 - Use Node.js `24.x` and pnpm `>=11 <12` (recommended to install and manage via Homebrew)
 - `.node-version` is committed with `24`; if the shell resolves another version, run `fnm use`
+- `scripts/check-toolchain.mjs` is the shared fast-fail guard for common pnpm entry points; keep it aligned with `package.json` engines and README setup notes
 - For exact commands, prefer `README.md`
 
 ## Coding Style & Naming
