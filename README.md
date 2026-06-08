@@ -20,7 +20,7 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 ## Requirements
 
 - Node.js `24.x`
-- pnpm `>=11 <12` (recommended to install and manage via Homebrew)
+- pnpm `>=11 <12` (recommended to install via Homebrew and run through this repo's toolchain guard)
 - pnpm-only workflow (no npm/yarn/bun)
 
 ## Local Node Setup (Optional)
@@ -30,6 +30,8 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 - Keep a system Node installation for external tools that invoke `node`/`npx` globally (for example, MCP helpers).
 - Before running project commands, verify `node -v` is `24.x` in this repository.
 - If your shell still resolves to another global Node version, run `fnm use` before `pnpm` commands.
+- For one-off non-interactive commands, run `fnm exec --using 24 pnpm <command>`.
+- Common project entry points run `scripts/check-toolchain.mjs` first and fail fast unless Node.js `24.x` and pnpm `>=11 <12` are active.
 
 ## Quick start
 
