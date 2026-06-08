@@ -25,6 +25,7 @@
 - `src/utils/blog-locale.ts` - strict locale helpers and normalization guard
 - `src/utils/i18n-pages.ts` - locale-aware page and pagination helpers
 - `src/utils/i18n-api.ts` - locale-aware RSS and OG endpoint helpers
+- `src/utils/i18n-seo.ts` - locale-aware SEO metadata, hreflang, and BlogPosting structured data helpers
 - `src/utils/generated/` - auto-generated bilingual mapping files
 - `src/utils/agent-discovery.ts` - centralization of read-only MCP tools and API resources
 - `src/utils/agent-api.ts` - read-only JSON API builder helpers

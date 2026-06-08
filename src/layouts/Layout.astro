@@ -19,18 +19,15 @@ import {
 } from "@/utils/breadcrumbs";
 import { unifiedCommentPaths } from "@/utils/generated/bilingualMapping";
 import { toOgLocale } from "@/utils/og-locale";
+import {
+  buildAlternateMetadata,
+  buildBilingualPostMap,
+  buildBlogPostingStructuredData,
+} from "@/utils/i18n-seo";
 
-const bilingualPostMap = new Map<string, { zh: string; en: string }>();
-for (const entry of Object.values(unifiedCommentPaths)) {
-  bilingualPostMap.set(entry.zhPath.replace(/\/$/, ""), {
-    zh: entry.zhPath,
-    en: entry.enPath,
-  });
-  bilingualPostMap.set(entry.enPath.replace(/\/$/, ""), {
-    zh: entry.zhPath,
-    en: entry.enPath,
-  });
-}
+const bilingualPostMap = buildBilingualPostMap(
+  Object.values(unifiedCommentPaths)
+);
 
 // I18n variables
 const currentLocale = getCurrentLocale(Astro);
@@ -79,60 +76,16 @@ const canonicalURL = ensureTrailingSlash(
   new URL(canonicalURLProp, Astro.site).href
 );
 
-const normalizedPathname = ensureTrailingSlash(Astro.url.pathname);
-const isPostPage =
-  normalizedPathname.includes("/posts/") &&
-  !normalizedPathname.endsWith("/posts/");
-
-const nonDefaultLocales = SUPPORTED_LOCALES.filter(
-  locale => locale !== DEFAULT_LOCALE
-);
-
-function stripLocalePrefix(pathname: string): string {
-  for (const locale of nonDefaultLocales) {
-    if (pathname === `/${locale}` || pathname === `/${locale}/`) {
-      return "/";
-    }
-    if (pathname.startsWith(`/${locale}/`)) {
-      const stripped = pathname.slice(locale.length + 1);
-      return stripped === "" ? "/" : stripped;
-    }
-  }
-  return pathname;
-}
-
-const basePath = ensureTrailingSlash(stripLocalePrefix(normalizedPathname));
-
-const alternateUrlByLocale = SUPPORTED_LOCALES.reduce<Record<string, string>>(
-  (acc, locale) => {
-    if (locale === currentLocale) {
-      acc[locale] = canonicalURL;
-      return acc;
-    }
-
-    const override = alternateURLs[locale];
-    if (override) {
-      acc[locale] = new URL(ensureTrailingSlash(override), Astro.site).href;
-      return acc;
-    }
-
-    if (!isPostPage && !disableAutoAlternates) {
-      const localizedPath =
-        locale === DEFAULT_LOCALE ? basePath : `/${locale}${basePath}`;
-      acc[locale] = new URL(localizedPath, Astro.site).href;
-    }
-
-    return acc;
-  },
-  {}
-);
-
-const hreflangLinks = SUPPORTED_LOCALES.map(locale => ({
-  locale,
-  href: alternateUrlByLocale[locale],
-})).filter(link => Boolean(link.href));
-
-const xDefaultURL = alternateUrlByLocale[DEFAULT_LOCALE] ?? canonicalURL;
+const { hreflangLinks, xDefaultURL } = buildAlternateMetadata({
+  supportedLocales: SUPPORTED_LOCALES,
+  defaultLocale: DEFAULT_LOCALE,
+  currentLocale,
+  canonicalURL,
+  pathname: Astro.url.pathname,
+  alternateURLs,
+  disableAutoAlternates,
+  site: Astro.site ?? SITE.website,
+});
 
 // Use the processed 'description' as finalDescription
 const finalDescription = description;
@@ -278,63 +231,20 @@ const baseStructuredData = [
 ];
 
 const postStructuredData = pubDatetime
-  ? (() => {
-      // Look up bilingual counterpart for sameAs / translationOfWork
-      // Use URL.pathname for robust path extraction (handles external canonicals, query/hash)
-      const canonicalPathname = new URL(canonicalURL).pathname.replace(
-        /\/$/,
-        ""
-      );
-      const counterpartMapping = bilingualPostMap.get(canonicalPathname);
-      const siteBase = SITE.website.replace(/\/$/, "");
-      const counterpartUrl = counterpartMapping
-        ? canonicalPathname === counterpartMapping.zh.replace(/\/$/, "")
-          ? siteBase + counterpartMapping.en
-          : siteBase + counterpartMapping.zh
-        : undefined;
-
-      return [
-        {
-          "@type": "BlogPosting",
-          "@id": new URL("#blogposting", canonicalURL).href,
-          mainEntityOfPage: {
-            "@type": "WebPage",
-            "@id": canonicalURL,
-          },
-          isPartOf: {
-            "@id": graphIds.blog,
-          },
-          speakable: {
-            "@type": "SpeakableSpecification",
-            cssSelector: ["main h1", "main h2", "main p"],
-          },
-          headline: title,
-          description: finalDescription,
-          image: socialImageURL,
-          url: canonicalURL,
-          datePublished: pubDatetime.toISOString(),
-          dateModified: modDatetime
-            ? modDatetime.toISOString()
-            : pubDatetime.toISOString(),
-          inLanguage: langTag,
-          author: {
-            "@id": graphIds.author,
-            name: author,
-            ...(profile && { url: profile }),
-          },
-          publisher: {
-            "@id": graphIds.author,
-          },
-          ...(counterpartUrl && {
-            sameAs: [counterpartUrl],
-            translationOfWork: {
-              "@type": "CreativeWork",
-              "@id": counterpartUrl,
-            },
-          }),
-        },
-      ];
-    })()
+  ? buildBlogPostingStructuredData({
+      canonicalURL,
+      title,
+      description: finalDescription,
+      socialImageURL,
+      pubDatetime,
+      modDatetime,
+      langTag,
+      author,
+      profile,
+      graphIds,
+      bilingualPostMap,
+      siteWebsite: SITE.website,
+    })
   : [];
 
 const breadcrumbStructuredData =
