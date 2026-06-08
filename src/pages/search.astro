@@ -11,12 +11,45 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 const pageTitle = t(Astro, "search.title");
 const pageDescription = t(Astro, "search.metaDescription");
 const layoutTitle = `${pageTitle} | ${SITE.title}`;
+const pagefindTranslations = {
+  placeholder: t(Astro, "search.pagefind.placeholder"),
+  clear_search: t(Astro, "search.pagefind.clearSearch"),
+  load_more: t(Astro, "search.pagefind.loadMore"),
+  search_label: t(Astro, "search.pagefind.searchLabel"),
+  filters_label: t(Astro, "search.pagefind.filtersLabel"),
+  zero_results: t(Astro, "search.pagefind.zeroResults"),
+  many_results: t(Astro, "search.pagefind.manyResults"),
+  one_result: t(Astro, "search.pagefind.oneResult"),
+  total_zero_results: t(Astro, "search.pagefind.totalZeroResults"),
+  total_one_result: t(Astro, "search.pagefind.totalOneResult"),
+  total_many_results: t(Astro, "search.pagefind.totalManyResults"),
+  alt_search: t(Astro, "search.pagefind.altSearch"),
+  search_suggestion: t(Astro, "search.pagefind.searchSuggestion"),
+  searching: t(Astro, "search.pagefind.searching"),
+  results_label: t(Astro, "search.pagefind.resultsLabel"),
+  keyboard_navigate: t(Astro, "search.pagefind.keyboardNavigate"),
+  keyboard_select: t(Astro, "search.pagefind.keyboardSelect"),
+  keyboard_clear: t(Astro, "search.pagefind.keyboardClear"),
+  keyboard_close: t(Astro, "search.pagefind.keyboardClose"),
+  keyboard_search: t(Astro, "search.pagefind.keyboardSearch"),
+  error_search: t(Astro, "search.pagefind.errorSearch"),
+  filter_selected_one: t(Astro, "search.pagefind.filterSelectedOne"),
+  filter_selected_many: t(Astro, "search.pagefind.filterSelectedMany"),
+  input_hint: t(Astro, "search.pagefind.inputHint"),
+  loading: t(Astro, "search.pagefind.loading"),
+};
 ---
 
 <Layout title={layoutTitle} description={pageDescription}>
   <Header />
   <Main pageTitle={pageTitle} pageDesc={t(Astro, "search.placeholder")}>
-    <div id="pagefind-search" transition:persist data-backurl={backUrl}></div>
+    <div
+      id="pagefind-search"
+      transition:persist
+      data-backurl={backUrl}
+      data-pagefind-translations={JSON.stringify(pagefindTranslations)}
+    >
+    </div>
   </Main>
   <Footer />
 </Layout>
@@ -29,6 +62,9 @@ const layoutTitle = `${pageTitle} | ${SITE.title}`;
     if (!pageFindSearch) return;
 
     const params = new URLSearchParams(window.location.search);
+    const translations = JSON.parse(
+      pageFindSearch.dataset.pagefindTranslations || "{}"
+    );
 
     const onIdle = window.requestIdleCallback || (cb => setTimeout(cb, 1));
 
@@ -51,6 +87,7 @@ const layoutTitle = `${pageTitle} | ${SITE.title}`;
         element: "#pagefind-search",
         showSubResults: true,
         showImages: false,
+        translations,
         processTerm: function (term: string) {
           params.set("q", term); // Update the `q` parameter in the URL
           history.replaceState(history.state, "", "?" + params.toString()); // Push the new URL without reloading

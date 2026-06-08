@@ -5,76 +5,35 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import TranslationNotFoundComponent from "@/components/TranslationNotFound.astro";
 import { t } from "@/i18n/utils";
-import { slugifyStr } from "@/utils/slugify";
-import { sanitizePath } from "@/utils/url";
+import { getPath } from "@/utils/getPath";
 
-// Get query params
-const targetLocale = Astro.url.searchParams.get("target") || "en";
+const [zhPosts, enPosts] = await Promise.all([
+  getCollection("blog"),
+  getCollection("blog-en"),
+]);
 
-// Handle potential malformed URI sequences (e.g., %E0%A4)
-let rawPath = Astro.url.searchParams.get("path") || "";
-try {
-  rawPath = decodeURIComponent(rawPath);
-} catch {
-  // If decoding fails, use the raw value
-}
-const currentPath = sanitizePath(rawPath);
-
-// Extract post slug from the current path
-const pathSegments = currentPath.split("/").filter(Boolean);
-const postSlug = pathSegments[pathSegments.length - 1] || "Article";
-
-// Determine which collection to search for the original article title:
-// - If targetLocale === "en" (missing English translation), search the Chinese collection ('blog') for the original.
-// - If targetLocale === "zh-CN" (missing Chinese translation), search the English collection ('blog-en') for the original.
-// This ensures we always display the original title from the source language.
-const searchCollection = targetLocale === "en" ? "blog" : "blog-en";
-
-let currentPostTitle = postSlug; // Fallback to slug if post not found
-
-try {
-  const posts = await getCollection(searchCollection);
-
-  // Find the post to get its title
-  if (pathSegments.length > 0) {
-    // Try to match by explicit slug first (for posts with custom slug)
-    // or fallback to slugified title matching
-    const post = posts.find(
-      p =>
-        (p.data.slug && p.data.slug === postSlug) ||
-        slugifyStr(p.data.title) === postSlug
-    );
-
-    if (post) {
-      currentPostTitle = post.data.title;
-    }
-  }
-} catch {
-  // Silently fallback to slug if collection cannot be retrieved
-}
+const postTitleByPath = Object.fromEntries(
+  [...zhPosts, ...enPosts]
+    .filter(post => !post.data.draft)
+    .map(post => [
+      getPath(post.id, post.filePath, true, post.data.slug),
+      post.data.title,
+    ])
+);
 
 // Get translation function
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
-
-// Override logic:
-// If target=en (Missing English), Chinese is the original.
-// If target=zh-CN (Missing Chinese), English is the original.
-const switchOverride: Record<string, string> = {};
-if (targetLocale === "en") {
-  switchOverride["zh-CN"] = currentPath;
-} else {
-  switchOverride["en"] = currentPath;
-}
 ---
 
 <Layout title={tr("language.translationNotFound")}>
-  <Header activeNav="posts" switchOverride={switchOverride} />
+  <Header activeNav="posts" />
   <main class="min-h-screen pt-16">
     <TranslationNotFoundComponent
-      targetLocale={targetLocale}
-      currentPostTitle={currentPostTitle}
-      currentPath={currentPath}
+      targetLocale="en"
+      currentPostTitle=""
+      currentPath="/"
+      postTitleByPath={postTitleByPath}
     />
   </main>
   <Footer />

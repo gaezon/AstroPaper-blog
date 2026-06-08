@@ -139,6 +139,38 @@ test.describe("Language Switcher Accessibility", () => {
   });
 });
 
+test.describe("Translation Missing Page Localization", () => {
+  test("Chinese missing-translation page uses localized primary copy", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/translation-not-found/?target=en&path=%2Fposts%2Fhoarder-app-replace-cubox%2F"
+    );
+
+    await expect(
+      page.getByRole("heading", { name: "暂无英文译文" })
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "文章「自建 Karakeep（原 Hoarder）剪藏服务取代 Cubox：解决隐私与成本问题」暂无英文译文。"
+      )
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "返回上一页" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "阅读中文原文" })
+    ).toHaveAttribute("href", "/posts/hoarder-app-replace-cubox/");
+    await expect(
+      page.getByRole("link", { name: "浏览全部中文文章" })
+    ).toHaveAttribute("href", "/posts/");
+
+    await expect(page.getByText("Go Back")).toHaveCount(0);
+    await expect(page.getByText("Read in Chinese")).toHaveCount(0);
+    await expect(page.getByText("Translation Not Available")).toHaveCount(0);
+  });
+});
+
 test.describe("Language Switcher Mobile Navigation", () => {
   test.use({
     viewport: { width: 390, height: 844 },

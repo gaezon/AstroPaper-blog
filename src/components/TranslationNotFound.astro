@@ -1,23 +1,51 @@
 ---
+import { t } from "@/i18n/utils";
+
 export interface Props {
   targetLocale: string;
   currentPostTitle: string;
   currentPath: string;
+  postTitleByPath: Record<string, string>;
 }
 
-const { targetLocale, currentPostTitle, currentPath } = Astro.props;
+const { targetLocale, currentPostTitle, currentPath, postTitleByPath } =
+  Astro.props;
+const tr = (key: string, params?: Record<string, string | number>) =>
+  t(Astro, key, params);
 
-// Determine which language is missing based on targetLocale
-const isMissingEnglish = targetLocale === "en";
-const isMissingChinese = targetLocale === "zh-CN";
+const normalizeTargetLocale = (locale: string) =>
+  locale === "zh-CN" ? "zh-CN" : "en";
+const normalizedTargetLocale = normalizeTargetLocale(targetLocale);
+const isMissingEnglish = normalizedTargetLocale === "en";
 
 // Dynamic content based on missing language
-const missingLanguageName = isMissingEnglish ? "English" : "Chinese";
-const availableLanguageName = isMissingEnglish ? "Chinese" : "English";
-const browseAllLink = isMissingEnglish ? "/" : "/en/";
-const browseAllText = isMissingEnglish
-  ? "browse all Chinese posts"
-  : "browse all English posts";
+const missingLanguageName = isMissingEnglish
+  ? tr("language.missing.english")
+  : tr("language.missing.chinese");
+const availableLanguageName = isMissingEnglish
+  ? tr("language.missing.chinese")
+  : tr("language.missing.english");
+const fallbackTitle = tr("language.missing.currentArticleFallback");
+const displayTitle = currentPostTitle.trim() || fallbackTitle;
+const browseAllLink = isMissingEnglish ? "/posts/" : "/en/posts/";
+const safeCurrentPath = currentPath || "/";
+
+const copy = {
+  english: tr("language.missing.english"),
+  chinese: tr("language.missing.chinese"),
+  fallbackTitle,
+  titleTemplate: tr("language.missing.title", { language: "__LANGUAGE__" }),
+  descriptionTemplate: tr("language.missing.description", {
+    title: "__TITLE__",
+    language: "__LANGUAGE__",
+  }),
+  readAvailableTemplate: tr("language.missing.readAvailable", {
+    language: "__LANGUAGE__",
+  }),
+  browseAllTemplate: tr("language.missing.browseAll", {
+    language: "__LANGUAGE__",
+  }),
+};
 ---
 
 <div
@@ -45,62 +73,27 @@ const browseAllText = isMissingEnglish
   </div>
 
   <h1
+    data-missing-title
     class="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
   >
-    {missingLanguageName} Translation Not Available
+    {tr("language.missing.title", { language: missingLanguageName })}
   </h1>
-  {
-    isMissingEnglish && (
-      <p class="mb-8 text-lg font-medium text-muted-foreground">暂无英文版本</p>
-    )
-  }
-  {
-    isMissingChinese && (
-      <p class="mb-8 text-lg font-medium text-muted-foreground">暂无中文版本</p>
-    )
-  }
 
   <div class="mb-8 max-w-lg space-y-2 text-muted-foreground/80">
-    {
-      currentPostTitle && currentPostTitle !== "Article" && (
-        <p>
-          The article{" "}
-          <span class="font-semibold text-foreground">
-            "{currentPostTitle}"
-          </span>{" "}
-          is not yet available in {missingLanguageName}.
-        </p>
-      )
-    }
-    {
-      isMissingEnglish && (
-        <p class="text-sm">
-          文章
-          <span class="font-medium text-foreground">
-            「{currentPostTitle || "本文"}」
-          </span>
-          暂无英文版本。
-        </p>
-      )
-    }
-    {
-      isMissingChinese && (
-        <p class="text-sm">
-          文章
-          <span class="font-medium text-foreground">
-            「{currentPostTitle || "本文"}」
-          </span>
-          暂无中文版本。
-        </p>
-      )
-    }
+    <p class="text-sm" data-missing-description>
+      {
+        tr("language.missing.description", {
+          title: displayTitle,
+          language: missingLanguageName,
+        })
+      }
+    </p>
   </div>
 
   <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
-    <!-- Primary: Go Back (most likely user intent) -->
     <button
       onclick="history.back()"
-      aria-label="Go back to previous page"
+      aria-label={tr("language.missing.back")}
       class="inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-base font-medium text-white transition-colors hover:bg-accent/90"
     >
       <svg
@@ -116,41 +109,131 @@ const browseAllText = isMissingEnglish
         class="mr-2"
         aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg
       >
-      Go Back
-      <span class="ml-2 text-xs opacity-80">(返回)</span>
+      {tr("language.missing.back")}
     </button>
 
-    <!-- Secondary: Read in available language -->
     <a
-      href={currentPath}
-      aria-label={`Read article in ${availableLanguageName}`}
+      href={safeCurrentPath}
+      aria-label={tr("language.missing.readAvailable", {
+        language: availableLanguageName,
+      })}
       class="inline-flex items-center justify-center rounded-lg border border-border bg-background px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted"
+      data-available-link
     >
-      Read in {availableLanguageName}
       {
-        isMissingEnglish && (
-          <span class="ml-2 text-xs text-muted-foreground opacity-80">
-            (中文版)
-          </span>
-        )
-      }
-      {
-        isMissingChinese && (
-          <span class="ml-2 text-xs text-muted-foreground opacity-80">
-            (English)
-          </span>
-        )
+        tr("language.missing.readAvailable", {
+          language: availableLanguageName,
+        })
       }
     </a>
   </div>
 
-  <!-- Tertiary: Low-priority navigation option -->
   <p class="mt-10 text-sm text-muted-foreground">
-    Or{" "}
-    <a href={browseAllLink} class="font-medium text-accent hover:underline">
-      {browseAllText}
+    <a
+      href={browseAllLink}
+      class="font-medium text-accent hover:underline"
+      data-browse-link
+    >
+      {tr("language.missing.browseAll", { language: availableLanguageName })}
     </a>
-    {isMissingEnglish && <span class="opacity-70">/ 或浏览中文文章</span>}
-    {isMissingChinese && <span class="opacity-70">/ 或浏览英文文章</span>}
   </p>
 </div>
+
+<script
+  is:inline
+  define:vars={{
+    copy,
+    postTitleByPath,
+    defaultTargetLocale: normalizedTargetLocale,
+    defaultCurrentPath: safeCurrentPath,
+  }}
+>
+  (() => {
+    const root = document.currentScript?.previousElementSibling;
+    if (!(root instanceof HTMLElement)) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const targetLocale =
+      params.get("target") === "zh-CN" ? "zh-CN" : defaultTargetLocale;
+    const rawPath = params.get("path") || defaultCurrentPath;
+
+    let decodedPath = rawPath;
+    try {
+      decodedPath = decodeURIComponent(rawPath);
+    } catch {}
+
+    const sanitizePath = path => {
+      const trimmed = path.trim();
+      if (!trimmed.startsWith("/") || trimmed.startsWith("//")) return "/";
+      const lowerPath = trimmed.toLowerCase();
+      if (
+        lowerPath.includes("javascript:") ||
+        lowerPath.includes("data:") ||
+        lowerPath.includes("vbscript:")
+      ) {
+        return "/";
+      }
+      return trimmed;
+    };
+
+    const ensureTrailingSlash = path =>
+      path === "/" || path.endsWith("/") ? path : `${path}/`;
+    const currentPath = ensureTrailingSlash(sanitizePath(decodedPath));
+    const missingLanguage =
+      targetLocale === "zh-CN" ? copy.chinese : copy.english;
+    const availableLanguage =
+      targetLocale === "zh-CN" ? copy.english : copy.chinese;
+    const title = postTitleByPath[currentPath] || copy.fallbackTitle;
+    const browseAllLink = targetLocale === "zh-CN" ? "/en/posts/" : "/posts/";
+
+    const renderTemplate = (template, values) =>
+      Object.entries(values).reduce(
+        (output, [key, value]) => output.replaceAll(key, value),
+        template
+      );
+
+    const heading = root.querySelector("[data-missing-title]");
+    const description = root.querySelector("[data-missing-description]");
+    const availableLink = root.querySelector("[data-available-link]");
+    const browseLink = root.querySelector("[data-browse-link]");
+    const readAvailable = renderTemplate(copy.readAvailableTemplate, {
+      __LANGUAGE__: availableLanguage,
+    });
+    const browseAll = renderTemplate(copy.browseAllTemplate, {
+      __LANGUAGE__: availableLanguage,
+    });
+
+    if (heading) {
+      heading.textContent = renderTemplate(copy.titleTemplate, {
+        __LANGUAGE__: missingLanguage,
+      });
+    }
+    if (description) {
+      description.textContent = renderTemplate(copy.descriptionTemplate, {
+        __TITLE__: title,
+        __LANGUAGE__: missingLanguage,
+      });
+    }
+    if (availableLink instanceof HTMLAnchorElement) {
+      availableLink.href = currentPath;
+      availableLink.setAttribute("aria-label", readAvailable);
+      availableLink.textContent = readAvailable;
+    }
+    if (browseLink instanceof HTMLAnchorElement) {
+      browseLink.href = browseAllLink;
+      browseLink.textContent = browseAll;
+    }
+
+    document
+      .querySelectorAll(".language-switcher-dropdown a[data-locale]")
+      .forEach(link => {
+        if (!(link instanceof HTMLAnchorElement)) return;
+        const locale = link.dataset.locale;
+        link.href =
+          locale === targetLocale
+            ? `${window.location.pathname}${window.location.search}`
+            : currentPath;
+        link.dataset.baseHref = link.href;
+      });
+  })();
+</script>
