@@ -77,6 +77,35 @@ export default {
     searchResults: "Search Results",
     searching: "Searching...",
     clearSearch: "Clear Search",
+    pagefind: {
+      placeholder: "Search posts",
+      clearSearch: "Clear",
+      loadMore: "Load more results",
+      searchLabel: "Site search",
+      filtersLabel: "Filters",
+      zeroResults: "No posts found for [SEARCH_TERM]",
+      manyResults: "Found [COUNT] posts for [SEARCH_TERM]",
+      oneResult: "Found [COUNT] post for [SEARCH_TERM]",
+      totalZeroResults: "No results",
+      totalOneResult: "[COUNT] result",
+      totalManyResults: "[COUNT] results",
+      altSearch:
+        "No posts found for [SEARCH_TERM]. Showing results for [DIFFERENT_TERM] instead",
+      searchSuggestion:
+        "No posts found for [SEARCH_TERM]. Try one of the following searches.",
+      searching: "Searching [SEARCH_TERM]...",
+      resultsLabel: "Search Results",
+      keyboardNavigate: "Navigate",
+      keyboardSelect: "Select",
+      keyboardClear: "Clear",
+      keyboardClose: "Close",
+      keyboardSearch: "Search",
+      errorSearch: "Search failed",
+      filterSelectedOne: "[COUNT] selected",
+      filterSelectedMany: "[COUNT] selected",
+      inputHint: "Results will appear as you type",
+      loading: "Loading",
+    },
   },
 
   // Tags related
@@ -106,9 +135,17 @@ export default {
     selectLanguage: "Select Language",
     default: "(default)",
     translationNotFound: "Translation Not Available",
-    translationNotFoundDescription:
-      '"{{title}}" is not yet available in {{targetLanguage}}.',
-    viewOtherPosts: "View {{targetLanguage}} Posts",
+    missing: {
+      chinese: "Chinese",
+      english: "English",
+      currentArticleFallback: "this article",
+      title: "{{language}} Translation Not Available",
+      description:
+        'The article "{{title}}" is not yet available in {{language}}.',
+      back: "Go Back",
+      readAvailable: "Read in {{language}}",
+      browseAll: "Browse all {{language}} posts",
+    },
   },
 
   // Theme switching
@@ -164,6 +201,14 @@ export default {
     collapse: "Collapse",
     socialLinks: "Contact me:",
     sharePostOn: "Share this article on:",
+    copyCode: "Copy",
+    copiedCode: "Copied",
+    zoomImage: "Zoom image",
+    imagePreview: "Image preview",
+    closeImagePreview: "Close image preview",
+    emailMe: "Send an email",
+    emailService: "email",
+    sharePostVia: "Share this post via {{service}}",
     cookie: {
       consentText:
         "We use cookies to enhance your browsing experience. Read our",
