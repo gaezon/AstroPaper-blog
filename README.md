@@ -10,7 +10,7 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 
 ## What this repo includes
 
-- Astro 6 + TypeScript + Tailwind CSS blog site
+- Astro 7 + TypeScript + Tailwind CSS blog site
 - Chinese (`zh-CN`) and English (`en`) routes
 - Build-time bilingual post mapping for unified comments
 - Build-time Mermaid rendering in GitHub Actions

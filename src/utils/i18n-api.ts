@@ -37,7 +37,10 @@ export async function getLocalizedPostOgStaticPaths(locale: BlogLocale) {
   return posts
     .filter(({ data }) => !data.ogImage)
     .map(post => ({
-      params: { slug: getPath(post.id, post.filePath, false, post.data.slug) },
+      params: {
+        slug: getPath(post.id, post.filePath, false, post.data.slug),
+        image: "index.png",
+      },
       props: post,
     }));
 }

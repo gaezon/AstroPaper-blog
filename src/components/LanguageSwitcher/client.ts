@@ -134,6 +134,7 @@ export function initLanguageSwitcher() {
 
     const clickHandler = (e: Event) => {
       e.stopPropagation();
+      preserveCurrentUrlParts(dropdown);
       const isOpen = dropdown.getAttribute("data-open") === "true";
       if (!isOpen) {
         openDropdown(dropdown);

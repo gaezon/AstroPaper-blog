@@ -11,19 +11,17 @@ type BlogEntry = CollectionEntry<"blog" | "blog-en">;
 export const getStaticPaths: GetStaticPaths = async () => {
   const locales: BlogLocale[] = ["zh-CN", "en"];
   const paths: Array<{
-    params: { locale: BlogLocale; slug: string };
+    params: { blogLocale: BlogLocale; slug: string };
     props: { locale: BlogLocale; post: BlogEntry };
   }> = [];
 
   for (const locale of locales) {
     const posts = (await getBlogPosts(locale)).filter(postFilter);
     for (const post of posts) {
-      // Slug derived via getPath(includeBase=false): may be a multi-segment
-      // path (e.g. "subdir/my-post") when posts use nested directories.
-      // The [...slug] rest param in the route handles this correctly.
-      const slug = getPath(post.id, post.filePath, false, post.data.slug);
+      // Keep the public endpoint contract at /api/posts/{locale}/{slug}.json.
+      const slug = `${getPath(post.id, post.filePath, false, post.data.slug)}.json`;
       paths.push({
-        params: { locale, slug },
+        params: { blogLocale: locale, slug },
         props: { locale, post },
       });
     }
