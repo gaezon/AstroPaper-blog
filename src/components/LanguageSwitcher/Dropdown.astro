@@ -18,6 +18,17 @@ const availableLocales = getAvailableLocales();
 const currentLocaleInfo = availableLocales.find(l => l.code === currentLocale);
 const tr = (key: string, params?: Record<string, string | number>) =>
   t(Astro, key, params);
+
+function withCurrentSearch(href: string) {
+  if (!Astro.url.search) return href;
+
+  const url = new URL(href, Astro.url.origin);
+  if (!url.search) {
+    url.search = Astro.url.search;
+  }
+
+  return `${url.pathname}${url.search}${url.hash}`;
+}
 ---
 
 <div class={`language-switcher-dropdown ${className}`} data-open="false">
@@ -73,8 +84,9 @@ const tr = (key: string, params?: Record<string, string | number>) =>
     }
     {
       availableLocales.map(locale => {
-        const targetHref =
+        const baseHref =
           override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
+        const targetHref = withCurrentSearch(baseHref);
         return (
           <a
             href={targetHref}

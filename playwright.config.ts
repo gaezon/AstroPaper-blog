@@ -13,6 +13,7 @@ export default defineConfig({
   },
   webServer: {
     command: "pnpm dev --host 127.0.0.1 --port 4321",
+    env: { ...process.env, ASTRO_DEV_BACKGROUND: "0" },
     url: "http://127.0.0.1:4321",
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",

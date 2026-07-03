@@ -1,5 +1,6 @@
 // Compatibility between unified and vite types: avoid disabling validation, use local ignores
 import { defineConfig, envField } from "astro/config";
+import { unified, type RehypePlugins } from "@astrojs/markdown-remark";
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -49,11 +50,7 @@ const mermaidLaunchOptions = process.env.MERMAID_CHROMIUM_EXECUTABLE_PATH
     } as const)
   : undefined;
 
-type RehypePluginsList = NonNullable<
-  NonNullable<Parameters<typeof defineConfig>[0]["markdown"]>["rehypePlugins"]
->;
-
-const mermaidConfig: RehypePluginsList = shouldRenderMermaidAtBuildTime
+const mermaidConfig: RehypePlugins = shouldRenderMermaidAtBuildTime
   ? [
       [
         rehypeMermaid,
@@ -77,6 +74,7 @@ const mermaidConfig: RehypePluginsList = shouldRenderMermaidAtBuildTime
 export default defineConfig({
   site: SITE.website,
   adapter: vercel(),
+  compressHTML: true,
   integrations: [
     mdx(),
     sitemap({
@@ -180,17 +178,19 @@ export default defineConfig({
     },
   },
   markdown: {
-    remarkPlugins: [
-      [remarkToc, tocConfig],
-      [remarkCollapse, getI18nCollapseConfig()],
-    ],
-    rehypePlugins: [
-      // Build-time Mermaid rendering in GitHub Actions only; otherwise this plugin is skipped.
-      ...mermaidConfig,
-      rehypeCallouts,
-      // Normalize Markdown image priority and fallback rendering attributes
-      rehypeImageSize,
-    ],
+    processor: unified({
+      remarkPlugins: [
+        [remarkToc, tocConfig],
+        [remarkCollapse, getI18nCollapseConfig()],
+      ],
+      rehypePlugins: [
+        // Build-time Mermaid rendering in GitHub Actions only; otherwise this plugin is skipped.
+        ...mermaidConfig,
+        rehypeCallouts,
+        // Normalize Markdown image priority and fallback rendering attributes
+        rehypeImageSize,
+      ],
+    }),
     syntaxHighlight: {
       excludeLangs: ["mermaid"],
     },
