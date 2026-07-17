@@ -1,7 +1,9 @@
 ---
 import { toTransitionName } from "@/utils/toTransitionName";
 import { getPath } from "@/utils/getPath";
+import { getArticleViewPaths } from "@/utils/article-view-paths";
 import Datetime from "./Datetime.astro";
+import ArticleViews from "./ArticleViews.astro";
 import { t } from "@/i18n/utils";
 
 export interface Props {
@@ -15,6 +17,8 @@ export interface Props {
 const { variant = "h2", data, id, filePath } = Astro.props;
 
 const { title, description, pubDatetime, modDatetime, timezone } = data;
+const postPath = getPath(id, filePath, true, data.slug);
+const articleViewPaths = getArticleViewPaths(postPath);
 
 const headerProps = {
   style: { viewTransitionName: toTransitionName(title) },
@@ -24,7 +28,7 @@ const headerProps = {
 
 <li class="my-6">
   <a
-    href={getPath(id, filePath)}
+    href={postPath}
     class="inline-block text-lg font-medium text-accent decoration-dashed underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
     aria-label={t(Astro, "ui.readArticle", { title })}
   >
@@ -36,6 +40,9 @@ const headerProps = {
       )
     }
   </a>
-  <Datetime {pubDatetime} {modDatetime} {timezone} />
+  <div class="flex items-center gap-2">
+    <Datetime {pubDatetime} {modDatetime} {timezone} />
+    <ArticleViews paths={articleViewPaths} loading="visible" />
+  </div>
   <p>{description}</p>
 </li>

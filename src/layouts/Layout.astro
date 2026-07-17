@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
+import { UMAMI } from "@/config/umami";
 import { SOCIALS } from "@/constants";
 import "@/styles/global.css";
 import {
@@ -401,6 +402,8 @@ const siteHostname = new URL(SITE.website).hostname;
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="dns-prefetch" href={UMAMI.origin} />
+    <link rel="preconnect" href={UMAMI.origin} crossorigin="anonymous" />
     {!disablePageUrlMeta && <link rel="canonical" href={canonicalURL} />}
     <meta name="generator" content={Astro.generator} />
     {robots && <meta name="robots" content={robots} />}
@@ -516,9 +519,11 @@ const siteHostname = new URL(SITE.website).hostname;
         <script
           is:inline
           defer
-          src="https://umami.gaazeon.com/umami"
-          data-website-id="82ee4d3c-d021-4a8b-94b3-6ce6840b6416"
+          src={`${UMAMI.origin}${UMAMI.trackerPath}`}
+          crossorigin="anonymous"
+          data-website-id={UMAMI.websiteId}
           data-domains={siteHostname}
+          data-exclude-hash="true"
         />
       )
     }

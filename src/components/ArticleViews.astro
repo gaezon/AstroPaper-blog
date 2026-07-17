@@ -1,0 +1,277 @@
+---
+import IconEye from "@/assets/icons/IconEye.svg";
+import { getUmamiArticleViewsUrl } from "@/config/umami";
+import { getCurrentLocale, t } from "@/i18n/utils";
+
+export interface Props {
+  paths: string[];
+  loading?: "eager" | "visible";
+  size?: "sm" | "lg";
+}
+
+const { paths, loading = "eager", size = "sm" } = Astro.props;
+const articlePaths = [...new Set(paths)].slice(0, 2);
+const requestUrl = getUmamiArticleViewsUrl(articlePaths);
+const currentLocale = getCurrentLocale(Astro);
+---
+
+<span
+  data-article-views
+  data-request-url={requestUrl}
+  data-locale={currentLocale}
+  data-loading={loading}
+  class="inline-flex min-h-6 items-center gap-2 opacity-80"
+  aria-live="polite"
+  aria-atomic="true"
+  aria-busy="true"
+>
+  <span aria-hidden="true">|</span>
+  <span class="inline-flex items-center gap-2">
+    <IconEye
+      aria-hidden="true"
+      class:list={[
+        "inline-block size-6 min-w-[1.375rem]",
+        { "scale-90": size === "sm" },
+      ]}
+    />
+    <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>
+      <span
+        data-article-views-value
+        class="inline-flex min-w-[3ch] justify-center align-middle"
+      >
+        <span
+          data-article-views-placeholder
+          aria-hidden="true"
+          class="inline-block h-2.5 w-6 rounded-full bg-current opacity-20 motion-safe:animate-pulse"
+        ></span>
+      </span>
+      {t(Astro, "post.views")}
+    </span>
+  </span>
+</span>
+
+<script>
+  interface CachedArticleViews {
+    views: number;
+    cachedAt: number;
+  }
+
+  type ArticleViewsWindow = Window & {
+    __articleViewsAbortController?: AbortController;
+    __articleViewsEventsBound?: boolean;
+    __articleViewsObserver?: IntersectionObserver;
+    __articleViewsPageRoot?: HTMLElement;
+    __articleViewsMemoryCache?: Map<string, number>;
+  };
+
+  const CACHE_PREFIX = "umami:article-views:";
+  const CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+  const articleViewsWindow = window as ArticleViewsWindow;
+
+  function isValidViews(value: unknown): value is number {
+    return (
+      typeof value === "number" && Number.isSafeInteger(value) && value >= 0
+    );
+  }
+
+  function renderArticleViews(root: HTMLElement, views: number) {
+    const value = root.querySelector<HTMLElement>("[data-article-views-value]");
+    if (!value) return;
+
+    value.textContent = new Intl.NumberFormat(root.dataset.locale).format(
+      views
+    );
+    root.classList.remove("invisible");
+    root.dataset.articleViewsState = "loaded";
+    root.setAttribute("aria-busy", "false");
+  }
+
+  function markArticleViewsUnavailable(root: HTMLElement) {
+    root.classList.add("invisible");
+    root.removeAttribute("data-article-views-state");
+    root.setAttribute("aria-busy", "false");
+  }
+
+  function readCachedViews(requestUrl: string): number | undefined {
+    articleViewsWindow.__articleViewsMemoryCache ??= new Map();
+    const memoryValue =
+      articleViewsWindow.__articleViewsMemoryCache.get(requestUrl);
+
+    if (isValidViews(memoryValue)) return memoryValue;
+
+    try {
+      const rawValue = localStorage.getItem(`${CACHE_PREFIX}${requestUrl}`);
+      if (!rawValue) return undefined;
+
+      const cached = JSON.parse(rawValue) as Partial<CachedArticleViews>;
+      if (
+        !isValidViews(cached.views) ||
+        typeof cached.cachedAt !== "number" ||
+        Date.now() - cached.cachedAt > CACHE_MAX_AGE
+      ) {
+        localStorage.removeItem(`${CACHE_PREFIX}${requestUrl}`);
+        return undefined;
+      }
+
+      articleViewsWindow.__articleViewsMemoryCache.set(
+        requestUrl,
+        cached.views
+      );
+      return cached.views;
+    } catch {
+      return undefined;
+    }
+  }
+
+  function cacheViews(requestUrl: string, views: number) {
+    articleViewsWindow.__articleViewsMemoryCache ??= new Map();
+    articleViewsWindow.__articleViewsMemoryCache.set(requestUrl, views);
+
+    try {
+      localStorage.setItem(
+        `${CACHE_PREFIX}${requestUrl}`,
+        JSON.stringify({ views, cachedAt: Date.now() })
+      );
+    } catch {
+      // Storage can be unavailable in private or restricted browsing modes.
+    }
+  }
+
+  function requestViews(
+    requestUrl: string,
+    signal: AbortSignal,
+    requests: Map<string, Promise<number>>
+  ): Promise<number> {
+    const pendingRequest = requests.get(requestUrl);
+    if (pendingRequest) return pendingRequest;
+
+    const request = fetch(requestUrl, {
+      credentials: "omit",
+      signal,
+    }).then(async response => {
+      if (!response.ok) throw new Error("Unable to load article views");
+
+      const data: unknown = await response.json();
+      const views =
+        data && typeof data === "object" && "views" in data
+          ? (data as { views?: unknown }).views
+          : undefined;
+
+      if (!isValidViews(views)) {
+        throw new Error("Invalid article views response");
+      }
+
+      return views;
+    });
+
+    requests.set(requestUrl, request);
+    return request;
+  }
+
+  async function loadArticleViews(
+    root: HTMLElement,
+    signal: AbortSignal,
+    requests: Map<string, Promise<number>>
+  ) {
+    if (root.dataset.articleViewsFetchStarted === "true") return;
+    const requestUrl = root.dataset.requestUrl;
+
+    if (!requestUrl) {
+      markArticleViewsUnavailable(root);
+      return;
+    }
+
+    root.dataset.articleViewsFetchStarted = "true";
+    const cachedViews = readCachedViews(requestUrl);
+    if (cachedViews !== undefined) renderArticleViews(root, cachedViews);
+    root.dataset.articleViewsState =
+      cachedViews === undefined ? "loading" : "refreshing";
+    root.setAttribute("aria-busy", "true");
+
+    try {
+      const views = await requestViews(requestUrl, signal, requests);
+      cacheViews(requestUrl, views);
+      renderArticleViews(root, views);
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        if (cachedViews === undefined) {
+          markArticleViewsUnavailable(root);
+        } else {
+          root.dataset.articleViewsState = "loaded";
+          root.setAttribute("aria-busy", "false");
+        }
+      }
+    }
+  }
+
+  function cleanupArticleViews() {
+    articleViewsWindow.__articleViewsAbortController?.abort();
+    articleViewsWindow.__articleViewsObserver?.disconnect();
+    delete articleViewsWindow.__articleViewsAbortController;
+    delete articleViewsWindow.__articleViewsObserver;
+    delete articleViewsWindow.__articleViewsPageRoot;
+  }
+
+  function loadArticleViewsForPage() {
+    const roots = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-article-views]")
+    );
+    const pageRoot = roots[0];
+
+    if (!pageRoot) {
+      cleanupArticleViews();
+      return;
+    }
+    if (articleViewsWindow.__articleViewsPageRoot === pageRoot) return;
+
+    cleanupArticleViews();
+    articleViewsWindow.__articleViewsPageRoot = pageRoot;
+
+    const controller = new AbortController();
+    const requests = new Map<string, Promise<number>>();
+    articleViewsWindow.__articleViewsAbortController = controller;
+
+    const startLoading = (root: HTMLElement) => {
+      articleViewsWindow.__articleViewsObserver?.unobserve(root);
+      void loadArticleViews(root, controller.signal, requests);
+    };
+
+    if ("IntersectionObserver" in window) {
+      articleViewsWindow.__articleViewsObserver = new IntersectionObserver(
+        entries => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              startLoading(entry.target as HTMLElement);
+            }
+          }
+        },
+        { rootMargin: "200px 0px" }
+      );
+    }
+
+    for (const root of roots) {
+      const requestUrl = root.dataset.requestUrl;
+      if (requestUrl) {
+        const cachedViews = readCachedViews(requestUrl);
+        if (cachedViews !== undefined) renderArticleViews(root, cachedViews);
+      }
+
+      if (
+        root.dataset.loading === "visible" &&
+        articleViewsWindow.__articleViewsObserver
+      ) {
+        articleViewsWindow.__articleViewsObserver.observe(root);
+      } else {
+        startLoading(root);
+      }
+    }
+  }
+
+  if (!articleViewsWindow.__articleViewsEventsBound) {
+    articleViewsWindow.__articleViewsEventsBound = true;
+    document.addEventListener("astro:page-load", loadArticleViewsForPage);
+    document.addEventListener("astro:before-swap", cleanupArticleViews);
+  }
+
+  loadArticleViewsForPage();
+</script>
