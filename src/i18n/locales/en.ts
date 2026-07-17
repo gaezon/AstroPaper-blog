@@ -34,6 +34,7 @@ export default {
     updatedOn: "Updated on",
     tags: "Tags",
     readTime: "min read",
+    views: "views",
     tableOfContents: "Table of Contents",
     backToTop: "Back to Top",
     sharePost: "Share Post",

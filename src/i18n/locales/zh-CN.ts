@@ -34,6 +34,7 @@ export default {
     updatedOn: "更新于",
     tags: "标签",
     readTime: "分钟阅读",
+    views: "次阅读",
     tableOfContents: "目录",
     backToTop: "返回顶部",
     sharePost: "分享文章",
