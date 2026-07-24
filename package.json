@@ -2,7 +2,7 @@
   "name": "astro-paper",
   "type": "module",
   "version": "6.1.0",
-  "packageManager": "pnpm@11.2.2",
+  "packageManager": "pnpm@11.17.0",
   "engines": {
     "node": "24.x",
     "pnpm": ">=11 <12"
