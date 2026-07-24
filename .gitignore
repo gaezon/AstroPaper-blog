@@ -32,6 +32,9 @@ public/pagefind
 .cursor/*
 !.cursor/rules
 
+# OpenCode local project config/skills
+.opencode/
+
 # Kiro local workspace specs
 .kiro/
 
