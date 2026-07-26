@@ -36,7 +36,7 @@ html[data-theme="dark"] {
     scrollbar-color: var(--color-muted) transparent;
   }
   html {
-    @apply overflow-y-scroll scroll-smooth;
+    @apply overflow-y-scroll motion-safe:scroll-smooth;
     /* Global scroll padding to leave space for sticky header and TOC */
     scroll-padding-top: 7rem;
   }
@@ -91,4 +91,21 @@ svg[id^="mermaid-"] {
 /* Client-side Mermaid fallback (non-CI builds, see src/scripts/mermaid-dev-preview.ts) */
 .mermaid-dev-preview {
   @apply my-6 flex justify-center;
+}
+
+/* Global reduced-motion fallback: collapse every animation/transition to a
+   single imperceptible frame, including view transitions. Component-level
+   reduced-motion rules stay as documentation but this is the safety net. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after,
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
