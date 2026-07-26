@@ -229,7 +229,7 @@ const enableMermaidClientFallback = !process.env.GITHUB_ACTIONS;
 <html
   dir={textDirection}
   lang={langTag}
-  class={`${scrollSmooth && "scroll-smooth"}`}
+  class:list={[{ "motion-safe:scroll-smooth": scrollSmooth }]}
 >
   <head>
     <meta charset="UTF-8" />
