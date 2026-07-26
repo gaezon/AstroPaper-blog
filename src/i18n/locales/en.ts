@@ -3,7 +3,7 @@ export default {
   site: {
     title: "Gaazeon's Blog",
     description:
-      "Welcome to Gaazeon's Tech Blog! Dive into modern web development, frontend frameworks, programming tools, and software development best practices. Discover practical insights and tips to enhance your coding skills and boost productivity.",
+      "Gaazeon's personal blog: first-hand notes on software development, self-hosted services, developer tools, and networking — including the mistakes made along the way.",
     author: "Gaazeon",
   },
 
