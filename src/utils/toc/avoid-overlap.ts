@@ -5,6 +5,7 @@ import {
   TOC_MOBILE_BREAKPOINT_PX,
   TOC_MOBILE_SAFE_BOTTOM_PX,
 } from "@/utils/toc/constants";
+import { subscribeToPageScroll } from "@/utils/scroll";
 
 export function setupTocToggleOverlapAvoidance(): () => void {
   const toggle = document.getElementById(TOC_IDS.toggle);
@@ -76,12 +77,9 @@ export function setupTocToggleOverlapAvoidance(): () => void {
   const handleResize = () => {
     avoidOverlap();
   };
-  const handleScroll = () => {
-    avoidOverlap();
-  };
 
   window.addEventListener("resize", handleResize);
-  window.addEventListener("scroll", handleScroll, { passive: true });
+  const unsubscribeScroll = subscribeToPageScroll(avoidOverlap);
 
   const backToTopContainer = document.getElementById(
     TOC_IDS.backToTopContainer
@@ -100,7 +98,7 @@ export function setupTocToggleOverlapAvoidance(): () => void {
 
   return () => {
     window.removeEventListener("resize", handleResize);
-    window.removeEventListener("scroll", handleScroll);
+    unsubscribeScroll();
     mutationObserver?.disconnect();
     mutationObserver = null;
     resetOverlapState();

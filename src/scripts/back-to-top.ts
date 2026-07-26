@@ -1,7 +1,9 @@
 /**
  * Back-to-top button: visibility toggle and conic-gradient scroll progress
- * ring, RAF-throttled. Re-initialized on view-transition navigation.
+ * ring, driven by the shared page-scroll dispatcher. Re-initialized on
+ * view-transition navigation.
  */
+import { subscribeToPageScroll } from "@/utils/scroll";
 
 let cleanupScrollListener: (() => void) | null = null;
 
@@ -51,20 +53,7 @@ function backToTop() {
     }
   }
 
-  let ticking = false;
-  const onScroll = () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        handleScroll();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  };
-  document.addEventListener("scroll", onScroll, { passive: true });
-  cleanupScrollListener = () => {
-    document.removeEventListener("scroll", onScroll);
-  };
+  cleanupScrollListener = subscribeToPageScroll(handleScroll);
 
   handleScroll();
 }

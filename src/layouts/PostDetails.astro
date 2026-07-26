@@ -256,7 +256,7 @@ const layoutProps = {
 
 <script>
   import {
-    createThrottledScrollListener,
+    subscribeToPageScroll,
     calculateScrollPercent,
   } from "@/utils/scroll";
 
@@ -309,10 +309,7 @@ const layoutProps = {
     };
 
     updateProgress();
-    scrollProgressCleanup = createThrottledScrollListener(
-      document,
-      updateProgress
-    );
+    scrollProgressCleanup = subscribeToPageScroll(updateProgress);
   }
 
   function initProgressBar() {

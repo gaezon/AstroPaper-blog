@@ -178,7 +178,9 @@ function registerLifecycle(): void {
   document.addEventListener("astro:before-swap", () => {
     cleanupToc({ invalidatePending: true });
   });
-  document.addEventListener("astro:after-swap", queueInit);
+  // astro:page-load fires on both initial load and every ClientRouter
+  // navigation (after the swap completes), so a separate astro:after-swap
+  // listener would only queue a redundant second init.
   document.addEventListener("astro:page-load", queueInit);
 }
 
