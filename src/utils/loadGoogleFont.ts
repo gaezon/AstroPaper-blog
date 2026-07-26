@@ -144,20 +144,21 @@ async function tryLoadLocalFont(
           candidates.push(
             `node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-${weight}-normal.woff`,
             `node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-${weight}-normal.woff`,
-            `public/fonts/ibm-plex-sans-${weight}.woff`,
-            `public/fonts/ibm-plex-sans-${weight}.ttf`
+            `assets/fonts/ibm-plex-sans-${weight}.woff`,
+            `assets/fonts/ibm-plex-sans-${weight}.ttf`
           );
         } else if (fontName.includes("Noto+Sans+SC")) {
           candidates.push(
             `node_modules/@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-${weight}-normal.woff`,
-            `public/fonts/noto-sans-sc-${weight}.woff`,
-            `public/fonts/noto-sans-sc-${weight}.ttf`
+            `assets/fonts/noto-sans-sc-${weight}.woff`,
+            `assets/fonts/noto-sans-sc-${weight}.ttf`,
+            `assets/fonts/noto-sans-sc-${weight}.otf`
           );
         } else if (fontName.includes("Noto+Sans")) {
           candidates.push(
             `node_modules/@fontsource/noto-sans/files/noto-sans-latin-${weight}-normal.woff`,
-            `public/fonts/noto-sans-${weight}.woff`,
-            `public/fonts/noto-sans-${weight}.ttf`
+            `assets/fonts/noto-sans-${weight}.woff`,
+            `assets/fonts/noto-sans-${weight}.ttf`
           );
         }
 
