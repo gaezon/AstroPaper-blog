@@ -144,8 +144,51 @@ export function applySecurityHeaders(config: VercelConfig): VercelConfig {
   };
 }
 
+const isAstroCacheRoute = (route: VercelRoute) =>
+  typeof route.src === "string" &&
+  route.src.startsWith("^/_astro/") &&
+  route.continue === true &&
+  !!route.headers &&
+  Object.keys(route.headers).some(key => key.toLowerCase() === "cache-control");
+
+/**
+ * The Astro Vercel adapter emits its immutable cache-control route for
+ * hashed /_astro/ assets after the `handle: "filesystem"` marker. Routes in
+ * that phase only run when the filesystem does NOT match, so the header never
+ * applies to the very files it targets (production serves them with Vercel's
+ * default max-age=0). Hoist the route into the main phase, where header
+ * routes with `continue: true` apply before filesystem serving.
+ */
+export function hoistAstroCacheRoute(config: VercelConfig): VercelConfig {
+  const cacheRouteIndex = config.routes.findIndex(isAstroCacheRoute);
+  const filesystemIndex = config.routes.findIndex(
+    route => route.handle === "filesystem"
+  );
+
+  if (
+    cacheRouteIndex === -1 ||
+    filesystemIndex === -1 ||
+    cacheRouteIndex < filesystemIndex
+  ) {
+    return config;
+  }
+
+  const routes = [...config.routes];
+  const [cacheRoute] = routes.splice(cacheRouteIndex, 1);
+  routes.splice(filesystemIndex, 0, cacheRoute);
+
+  return {
+    ...config,
+    routes,
+  };
+}
+
 export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
-  const steps = [applySecurityHeaders, applyLocalized404Routes];
+  const steps = [
+    applySecurityHeaders,
+    hoistAstroCacheRoute,
+    applyLocalized404Routes,
+  ];
 
   return steps.reduce((cfg, step) => step(cfg), config);
 }
