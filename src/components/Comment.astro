@@ -103,6 +103,12 @@ const commentLoadingMessage =
 const twikooObserverOffset = 400;
 ---
 
+<!-- Twikoo assets/API are lazy-loaded from these origins; warm DNS ahead of the
+scroll-triggered load. dns-prefetch (not preconnect): comments sit at the bottom
+of the page, and browsers drop unused preconnect sockets after ~10s. -->
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+<link rel="dns-prefetch" href="https://comment.gaazeon.com" />
+
 <div
   id="tcomment"
   data-comment-root="true"
