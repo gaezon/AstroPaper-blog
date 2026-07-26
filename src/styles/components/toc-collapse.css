@@ -198,9 +198,10 @@ html[data-theme="dark"] .toc-collapse summary:hover {
 #toc-nav a,
 #toc-nav-mobile a {
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: hsl(var(--foreground) / 0.65) !important;
-  backdrop-filter: blur(1px);
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -209,7 +210,6 @@ html[data-theme="dark"] .toc-collapse summary:hover {
 #toc-nav-mobile a:hover {
   transform: translateX(2px);
   color: hsl(var(--foreground) / 0.85) !important;
-  backdrop-filter: blur(2px);
   text-shadow: 0 0 8px hsl(var(--foreground) / 0.1);
 }
 
@@ -217,7 +217,6 @@ html[data-theme="dark"] .toc-collapse summary:hover {
 #toc-nav-mobile a.active {
   font-weight: 500;
   color: hsl(var(--accent)) !important;
-  backdrop-filter: blur(3px);
   text-shadow: 0 0 12px hsl(var(--accent) / 0.3);
 }
 
