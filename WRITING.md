@@ -59,7 +59,7 @@ locale: "zh-CN" # 默认
 - 标题层级：`#` 开始，按层级递进（H1–H3 优先）。页面会自动生成目录（TOC）。
 - 代码块：使用三反引号 ` ``` ` 包裹，并标注语言（如 `ts`/`bash`）。
 - 图片：建议放在 `public/assets/<slug>/` 或复用远程图；Markdown 内用标准语法 `![alt](url)`，为图片加上描述有助于无障碍与 SEO。
-- Mermaid：直接使用 ` ```mermaid ` 代码块。CI（GitHub Actions）会在构建时渲染为 SVG；本地开发环境通常保持代码块原样以便编辑与审阅。
+- Mermaid：直接使用 ` ```mermaid ` 代码块。CI（GitHub Actions）会在构建时渲染为 SVG；本地开发环境由客户端回退脚本（`src/scripts/mermaid-dev-preview.ts`）用相同主题变量实时渲染，所见即所得。
 - 折叠/TOC：本站已启用 `remark-toc` 与折叠处理，保持正常标题结构即可。
 - Callout：支持 Obsidian 风格提示块，例如 `> [!NOTE]`、`> [!TIP]`、`> [!WARNING]`，适合放置补充说明、操作提示或风险提醒。
 

@@ -219,6 +219,10 @@ const structuredData = {
 };
 // Restrict Umami tracking to specific domains (avoid local/preview)
 const siteHostname = new URL(SITE.website).hostname;
+
+// Client-side Mermaid fallback: only outside GitHub Actions, where
+// rehype-mermaid is skipped and raw mermaid code blocks remain (see astro.config.ts).
+const enableMermaidClientFallback = !process.env.GITHUB_ACTIONS;
 ---
 
 <!doctype html>
@@ -470,6 +474,12 @@ const siteHostname = new URL(SITE.website).hostname;
     <ClientRouter />
 
     <script src="../scripts/toggle-theme.ts"></script>
+
+    {
+      enableMermaidClientFallback && (
+        <script src="../scripts/mermaid-dev-preview.ts" />
+      )
+    }
 
     {
       import.meta.env.PROD && (
