@@ -61,7 +61,7 @@
 
 ## Key Test Areas
 
-- `tests/mermaid-rendering.spec.ts` - Mermaid `<picture>` output and theme behavior
+- `tests/mermaid-rendering.spec.ts` - Mermaid `<picture>` output (CI) and client-side fallback rendering (non-CI), including theme behavior
 - `tests/language-switcher.spec.ts` - switcher interaction and listener cleanup
 - `tests/post-navigation.spec.ts` - article navigation boundaries
 - `tests/comment-lazy-load.spec.ts` - comment loading behavior

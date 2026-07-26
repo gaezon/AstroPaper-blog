@@ -13,7 +13,7 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 - Astro 7 + TypeScript + Tailwind CSS blog site
 - Chinese (`zh-CN`) and English (`en`) routes
 - Build-time bilingual post mapping for unified comments
-- Build-time Mermaid rendering in GitHub Actions
+- Build-time Mermaid rendering in GitHub Actions, with a client-side fallback renderer outside CI for WYSIWYG local preview
 - Static search with Pagefind
 - Dynamic OpenGraph image generation
 
