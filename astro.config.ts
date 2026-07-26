@@ -170,6 +170,12 @@ export default defineConfig({
   ],
   output: "static",
   trailingSlash: "always",
+  // ClientRouter enables prefetch implicitly; make it explicit and prefetch
+  // in-viewport links so list -> post navigation is near-instant on this static site.
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "viewport",
+  },
   i18n: {
     defaultLocale: "zh-CN",
     locales: ["zh-CN", "en"],
