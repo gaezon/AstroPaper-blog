@@ -123,6 +123,11 @@ test.describe("Mermaid Build-Time Rendering", () => {
 });
 
 test.describe("Mermaid No Client-Side JavaScript", () => {
+  test.skip(
+    !shouldRenderMermaidAtBuildTime,
+    "Outside GitHub Actions the client-side fallback renderer is active by design."
+  );
+
   test("should not load mermaid.min.js", async ({ page }) => {
     const mermaidRequests: string[] = [];
 
@@ -226,5 +231,48 @@ test.describe("Mermaid Performance", () => {
 
     const img = picture.locator("img");
     await expect(img).toBeVisible({ timeout: 5000 });
+  });
+});
+
+test.describe("Mermaid Client-Side Fallback (non-CI)", () => {
+  test.skip(
+    shouldRenderMermaidAtBuildTime,
+    "In GitHub Actions diagrams are rendered at build time; the fallback is disabled."
+  );
+
+  test("should render raw mermaid code blocks into SVG in the browser", async ({
+    page,
+  }) => {
+    await page.goto(TEST_POST_PATH);
+
+    const containers = page.locator(".mermaid-dev-preview");
+    await expect(containers.first()).toBeVisible();
+
+    const svg = containers.first().locator("svg");
+    await expect(svg).toBeVisible({ timeout: 15000 });
+
+    // No raw mermaid code blocks should remain
+    await expect(page.locator("pre > code.language-mermaid")).toHaveCount(0);
+  });
+
+  test("should re-render diagrams when the theme is toggled", async ({
+    page,
+  }) => {
+    await page.goto(TEST_POST_PATH);
+
+    const svg = page.locator(".mermaid-dev-preview svg").first();
+    await expect(svg).toBeVisible({ timeout: 15000 });
+    const initialTheme = await page.locator("html").getAttribute("data-theme");
+
+    await page.locator("#theme-btn").click();
+
+    await expect(page.locator("html")).not.toHaveAttribute(
+      "data-theme",
+      initialTheme ?? ""
+    );
+    // Diagram should still be rendered after the theme-driven re-render
+    await expect(page.locator(".mermaid-dev-preview svg").first()).toBeVisible({
+      timeout: 15000,
+    });
   });
 });

@@ -40,8 +40,9 @@ if (typeof unifiedCommentPaths === "object") {
 
 // https://astro.build/config
 // Enable build-time Mermaid rendering only in GitHub Actions where a browser is available.
-// In other environments (e.g., local dev, Vercel), the plugin is skipped and raw mermaid code blocks remain.
-// This repo does not auto-inject a Mermaid client-side renderer by default.
+// In other environments (e.g., local dev, Vercel), the plugin is skipped and raw mermaid
+// code blocks remain; Layout.astro injects a client-side fallback renderer
+// (src/scripts/mermaid-dev-preview.ts) instead so local preview matches production visuals.
 const shouldRenderMermaidAtBuildTime = !!process.env.GITHUB_ACTIONS;
 const mermaidLaunchOptions = process.env.MERMAID_CHROMIUM_EXECUTABLE_PATH
   ? ({

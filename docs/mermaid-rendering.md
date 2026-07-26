@@ -6,16 +6,22 @@
 
 - 在 GitHub Actions 中启用构建时 Mermaid 渲染
   - 判断条件：`GITHUB_ACTIONS` 环境变量
-- 在非 GitHub Actions 环境（本地开发、Vercel 原生构建、其他 CI 等）默认不启用该插件
-- 主题支持通过 `<picture>` 实现亮色/暗色资源切换
-
-> 说明：当前配置在非 GitHub Actions 环境下不自动回退到客户端 Mermaid 渲染脚本，通常会保留原始 `mermaid` 代码块用于编辑与审阅。
+  - 产物为 `<picture>` 元素，通过亮/暗双 SVG 支持主题切换，客户端零 Mermaid JS
+- 在非 GitHub Actions 环境（本地开发、`pnpm preview`、其他 CI 等）不启用该插件，
+  改为注入客户端回退渲染脚本 `src/scripts/mermaid-dev-preview.ts`：
+  - 在浏览器中把残留的 ` ```mermaid ` 代码块渲染为 SVG
+  - 复用 `src/utils/mermaidTheme.ts` 中与构建时完全相同的主题变量，本地预览与生产视觉一致
+  - 监听 `theme-changed` 事件（由 `src/scripts/toggle-theme.ts` 派发），切换亮/暗主题时重新渲染
+  - 渲染失败时展示错误信息和原始代码块，便于写作时即时发现语法错误
+- GitHub Actions 构建中，`Layout.astro` 不会输出该脚本标签，Mermaid 库不会进入生产 bundle
 
 ## 配置位置
 
 - `astro.config.ts`
   - `shouldRenderMermaidAtBuildTime`
   - `markdown.rehypePlugins` 中的 `mermaidConfig`
+- `src/layouts/Layout.astro`：按 `GITHUB_ACTIONS` 条件注入回退脚本
+- `src/scripts/mermaid-dev-preview.ts`：客户端回退渲染实现
 
 关键片段：
 

@@ -30,7 +30,7 @@ This file provides concise, repository-specific guidance for coding agents.
 - Chinese routes have no locale prefix; English routes use `/en/`
 - Bilingual article pairing uses `originalTitle` in frontmatter
 - First-paint theme boot stays inline in `src/layouts/Layout.astro`; deferred theme behavior lives in `src/scripts/toggle-theme.ts`
-- Mermaid rendering is build-time in GitHub Actions and left as code blocks outside CI
+- Mermaid rendering is build-time in GitHub Actions; outside CI a client-side fallback (`src/scripts/mermaid-dev-preview.ts`) renders code blocks in the browser with the same theme variables
 - Vercel prebuilt output is patched after build so localized zh/en 404 routing and security response headers work correctly
 
 ## High-signal file areas

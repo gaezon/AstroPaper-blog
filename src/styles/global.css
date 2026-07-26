@@ -87,3 +87,8 @@ picture > source[id^="mermaid-"],
 svg[id^="mermaid-"] {
   @apply mx-auto my-6;
 }
+
+/* Client-side Mermaid fallback (non-CI builds, see src/scripts/mermaid-dev-preview.ts) */
+.mermaid-dev-preview {
+  @apply my-6 flex justify-center;
+}
