@@ -42,35 +42,6 @@ const siteTitle = getLocalizedSiteTitle(locale);
       >
         {tr("error.notFound.backHome")}
       </LinkButton>
-      <p class="mt-4 text-sm opacity-75">
-        {
-          locale === "en" ? (
-            <>
-              If you are an AI agent, see{" "}
-              <a href="/llms.txt" class="underline">
-                llms.txt
-              </a>{" "}
-              or{" "}
-              <a href="/agent-integration.md" class="underline">
-                agent-integration.md
-              </a>{" "}
-              for machine-readable resources.
-            </>
-          ) : (
-            <>
-              如果你是 AI 代理，请参阅{" "}
-              <a href="/llms.txt" class="underline">
-                llms.txt
-              </a>{" "}
-              或{" "}
-              <a href="/agent-integration.md" class="underline">
-                agent-integration.md
-              </a>{" "}
-              获取机器可读资源。
-            </>
-          )
-        }
-      </p>
     </div>
   </main>
 

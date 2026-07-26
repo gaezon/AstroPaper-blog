@@ -1,5 +1,4 @@
-// Feature: agent-readiness-optimization, Property 9: AI-crawler policy applies uniformly across the six named agents
-// **Validates: Requirements 3.1, 3.2, 3.3, 8.8**
+// AI-crawler policy applies uniformly across the six named agents
 import { describe, it, expect, beforeAll } from "vitest";
 import { GET } from "../../src/pages/robots.txt";
 
@@ -43,7 +42,7 @@ function parseRobotsTxt(content: string): Map<string, string[]> {
   return blocks;
 }
 
-describe("robots.txt AI crawler policy (P9)", () => {
+describe("robots.txt AI crawler policy", () => {
   let content: string;
   let blocks: Map<string, string[]>;
 
@@ -70,29 +69,6 @@ describe("robots.txt AI crawler policy (P9)", () => {
     }
   });
 
-  it("each named agent has Disallow: /api/", () => {
-    for (const agent of AI_AGENTS) {
-      const directives = blocks.get(agent) ?? [];
-      expect(
-        directives.some(d => d === "Disallow: /api/"),
-        `${agent} missing Disallow: /api/`
-      ).toBe(true);
-    }
-  });
-
-  it("no named agent has a conflicting Allow: /api/ directive", () => {
-    for (const agent of AI_AGENTS) {
-      const directives = blocks.get(agent) ?? [];
-      const hasConflict = directives.some(
-        d => d.startsWith("Allow:") && d.includes("/api/") && d !== "Allow: /"
-      );
-      expect(
-        hasConflict,
-        `${agent} has conflicting Allow: /api/ directive`
-      ).toBe(false);
-    }
-  });
-
   it("default User-agent: * block still exists with Allow: /", () => {
     expect(blocks.has("*")).toBe(true);
     const directives = blocks.get("*") ?? [];
@@ -107,6 +83,5 @@ describe("robots.txt AI crawler policy (P9)", () => {
   it("AI discovery comments are preserved", () => {
     expect(content).toContain("# AI and agent discovery");
     expect(content).toContain("llms.txt");
-    expect(content).toContain("agents.md");
   });
 });

@@ -27,14 +27,7 @@
 - `src/utils/i18n-api.ts` - locale-aware RSS and OG endpoint helpers
 - `src/utils/i18n-seo.ts` - locale-aware SEO metadata, hreflang, and BlogPosting structured data helpers
 - `src/utils/generated/` - auto-generated bilingual mapping files
-- `src/utils/agent-discovery.ts` - centralization of read-only MCP tools and API resources
-- `src/utils/agent-api.ts` - read-only JSON API builder helpers
-- `src/utils/mcp.ts` - read-only MCP helper utilities
-- `src/utils/mcp-endpoint.ts` - unified handler for JSON-RPC and MCP requests
-- `src/pages/.well-known/mcp.ts` - MCP GET/POST route wrapper
-- `src/pages/.well-known/mcp/server-card.json.ts` - static client discovery server card
-- `src/utils/http-headers.ts` - single source of truth for all security and discovery HTTP headers (CSP, Link, Referrer-Policy, Permissions-Policy, Well-Known Content-Types); imported by both the Vite dev plugin and the Vercel post-build script
-- `src/utils/vite-dev-parity.ts` - Vite connect middleware (`devParityPlugin`) that mirrors production Vercel routing behavior in local dev: Markdown content negotiation, Well-Known Content-Type correction, and API JSON 404 recovery
+- `src/utils/http-headers.ts` - single source of truth for security and discovery HTTP headers (CSP, Link, Referrer-Policy, Permissions-Policy); imported by the dev middleware and the Vercel post-build script
 - `scripts/apply-vercel-routes.ts` - post-build script to patch Vercel prebuilt routes and headers
 
 ## Runtime & Tooling Constraints
@@ -76,16 +69,8 @@
 - `tests/toc-animation-optimization.spec.ts` - TOC behavior and animation
 - `tests/i18n.spec.ts` - localized routing and locale behavior
 - `tests/pagination-locale.spec.ts` - locale prefixes and pagination boundaries
-- `tests/unit/mcp-live-endpoint.spec.ts` - validation of read-only MCP JSON-RPC requests
-- `tests/unit/mcp-handshake-builder.spec.ts` - validation of MCP protocol handshake capabilities
-- `tests/unit/mcp-well-known-json.spec.ts` - validation of /.well-known/mcp and server-card.json
-- `tests/unit/mcp-streaming-posture.spec.ts` - validation of server-initiated streaming rejection
-- `tests/unit/agent-docs-discovery.spec.ts` - validation of static agent discovery assets
-- `tests/unit/api-json-schema.spec.ts` - validation of read-only posts and tags JSON API schema
-- `tests/unit/api-json-404.spec.ts` - validation of JSON-formatted 404 recovery envelopes
 - `tests/unit/vercel-localized-404-routes.spec.ts` - validation of prebuilt Vercel config post-processing
-- `tests/unit/mcp-edge-function-bundle.spec.ts` - validation of esbuild bundle output shape and handler executability for the Vercel MCP Edge Function
-- `tests/middleware-dev-parity.spec.ts` - end-to-end validation of Dev-Prod Parity: security headers, Well-Known Content-Type, API JSON 404, and Markdown content negotiation in local dev
+- `tests/middleware-dev-parity.spec.ts` - validation of dev security headers matching production
 
 ## Accessibility & Performance
 
@@ -98,9 +83,7 @@
 
 - Build output is produced via Astro static build and Vercel prebuilt artifacts under `.vercel/output/`
 - `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` serves localized zh/en 404 pages and security response headers correctly
-- `scripts/apply-vercel-routes.ts` also generates `.vercel/output/functions/.well-known/mcp.func/index.mjs` by bundling `src/utils/mcp-endpoint.ts` with esbuild (`platform: "node"`, `target: "node24"`); this replaces the former hand-written JS template and keeps the Vercel Edge Function in sync with the local handler as a single source of truth
-- All HTTP security/discovery header values are declared once in `src/utils/http-headers.ts` and shared between the Vite dev plugin (`src/utils/vite-dev-parity.ts`) and the Vercel post-build script; when updating CSP or Link header entries, edit only this file
-- `src/utils/vite-dev-parity.ts` is registered as a Vite plugin in `astro.config.ts` (`apply: "serve"`) and provides local-dev equivalents of the Vercel routing rules: Markdown content negotiation at `/`, Well-Known Content-Type headers, and JSON-formatted 404 responses for unknown `/api/` paths
+- All HTTP security/discovery header values are declared once in `src/utils/http-headers.ts` and shared between the dev middleware (`src/middleware.ts`) and the Vercel post-build script; when updating CSP or Link header entries, edit only this file
 - Pagefind index generation targets `.vercel/output/static`
 
 ## Documentation Maintenance

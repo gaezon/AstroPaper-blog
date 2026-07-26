@@ -3,9 +3,9 @@ import type { Site } from "./types";
 export const SITE: Site = {
   website: "https://blog.gaazeon.com/", // replace this with your deployed domain
   author: "Gaazeon",
-  desc: "Gaazeon 的技术博客，专注分享软件开发、Web 前端技术、编程工具使用心得和开发经验。以及实用的开发工具推荐和使用技巧，助力自我与广大开发者共同提升技能。",
+  desc: "Gaazeon 的个人技术博客，记录软件开发、自托管服务、开发工具与网络配置的第一手实践笔记，也偶尔写写踩过的坑和折腾的过程。",
   descEn:
-    "Gaazeon's tech blog, focusing on software development, web frontend technologies, programming tools, and development experience. Practical development tool recommendations and usage tips to help developers improve their skills together.",
+    "Gaazeon's personal blog: first-hand notes on software development, self-hosted services, developer tools, and networking — including the mistakes made along the way.",
   profile: "",
   title: "Gaazeon's blog.",
   titleEn: "Gaazeon's Blog",

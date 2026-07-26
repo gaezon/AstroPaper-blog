@@ -96,7 +96,6 @@ const siteURL = new URL(SITE.website);
 const siteRootURL = ensureTrailingSlash(siteURL.href);
 const aboutURL = new URL("/about/", siteRootURL).href;
 const contactURL = new URL("/contact/", siteRootURL).href;
-const pricingURL = new URL("/pricing/", siteRootURL).href;
 const githubRepositoryURL = "https://github.com/gz4zzxc/AstroPaper-blog";
 const authorEmail = SOCIALS.find(social =>
   social.href.startsWith("mailto:")
@@ -107,9 +106,6 @@ const graphIds = {
   blog: new URL("#blog", siteRootURL).href,
   organization: new URL("#organization", siteRootURL).href,
   author: new URL("#author", siteRootURL).href,
-  softwareApplication: new URL("#agent-discovery-application", siteRootURL)
-    .href,
-  freeOffer: new URL("#free-access-offer", siteRootURL).href,
 };
 
 const entitySameAs = [githubRepositoryURL];
@@ -190,44 +186,6 @@ const baseStructuredData = [
     affiliation: {
       "@id": graphIds.organization,
     },
-  },
-  {
-    "@type": "Offer",
-    "@id": graphIds.freeOffer,
-    name: "Free public access",
-    url: pricingURL,
-    price: "0",
-    priceCurrency: "USD",
-    availability: "https://schema.org/InStock",
-    category: "free public technical content",
-  },
-  {
-    "@type": "SoftwareApplication",
-    "@id": graphIds.softwareApplication,
-    name: "Gaazeon's Blog public agent discovery interface",
-    applicationCategory: "ReferenceApplication",
-    operatingSystem: "Any",
-    url: siteRootURL,
-    description:
-      "Public read-only discovery interface for Gaazeon's bilingual technical blog, including llms.txt, OpenAPI, RSS, sitemap, Markdown index, and agent instructions.",
-    creator: {
-      "@id": graphIds.author,
-    },
-    publisher: {
-      "@id": graphIds.organization,
-    },
-    isAccessibleForFree: true,
-    offers: {
-      "@id": graphIds.freeOffer,
-    },
-    featureList: [
-      "Bilingual technical article discovery",
-      "Markdown index for AI retrieval",
-      "OpenAPI description of public static resources",
-      "RSS and sitemap discovery",
-      "Agent usage guidance",
-    ],
-    sameAs: entitySameAs,
   },
 ];
 
