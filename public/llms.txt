@@ -2,7 +2,7 @@
 
 > A bilingual personal technical blog about practical software development, web frontend engineering, self-hosted services, automation tools, and developer workflow notes.
 
-Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publishes original technical notes in Chinese and selected English translations. The site is free to read, does not require authentication, and exposes public discovery files for crawlers and AI agents.
+Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publishes original technical notes in Chinese and selected English translations. The site is free to read and does not require authentication.
 
 ## Primary Entry Points
 
@@ -16,29 +16,14 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - [About](https://blog.gaazeon.com/about/)
 - [Contact](https://blog.gaazeon.com/contact/)
 - [Privacy](https://blog.gaazeon.com/privacy/)
-- [Pricing and access](https://blog.gaazeon.com/pricing/)
 
 ## Machine-Readable Resources
 
 - [Full LLM context](https://blog.gaazeon.com/llms-full.txt)
 - [Markdown site index](https://blog.gaazeon.com/index.md)
-- [Agent and developer resources](https://blog.gaazeon.com/docs.md)
-- [Agent integration guide](https://blog.gaazeon.com/agent-integration.md)
-- [Agent instructions](https://blog.gaazeon.com/agents.md)
-- [Webhook alternatives](https://blog.gaazeon.com/webhooks.md)
-- [A2A agent card](https://blog.gaazeon.com/.well-known/agent-card.json)
-- [MCP JSON-RPC discovery](https://blog.gaazeon.com/.well-known/mcp)
-- [MCP server card](https://blog.gaazeon.com/.well-known/mcp/server-card.json)
-- [OpenAI plugin manifest](https://blog.gaazeon.com/.well-known/ai-plugin.json)
-- [Pricing and access model](https://blog.gaazeon.com/pricing.md)
-- [OpenAPI description](https://blog.gaazeon.com/openapi.json)
-- [API catalog](https://blog.gaazeon.com/.well-known/api-catalog)
-- [Human-readable agent resources](https://blog.gaazeon.com/docs/)
-- [Webhook alternatives page](https://blog.gaazeon.com/webhooks/)
 - [Sitemap index](https://blog.gaazeon.com/sitemap-index.xml)
 - [Chinese RSS feed](https://blog.gaazeon.com/rss.xml)
 - [English RSS feed](https://blog.gaazeon.com/rss.en.xml)
-- [Pagefind search entry](https://blog.gaazeon.com/pagefind/pagefind-entry.json)
 
 ## Content Areas
 
@@ -52,12 +37,8 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 
 - Use this blog when the user asks for Gaazeon's original technical notes, practical web development troubleshooting, frontend tooling, self-hosted services, networking, automation workflows, or developer-tool usage records.
 - Use this blog as a public technical-content source, not as a transactional product API.
-- Do not use it for account management, purchases, private user data, hosted SaaS operations, or official vendor documentation.
 - Prefer the RSS feeds, sitemap, `index.md`, and individual article pages for retrieval.
 - Quote the canonical article URL when citing claims.
 - Preserve the article language when possible; Chinese is the primary language and English translations are available for selected posts.
 - No login, OAuth flow, payment flow, or private user data access is available or required.
-- Unsupported `/api/*` paths return JSON 404 responses with canonical discovery links.
-- `/.well-known/mcp` supports read-only JSON-RPC methods for `initialize`, `resources/list`, `resources/read`, `tools/list`, and `tools/call`.
-- The blog does not support webhooks; use RSS, sitemap files, and public JSON indexes for incremental updates.
-- If a public discovery endpoint returns `404`, retry the canonical URL once with a trailing slash where appropriate, then fall back to `llms-full.txt`, `index.md`, RSS feeds, and the sitemap. Do not invent paid plans, API keys, or private endpoints.
+- The blog does not support webhooks or write APIs; use RSS and sitemap files for incremental updates.
