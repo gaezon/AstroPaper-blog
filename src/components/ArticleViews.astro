@@ -13,6 +13,11 @@ const { paths, loading = "eager", size = "sm" } = Astro.props;
 const articlePaths = [...new Set(paths)].slice(0, 2);
 const requestUrl = getUmamiArticleViewsUrl(articlePaths);
 const currentLocale = getCurrentLocale(Astro);
+const viewsLabel =
+  currentLocale === "zh-CN"
+    ? t(Astro, "post.views")
+    : `\u00a0${t(Astro, "post.views")}`;
+const iconClass = size === "lg" ? "size-5 sm:size-[1.375rem]" : "size-5";
 ---
 
 <span
@@ -26,26 +31,29 @@ const currentLocale = getCurrentLocale(Astro);
   aria-busy="true"
 >
   <span aria-hidden="true">|</span>
-  <span class="inline-flex items-center gap-2">
+  <span class="inline-flex items-center gap-x-1" data-article-views-content>
     <IconEye
       aria-hidden="true"
-      class:list={[
-        "inline-block size-6 min-w-[1.375rem]",
-        { "scale-90": size === "sm" },
-      ]}
+      class:list={["inline-block shrink-0", iconClass]}
     />
-    <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>
+    <span
+      class:list={[
+        "inline-flex items-baseline gap-x-0",
+        "text-sm",
+        { "sm:text-base": size === "lg" },
+      ]}
+      data-article-views-text
+    >
       <span
         data-article-views-value
-        class="inline-flex min-w-[3ch] justify-center align-middle"
+        class="min-w-[3ch] text-right tabular-nums"
       >
         <span
           data-article-views-placeholder
           aria-hidden="true"
           class="inline-block h-2.5 w-6 rounded-full bg-current opacity-20 motion-safe:animate-pulse"
         ></span>
-      </span>
-      {t(Astro, "post.views")}
+      </span><span>{viewsLabel}</span>
     </span>
   </span>
 </span>

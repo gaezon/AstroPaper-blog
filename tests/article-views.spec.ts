@@ -47,7 +47,7 @@ test.describe("combined bilingual article views", () => {
     const requests = await mockArticleViews(page);
 
     await page.goto(ZH_PATH);
-    await expect(page.getByText("691 次阅读")).toBeVisible();
+    await expect(page.getByText("691次阅读")).toBeVisible();
     await expectRequest(requests, [ZH_PATH, EN_PATH]);
 
     await page.goto(EN_PATH);
@@ -62,7 +62,7 @@ test.describe("combined bilingual article views", () => {
 
     await page.goto(ZH_PATH);
     await expect(page.locator("[data-article-views]")).toHaveClass(/invisible/);
-    await expect(page.getByText("0 次阅读")).toHaveCount(0);
+    await expect(page.getByText("0次阅读")).toHaveCount(0);
   });
 
   test("shows a stable placeholder while a slow response is loading", async ({
@@ -78,7 +78,7 @@ test.describe("combined bilingual article views", () => {
     await expect(placeholder).toBeVisible();
     const loadingBox = await views.boundingBox();
 
-    await expect(page.getByText("691 次阅读")).toBeVisible();
+    await expect(page.getByText("691次阅读")).toBeVisible();
     const loadedBox = await views.boundingBox();
 
     expect(loadingBox).not.toBeNull();
@@ -94,7 +94,7 @@ test.describe("combined bilingual article views", () => {
     const requests = await mockArticleViews(page);
 
     await page.goto(UNPAIRED_PATH);
-    await expect(page.getByText("691 次阅读")).toBeVisible();
+    await expect(page.getByText("691次阅读")).toBeVisible();
     await expectRequest(requests, [UNPAIRED_PATH]);
   });
 
@@ -106,7 +106,27 @@ test.describe("combined bilingual article views", () => {
     const articleCard = page.locator("li").filter({
       has: page.locator(`a[href="${ZH_PATH}"]`),
     });
-    await expect(articleCard.getByText("691 次阅读")).toBeVisible();
+    await expect(articleCard.getByText("691次阅读")).toBeVisible();
+    await expect(
+      articleCard.locator("[data-article-views-content] svg")
+    ).toHaveCSS("width", "20px");
     await expectRequest(requests, [ZH_PATH, EN_PATH]);
+  });
+
+  test("aligns the Chinese view count and label on one baseline", async ({
+    page,
+  }) => {
+    await mockArticleViews(page);
+
+    await page.goto(ZH_PATH);
+    await expect(page.getByText("691次阅读")).toBeVisible();
+
+    const text = page.locator("[data-article-views-text]");
+    const value = page.locator("[data-article-views-value]");
+    const content = page.locator("[data-article-views-content]");
+    await expect(text).toHaveCSS("align-items", "baseline");
+    await expect(text).toHaveCSS("column-gap", "0px");
+    await expect(value).toHaveCSS("text-align", "right");
+    await expect(content).toHaveCSS("column-gap", "4px");
   });
 });

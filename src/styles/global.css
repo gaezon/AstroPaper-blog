@@ -40,8 +40,16 @@ html[data-theme="dark"] {
     /* Global scroll padding to leave space for sticky header and TOC */
     scroll-padding-top: 7rem;
   }
+  html[lang="zh-CN"] {
+    line-break: strict;
+    text-autospace: normal;
+    quotes: "「" "」" "『" "』";
+  }
+  html[lang="zh-CN"] body {
+    line-height: 1.7;
+  }
   body {
-    @apply flex min-h-svh flex-col bg-background font-mono text-foreground selection:bg-accent/75 selection:text-background;
+    @apply flex min-h-svh flex-col bg-background font-sans text-foreground selection:bg-accent/75 selection:text-background;
   }
   a,
   button {
@@ -55,6 +63,19 @@ html[data-theme="dark"] {
   footer {
     @apply mx-auto max-w-app px-4;
   }
+}
+
+/* Chromium currently implements this CSS Text Level 4 enhancement. Keeping it
+   behind a support query lets other engines retain their native punctuation
+   handling without a layout fallback. */
+@supports (text-spacing-trim: normal) {
+  html[lang="zh-CN"] {
+    text-spacing-trim: normal;
+  }
+}
+
+html[lang="en"] .page-description {
+  font-style: italic;
 }
 
 @utility max-w-app {

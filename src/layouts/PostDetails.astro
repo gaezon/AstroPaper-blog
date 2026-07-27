@@ -95,6 +95,8 @@ const { prevPost, nextPost } = getAdjacentPosts(allPosts, currentPostIndex);
 
 // ===== Language switch: cross-link overrides (precomputed before template) =====
 const currentLocale = getCurrentLocale(Astro);
+const articleMeasureClass =
+  currentLocale === "zh-CN" ? "max-w-[40em]" : "max-w-prose";
 const switchOverride: Record<string, string | undefined> = {};
 const currentPostPath = getPath(post.id, post.filePath, true, post.data.slug);
 try {
@@ -186,7 +188,10 @@ const layoutProps = {
         </div>
         <article
           id="article"
-          class="app-prose prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg) mx-auto mt-8 max-w-full"
+          class:list={[
+            "app-prose prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg) mx-auto mt-8",
+            articleMeasureClass,
+          ]}
           role="main"
           aria-labelledby="article-title"
           data-copy-code-label={tr("ui.copyCode")}
