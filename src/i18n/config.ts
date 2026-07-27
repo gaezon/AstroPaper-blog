@@ -11,11 +11,6 @@ const localeProfiles: Record<string, LocaleProfile> = {
     direction: "ltr",
     isDefault: true,
     label: "中文",
-    font: {
-      family:
-        "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
-      weights: ["300", "400", "500", "600", "700"],
-    },
   },
   en: {
     name: "English",
@@ -23,11 +18,6 @@ const localeProfiles: Record<string, LocaleProfile> = {
     langTag: "en",
     direction: "ltr",
     label: "English",
-    font: {
-      family:
-        "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
-      weights: ["300", "400", "500", "600", "700"],
-    },
   },
 };
 

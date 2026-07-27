@@ -10,12 +10,22 @@
     h2,
     h3,
     h4,
+    h5,
+    h6,
     th {
       @apply mb-3 text-foreground;
     }
 
     h3 {
       @apply italic;
+    }
+
+    h5 {
+      @apply mt-6 text-lg font-semibold;
+    }
+
+    h6 {
+      @apply mt-5 text-base font-semibold;
     }
 
     p,
@@ -30,6 +40,11 @@
 
     a {
       @apply break-words text-foreground decoration-dashed underline-offset-4 hover:text-accent focus-visible:no-underline;
+    }
+
+    p,
+    li {
+      overflow-wrap: break-word;
     }
 
     ul {
@@ -100,6 +115,17 @@
     }
   }
 
+  html[lang="zh-CN"] .app-prose {
+    h3 {
+      font-style: normal;
+    }
+
+    blockquote {
+      font-style: normal;
+      quotes: none;
+    }
+  }
+
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
     @apply flex border bg-(--shiki-light-bg) text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
@@ -125,4 +151,10 @@
       @apply rounded-sm border border-border px-0.5 py-px;
     }
   }
+}
+
+/* rehype-callouts ships this rule outside Tailwind's layers, so this override
+   must be unlayered as well. */
+html[lang="zh-CN"] .app-prose .callout {
+  line-height: 1.5;
 }

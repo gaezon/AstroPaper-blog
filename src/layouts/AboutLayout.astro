@@ -24,7 +24,7 @@ const { frontmatter } = Astro.props;
   <Breadcrumb />
   <main id="main-content">
     <section id="about" class="app-prose prose-img:border-0 mb-28 max-w-app">
-      <h1 class="text-2xl tracking-wider sm:text-3xl">{frontmatter.title}</h1>
+      <h1 class="text-2xl sm:text-3xl">{frontmatter.title}</h1>
       <slot />
     </section>
   </main>
