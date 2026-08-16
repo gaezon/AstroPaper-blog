@@ -1,15 +1,18 @@
-name: Deploy to Vercel Preview
+name: Deploy to Vercel Preview (manual fallback)
 
+# Automatic Preview Deployments are owned by Vercel Git Integration.
+# Keep this workflow as an emergency/manual fallback only.
 on:
-  push:
-    branches:
-      - "feature/*"
-      - "fix/*"
+  workflow_dispatch:
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+concurrency:
+  group: deploy-preview-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy-preview:
@@ -50,29 +53,27 @@ jobs:
         uses: actions/cache@v5
         with:
           path: tmp/og-image-cache
-          key: ${{ runner.os }}-og-cache-${{ hashFiles('src/data/blog/**/*.md', 'src/utils/og-templates/*.js', 'src/utils/og-templates/*.ts', 'src/utils/loadGoogleFont.ts', 'src/config.ts', 'package.json', 'pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-og-cache-${{ hashFiles('src/utils/og-templates/**', 'src/utils/generateOgImages.ts', 'src/utils/og-cache-validator.ts', 'src/utils/loadGoogleFont.ts', 'src/config.ts', 'package.json', 'pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-og-cache-
 
       - name: Verify system Chrome
         run: |
           test -x "$MERMAID_CHROMIUM_EXECUTABLE_PATH"
           "$MERMAID_CHROMIUM_EXECUTABLE_PATH" --version
 
-      - name: Lint code
-        run: pnpm run lint
-
-      - name: Check code format
-        run: pnpm run format:check
-
-      - name: Build the project
-        run: pnpm run build:strict
-
       - name: Pull Vercel Environment Information
-        run: pnpm dlx vercel@latest pull --yes --environment=preview --token=${VERCEL_TOKEN}
+        run: pnpm dlx vercel@latest pull --yes --environment=preview --git-branch="${GITHUB_REF_NAME}" --token="${VERCEL_TOKEN}"
+
+      - name: Build Vercel Project
+        # PR CI owns lint, formatting, type-checking, and browser tests.
+        # vercel build consumes the environment and project settings pulled above.
+        run: pnpm dlx vercel@latest build --token="${VERCEL_TOKEN}"
 
       - name: Deploy Project Artifacts to Vercel
         id: vercel-deploy
         run: |
-          DEPLOY_URL=$(pnpm dlx vercel@latest deploy --prebuilt --token=${VERCEL_TOKEN})
+          DEPLOY_URL=$(pnpm dlx vercel@latest deploy --prebuilt --token="${VERCEL_TOKEN}")
           echo "preview_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
 
       - name: Comment Preview URL on PR
