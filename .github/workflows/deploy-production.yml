@@ -1,17 +1,22 @@
-name: Deploy to Vercel Production
+name: Deploy to Vercel Production (manual fallback)
 
+# Automatic Production Deployments are owned by Vercel Git Integration.
+# Keep this workflow as an emergency/manual fallback only.
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
+concurrency:
+  group: deploy-production-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   deploy-production:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -49,24 +54,22 @@ jobs:
         uses: actions/cache@v5
         with:
           path: tmp/og-image-cache
-          key: ${{ runner.os }}-og-cache-${{ hashFiles('src/data/blog/**/*.md', 'src/utils/og-templates/*.js', 'src/utils/og-templates/*.ts', 'src/utils/loadGoogleFont.ts', 'src/config.ts', 'package.json', 'pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-og-cache-${{ hashFiles('src/utils/og-templates/**', 'src/utils/generateOgImages.ts', 'src/utils/og-cache-validator.ts', 'src/utils/loadGoogleFont.ts', 'src/config.ts', 'package.json', 'pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-og-cache-
 
       - name: Verify system Chrome
         run: |
           test -x "$MERMAID_CHROMIUM_EXECUTABLE_PATH"
           "$MERMAID_CHROMIUM_EXECUTABLE_PATH" --version
 
-      - name: Lint code
-        run: pnpm run lint
-
-      - name: Check code format
-        run: pnpm run format:check
-
-      - name: Build the project
-        run: pnpm run build:strict
-
       - name: Pull Vercel Environment Information
-        run: pnpm dlx vercel@latest pull --yes --environment=production --token=${VERCEL_TOKEN}
+        run: pnpm dlx vercel@latest pull --yes --environment=production --token="${VERCEL_TOKEN}"
+
+      - name: Build Vercel Project
+        # The protected main branch is expected to have passed PR CI.
+        # vercel build consumes the environment and project settings pulled above.
+        run: pnpm dlx vercel@latest build --prod --token="${VERCEL_TOKEN}"
 
       - name: Deploy Project Artifacts to Vercel
-        run: pnpm dlx vercel@latest deploy --prebuilt --prod --token=${VERCEL_TOKEN}
+        run: pnpm dlx vercel@latest deploy --prebuilt --prod --token="${VERCEL_TOKEN}"

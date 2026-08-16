@@ -95,6 +95,9 @@ docs/                 Feature and maintenance docs
 
 ## Deployment
 
-- CI and deploy workflows are under `.github/workflows/`.
-- Production and preview deployments are prebuilt in GitHub Actions and deployed to Vercel with `--prebuilt`.
+- Vercel Git Integration owns automatic Preview and Production Deployments from GitHub.
+- Pull request CI owns linting, formatting, type-checking, and browser tests.
+- `.github/workflows/deploy-preview.yml` and `deploy-production.yml` are manual `--prebuilt` fallbacks for Vercel outages or Git Integration issues.
+- The fallback workflows run `vercel pull` → `vercel build` → `vercel deploy --prebuilt`, so target-environment build-time variables are captured before creating `.vercel/output/`.
+- Keep `main` protected by the required PR CI check before relying on the lean production build.
 - `pnpm build` and `pnpm build:strict` also patch `.vercel/output/config.json` so Vercel prebuilt deployments serve localized zh/en 404 pages and security response headers.
