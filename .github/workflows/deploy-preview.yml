@@ -1,21 +1,30 @@
-name: Deploy to Vercel Preview (manual fallback)
+name: Deploy to Vercel Preview
 
-# Automatic Preview Deployments are owned by Vercel Git Integration.
-# Keep this workflow as an emergency/manual fallback only.
+# Vercel Git Integration is intentionally disconnected from this project.
+# Deploy trusted same-repository pull requests through the Vercel CLI instead.
 on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
   workflow_dispatch:
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_CLI_VERSION: 54.18.0
 
 concurrency:
-  group: deploy-preview-${{ github.ref }}
+  group: deploy-preview-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   deploy-preview:
+    # Fork PRs do not receive VERCEL_TOKEN. They remain covered by the regular
+    # CI workflow, while same-repository PRs receive a real Vercel preview.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -63,48 +72,55 @@ jobs:
           "$MERMAID_CHROMIUM_EXECUTABLE_PATH" --version
 
       - name: Pull Vercel Environment Information
-        run: pnpm dlx vercel@latest pull --yes --environment=preview --git-branch="${GITHUB_REF_NAME}" --token="${VERCEL_TOKEN}"
+        run: pnpm dlx "vercel@${VERCEL_CLI_VERSION}" pull --yes --environment=preview --git-branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" --token="${VERCEL_TOKEN}"
 
       - name: Build Vercel Project
         # PR CI owns lint, formatting, type-checking, and browser tests.
         # vercel build consumes the environment and project settings pulled above.
-        run: pnpm dlx vercel@latest build --token="${VERCEL_TOKEN}"
+        run: pnpm dlx "vercel@${VERCEL_CLI_VERSION}" build --token="${VERCEL_TOKEN}"
 
       - name: Deploy Project Artifacts to Vercel
         id: vercel-deploy
         run: |
-          DEPLOY_URL=$(pnpm dlx vercel@latest deploy --prebuilt --token="${VERCEL_TOKEN}")
-          echo "preview_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          DEPLOY_URL=$(pnpm dlx "vercel@${VERCEL_CLI_VERSION}" deploy --prebuilt --token="${VERCEL_TOKEN}")
+          test -n "$DEPLOY_URL"
+          printf 'preview_url=%s\n' "$DEPLOY_URL" >> "$GITHUB_OUTPUT"
 
       - name: Comment Preview URL on PR
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v8
         env:
           PREVIEW_URL: ${{ steps.vercel-deploy.outputs.preview_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         with:
           script: |
             const previewUrl = process.env.PREVIEW_URL;
             const { repo, owner } = context.repo;
-            const branchName = context.ref.replace('refs/heads/', '');
 
-            // Find the PR associated with this branch
-            const { data: prs } = await github.rest.pulls.list({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
-              head: `${owner}:${branchName}`,
-              state: 'open'
+              issue_number: Number(process.env.PR_NUMBER),
+              per_page: 100,
             });
 
-            if (prs.length > 0) {
-              const pr = prs[0];
-              const body = `🚀 **Vercel Preview Deployed!**\n\nVisit your preview here: [${previewUrl}](${previewUrl})`;
-              
+            const body = `<!-- vercel-preview -->\n🚀 **Vercel Preview Deployed!**\n\nVisit your preview here: [${previewUrl}](${previewUrl})`;
+            const existingComment = comments.find((comment) =>
+              comment.user?.type === 'Bot' && comment.body?.includes('<!-- vercel-preview -->')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
               await github.rest.issues.createComment({
                 owner,
                 repo,
-                issue_number: pr.number,
-                body: body
+                issue_number: Number(process.env.PR_NUMBER),
+                body
               });
-              console.log(`Commented on PR #${pr.number}`);
-            } else {
-              console.log('No open PR found for this branch.');
             }
