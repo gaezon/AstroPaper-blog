@@ -53,8 +53,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       probe-image-size:
-        specifier: ^7.2.3
-        version: 7.2.3(supports-color@7.2.0)
+        specifier: ^7.3.0
+        version: 7.3.0(supports-color@7.2.0)
       rehype-callouts:
         specifier: ^2.1.2
         version: 2.1.2
@@ -3637,8 +3637,8 @@ packages:
     resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
 
-  probe-image-size@7.2.3:
-    resolution: {integrity: sha512-HubhG4Rb2UH8YtV4ba0Vp5bQ7L78RTONYu/ujmCu5nBI8wGv24s4E9xSKBi0N1MowRpxk76pFCpJtW0KPzOK0w==}
+  probe-image-size@7.3.0:
+    resolution: {integrity: sha512-7CaDeBwiAbh6ohXsvLbAZhO7wzsZAmaevfxe39qvCwRh8LyaZfDlBGGLU1CCTgrTLtCOdwBBhjOrIHaIIimHfQ==}
 
   process-ancestry@0.1.0:
     resolution: {integrity: sha512-tGqJW/UnclpYASFcM6Xh8D8l/BMtaQ9+CSG0vlJSJTcdMM4lDRv4c6H0Pdcsfted+bVczdYSfk2fdukg2gQkZg==}
@@ -7938,7 +7938,7 @@ snapshots:
     dependencies:
       debug: 3.2.7(supports-color@7.2.0)
       iconv-lite: 0.4.24
-      sax: 1.6.0
+      sax: 1.6.1
     transitivePeerDependencies:
       - supports-color
 
@@ -8158,7 +8158,7 @@ snapshots:
 
   prismjs@1.30.0: {}
 
-  probe-image-size@7.2.3(supports-color@7.2.0):
+  probe-image-size@7.3.0(supports-color@7.2.0):
     dependencies:
       lodash.merge: 4.6.2
       needle: 2.9.1(supports-color@7.2.0)
