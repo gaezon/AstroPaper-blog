@@ -1,6 +1,6 @@
 # AstroPaper Blog (Gaazeon)
 
-[![Astro](https://img.shields.io/badge/Astro-6-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
+[![Astro](https://img.shields.io/badge/Astro-7-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
 [![Node.js](https://img.shields.io/badge/Node.js-24.x-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-11.x-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
@@ -88,6 +88,8 @@ docs/                 Feature and maintenance docs
 ## Documentation
 
 - Writing guide: `WRITING.md`
+- Contributing guide: `CONTRIBUTING.md`
+- Security policy: `SECURITY.md`
 - i18n language switcher: `docs/i18n-language-switcher.md`
 - Bilingual comment mapping: `docs/bilingual-comment-system.md`
 - Mermaid rendering: `docs/mermaid-rendering.md`

@@ -5,9 +5,9 @@ This file provides concise, repository-specific guidance for coding agents.
 ## Repo at a glance
 
 - Personal bilingual blog for `blog.gaazeon.com`
-- Built on Astro 6 + TypeScript + Tailwind CSS
+- Built on Astro 7 + TypeScript + Tailwind CSS
 - Chinese-first publishing with English companion content for SEO
-- Runtime requirements: Node.js `24.x`, pnpm `>=10 <11`, pnpm only
+- Runtime requirements: Node.js `24.x`, pnpm `>=11 <12`, pnpm only
 - `.node-version` is committed with `24`; if the active shell uses another Node version, run `fnm use` before `pnpm` commands
 
 ## Source of truth
