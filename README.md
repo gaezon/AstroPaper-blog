@@ -95,6 +95,16 @@ docs/                 Feature and maintenance docs
 - Mermaid rendering: `docs/mermaid-rendering.md`
 - Remark/Rehype plugins (TOC + collapse + callouts): `docs/remark-plugins.md`
 
+## License
+
+This repository uses separate license notices for source code and published content:
+
+- Unless otherwise noted, the source code in this repository is licensed under the MIT License. The original AstroPaper copyright and license notice are preserved in [`LICENSE`](./LICENSE).
+- Blog posts, translations, and other original site content are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), unless a post or asset states otherwise.
+- Third-party code, fonts, images, and other assets remain under their respective licenses.
+
+The root MIT license applies to the software and does not supersede these content-specific notices.
+
 ## Deployment
 
 - GitHub Actions owns Preview and Production Deployments through the Vercel CLI because this project is intentionally disconnected from Vercel Git Integration.
