@@ -19,7 +19,7 @@ export const SITE: Site = {
   editPost: {
     enabled: false,
     text: "Suggest Changes",
-    url: "https://github.com/satnaing/astro-paper/edit/main/",
+    url: "https://github.com/gaezon/AstroPaper-blog/edit/main/",
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
