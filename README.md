@@ -99,7 +99,7 @@ docs/                 Feature and maintenance docs
 
 This repository uses separate license notices for source code and published content:
 
-- The AstroPaper-derived source code is licensed under the MIT License. The original AstroPaper copyright and license notice are preserved in [`LICENSE`](./LICENSE).
+- Unless otherwise noted, the source code in this repository is licensed under the MIT License. The original AstroPaper copyright and license notice are preserved in [`LICENSE`](./LICENSE).
 - Blog posts, translations, and other original site content are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), unless a post or asset states otherwise.
 - Third-party code, fonts, images, and other assets remain under their respective licenses.
 
