@@ -62,6 +62,9 @@ jobs:
       - name: "📝 Checking code format"
         run: pnpm run format:check
 
+      - name: "🧪 Run unit tests"
+        run: pnpm run test:unit
+
       - name: "🔐 Check Twikoo SRI"
         run: pnpm run twikoo:sri:check
 

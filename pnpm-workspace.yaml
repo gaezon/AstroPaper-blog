@@ -1,5 +1,19 @@
 engineStrict: true
 
+overrides:
+  '@eslint/plugin-kit': 0.3.4
+  'brace-expansion@1': 1.1.18
+  'brace-expansion@2': 2.1.4
+  fast-uri: 3.1.5
+  flatted: 3.4.2
+  js-yaml: 4.3.1
+  'minimatch@3': 3.1.4
+  'minimatch@9': 9.0.7
+  'nanoid@3': 3.3.18
+  path-to-regexp: 6.3.0
+  'postcss@8': 8.5.26
+  yaml: 2.9.0
+
 allowBuilds:
   esbuild: true
   sharp: true
