@@ -99,6 +99,6 @@ docs/                 Feature and maintenance docs
 - Pull request CI owns linting, formatting, type-checking, and browser tests.
 - `.github/workflows/deploy-preview.yml` runs for trusted same-repository pull requests; fork pull requests remain CI-only because GitHub does not expose Vercel secrets to them.
 - `.github/workflows/deploy-production.yml` runs for pushes to protected `main`; both workflows also retain `workflow_dispatch` for manual recovery.
-- The deployment workflows run `vercel pull` → `vercel build` → `vercel deploy --prebuilt`, so target-environment build-time variables are captured before creating `.vercel/output/`.
+- The deployment workflows run the repository's `pnpm build:strict` → `vercel deploy --prebuilt` flow, so the project-scoped Vercel token only uploads the generated `.vercel/output/` artifacts.
 - Keep `main` protected by the required PR CI check before relying on the lean production build.
 - `pnpm build` and `pnpm build:strict` also patch `.vercel/output/config.json` so Vercel prebuilt deployments serve localized zh/en 404 pages and security response headers.

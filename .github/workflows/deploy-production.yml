@@ -67,13 +67,10 @@ jobs:
           test -x "$MERMAID_CHROMIUM_EXECUTABLE_PATH"
           "$MERMAID_CHROMIUM_EXECUTABLE_PATH" --version
 
-      - name: Pull Vercel Environment Information
-        run: pnpm dlx "vercel@${VERCEL_CLI_VERSION}" pull --yes --environment=production --token="${VERCEL_TOKEN}"
-
       - name: Build Vercel Project
         # The protected main branch is expected to have passed PR CI.
-        # vercel build consumes the environment and project settings pulled above.
-        run: pnpm dlx "vercel@${VERCEL_CLI_VERSION}" build --prod --token="${VERCEL_TOKEN}"
+        # Build locally so the project-scoped token only uploads artifacts.
+        run: pnpm run build:strict
 
       - name: Deploy Project Artifacts to Vercel
         run: pnpm dlx "vercel@${VERCEL_CLI_VERSION}" deploy --prebuilt --prod --token="${VERCEL_TOKEN}"
