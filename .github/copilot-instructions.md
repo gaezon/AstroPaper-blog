@@ -1,6 +1,6 @@
 # GitHub Copilot：仓库自定义指令
 
-你正在协助维护一个基于 **Astro 6 + TypeScript + Tailwind CSS** 的双语博客站点。请优先遵循仓库现有模式，并以最小改动完成任务。
+你正在协助维护一个基于 **Astro 7 + TypeScript + Tailwind CSS** 的双语博客站点。请优先遵循仓库现有模式，并以最小改动完成任务。
 
 ## 先看哪里
 
