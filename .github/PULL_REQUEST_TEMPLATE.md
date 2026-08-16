@@ -13,11 +13,12 @@
 
 ## Checklist
 
-<!-- Please follow this checklist and put an x in each of the boxes, like this: [x]. You can also fill these out after creating the PR. This is simply a reminder of what we are going to look for before merging your code. -->
+<!-- Please check the items that apply. -->
 
-- [ ] I have read the [Contributing Guide](https://github.com/gaezon/AstroPaper-blog/blob/main/CONTRIBUTING.md)
-- [ ] I have added or updated tests where appropriate
-- [ ] I have added the necessary documentation (if appropriate)
+- [ ] The change is focused and its purpose is explained
+- [ ] I have not committed secrets, generated output, or test artifacts
+- [ ] I have added or updated tests where relevant
+- [ ] I have updated documentation where relevant
 - [ ] This change introduces a breaking change
 
 ## Further comments

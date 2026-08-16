@@ -426,15 +426,11 @@ const enableMermaidClientFallback = !process.env.GITHUB_ACTIONS;
     }
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    {
-      !disablePageUrlMeta && (
-        <meta property="twitter:url" content={canonicalURL} />
-      )
-    }
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={finalDescription} />
-    <meta property="twitter:image" content={socialImageURL} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {!disablePageUrlMeta && <meta name="twitter:url" content={canonicalURL} />}
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={finalDescription} />
+    <meta name="twitter:image" content={socialImageURL} />
 
     <!-- JSON-LD Structured data -->
     {
