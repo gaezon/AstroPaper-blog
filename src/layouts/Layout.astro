@@ -96,7 +96,7 @@ const siteURL = new URL(SITE.website);
 const siteRootURL = ensureTrailingSlash(siteURL.href);
 const aboutURL = new URL("/about/", siteRootURL).href;
 const contactURL = new URL("/contact/", siteRootURL).href;
-const githubRepositoryURL = "https://github.com/gz4zzxc/AstroPaper-blog";
+const githubRepositoryURL = "https://github.com/gaezon/AstroPaper-blog";
 const authorEmail = SOCIALS.find(social =>
   social.href.startsWith("mailto:")
 )?.href?.replace(/^mailto:/, "");
