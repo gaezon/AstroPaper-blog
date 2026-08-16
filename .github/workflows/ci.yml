@@ -47,7 +47,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: "🗂️ Restore OG image cache"
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: tmp/og-image-cache
           key: ${{ runner.os }}-og-cache-${{ hashFiles('src/utils/og-templates/**', 'src/utils/generateOgImages.ts', 'src/utils/og-cache-validator.ts', 'src/utils/loadGoogleFont.ts', 'src/config.ts', 'package.json', 'pnpm-lock.yaml') }}
