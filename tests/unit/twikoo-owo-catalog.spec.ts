@@ -2,32 +2,18 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import {
-  TWIKOO_EMOTION_CDN,
-  TWIKOO_UPSTREAM_EMOTION_CDN,
-} from "../../src/config/twikoo";
-import { rewriteTwikooEmotionCdnUrl } from "../../src/utils/twikoo-emotion-cdn";
+import { TWIKOO_EMOTION_CDN } from "../../src/config/twikoo";
 
 const catalogPath = join(
   dirname(fileURLToPath(import.meta.url)),
   "../../public/twikoo/owo.json"
 );
 
-describe("rewriteTwikooEmotionCdnUrl", () => {
-  it("rewrites the Twikoo 1.7.19 upstream catalog to the same-origin copy", () => {
-    expect(rewriteTwikooEmotionCdnUrl(TWIKOO_UPSTREAM_EMOTION_CDN)).toBe(
-      TWIKOO_EMOTION_CDN
-    );
-    expect(rewriteTwikooEmotionCdnUrl("/twikoo/owo.json")).toBe(
-      "/twikoo/owo.json"
-    );
-    expect(rewriteTwikooEmotionCdnUrl("https://comment.gaazeon.com/")).toBe(
-      "https://comment.gaazeon.com/"
-    );
-  });
-});
-
 describe("vendored Twikoo OwO catalog", () => {
+  it("is published at the same-origin path GET_CONFIG now returns", () => {
+    expect(TWIKOO_EMOTION_CDN).toBe("/twikoo/owo.json");
+  });
+
   it("is valid OwO JSON whose image icons stay on the upstream image host", () => {
     const catalog = JSON.parse(readFileSync(catalogPath, "utf8")) as Record<
       string,

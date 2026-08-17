@@ -9,13 +9,7 @@
  *
  * Config (URLs, SRI, labels) is read from data attributes on the comment root
  * (see Comment.astro).
- *
- * Twikoo 1.7.19 has no frontend emotionCdn option; it XHRs the server
- * EMOTION_CDN or falls back to owo.imaegoo.com. Rewrite that catalog
- * request to the same-origin copy so connect-src stays an explicit allowlist.
  */
-
-import { installTwikooEmotionCdnRewrite } from "@/utils/twikoo-emotion-cdn";
 
 type TwikooGlobal = {
   init: (config: Record<string, unknown>) => void;
@@ -28,8 +22,6 @@ declare global {
 }
 
 export {};
-
-installTwikooEmotionCdnRewrite();
 
 const COMMENT_ROOT_SELECTOR = "[data-comment-root='true']";
 
