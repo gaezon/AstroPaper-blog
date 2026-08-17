@@ -24,8 +24,7 @@ test.describe("agent-readiness mainEntityOfPage (P21)", () => {
           return false;
         }
         const mepObj = node.mainEntityOfPage as
-          | string
-          | Record<string, unknown>;
+          string | Record<string, unknown>;
         const mep =
           typeof mepObj === "string" ? mepObj : mepObj["@id"] || mepObj.url;
         return mep === canonical;

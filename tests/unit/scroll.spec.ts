@@ -293,8 +293,7 @@ describe("scroll utilities (unit tests)", () => {
       const cleanup = createThrottledScrollListener(target, handler);
 
       const registeredHandler = addEventListener.mock.calls[0]?.[1] as
-        | (() => void)
-        | undefined;
+        (() => void) | undefined;
 
       if (!registeredHandler) {
         throw new Error("Expected scroll handler to be registered.");
@@ -473,8 +472,7 @@ describe("scroll utilities (unit tests)", () => {
       expect(onClick).toHaveBeenCalled();
 
       const scheduledCallback = setTimeout.mock.calls[0]?.[0] as
-        | (() => void)
-        | undefined;
+        (() => void) | undefined;
       if (!scheduledCallback) {
         throw new Error("Expected timeout callback to be scheduled.");
       }
