@@ -1,5 +1,6 @@
 ---
 import Socials from "./Socials.astro";
+import { GITHUB_REPOSITORY_URL } from "@/config";
 import { getCurrentLocale, t } from "@/i18n/utils";
 import { normalizePathWithLocale } from "@/utils/url";
 
@@ -78,6 +79,15 @@ const tr = (key: string, params?: Record<string, string | number>) =>
           href={localeUrl("/privacy")}
         >
           {tr("ui.privacyPolicy")}
+        </a>
+        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <a
+          class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
+          href={GITHUB_REPOSITORY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {tr("ui.sourceCode")}
         </a>
       </div>
     </div>

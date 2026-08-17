@@ -3,7 +3,8 @@ import IconMail from "@/assets/icons/IconMail.svg";
 import IconFacebook from "@/assets/icons/IconFacebook.svg";
 import IconTelegram from "@/assets/icons/IconTelegram.svg";
 import IconBrandX from "@/assets/icons/IconBrandX.svg";
-import { SITE } from "@/config";
+import IconGitHub from "@/assets/icons/IconGitHub.svg";
+import { GITHUB_PROFILE_URL, SITE } from "@/config";
 
 interface Social {
   name: string;
@@ -13,6 +14,12 @@ interface Social {
 }
 
 export const SOCIALS: Social[] = [
+  {
+    name: "GitHub",
+    href: GITHUB_PROFILE_URL,
+    linkTitle: `${SITE.title} on GitHub`,
+    icon: IconGitHub,
+  },
   {
     name: "Mail",
     href: "mailto:gaazeon@gaazeon.com",

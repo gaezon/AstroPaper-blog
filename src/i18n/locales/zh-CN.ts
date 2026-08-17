@@ -206,6 +206,8 @@ export default {
     imagePreview: "图片预览",
     closeImagePreview: "关闭图片预览",
     emailMe: "发送邮件",
+    githubMe: "GitHub",
+    sourceCode: "源码",
     emailService: "电子邮件",
     sharePostVia: "通过{{service}}分享文章",
     cookie: {
