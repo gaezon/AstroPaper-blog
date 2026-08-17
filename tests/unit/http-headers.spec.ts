@@ -8,8 +8,11 @@ const connectSrc = CONTENT_SECURITY_POLICY.split("; ").find(directive =>
 describe("CONTENT_SECURITY_POLICY", () => {
   it("allowlists the official Twikoo OwO catalog host for XHR", () => {
     expect(connectSrc).toBeDefined();
-    expect(connectSrc).toContain("https://owo.imaegoo.com");
-    expect(connectSrc).toContain("https://comment.gaazeon.com");
-    expect(connectSrc).not.toMatch(/\bhttps:\s*$/);
+
+    const sources = connectSrc?.split(/\s+/).slice(1) ?? [];
+
+    expect(sources).toContain("https://owo.imaegoo.com");
+    expect(sources).toContain("https://comment.gaazeon.com");
+    expect(sources).not.toContain("https:");
   });
 });
