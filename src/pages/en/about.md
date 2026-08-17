@@ -12,7 +12,9 @@ There are two reasons why I started blogging. One is that I felt I was reading a
 
 My blog mostly focuses on practical technologies, and I will probably also share life records in the future.
 
-Chinese is my native language, and I can read English technical documentation. If you find any issues in my articles, please let me know.
+Chinese is my native language, and I can read English technical documentation. If you find any issues in my articles, please let me know — or open an issue / suggest a change in the public repository.
+
+This blog is fully open source on GitHub: [gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog). My GitHub profile is [gaezon](https://github.com/gaezon).
 
 ---
 

@@ -208,6 +208,8 @@ export default {
     imagePreview: "Image preview",
     closeImagePreview: "Close image preview",
     emailMe: "Send an email",
+    githubMe: "GitHub",
+    sourceCode: "Source",
     emailService: "email",
     sharePostVia: "Share this post via {{service}}",
     cookie: {

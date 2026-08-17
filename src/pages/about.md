@@ -12,7 +12,9 @@ description: "技术爱好者 Gaazeon 的个人介绍。非计算机专业出身
 
 我博客关注的大多是实用的技术，后续应该也会分享生活的记录。
 
-中文是母语，英文能看懂技术文档。如果发现文章里有什么问题，欢迎告诉我。
+中文是母语，英文能看懂技术文档。如果发现文章里有什么问题，欢迎告诉我，也可以直接在公开仓库里提 issue 或建议修改。
+
+这个博客的源码托管在 GitHub，完全开源：[gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)。我的 GitHub 主页是 [gaezon](https://github.com/gaezon)。
 
 ---
 

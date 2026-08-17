@@ -1,12 +1,16 @@
 import type { Site } from "./types";
 
+export const GITHUB_PROFILE_URL = "https://github.com/gaezon";
+export const GITHUB_REPOSITORY_URL =
+  "https://github.com/gaezon/AstroPaper-blog";
+
 export const SITE: Site = {
   website: "https://blog.gaazeon.com/", // replace this with your deployed domain
   author: "Gaazeon",
   desc: "Gaazeon 的个人技术博客，记录软件开发、自托管服务、开发工具与网络配置的第一手实践笔记，也偶尔写写踩过的坑和折腾的过程。",
   descEn:
     "Gaazeon's personal blog: first-hand notes on software development, self-hosted services, developer tools, and networking — including the mistakes made along the way.",
-  profile: "",
+  profile: GITHUB_PROFILE_URL,
   title: "Gaazeon's blog.",
   titleEn: "Gaazeon's Blog",
   ogImage: "astropaper-og.jpg",
@@ -17,9 +21,9 @@ export const SITE: Site = {
   showArchives: true,
   showBackButton: true, // show back button in post detail
   editPost: {
-    enabled: false,
+    enabled: true,
     text: "Suggest Changes",
-    url: "https://github.com/gaezon/AstroPaper-blog/edit/main/",
+    url: `${GITHUB_REPOSITORY_URL}/edit/main/`,
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"

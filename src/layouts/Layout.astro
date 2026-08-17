@@ -2,7 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
-import { SITE } from "@/config";
+import { GITHUB_PROFILE_URL, GITHUB_REPOSITORY_URL, SITE } from "@/config";
 import { UMAMI } from "@/config/umami";
 import { SOCIALS } from "@/constants";
 import "@/styles/global.css";
@@ -96,7 +96,8 @@ const siteURL = new URL(SITE.website);
 const siteRootURL = ensureTrailingSlash(siteURL.href);
 const aboutURL = new URL("/about/", siteRootURL).href;
 const contactURL = new URL("/contact/", siteRootURL).href;
-const githubRepositoryURL = "https://github.com/gaezon/AstroPaper-blog";
+const githubProfileURL = SITE.profile || GITHUB_PROFILE_URL;
+const githubRepositoryURL = GITHUB_REPOSITORY_URL;
 const authorEmail = SOCIALS.find(social =>
   social.href.startsWith("mailto:")
 )?.href?.replace(/^mailto:/, "");
@@ -108,7 +109,7 @@ const graphIds = {
   author: new URL("#author", siteRootURL).href,
 };
 
-const entitySameAs = [githubRepositoryURL];
+const entitySameAs = [githubProfileURL, githubRepositoryURL];
 
 // Note: When keeping variable examples, avoid unused assignments to satisfy ESLint
 
@@ -183,6 +184,7 @@ const baseStructuredData = [
     name: SITE.author,
     url: aboutURL,
     ...(authorEmail && { email: authorEmail }),
+    sameAs: entitySameAs,
     affiliation: {
       "@id": graphIds.organization,
     },

@@ -14,6 +14,13 @@ description: "欢迎与 Gaazeon 交流技术问题、文章反馈或合作机会
 
 我通常会在 24–48 小时内回复。邮件主题如果能简单说明问题背景，会更方便快速定位重点。
 
+## 🐙 GitHub
+
+- 个人主页：[github.com/gaezon](https://github.com/gaezon)
+- 博客源码：[gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)
+
+文章勘误、补充说明或实现细节，也可以直接在仓库开 issue，或点文章页的「建议修改」。
+
 ## 📝 常见交流主题
 
 ### 技术和工具问题
