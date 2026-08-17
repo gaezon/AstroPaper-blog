@@ -34,12 +34,8 @@ const mermaidConfig = shouldRenderMermaidAtBuildTime
         rehypeMermaid,
         {
           strategy: "img-svg",
-          dark: {
-            /* ... */
-          },
-          mermaidConfig: {
-            /* ... */
-          },
+          dark: {/* ... */},
+          mermaidConfig: {/* ... */},
         },
       ],
     ]
