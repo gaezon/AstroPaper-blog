@@ -14,6 +14,8 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - About: <https://blog.gaazeon.com/about/>
 - Contact: <https://blog.gaazeon.com/contact/>
 - Privacy: <https://blog.gaazeon.com/privacy/>
+- GitHub profile: <https://github.com/gaezon>
+- Source repository: <https://github.com/gaezon/AstroPaper-blog>
 
 ## Feeds And Discovery
 

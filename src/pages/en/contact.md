@@ -12,6 +12,13 @@ Thank you for visiting Gaazeon's blog! If you have questions, suggestions, or wo
 
 I usually reply within 24–48 hours. Adding a short summary in the subject line helps me respond faster.
 
+## 🐙 GitHub
+
+- Profile: [github.com/gaezon](https://github.com/gaezon)
+- Blog source: [gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)
+
+Corrections, clarifications, and implementation notes are also welcome as repository issues, or via the “Suggest Changes” link on each post.
+
 ## 📝 Common reasons to reach out
 
 ### Technical questions

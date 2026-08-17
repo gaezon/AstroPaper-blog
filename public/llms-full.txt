@@ -13,6 +13,7 @@ This file gives AI systems a compact, machine-readable overview of Gaazeon's Blo
 - Contact: [Contact](https://blog.gaazeon.com/contact/)
 - About: [About](https://blog.gaazeon.com/about/)
 - Privacy: [Privacy](https://blog.gaazeon.com/privacy/)
+- GitHub profile: [gaezon](https://github.com/gaezon)
 - Source repository: [gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)
 
 ## Description
