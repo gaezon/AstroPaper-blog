@@ -11,6 +11,11 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      # @types/node major tracks the Node major. This repo is pinned to Node 24.x.
+      - dependency-name: "@types/node"
+        update-types:
+          - version-update:semver-major
     groups:
       npm-minor-and-patch:
         applies-to: version-updates
