@@ -2,7 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
-import { GITHUB_PROFILE_URL, GITHUB_REPOSITORY_URL, SITE } from "@/config";
+import { GITHUB_PROFILE_URL, SITE } from "@/config";
 import { UMAMI } from "@/config/umami";
 import { SOCIALS } from "@/constants";
 import "@/styles/global.css";
@@ -96,8 +96,7 @@ const siteURL = new URL(SITE.website);
 const siteRootURL = ensureTrailingSlash(siteURL.href);
 const aboutURL = new URL("/about/", siteRootURL).href;
 const contactURL = new URL("/contact/", siteRootURL).href;
-const githubProfileURL = SITE.profile || GITHUB_PROFILE_URL;
-const githubRepositoryURL = GITHUB_REPOSITORY_URL;
+const personSameAs = [SITE.profile || GITHUB_PROFILE_URL];
 const authorEmail = SOCIALS.find(social =>
   social.href.startsWith("mailto:")
 )?.href?.replace(/^mailto:/, "");
@@ -108,8 +107,6 @@ const graphIds = {
   organization: new URL("#organization", siteRootURL).href,
   author: new URL("#author", siteRootURL).href,
 };
-
-const entitySameAs = [githubProfileURL, githubRepositoryURL];
 
 // Note: When keeping variable examples, avoid unused assignments to satisfy ESLint
 
@@ -140,7 +137,6 @@ const baseStructuredData = [
     publisher: {
       "@id": graphIds.organization,
     },
-    sameAs: entitySameAs,
     potentialAction: {
       "@type": "SearchAction",
       target: new URL("/search/?q={search_term_string}", siteRootURL).href,
@@ -161,7 +157,6 @@ const baseStructuredData = [
       "@id": graphIds.organization,
     },
     isAccessibleForFree: true,
-    sameAs: entitySameAs,
   },
   {
     "@type": "Organization",
@@ -176,7 +171,6 @@ const baseStructuredData = [
       ...(authorEmail && { email: authorEmail }),
       availableLanguage: ["zh-CN", "en"],
     },
-    sameAs: entitySameAs,
   },
   {
     "@type": "Person",
@@ -184,7 +178,7 @@ const baseStructuredData = [
     name: SITE.author,
     url: aboutURL,
     ...(authorEmail && { email: authorEmail }),
-    sameAs: entitySameAs,
+    sameAs: personSameAs,
     affiliation: {
       "@id": graphIds.organization,
     },

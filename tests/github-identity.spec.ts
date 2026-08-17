@@ -4,14 +4,9 @@ import { findFirstJsonLdNodeByType, getJsonLdNodes } from "./helpers/json-ld";
 const GITHUB_PROFILE_URL = "https://github.com/gaezon";
 const GITHUB_REPOSITORY_URL = "https://github.com/gaezon/AstroPaper-blog";
 
-const expectSameAsIncludesGitHub = (sameAs: unknown) => {
-  expect(Array.isArray(sameAs)).toBe(true);
-  expect(sameAs).toEqual(
-    expect.arrayContaining([GITHUB_PROFILE_URL, GITHUB_REPOSITORY_URL])
-  );
-};
-
 test.describe("public GitHub identity", () => {
+  test.use({ locale: "zh-CN" });
+
   test("homepage socials link to the GitHub profile", async ({ page }) => {
     await page.goto("/");
 
@@ -82,18 +77,18 @@ test.describe("public GitHub identity", () => {
     );
   });
 
-  test("structured data sameAs includes GitHub profile and repository", async ({
-    page,
-  }) => {
+  test("Person sameAs is only the GitHub profile", async ({ page }) => {
     await page.goto("/");
 
     const nodes = await getJsonLdNodes(page);
     const person = findFirstJsonLdNodeByType(nodes, "Person");
     const website = findFirstJsonLdNodeByType(nodes, "WebSite");
     const organization = findFirstJsonLdNodeByType(nodes, "Organization");
+    const blog = findFirstJsonLdNodeByType(nodes, "Blog");
 
-    expectSameAsIncludesGitHub(person?.sameAs);
-    expectSameAsIncludesGitHub(website?.sameAs);
-    expectSameAsIncludesGitHub(organization?.sameAs);
+    expect(person?.sameAs).toEqual([GITHUB_PROFILE_URL]);
+    expect(website?.sameAs).toBeUndefined();
+    expect(organization?.sameAs).toBeUndefined();
+    expect(blog?.sameAs).toBeUndefined();
   });
 });
