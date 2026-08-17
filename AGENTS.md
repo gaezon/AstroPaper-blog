@@ -85,6 +85,7 @@
 - `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` serves localized zh/en 404 pages and security response headers correctly
 - All HTTP security/discovery header values are declared once in `src/utils/http-headers.ts` and shared between the dev middleware (`src/middleware.ts`) and the Vercel post-build script; when updating CSP or Link header entries, edit only this file
 - Pagefind index generation targets `.vercel/output/static`
+- Branch protection on `main` requires the GitHub Actions check named `build` (the CI job id). Do not set a custom `jobs.build.name`; GitHub matches the job display name, and a mismatch leaves the required check unreported
 
 ## Documentation Maintenance
 
