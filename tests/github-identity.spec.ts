@@ -44,7 +44,7 @@ test.describe("public GitHub identity", () => {
       page.getByRole("link", { name: "gaezon/AstroPaper-blog" })
     ).toHaveAttribute("href", GITHUB_REPOSITORY_URL);
     await expect(
-      page.getByRole("link", { name: "gaezon" }).first()
+      page.getByRole("link", { name: "gaezon", exact: true })
     ).toHaveAttribute("href", GITHUB_PROFILE_URL);
 
     await page.goto("/contact/");
