@@ -8,7 +8,8 @@ export const CONTENT_SECURITY_POLICY = [
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://umami.gaazeon.com https://comment.gaazeon.com",
+  // Twikoo fetches its official OwO catalog via XHR from owo.imaegoo.com
+  "connect-src 'self' https://umami.gaazeon.com https://comment.gaazeon.com https://owo.imaegoo.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
