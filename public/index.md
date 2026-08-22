@@ -34,7 +34,7 @@ Webhooks, event callbacks, and mutation endpoints are not supported. Use RSS and
 
 ## Analytics Transparency
 
-Production traffic analytics use a self-hosted Umami instance. Its source code and site-specific changes are public at <https://github.com/gaezon/umami>. Production performance metrics also use Vercel Speed Insights. See <https://blog.gaazeon.com/privacy/> for the data-processing details.
+Production traffic analytics use a self-hosted Umami instance. The tracker records page path/title, referrer, browser language, and screen size, and derives anonymous browser, operating-system, device, and approximate-location dimensions; an IP address may be used during processing for anonymous session and location calculation but is not stored as an analytics record. Its source code and site-specific changes are public at <https://github.com/gaezon/umami>, while the public article-views endpoint exposed by the Umami instance returns aggregate counts only. Production performance metrics are received and processed by <https://vercel.com/docs/speed-insights/privacy-policy>, separately from Umami. See <https://blog.gaazeon.com/privacy/> for the data-processing details.
 
 ## When To Use
 

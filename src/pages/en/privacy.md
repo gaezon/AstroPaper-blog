@@ -10,11 +10,11 @@ Gaazeon's Blog is a public technical blog. Articles can be read anonymously. The
 
 ## Analytics
 
-In production, this site uses a self-hosted Umami instance for basic traffic analytics. The data helps understand page visits and improve content structure. It is not used for advertising targeting.
+In production, this site uses a self-hosted Umami instance for basic traffic analytics. Umami records information such as page path, page title, referrer, browser language, and screen size, and derives anonymous dimensions such as browser, operating system, device type, and approximate location. The IP address may be used during request processing to generate an anonymous session and calculate location, but it is not stored as an analytics record. The data helps understand page visits and improve content structure. It is not used for advertising targeting. See the [Umami metric definitions](https://docs.umami.is/docs/metric-definitions) for the default metric details.
 
-The Umami source code and custom changes used for this site are public in [gaezon/umami](https://github.com/gaezon/umami), so the implementation can be inspected directly. The public repository does not contain the running instance's environment variables, admin credentials, database, or raw analytics records; the article views endpoint exposed by the blog returns only aggregate article view counts.
+The Umami source code and custom changes used for this site are public in [gaezon/umami](https://github.com/gaezon/umami), so the implementation can be inspected directly. Umami's raw analytics data and admin console are not public; the public article-views endpoint exposed by the Umami instance and used by the blog returns only aggregate article view counts. The public repository does not contain the running instance's environment variables, admin credentials, database, or raw analytics records.
 
-The production site also loads [Vercel Speed Insights](https://github.com/vercel/speed-insights) to collect Web Vitals and other page-performance metrics. This runs separately from Umami.
+The production site also loads [Vercel Speed Insights](https://vercel.com/docs/speed-insights/privacy-policy) to collect Web Vitals and other page-performance metrics. These performance metrics are received and processed by Vercel Speed Insights separately from this site's self-hosted Umami analytics.
 
 ## Comments
 

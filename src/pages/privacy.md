@@ -10,11 +10,11 @@ Gaazeon 博客是一个公开技术博客。网站内容可匿名阅读，不提
 
 ## 访问统计
 
-本站在生产环境中使用自托管 Umami 做基础访问统计，用于了解页面访问量和改进内容结构。统计不需要你注册账号，也不用于广告定向。
+本站在生产环境中使用自托管 Umami 做基础访问统计，用于了解页面访问量和改进内容结构。Umami 会记录页面路径、页面标题、来源页、浏览器语言和屏幕尺寸等访问信息，并生成浏览器、操作系统、设备类型及大致地理位置等匿名统计维度。IP 地址可能在请求处理过程中用于生成匿名会话和计算地理位置，但不会作为统计记录保存。统计不需要你注册账号，也不用于广告定向。默认指标的具体定义见 [Umami 官方文档](https://docs.umami.is/docs/metric-definitions)。
 
-统计服务所使用的 Umami 源码及本站的定制改动已公开在 [gaezon/umami](https://github.com/gaezon/umami)，可以直接查看实现。公开仓库不包含运行实例的环境变量、后台凭据、数据库或原始统计记录；博客页面展示的文章阅读量接口只返回文章累计阅读量。
+统计服务所使用的 Umami 源码及本站的定制改动已公开在 [gaezon/umami](https://github.com/gaezon/umami)，可以直接查看实现。Umami 的原始统计数据和管理后台不公开；Umami 实例向博客提供的公开文章阅读量接口只返回文章累计阅读量。公开仓库不包含运行实例的环境变量、后台凭据、数据库或原始统计记录。
 
-此外，生产环境还加载 [Vercel Speed Insights](https://github.com/vercel/speed-insights)，用于收集 Web Vitals 等页面性能指标。这部分与 Umami 分开运行。
+此外，生产环境还加载 [Vercel Speed Insights](https://vercel.com/docs/speed-insights/privacy-policy)，用于收集 Web Vitals 等页面性能指标。这些性能数据由 Vercel Speed Insights 接收和处理，与本站自托管的 Umami 访问统计分开。
 
 ## 评论
 
