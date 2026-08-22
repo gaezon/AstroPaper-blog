@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   applyLocalized404Routes,
+  applyArticleViewsRewrite,
   applyVercelRoutesConfig,
   hoistAstroCacheRoute,
+  ARTICLE_VIEWS_REWRITE_ROUTE,
   LOCALIZED_NOT_FOUND_ROUTES,
   SECURITY_HEADERS_ROUTE,
 } from "../../scripts/apply-vercel-routes";
@@ -92,6 +94,30 @@ describe("hoistAstroCacheRoute", () => {
   });
 });
 
+describe("applyArticleViewsRewrite", () => {
+  it("inserts the article views proxy before filesystem handling", () => {
+    const config = {
+      version: 3,
+      routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
+    };
+
+    expect(applyArticleViewsRewrite(config).routes).toEqual([
+      ARTICLE_VIEWS_REWRITE_ROUTE,
+      { handle: "filesystem" },
+      ...LOCALIZED_NOT_FOUND_ROUTES,
+    ]);
+  });
+
+  it("stays idempotent when the proxy route is already present", () => {
+    const config = {
+      version: 3,
+      routes: [ARTICLE_VIEWS_REWRITE_ROUTE, { handle: "filesystem" }],
+    };
+
+    expect(applyArticleViewsRewrite(config).routes).toEqual(config.routes);
+  });
+});
+
 describe("applyVercelRoutesConfig", () => {
   it("inserts security headers, hoists the cache route, and localizes 404 routes", () => {
     const config = {
@@ -106,6 +132,7 @@ describe("applyVercelRoutesConfig", () => {
     expect(applyVercelRoutesConfig(config).routes).toEqual([
       SECURITY_HEADERS_ROUTE,
       astroCacheRoute,
+      ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);
@@ -120,6 +147,7 @@ describe("applyVercelRoutesConfig", () => {
       routes: [
         parsedSecurityHeadersRoute,
         astroCacheRoute,
+        ARTICLE_VIEWS_REWRITE_ROUTE,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
       ],
@@ -153,6 +181,7 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);
@@ -175,6 +204,7 @@ describe("applyVercelRoutesConfig", () => {
       routes: [
         serializedSecurityHeadersRoute,
         { handle: "filesystem" },
+        ARTICLE_VIEWS_REWRITE_ROUTE,
         ...LOCALIZED_NOT_FOUND_ROUTES,
       ],
     };
@@ -187,6 +217,7 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
     ]);

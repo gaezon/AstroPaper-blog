@@ -37,6 +37,7 @@
     "test:unit": "vitest run --config vitest.config.ts",
     "pretest:sitemap": "node scripts/check-toolchain.mjs",
     "test:sitemap": "pnpm build && pnpm exec playwright test --config=playwright.sitemap.config.ts",
+    "smoke:article-views": "node scripts/smoke-article-views.mjs",
     "prepare": "husky"
   },
   "dependencies": {
