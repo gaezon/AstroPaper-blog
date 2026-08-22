@@ -6,13 +6,13 @@
   "trailingSlash": true,
   "rewrites": [
     {
-      "source": "/api/article-views",
+      "source": "/api/article-views/",
       "destination": "https://umami.gaazeon.com/api/public/article-views"
     }
   ],
   "headers": [
     {
-      "source": "/api/article-views",
+      "source": "/api/article-views/",
       "headers": [
         {
           "key": "CDN-Cache-Control",

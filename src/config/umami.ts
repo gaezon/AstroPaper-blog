@@ -4,7 +4,7 @@ export const UMAMI = {
   trackerPath: "/umami",
   websiteId: "82ee4d3c-d021-4a8b-94b3-6ce6840b6416",
   articleViewsPath: "/api/public/article-views",
-  articleViewsProxyPath: "/api/article-views",
+  articleViewsProxyPath: "/api/article-views/",
 } as const;
 
 export function getUmamiArticleViewsUrl(paths: string[]): string {
