@@ -208,6 +208,7 @@ export default {
     emailMe: "发送邮件",
     githubMe: "GitHub",
     sourceCode: "源码",
+    analyticsSource: "统计源码",
     emailService: "电子邮件",
     sharePostVia: "通过{{service}}分享文章",
     cookie: {

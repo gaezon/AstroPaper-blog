@@ -16,6 +16,7 @@ I usually reply within 24–48 hours. Adding a short summary in the subject line
 
 - Profile: [github.com/gaezon](https://github.com/gaezon)
 - Blog source: [gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)
+- Analytics source: [gaezon/umami](https://github.com/gaezon/umami)
 
 Corrections, clarifications, and implementation notes are also welcome as repository issues, or via the “Suggest Changes” link on each post.
 

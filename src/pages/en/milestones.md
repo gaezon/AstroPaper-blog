@@ -120,7 +120,7 @@ After all this tinkering, here's what the blog has become:
 
 - 🚀 CDN acceleration, fast access globally
 - 💾 Static generation, zero server load
-- 🎯 No ads, no tracking, pure reading experience
+- 🎯 No ads; traffic analytics use self-hosted [Umami](https://github.com/gaezon/umami) with public source code, keeping the experience reading-first
 - 💬 Reader interaction, Twikoo comment system makes communication convenient
 
 ---
