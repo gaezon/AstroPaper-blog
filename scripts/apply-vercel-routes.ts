@@ -30,6 +30,14 @@ export const SECURITY_HEADERS_ROUTE = {
   continue: true,
 } as const satisfies VercelRoute;
 
+export const ARTICLE_VIEWS_REWRITE_ROUTE = {
+  src: "^/api/article-views/$",
+  dest: "https://umami.gaazeon.com/api/public/article-views",
+  headers: {
+    "CDN-Cache-Control": "public, max-age=600, stale-while-revalidate=3600",
+  },
+} as const satisfies VercelRoute;
+
 const SECURITY_HEADER_KEYS = new Set(
   Object.keys(SECURITY_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
 );
@@ -183,10 +191,31 @@ export function hoistAstroCacheRoute(config: VercelConfig): VercelConfig {
   };
 }
 
+export function applyArticleViewsRewrite(config: VercelConfig): VercelConfig {
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, ARTICLE_VIEWS_REWRITE_ROUTE)
+  );
+  const filesystemIndex = routes.findIndex(
+    route => route.handle === "filesystem"
+  );
+
+  if (filesystemIndex === -1) {
+    throw new Error("Could not find Vercel filesystem route.");
+  }
+
+  routes.splice(filesystemIndex, 0, ARTICLE_VIEWS_REWRITE_ROUTE);
+
+  return {
+    ...config,
+    routes,
+  };
+}
+
 export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
   const steps = [
     applySecurityHeaders,
     hoistAstroCacheRoute,
+    applyArticleViewsRewrite,
     applyLocalized404Routes,
   ];
 

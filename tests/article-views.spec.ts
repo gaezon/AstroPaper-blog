@@ -7,7 +7,7 @@ const UNPAIRED_PATH = "/posts/upgrade-astropaper-git/";
 async function mockArticleViews(page: Page, status = 200, delay = 0) {
   const requests: string[][] = [];
 
-  await page.route("**/api/public/article-views?**", async route => {
+  await page.route(/\/api\/article-views\/\?.*/, async route => {
     const url = new URL(route.request().url());
     requests.push(url.searchParams.getAll("path"));
     if (delay > 0) await new Promise(resolve => setTimeout(resolve, delay));
