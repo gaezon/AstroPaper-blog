@@ -1,5 +1,6 @@
 export const UMAMI = {
   origin: "https://umami.gaazeon.com",
+  repositoryUrl: "https://github.com/gaezon/umami",
   trackerPath: "/umami",
   websiteId: "82ee4d3c-d021-4a8b-94b3-6ce6840b6416",
   articleViewsPath: "/api/public/article-views",

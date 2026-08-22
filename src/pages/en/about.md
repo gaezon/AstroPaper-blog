@@ -14,7 +14,11 @@ My blog mostly focuses on practical technologies, and I will probably also share
 
 Chinese is my native language, and I can read English technical documentation. If you find any issues in my articles, please let me know — or open an issue / suggest a change in the public repository.
 
-This blog is fully open source on GitHub: [gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog). My GitHub profile is [gaezon](https://github.com/gaezon).
+## Open and transparent
+
+This blog is fully open source on GitHub: [gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog). The self-hosted Umami source code and the custom changes used for this site are also public in [gaezon/umami](https://github.com/gaezon/umami). See the [Privacy Policy](/en/privacy/) for the scope of data processing.
+
+My GitHub profile is [gaezon](https://github.com/gaezon).
 
 ---
 
