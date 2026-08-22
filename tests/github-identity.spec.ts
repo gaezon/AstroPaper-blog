@@ -3,8 +3,9 @@ import { findFirstJsonLdNodeByType, getJsonLdNodes } from "./helpers/json-ld";
 
 const GITHUB_PROFILE_URL = "https://github.com/gaezon";
 const GITHUB_REPOSITORY_URL = "https://github.com/gaezon/AstroPaper-blog";
+const UMAMI_REPOSITORY_URL = "https://github.com/gaezon/umami";
 
-test.describe("public GitHub identity", () => {
+test.describe("public GitHub and analytics repositories", () => {
   test.use({ locale: "zh-CN" });
 
   test("homepage socials link to the GitHub profile", async ({ page }) => {
@@ -24,20 +25,24 @@ test.describe("public GitHub identity", () => {
     await expect(
       page.getByRole("link", { name: "GitHub" }).first()
     ).toHaveAttribute("href", GITHUB_PROFILE_URL);
-    await expect(page.getByRole("link", { name: "Source" })).toHaveAttribute(
-      "href",
-      GITHUB_REPOSITORY_URL
-    );
+    await expect(
+      page.getByRole("link", { name: "Source", exact: true })
+    ).toHaveAttribute("href", GITHUB_REPOSITORY_URL);
+    await expect(
+      page.getByRole("link", { name: "Analytics source", exact: true })
+    ).toHaveAttribute("href", UMAMI_REPOSITORY_URL);
   });
 
-  test("footer, about, and contact expose the public repository", async ({
+  test("footer, about, contact, and privacy expose public repositories", async ({
     page,
   }) => {
     await page.goto("/");
-    await expect(page.getByRole("link", { name: "源码" })).toHaveAttribute(
-      "href",
-      GITHUB_REPOSITORY_URL
-    );
+    await expect(
+      page.getByRole("link", { name: "源码", exact: true })
+    ).toHaveAttribute("href", GITHUB_REPOSITORY_URL);
+    await expect(
+      page.getByRole("link", { name: "统计源码", exact: true })
+    ).toHaveAttribute("href", UMAMI_REPOSITORY_URL);
 
     await page.goto("/about/");
     await expect(
@@ -46,6 +51,9 @@ test.describe("public GitHub identity", () => {
     await expect(
       page.getByRole("link", { name: "gaezon", exact: true })
     ).toHaveAttribute("href", GITHUB_PROFILE_URL);
+    await expect(
+      page.getByRole("link", { name: "gaezon/umami" })
+    ).toHaveAttribute("href", UMAMI_REPOSITORY_URL);
 
     await page.goto("/contact/");
     await expect(
@@ -54,6 +62,19 @@ test.describe("public GitHub identity", () => {
     await expect(
       page.getByRole("link", { name: "gaezon/AstroPaper-blog" })
     ).toHaveAttribute("href", GITHUB_REPOSITORY_URL);
+    await expect(
+      page.getByRole("link", { name: "gaezon/umami" })
+    ).toHaveAttribute("href", UMAMI_REPOSITORY_URL);
+
+    await page.goto("/privacy/");
+    await expect(
+      page.getByRole("link", { name: "gaezon/umami" })
+    ).toHaveAttribute("href", UMAMI_REPOSITORY_URL);
+
+    await page.goto("/en/privacy/");
+    await expect(
+      page.getByRole("link", { name: "gaezon/umami" })
+    ).toHaveAttribute("href", UMAMI_REPOSITORY_URL);
   });
 
   test("post pages offer a GitHub edit link", async ({ page }) => {

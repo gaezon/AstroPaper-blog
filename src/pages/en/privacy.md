@@ -12,6 +12,10 @@ Gaazeon's Blog is a public technical blog. Articles can be read anonymously. The
 
 In production, this site uses a self-hosted Umami instance for basic traffic analytics. The data helps understand page visits and improve content structure. It is not used for advertising targeting.
 
+The Umami source code and custom changes used for this site are public in [gaezon/umami](https://github.com/gaezon/umami), so the implementation can be inspected directly. The public repository does not contain the running instance's environment variables, admin credentials, database, or raw analytics records; the article views endpoint exposed by the blog returns only aggregate article view counts.
+
+The production site also loads [Vercel Speed Insights](https://github.com/vercel/speed-insights) to collect Web Vitals and other page-performance metrics. This runs separately from Umami.
+
 ## Comments
 
 Some posts may load a comment component. If you choose to post a comment, the submitted content, nickname, and related form data are used to display the comment and support follow-up discussion.

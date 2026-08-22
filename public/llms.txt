@@ -18,6 +18,7 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - [Privacy](https://blog.gaazeon.com/privacy/)
 - [GitHub profile](https://github.com/gaezon)
 - [Source repository](https://github.com/gaezon/AstroPaper-blog)
+- [Analytics source](https://github.com/gaezon/umami)
 
 ## Machine-Readable Resources
 
@@ -26,6 +27,10 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - [Sitemap index](https://blog.gaazeon.com/sitemap-index.xml)
 - [Chinese RSS feed](https://blog.gaazeon.com/rss.xml)
 - [English RSS feed](https://blog.gaazeon.com/rss.en.xml)
+
+## Analytics Transparency
+
+Production traffic analytics use a self-hosted Umami instance, and its source code and site-specific changes are public in [gaezon/umami](https://github.com/gaezon/umami). Production performance metrics also use Vercel Speed Insights. See the [Privacy](https://blog.gaazeon.com/privacy/) page for data-processing details.
 
 ## Content Areas
 

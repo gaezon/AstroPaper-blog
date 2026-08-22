@@ -15,6 +15,7 @@ This file gives AI systems a compact, machine-readable overview of Gaazeon's Blo
 - Privacy: [Privacy](https://blog.gaazeon.com/privacy/)
 - GitHub profile: [gaezon](https://github.com/gaezon)
 - Source repository: [gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)
+- Analytics source: [gaezon/umami](https://github.com/gaezon/umami)
 
 ## Description
 
@@ -25,6 +26,10 @@ The blog's differentiator is hands-on, reproducible troubleshooting written from
 ## Access Model
 
 The blog is publicly readable. It has no user account system, no OAuth flow, no paid API, no purchase workflow, and no protected resources. Agents can fetch public pages, RSS feeds, sitemap files, the Markdown index, and static search metadata without credentials.
+
+## Analytics Transparency
+
+Production traffic analytics use a self-hosted Umami instance, and its source code and site-specific changes are public in [gaezon/umami](https://github.com/gaezon/umami). Production performance metrics also use Vercel Speed Insights. See the [Privacy](https://blog.gaazeon.com/privacy/) page for data-processing details.
 
 ## Retrieval Strategy
 

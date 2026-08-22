@@ -16,6 +16,7 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 - Privacy: <https://blog.gaazeon.com/privacy/>
 - GitHub profile: <https://github.com/gaezon>
 - Source repository: <https://github.com/gaezon/AstroPaper-blog>
+- Analytics source: <https://github.com/gaezon/umami>
 
 ## Feeds And Discovery
 
@@ -30,6 +31,10 @@ Gaazeon's Blog is a bilingual personal technical blog focused on practical softw
 The site is free to read and does not require authentication. There are no paid plans, OAuth flows, private APIs, purchase flows, or user-account resources.
 
 Webhooks, event callbacks, and mutation endpoints are not supported. Use RSS and sitemap files for incremental updates.
+
+## Analytics Transparency
+
+Production traffic analytics use a self-hosted Umami instance. Its source code and site-specific changes are public at <https://github.com/gaezon/umami>. Production performance metrics also use Vercel Speed Insights. See <https://blog.gaazeon.com/privacy/> for the data-processing details.
 
 ## When To Use
 

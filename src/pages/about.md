@@ -14,7 +14,11 @@ description: "技术爱好者 Gaazeon 的个人介绍。非计算机专业出身
 
 中文是母语，英文能看懂技术文档。如果发现文章里有什么问题，欢迎告诉我，也可以直接在公开仓库里提 issue 或建议修改。
 
-这个博客的源码托管在 GitHub，完全开源：[gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)。我的 GitHub 主页是 [gaezon](https://github.com/gaezon)。
+## 开放与透明
+
+这个博客的源码托管在 GitHub，完全开源：[gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)。用于访问统计的自托管 Umami 源码及本站的定制改动，也公开在 [gaezon/umami](https://github.com/gaezon/umami)。统计数据的处理范围见[隐私政策](/privacy/)。
+
+我的 GitHub 主页是 [gaezon](https://github.com/gaezon)。
 
 ---
 
