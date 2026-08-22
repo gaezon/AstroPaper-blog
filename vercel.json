@@ -3,5 +3,22 @@
   "ignoreCommand": "node scripts/vercel-ignore-build.mjs",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm build",
-  "trailingSlash": true
+  "trailingSlash": true,
+  "rewrites": [
+    {
+      "source": "/api/article-views",
+      "destination": "https://umami.gaazeon.com/api/public/article-views"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/article-views",
+      "headers": [
+        {
+          "key": "CDN-Cache-Control",
+          "value": "public, max-age=600, stale-while-revalidate=3600"
+        }
+      ]
+    }
+  ]
 }
