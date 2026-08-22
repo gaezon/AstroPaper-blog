@@ -3,7 +3,7 @@ const articlePath =
   process.env.ARTICLE_PATH ?? "/posts/upgrade-astropaper-git/";
 
 if (!previewUrl) {
-  console.error("PREVIEW_URL is required");
+  process.stderr.write("PREVIEW_URL is required\n");
   process.exit(1);
 }
 
@@ -54,8 +54,8 @@ if (second.cache !== "HIT") {
   );
 }
 
-console.log(
-  JSON.stringify(
+process.stdout.write(
+  `${JSON.stringify(
     {
       endpoint: endpoint.toString(),
       first,
@@ -63,5 +63,5 @@ console.log(
     },
     null,
     2
-  )
+  )}\n`
 );

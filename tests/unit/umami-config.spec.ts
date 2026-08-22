@@ -12,7 +12,8 @@ describe("Umami public article views configuration", () => {
     );
 
     expect(url.origin).toBe("https://blog.example.com");
-    expect(url.pathname).toBe("/api/article-views/");
+    expect(UMAMI.articleViewsProxyPath).toBe("/api/article-views/");
+    expect(url.pathname).toBe(UMAMI.articleViewsProxyPath);
     expect(url.searchParams.getAll("path")).toEqual([
       "/posts/中文文章/",
       "/en/posts/english-article/",
