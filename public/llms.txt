@@ -18,6 +18,7 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - [Privacy](https://blog.gaazeon.com/privacy/)
 - [GitHub profile](https://github.com/gaezon)
 - [Source repository](https://github.com/gaezon/AstroPaper-blog)
+- [Analytics source](https://github.com/gaezon/umami)
 
 ## Machine-Readable Resources
 
@@ -26,6 +27,10 @@ Gaazeon's Blog is a static public blog at <https://blog.gaazeon.com/>. It publis
 - [Sitemap index](https://blog.gaazeon.com/sitemap-index.xml)
 - [Chinese RSS feed](https://blog.gaazeon.com/rss.xml)
 - [English RSS feed](https://blog.gaazeon.com/rss.en.xml)
+
+## Analytics Transparency
+
+Production traffic analytics use a self-hosted Umami instance. The tracker records page path/title, referrer, browser language, and screen size, and derives anonymous browser, operating-system, device, and approximate-location dimensions; an IP address may be used during processing for anonymous session and location calculation but is not stored as an analytics record. Its source code and site-specific changes are public in [gaezon/umami](https://github.com/gaezon/umami), while the public article-views endpoint exposed by the Umami instance returns aggregate counts only. Production performance metrics are received and processed by [Vercel Speed Insights](https://vercel.com/docs/speed-insights/privacy-policy), separately from Umami. See the [Privacy](https://blog.gaazeon.com/privacy/) page for data-processing details.
 
 ## Content Areas
 

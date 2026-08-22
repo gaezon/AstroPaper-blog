@@ -210,6 +210,7 @@ export default {
     emailMe: "Send an email",
     githubMe: "GitHub",
     sourceCode: "Source",
+    analyticsSource: "Analytics source",
     emailService: "email",
     sharePostVia: "Share this post via {{service}}",
     cookie: {

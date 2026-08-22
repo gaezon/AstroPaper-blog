@@ -1,6 +1,7 @@
 ---
 import Socials from "./Socials.astro";
 import { GITHUB_REPOSITORY_URL } from "@/config";
+import { UMAMI } from "@/config/umami";
 import { getCurrentLocale, t } from "@/i18n/utils";
 import { normalizePathWithLocale } from "@/utils/url";
 
@@ -65,6 +66,15 @@ const tr = (key: string, params?: Record<string, string | number>) =>
           rel="noopener noreferrer"
         >
           CC BY-NC-SA 4.0
+        </a>
+        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <a
+          class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
+          href={UMAMI.repositoryUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {tr("ui.analyticsSource")}
         </a>
         <span class="text-foreground/35" aria-hidden="true">|</span>
         <a

@@ -18,6 +18,7 @@ description: "欢迎与 Gaazeon 交流技术问题、文章反馈或合作机会
 
 - 个人主页：[github.com/gaezon](https://github.com/gaezon)
 - 博客源码：[gaezon/AstroPaper-blog](https://github.com/gaezon/AstroPaper-blog)
+- 统计服务源码：[gaezon/umami](https://github.com/gaezon/umami)
 
 文章勘误、补充说明或实现细节，也可以直接在仓库开 issue，或点文章页的「建议修改」。
 
