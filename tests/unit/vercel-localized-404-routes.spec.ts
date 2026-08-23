@@ -116,6 +116,12 @@ describe("applyArticleViewsRewrite", () => {
 
     expect(applyArticleViewsRewrite(config).routes).toEqual(config.routes);
   });
+
+  it("sets CDN-Cache-Control to max-age=1800, stale-while-revalidate=21600", () => {
+    expect(ARTICLE_VIEWS_REWRITE_ROUTE.headers["CDN-Cache-Control"]).toBe(
+      "public, max-age=1800, stale-while-revalidate=21600"
+    );
+  });
 });
 
 describe("applyVercelRoutesConfig", () => {
