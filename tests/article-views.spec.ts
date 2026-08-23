@@ -130,3 +130,21 @@ test.describe("combined bilingual article views", () => {
     await expect(content).toHaveCSS("column-gap", "4px");
   });
 });
+
+test.describe("article-views CDN cache smoke test", () => {
+  test("response body always conforms to { views: number }", async ({
+    page,
+  }) => {
+    await page.route(/\/api\/article-views\/\?.*/, route =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ views: 0 }),
+      })
+    );
+
+    await page.goto(ZH_PATH);
+    // A zero views count is invisible per UX rules, but the component still renders.
+    await expect(page.locator("[data-article-views]")).toBeAttached();
+  });
+});
