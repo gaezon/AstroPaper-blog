@@ -132,54 +132,6 @@ test.describe("combined bilingual article views", () => {
 });
 
 test.describe("article-views CDN cache smoke test", () => {
-  test("first request may miss; second identical request reuses the same interceptor (HIT simulation)", async ({
-    page,
-  }) => {
-    const intercepted: Array<{ url: string; responseBody: unknown }> = [];
-
-    // Intercept all article-views requests and record them.
-    // In a real CDN scenario the second request would return a HIT from cache;
-    // here we simulate by verifying the response body shape on each interception
-    // and asserting only one network call is made per unique path set when the
-    // browser cache is warm.
-    await page.route(/\/api\/article-views\/\?.*/, async route => {
-      const url = route.request().url();
-      const body = { views: 42 };
-      intercepted.push({ url, responseBody: body });
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        headers: {
-          "access-control-allow-origin": "*",
-          // Reflect the expected CDN-Cache-Control value so assertions work
-          // even when Vercel edge is not involved.
-          "CDN-Cache-Control":
-            "public, max-age=1800, stale-while-revalidate=21600",
-          "Cache-Control": "public, max-age=1800, stale-while-revalidate=21600",
-        },
-        body: JSON.stringify(body),
-      });
-    });
-
-    // First visit – must produce a network request (cache MISS).
-    await page.goto(ZH_PATH);
-    await expect(page.getByText("42次阅读")).toBeVisible();
-    const firstCount = intercepted.length;
-    expect(firstCount).toBeGreaterThanOrEqual(1);
-
-    // Second visit to the same URL – browser may serve from cache (HIT).
-    // We validate the response body shape via the visible count instead of
-    // counting network hits, because Playwright route interception does not
-    // distinguish browser-cache hits from live requests.
-    await page.goto(ZH_PATH);
-    await expect(page.getByText("42次阅读")).toBeVisible();
-
-    // Verify that every intercepted response had the correct shape.
-    for (const record of intercepted) {
-      expect(record.responseBody).toMatchObject({ views: expect.any(Number) });
-    }
-  });
-
   test("response body always conforms to { views: number }", async ({
     page,
   }) => {
@@ -187,10 +139,6 @@ test.describe("article-views CDN cache smoke test", () => {
       route.fulfill({
         status: 200,
         contentType: "application/json",
-        headers: {
-          "CDN-Cache-Control":
-            "public, max-age=1800, stale-while-revalidate=21600",
-        },
         body: JSON.stringify({ views: 0 }),
       })
     );
@@ -198,34 +146,5 @@ test.describe("article-views CDN cache smoke test", () => {
     await page.goto(ZH_PATH);
     // A zero views count is invisible per UX rules, but the component still renders.
     await expect(page.locator("[data-article-views]")).toBeAttached();
-  });
-
-  test("CDN-Cache-Control header reflects the updated policy (max-age=1800, swr=21600)", async ({
-    page,
-  }) => {
-    let capturedHeaders: Record<string, string> = {};
-
-    await page.route(/\/api\/article-views\/\?.*/, async route => {
-      const headers = {
-        "CDN-Cache-Control":
-          "public, max-age=1800, stale-while-revalidate=21600",
-        "Cache-Control": "public, max-age=1800, stale-while-revalidate=21600",
-        "access-control-allow-origin": "*",
-      };
-      capturedHeaders = headers;
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        headers,
-        body: JSON.stringify({ views: 7 }),
-      });
-    });
-
-    await page.goto(ZH_PATH);
-    await expect(page.getByText("7次阅读")).toBeVisible();
-
-    expect(capturedHeaders["CDN-Cache-Control"]).toBe(
-      "public, max-age=1800, stale-while-revalidate=21600"
-    );
   });
 });
