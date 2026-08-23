@@ -34,7 +34,7 @@ export const ARTICLE_VIEWS_REWRITE_ROUTE = {
   src: "^/api/article-views/$",
   dest: "https://umami.gaazeon.com/api/public/article-views",
   headers: {
-    "CDN-Cache-Control": "public, max-age=600, stale-while-revalidate=3600",
+    "CDN-Cache-Control": "public, max-age=1800, stale-while-revalidate=21600",
   },
 } as const satisfies VercelRoute;
 
