@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   applyLocalized404Routes,
@@ -115,6 +117,28 @@ describe("applyArticleViewsRewrite", () => {
     };
 
     expect(applyArticleViewsRewrite(config).routes).toEqual(config.routes);
+  });
+
+  it("matches the CDN-Cache-Control value in vercel.json to prevent silent config drift", () => {
+    type VercelJsonHeader = { key: string; value: string };
+    type VercelJsonHeaderRule = { source: string; headers: VercelJsonHeader[] };
+    type VercelJson = { headers?: VercelJsonHeaderRule[] };
+
+    const vercelJson = JSON.parse(
+      readFileSync(resolve(__dirname, "../../vercel.json"), "utf8")
+    ) as VercelJson;
+
+    const articleViewsRule = vercelJson.headers?.find(
+      rule => rule.source === "/api/article-views/"
+    );
+    const cdnHeader = articleViewsRule?.headers.find(
+      h => h.key === "CDN-Cache-Control"
+    );
+
+    expect(cdnHeader?.value).toBeDefined();
+    expect(cdnHeader?.value).toBe(
+      ARTICLE_VIEWS_REWRITE_ROUTE.headers["CDN-Cache-Control"]
+    );
   });
 });
 
