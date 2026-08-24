@@ -41,22 +41,22 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "7.2.2",
-    "@astrojs/mdx": "^7.0.5",
+    "@astrojs/markdown-remark": "7.2.4",
+    "@astrojs/mdx": "^7.0.7",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
-    "@astrojs/vercel": "^11.0.5",
+    "@astrojs/vercel": "^11.0.7",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.3",
     "@vercel/speed-insights": "^2.0.0",
-    "astro": "^7.2.2",
+    "astro": "^7.2.4",
     "lodash.kebabcase": "^4.1.1",
-    "probe-image-size": "^7.3.0",
+    "probe-image-size": "^7.4.0",
     "rehype-callouts": "^2.2.0",
     "rehype-mermaid": "^3.0.0",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",
-    "satori": "^0.29.0",
+    "satori": "^0.33.0",
     "sharp": "^0.35.3",
     "slugify": "1.6.9",
     "tailwindcss": "^4.3.3",
@@ -82,7 +82,7 @@
     "globals": "^17.11.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
-    "mermaid": "^11.16.1",
+    "mermaid": "^11.17.0",
     "pagefind": "^1.5.2",
     "playwright": "1.62.1",
     "prettier": "^3.9.6",
@@ -91,8 +91,8 @@
     "tsx": "^4.23.12",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,md,css,astro,yaml,yml}": "prettier --write"
