@@ -62,9 +62,9 @@ function clampResponsiveOptions(options: ImageTransform): void {
 
 const markdownImageService: LocalImageService = {
   ...sharpService,
-  async validateOptions(options, imageConfig) {
+  async validateOptions(options, imageConfig, logger) {
     const validated = sharpService.validateOptions
-      ? await sharpService.validateOptions(options, imageConfig)
+      ? await sharpService.validateOptions(options, imageConfig, logger)
       : options;
 
     if (isTargetMarkdownImage(validated)) {
