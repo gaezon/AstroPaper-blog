@@ -49,7 +49,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.3",
     "@vercel/speed-insights": "^2.0.0",
-    "astro": "^7.2.4",
+    "astro": "^7.2.8",
     "lodash.kebabcase": "^4.1.1",
     "probe-image-size": "^7.4.0",
     "rehype-callouts": "^2.2.0",
