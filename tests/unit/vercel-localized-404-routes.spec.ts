@@ -4,9 +4,11 @@ import { describe, expect, it } from "vitest";
 import {
   applyLocalized404Routes,
   applyArticleViewsRewrite,
+  applyHtmlDocumentCache,
   applyVercelRoutesConfig,
   hoistAstroCacheRoute,
   ARTICLE_VIEWS_REWRITE_ROUTE,
+  HTML_DOCUMENT_CACHE_ROUTE,
   LOCALIZED_NOT_FOUND_ROUTES,
   SECURITY_HEADERS_ROUTE,
 } from "../../scripts/apply-vercel-routes";
@@ -96,6 +98,36 @@ describe("hoistAstroCacheRoute", () => {
   });
 });
 
+describe("applyHtmlDocumentCache", () => {
+  it("inserts the HTML cache route before filesystem handling", () => {
+    const config = {
+      version: 3,
+      routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
+    };
+
+    expect(applyHtmlDocumentCache(config).routes).toEqual([
+      HTML_DOCUMENT_CACHE_ROUTE,
+      { handle: "filesystem" },
+      ...LOCALIZED_NOT_FOUND_ROUTES,
+    ]);
+  });
+
+  it("stays idempotent when the HTML cache route is already present", () => {
+    const config = {
+      version: 3,
+      routes: [HTML_DOCUMENT_CACHE_ROUTE, { handle: "filesystem" }],
+    };
+
+    expect(applyHtmlDocumentCache(config).routes).toEqual(config.routes);
+  });
+
+  it("does not match hashed /_astro/ assets or API rewrites", () => {
+    expect(HTML_DOCUMENT_CACHE_ROUTE.src).toContain("?!_astro/");
+    expect(HTML_DOCUMENT_CACHE_ROUTE.src).toContain("|_vercel/");
+    expect(HTML_DOCUMENT_CACHE_ROUTE.src).toContain("|api/");
+  });
+});
+
 describe("applyArticleViewsRewrite", () => {
   it("inserts the article views proxy before filesystem handling", () => {
     const config = {
@@ -143,7 +175,7 @@ describe("applyArticleViewsRewrite", () => {
 });
 
 describe("applyVercelRoutesConfig", () => {
-  it("inserts security headers, hoists the cache route, and localizes 404 routes", () => {
+  it("inserts security headers, hoists asset cache, caches HTML, and localizes 404 routes", () => {
     const config = {
       version: 3,
       routes: [
@@ -156,6 +188,7 @@ describe("applyVercelRoutesConfig", () => {
     expect(applyVercelRoutesConfig(config).routes).toEqual([
       SECURITY_HEADERS_ROUTE,
       astroCacheRoute,
+      HTML_DOCUMENT_CACHE_ROUTE,
       ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -171,6 +204,7 @@ describe("applyVercelRoutesConfig", () => {
       routes: [
         parsedSecurityHeadersRoute,
         astroCacheRoute,
+        HTML_DOCUMENT_CACHE_ROUTE,
         ARTICLE_VIEWS_REWRITE_ROUTE,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -205,6 +239,7 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      HTML_DOCUMENT_CACHE_ROUTE,
       ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -241,6 +276,7 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      HTML_DOCUMENT_CACHE_ROUTE,
       ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,

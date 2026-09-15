@@ -38,6 +38,20 @@ export const ARTICLE_VIEWS_REWRITE_ROUTE = {
   },
 } as const satisfies VercelRoute;
 
+/**
+ * Repeat HTML visits currently revalidate on every load (`max-age=0,
+ * must-revalidate`). Keep max-age=0 so a deploy cannot strand browsers
+ * on HTML that points at replaced `/_astro/` hashes, but allow SWR.
+ */
+export const HTML_DOCUMENT_CACHE_ROUTE = {
+  src: "^/(?!_astro/|_vercel/|api/).*$",
+  headers: {
+    "Cache-Control": "public, max-age=0, stale-while-revalidate=600",
+    "CDN-Cache-Control": "public, s-maxage=600, stale-while-revalidate=86400",
+  },
+  continue: true,
+} as const satisfies VercelRoute;
+
 const SECURITY_HEADER_KEYS = new Set(
   Object.keys(SECURITY_HEADERS_ROUTE.headers).map(key => key.toLowerCase())
 );
@@ -211,10 +225,31 @@ export function applyArticleViewsRewrite(config: VercelConfig): VercelConfig {
   };
 }
 
+export function applyHtmlDocumentCache(config: VercelConfig): VercelConfig {
+  const routes = config.routes.filter(
+    route => !hasSameRouteShape(route, HTML_DOCUMENT_CACHE_ROUTE)
+  );
+  const filesystemIndex = routes.findIndex(
+    route => route.handle === "filesystem"
+  );
+
+  if (filesystemIndex === -1) {
+    throw new Error("Could not find Vercel filesystem route.");
+  }
+
+  routes.splice(filesystemIndex, 0, HTML_DOCUMENT_CACHE_ROUTE);
+
+  return {
+    ...config,
+    routes,
+  };
+}
+
 export function applyVercelRoutesConfig(config: VercelConfig): VercelConfig {
   const steps = [
     applySecurityHeaders,
     hoistAstroCacheRoute,
+    applyHtmlDocumentCache,
     applyArticleViewsRewrite,
     applyLocalized404Routes,
   ];
