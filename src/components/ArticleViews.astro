@@ -257,13 +257,18 @@ const iconClass = size === "lg" ? "size-5 sm:size-[1.375rem]" : "size-5";
       );
     }
 
+    const listViewsIdleTimeoutMs = 1500;
     const scheduleOnIdle = (callback: () => void) => {
       if (typeof window.requestIdleCallback === "function") {
-        window.requestIdleCallback(callback, { timeout: 1500 });
+        window.requestIdleCallback(callback, {
+          timeout: listViewsIdleTimeoutMs,
+        });
         return;
       }
 
-      window.setTimeout(callback, 1);
+      // Safari still lacks requestIdleCallback; keep the same outer bound
+      // as the rIC timeout so list fetches do not race first paint.
+      window.setTimeout(callback, listViewsIdleTimeoutMs);
     };
 
     for (const root of roots) {
