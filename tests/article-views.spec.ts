@@ -171,14 +171,22 @@ test.describe("combined bilingual article views", () => {
       const nativeSetTimeout = window.setTimeout.bind(window);
       const pending: Array<() => void> = [];
 
-      window.setTimeout = ((handler, timeout, ...args: unknown[]) => {
+      const interceptedSetTimeout = (
+        handler: TimerHandler,
+        timeout?: number,
+        ...args: unknown[]
+      ): number => {
         if (typeof handler === "function" && timeout === 1500) {
-          pending.push(() => handler(...args));
+          pending.push(() => {
+            handler(...args);
+          });
           return 0;
         }
 
         return nativeSetTimeout(handler, timeout, ...args);
-      }) as typeof window.setTimeout;
+      };
+
+      window.setTimeout = interceptedSetTimeout as typeof window.setTimeout;
 
       Object.assign(window, {
         __runArticleViewsIdleFallback() {
