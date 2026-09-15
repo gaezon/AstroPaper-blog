@@ -6,18 +6,28 @@ const searchPageSource = readFileSync(
   resolve(__dirname, "../../src/pages/search.astro"),
   "utf8"
 );
+const pagefindUiSource = readFileSync(
+  resolve(__dirname, "../../src/scripts/pagefind-ui.ts"),
+  "utf8"
+);
 
 describe("search page CSS loading", () => {
-  it("does not statically import Pagefind CSS at the top of the page", () => {
+  it("does not side-effect import Pagefind CSS into the page stylesheet graph", () => {
     expect(searchPageSource).not.toMatch(
-      /^import ["']@pagefind\/default-ui\/css\/ui\.css["']/m
+      /import ["']@pagefind\/default-ui\/css\/ui\.css["']/
+    );
+    expect(pagefindUiSource).not.toMatch(
+      /^import ["']@pagefind\/default-ui\/css\/ui\.css["'];?$/m
     );
   });
 
-  it("loads Pagefind CSS from the idle-time search initializer", () => {
-    expect(searchPageSource).toMatch(
-      /import\(["']@pagefind\/default-ui\/css\/ui\.css["']\)/
+  it("loads Pagefind CSS as a hashed URL and Pagefind JS in parallel on idle", () => {
+    expect(pagefindUiSource).toMatch(
+      /@pagefind\/default-ui\/css\/ui\.css\?url/
     );
+    expect(searchPageSource).toMatch(/Promise\.all\(/);
+    expect(searchPageSource).toMatch(/import\(["']@pagefind\/default-ui["']\)/);
+    expect(searchPageSource).toMatch(/loadPagefindStylesheet\(/);
   });
 
   it("keeps search UI theme overrides inline so they cannot leak into other routes", () => {
