@@ -15,6 +15,23 @@ test.describe("Mobile navigation layout", () => {
     });
     await page.goto("/");
 
+    const homeLink = page.locator('#top-nav-wrap a[aria-label="首页"]');
+    const logoImage = homeLink.locator("img");
+    await expect(logoImage).toBeVisible();
+    await expect(logoImage).toHaveAttribute("alt", "");
+    await expect(logoImage).toHaveAttribute("width", "50");
+    await expect(logoImage).toHaveAttribute("height", "50");
+    await expect(logoImage).toHaveAttribute("src", /dummy-logo/);
+    await expect
+      .poll(() =>
+        logoImage.evaluate(
+          el =>
+            el instanceof HTMLImageElement && el.complete && el.naturalWidth > 0
+        )
+      )
+      .toBe(true);
+    await expect(homeLink.locator(":scope > svg")).toHaveCount(0);
+
     const navMenu = page.locator("#nav-menu");
     const menuPanel = page.locator("#menu-panel");
     const menuButton = page.getByRole("button", { name: "菜单" });
