@@ -4,9 +4,12 @@ import { describe, expect, it } from "vitest";
 import {
   applyLocalized404Routes,
   applyArticleViewsRewrite,
+  applyHtmlDocumentCache,
   applyVercelRoutesConfig,
   hoistAstroCacheRoute,
   ARTICLE_VIEWS_REWRITE_ROUTE,
+  HTML_DOCUMENT_CACHE_ROUTE,
+  HTML_DOCUMENT_CACHE_PATH_PATTERN,
   LOCALIZED_NOT_FOUND_ROUTES,
   SECURITY_HEADERS_ROUTE,
 } from "../../scripts/apply-vercel-routes";
@@ -96,6 +99,84 @@ describe("hoistAstroCacheRoute", () => {
   });
 });
 
+describe("applyHtmlDocumentCache", () => {
+  it("inserts the HTML cache route before filesystem handling", () => {
+    const config = {
+      version: 3,
+      routes: [{ handle: "filesystem" }, ...LOCALIZED_NOT_FOUND_ROUTES],
+    };
+
+    expect(applyHtmlDocumentCache(config).routes).toEqual([
+      HTML_DOCUMENT_CACHE_ROUTE,
+      { handle: "filesystem" },
+      ...LOCALIZED_NOT_FOUND_ROUTES,
+    ]);
+  });
+
+  it("stays idempotent when the HTML cache route is already present", () => {
+    const config = {
+      version: 3,
+      routes: [HTML_DOCUMENT_CACHE_ROUTE, { handle: "filesystem" }],
+    };
+
+    expect(applyHtmlDocumentCache(config).routes).toEqual(config.routes);
+  });
+
+  it("keeps browsers on max-age=0 without SWR and SWR only on CDN headers", () => {
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["Cache-Control"]).toBe(
+      "public, max-age=0, must-revalidate"
+    );
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["Cache-Control"]).not.toContain(
+      "stale-while-revalidate"
+    );
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["CDN-Cache-Control"]).toBe(
+      "public, s-maxage=600, stale-while-revalidate=86400"
+    );
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["Vercel-CDN-Cache-Control"]).toBe(
+      "public, s-maxage=600, stale-while-revalidate=86400"
+    );
+  });
+
+  it.each([
+    "/",
+    "/en/",
+    "/about/",
+    "/posts/",
+    "/posts/2/",
+    "/posts/hoarder-app-replace-cubox/",
+    "/en/posts/self-host-hoarder-replace-cubox/",
+    "/tags/selfhost/",
+    "/search/",
+    "/en/404/",
+    "/translation-not-found/",
+  ])("matches HTML document URL %s", pathname => {
+    expect(HTML_DOCUMENT_CACHE_PATH_PATTERN.test(pathname)).toBe(true);
+  });
+
+  it.each([
+    "/rss.xml",
+    "/rss.en.xml",
+    "/sitemap-index.xml",
+    "/favicon.svg",
+    "/astropaper-og.jpg",
+    "/ads.txt",
+    "/index.md",
+    "/llms.txt",
+    "/llms-full.txt",
+    "/robots.txt",
+    "/og.png",
+    "/en/og.png",
+    "/posts/hoarder-app-replace-cubox/index.png/",
+    "/_astro/dummy-logo.BkuKyzzX.svg",
+    "/api/article-views/",
+    "/pagefind/pagefind.js",
+    "/pagefind/",
+    "/twikoo/owo.json",
+  ])("does not match non-document URL %s", pathname => {
+    expect(HTML_DOCUMENT_CACHE_PATH_PATTERN.test(pathname)).toBe(false);
+  });
+});
+
 describe("applyArticleViewsRewrite", () => {
   it("inserts the article views proxy before filesystem handling", () => {
     const config = {
@@ -143,7 +224,7 @@ describe("applyArticleViewsRewrite", () => {
 });
 
 describe("applyVercelRoutesConfig", () => {
-  it("inserts security headers, hoists the cache route, and localizes 404 routes", () => {
+  it("inserts security headers, hoists asset cache, caches HTML, and localizes 404 routes", () => {
     const config = {
       version: 3,
       routes: [
@@ -156,6 +237,7 @@ describe("applyVercelRoutesConfig", () => {
     expect(applyVercelRoutesConfig(config).routes).toEqual([
       SECURITY_HEADERS_ROUTE,
       astroCacheRoute,
+      HTML_DOCUMENT_CACHE_ROUTE,
       ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -171,6 +253,7 @@ describe("applyVercelRoutesConfig", () => {
       routes: [
         parsedSecurityHeadersRoute,
         astroCacheRoute,
+        HTML_DOCUMENT_CACHE_ROUTE,
         ARTICLE_VIEWS_REWRITE_ROUTE,
         { handle: "filesystem" },
         ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -205,6 +288,7 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      HTML_DOCUMENT_CACHE_ROUTE,
       ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
@@ -241,6 +325,7 @@ describe("applyVercelRoutesConfig", () => {
           ...SECURITY_HEADERS_ROUTE.headers,
         },
       },
+      HTML_DOCUMENT_CACHE_ROUTE,
       ARTICLE_VIEWS_REWRITE_ROUTE,
       { handle: "filesystem" },
       ...LOCALIZED_NOT_FOUND_ROUTES,
