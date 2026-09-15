@@ -7,6 +7,7 @@ import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
+import logoUrl from "@/assets/dummy-logo.svg?url";
 import { getCurrentLocale, t } from "@/i18n/utils";
 import { normalizePathWithLocale } from "@/utils/url";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
@@ -92,7 +93,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
           aria-label={tr("nav.home")}
         >
           <img
-            src="/dummy-logo.svg"
+            src={logoUrl}
             alt=""
             width="50"
             height="50"
