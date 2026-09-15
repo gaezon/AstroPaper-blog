@@ -113,6 +113,109 @@ test.describe("combined bilingual article views", () => {
     await expectRequest(requests, [ZH_PATH, EN_PATH]);
   });
 
+  test("does not fetch list view counts until idle callbacks run", async ({
+    page,
+  }) => {
+    const requests = await mockArticleViews(page);
+
+    await page.addInitScript(() => {
+      const pending: Array<(deadline: IdleDeadline) => void> = [];
+      window.requestIdleCallback = (callback => {
+        pending.push(callback);
+        return pending.length;
+      }) as typeof window.requestIdleCallback;
+      Object.assign(window, {
+        __runArticleViewsIdle() {
+          const deadline = {
+            didTimeout: true,
+            timeRemaining: () => 0,
+          } as IdleDeadline;
+          while (pending.length > 0) {
+            pending.shift()?.(deadline);
+          }
+        },
+      });
+    });
+
+    await page.goto("/posts/", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.locator("[data-article-views][data-loading='visible']").first()
+    ).toBeAttached();
+    expect(requests).toHaveLength(0);
+
+    await page.evaluate(() => {
+      (
+        window as Window & { __runArticleViewsIdle?: () => void }
+      ).__runArticleViewsIdle?.();
+    });
+
+    const articleCard = page.locator("li").filter({
+      has: page.locator(`a[href="${ZH_PATH}"]`),
+    });
+    await expect(articleCard.getByText("691次阅读")).toBeVisible();
+    await expectRequest(requests, [ZH_PATH, EN_PATH]);
+  });
+
+  test("Safari fallback still defers list fetches instead of using 1ms timeout", async ({
+    page,
+  }) => {
+    const requests = await mockArticleViews(page);
+
+    await page.addInitScript(() => {
+      Object.defineProperty(window, "requestIdleCallback", {
+        configurable: true,
+        writable: true,
+        value: undefined,
+      });
+
+      const nativeSetTimeout = window.setTimeout.bind(window);
+      const pending: Array<() => void> = [];
+
+      const interceptedSetTimeout = (
+        handler: TimerHandler,
+        timeout?: number,
+        ...args: unknown[]
+      ): number => {
+        if (typeof handler === "function" && timeout === 1500) {
+          pending.push(() => {
+            handler(...args);
+          });
+          return 0;
+        }
+
+        return nativeSetTimeout(handler, timeout, ...args);
+      };
+
+      window.setTimeout = interceptedSetTimeout as typeof window.setTimeout;
+
+      Object.assign(window, {
+        __runArticleViewsIdleFallback() {
+          while (pending.length > 0) {
+            pending.shift()?.();
+          }
+        },
+      });
+    });
+
+    await page.goto("/posts/", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.locator("[data-article-views][data-loading='visible']").first()
+    ).toBeAttached();
+    expect(requests).toHaveLength(0);
+
+    await page.evaluate(() => {
+      (
+        window as Window & { __runArticleViewsIdleFallback?: () => void }
+      ).__runArticleViewsIdleFallback?.();
+    });
+
+    const articleCard = page.locator("li").filter({
+      has: page.locator(`a[href="${ZH_PATH}"]`),
+    });
+    await expect(articleCard.getByText("691次阅读")).toBeVisible();
+    await expectRequest(requests, [ZH_PATH, EN_PATH]);
+  });
+
   test("aligns the Chinese view count and label on one baseline", async ({
     page,
   }) => {
