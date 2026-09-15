@@ -39,18 +39,24 @@ export const ARTICLE_VIEWS_REWRITE_ROUTE = {
 } as const satisfies VercelRoute;
 
 /**
- * Repeat HTML visits currently revalidate on every load (`max-age=0,
- * must-revalidate`). Keep max-age=0 so a deploy cannot strand browsers
- * on HTML that points at replaced `/_astro/` hashes, but allow SWR.
+ * HTML documents use trailing slashes. Keep browser Cache-Control at
+ * max-age=0 without SWR so a deploy cannot strand clients on HTML that
+ * points at replaced `/_astro/` hashes. Edge caches may still HIT/SWR.
  */
 export const HTML_DOCUMENT_CACHE_ROUTE = {
-  src: "^/(?!_astro/|_vercel/|api/).*$",
+  src: "^/(?!_astro/|_vercel/|api/|pagefind/)(?:[^.]*?/)*$",
   headers: {
-    "Cache-Control": "public, max-age=0, stale-while-revalidate=600",
+    "Cache-Control": "public, max-age=0, must-revalidate",
     "CDN-Cache-Control": "public, s-maxage=600, stale-while-revalidate=86400",
+    "Vercel-CDN-Cache-Control":
+      "public, s-maxage=600, stale-while-revalidate=86400",
   },
   continue: true,
 } as const satisfies VercelRoute;
+
+export const HTML_DOCUMENT_CACHE_PATH_PATTERN = new RegExp(
+  HTML_DOCUMENT_CACHE_ROUTE.src
+);
 
 const SECURITY_HEADER_KEYS = new Set(
   Object.keys(SECURITY_HEADERS_ROUTE.headers).map(key => key.toLowerCase())

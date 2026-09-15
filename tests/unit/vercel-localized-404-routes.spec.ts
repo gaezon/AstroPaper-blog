@@ -9,6 +9,7 @@ import {
   hoistAstroCacheRoute,
   ARTICLE_VIEWS_REWRITE_ROUTE,
   HTML_DOCUMENT_CACHE_ROUTE,
+  HTML_DOCUMENT_CACHE_PATH_PATTERN,
   LOCALIZED_NOT_FOUND_ROUTES,
   SECURITY_HEADERS_ROUTE,
 } from "../../scripts/apply-vercel-routes";
@@ -121,10 +122,58 @@ describe("applyHtmlDocumentCache", () => {
     expect(applyHtmlDocumentCache(config).routes).toEqual(config.routes);
   });
 
-  it("does not match hashed /_astro/ assets or API rewrites", () => {
-    expect(HTML_DOCUMENT_CACHE_ROUTE.src).toContain("?!_astro/");
-    expect(HTML_DOCUMENT_CACHE_ROUTE.src).toContain("|_vercel/");
-    expect(HTML_DOCUMENT_CACHE_ROUTE.src).toContain("|api/");
+  it("keeps browsers on max-age=0 without SWR and SWR only on CDN headers", () => {
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["Cache-Control"]).toBe(
+      "public, max-age=0, must-revalidate"
+    );
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["Cache-Control"]).not.toContain(
+      "stale-while-revalidate"
+    );
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["CDN-Cache-Control"]).toBe(
+      "public, s-maxage=600, stale-while-revalidate=86400"
+    );
+    expect(HTML_DOCUMENT_CACHE_ROUTE.headers["Vercel-CDN-Cache-Control"]).toBe(
+      "public, s-maxage=600, stale-while-revalidate=86400"
+    );
+  });
+
+  it.each([
+    "/",
+    "/en/",
+    "/about/",
+    "/posts/",
+    "/posts/2/",
+    "/posts/hoarder-app-replace-cubox/",
+    "/en/posts/self-host-hoarder-replace-cubox/",
+    "/tags/selfhost/",
+    "/search/",
+    "/en/404/",
+    "/translation-not-found/",
+  ])("matches HTML document URL %s", pathname => {
+    expect(HTML_DOCUMENT_CACHE_PATH_PATTERN.test(pathname)).toBe(true);
+  });
+
+  it.each([
+    "/rss.xml",
+    "/rss.en.xml",
+    "/sitemap-index.xml",
+    "/favicon.svg",
+    "/astropaper-og.jpg",
+    "/ads.txt",
+    "/index.md",
+    "/llms.txt",
+    "/llms-full.txt",
+    "/robots.txt",
+    "/og.png",
+    "/en/og.png",
+    "/posts/hoarder-app-replace-cubox/index.png/",
+    "/_astro/dummy-logo.BkuKyzzX.svg",
+    "/api/article-views/",
+    "/pagefind/pagefind.js",
+    "/pagefind/",
+    "/twikoo/owo.json",
+  ])("does not match non-document URL %s", pathname => {
+    expect(HTML_DOCUMENT_CACHE_PATH_PATTERN.test(pathname)).toBe(false);
   });
 });
 
