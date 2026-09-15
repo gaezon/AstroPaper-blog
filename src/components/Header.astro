@@ -7,7 +7,6 @@ import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
-import DummyLogo from "@/assets/dummy-logo.svg";
 import { getCurrentLocale, t } from "@/i18n/utils";
 import { normalizePathWithLocale } from "@/utils/url";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
@@ -92,7 +91,14 @@ const tr = (key: string, params?: Record<string, string | number>) =>
           class="flex items-center"
           aria-label={tr("nav.home")}
         >
-          <DummyLogo class="h-auto w-[45px] sm:w-[50px]" />
+          <img
+            src="/dummy-logo.svg"
+            alt=""
+            width="50"
+            height="50"
+            decoding="async"
+            class="h-auto w-[45px] sm:w-[50px]"
+          />
         </a>
         <button
           id="menu-btn"

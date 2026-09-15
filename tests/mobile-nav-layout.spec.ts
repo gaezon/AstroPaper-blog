@@ -15,6 +15,12 @@ test.describe("Mobile navigation layout", () => {
     });
     await page.goto("/");
 
+    const logoImage = page.locator('#top-nav-wrap a[aria-label="首页"] img');
+    await expect(logoImage).toBeVisible();
+    await expect(logoImage).toHaveAttribute("alt", "");
+    await expect(logoImage).toHaveAttribute("width", "50");
+    await expect(logoImage).toHaveAttribute("height", "50");
+
     const navMenu = page.locator("#nav-menu");
     const menuPanel = page.locator("#menu-panel");
     const menuButton = page.getByRole("button", { name: "菜单" });
