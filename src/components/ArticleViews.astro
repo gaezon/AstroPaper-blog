@@ -253,9 +253,23 @@ const iconClass = size === "lg" ? "size-5 sm:size-[1.375rem]" : "size-5";
             }
           }
         },
-        { rootMargin: "200px 0px" }
+        { rootMargin: "0px" }
       );
     }
+
+    const listViewsIdleTimeoutMs = 1500;
+    const scheduleOnIdle = (callback: () => void) => {
+      if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(callback, {
+          timeout: listViewsIdleTimeoutMs,
+        });
+        return;
+      }
+
+      // Safari still lacks requestIdleCallback; keep the same outer bound
+      // as the rIC timeout so list fetches do not race first paint.
+      window.setTimeout(callback, listViewsIdleTimeoutMs);
+    };
 
     for (const root of roots) {
       const requestUrl = root.dataset.requestUrl;
@@ -268,7 +282,10 @@ const iconClass = size === "lg" ? "size-5 sm:size-[1.375rem]" : "size-5";
         root.dataset.loading === "visible" &&
         articleViewsWindow.__articleViewsObserver
       ) {
-        articleViewsWindow.__articleViewsObserver.observe(root);
+        scheduleOnIdle(() => {
+          if (controller.signal.aborted || !root.isConnected) return;
+          articleViewsWindow.__articleViewsObserver?.observe(root);
+        });
       } else {
         startLoading(root);
       }
