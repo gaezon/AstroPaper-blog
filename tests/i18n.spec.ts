@@ -187,4 +187,23 @@ test.describe("i18n regressions", () => {
     await page.goto("/");
     await expect(page).toHaveURL(/\/en\/$/);
   });
+
+  test("keeps `/` after ClientRouter navigation from a Chinese inner page", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.removeItem("preferred-locale");
+    });
+
+    await page.goto("/posts/hoarder-app-replace-cubox/");
+    await expect(page).toHaveURL(/\/posts\/hoarder-app-replace-cubox\/$/);
+
+    await Promise.all([
+      page.waitForURL(url => url.pathname === "/"),
+      page.locator("#back-button").click(),
+    ]);
+
+    expect(new URL(page.url()).pathname).toBe("/");
+    expect(await page.content()).toContain("detectLocaleFromNavigator");
+  });
 });

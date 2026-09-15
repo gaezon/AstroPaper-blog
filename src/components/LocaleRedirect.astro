@@ -2,13 +2,21 @@
 /**
  * Sync homepage-only locale redirect. Keep this in <head> so English
  * visitors on `/` replace the document before first paint. Do not import
- * this from inner routes — the script is parser-blocking.
+ * this from inner routes — the script is parser-blocking. Skip when
+ * `data-astro-transition` is set so ClientRouter returns to `/` do not
+ * re-run the redirect.
  */
 ---
 
 <script is:inline>
   (function () {
     if (typeof window === "undefined") return;
+
+    // ClientRouter sets this on <html> before executing newly added
+    // inline scripts. Direct loads of `/` do not have the attribute.
+    if (document.documentElement.hasAttribute("data-astro-transition")) {
+      return;
+    }
 
     const DEFAULT_LOCALE = "zh-CN";
     const FALLBACK_LOCALE = "en";
