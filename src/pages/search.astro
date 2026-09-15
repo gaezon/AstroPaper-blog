@@ -74,9 +74,9 @@ const pagefindTranslations = {
     onIdle(async () => {
       const [, ui] = await Promise.all([
         pagefindCssReady,
+        // @ts-expect-error — Missing types for @pagefind/default-ui package.
         import("@pagefind/default-ui"),
       ]);
-      // @ts-expect-error — Missing types for @pagefind/default-ui package.
       const { PagefindUI } = ui;
 
       // Display warning inn dev mode

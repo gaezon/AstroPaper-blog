@@ -21,7 +21,7 @@ describe("search page CSS loading", () => {
     );
   });
 
-  it("loads Pagefind CSS as a hashed URL and Pagefind JS in parallel on idle", () => {
+  it("starts hashed Pagefind CSS on module eval and waits for it with JS on idle", () => {
     expect(pagefindUiSource).toMatch(
       /@pagefind\/default-ui\/css\/ui\.css\?url/
     );
