@@ -35,7 +35,11 @@ const pageTitle = getLocalizedSiteTitle(currentLocale);
 const pageDescription = t(Astro, "site.description");
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  enableLocaleRedirect={currentLocale === "zh-CN"}
+>
   <Header />
   <main id="main-content" data-layout="index">
     <section id="hero" class="pt-8 pb-6">

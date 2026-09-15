@@ -159,4 +159,51 @@ test.describe("i18n regressions", () => {
       /\/tags\/%E8%87%AA%E5%8A%A8%E5%8C%96\/|\/tags\/自动化\//
     );
   });
+
+  test("ships the locale redirect script only on the Chinese homepage", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("preferred-locale", "zh-CN");
+    });
+
+    await page.goto("/");
+    expect(await page.content()).toContain("detectLocaleFromNavigator");
+
+    await page.goto("/posts/");
+    expect(await page.content()).not.toContain("detectLocaleFromNavigator");
+
+    await page.goto("/en/");
+    expect(await page.content()).not.toContain("detectLocaleFromNavigator");
+  });
+
+  test("redirects `/` to `/en/` when the stored locale is English", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("preferred-locale", "en");
+    });
+
+    await page.goto("/");
+    await expect(page).toHaveURL(/\/en\/$/);
+  });
+
+  test("keeps `/` after ClientRouter navigation from a Chinese inner page", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.removeItem("preferred-locale");
+    });
+
+    await page.goto("/posts/hoarder-app-replace-cubox/");
+    await expect(page).toHaveURL(/\/posts\/hoarder-app-replace-cubox\/$/);
+
+    await Promise.all([
+      page.waitForURL(url => url.pathname === "/"),
+      page.locator("#back-button").click(),
+    ]);
+
+    expect(new URL(page.url()).pathname).toBe("/");
+    expect(await page.content()).toContain("detectLocaleFromNavigator");
+  });
 });
