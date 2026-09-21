@@ -130,7 +130,7 @@ test.describe("Twikoo lazy-load triggers", () => {
 
     await expect(commentsContainer).toHaveAttribute("aria-busy", "true");
     await expect(page.locator("[data-comment-trigger-ui]")).toHaveCount(0);
-    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
+    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(0);
 
     await expect.poll(() => twikooMock.getRequestCount()).toBe(1);
   });
@@ -150,7 +150,7 @@ test.describe("Twikoo lazy-load triggers", () => {
 
     await scrollUntilTwikooLoads(page, twikooMock.getRequestCount);
     await expect(page.locator("[data-comment-trigger-ui]")).toHaveCount(0);
-    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
+    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(0);
   });
 
   test("auto trigger still works after return and navigating to another post", async ({
@@ -187,7 +187,7 @@ test.describe("Twikoo lazy-load triggers", () => {
 
     await scrollUntilTwikooLoads(page, twikooMock.getRequestCount);
     await expect(page.locator("[data-comment-trigger-ui]")).toHaveCount(0);
-    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
+    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(0);
   });
 
   test("auto trigger works in posts list -> post -> back -> post flow", async ({
@@ -221,6 +221,6 @@ test.describe("Twikoo lazy-load triggers", () => {
 
     await scrollUntilTwikooLoads(page, twikooMock.getRequestCount);
     await expect(page.locator("[data-comment-trigger-ui]")).toHaveCount(0);
-    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(1);
+    await expect(page.locator('link[data-twikoo-style="true"]')).toHaveCount(0);
   });
 });

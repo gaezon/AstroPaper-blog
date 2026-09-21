@@ -90,58 +90,6 @@ const ensureTwikooScript = (
   return twikooScriptPromise;
 };
 
-const ensureTwikooStyles = (
-  twikooCssUrl: string | undefined
-): Promise<void> => {
-  if (!twikooCssUrl) {
-    return Promise.resolve();
-  }
-
-  const existingStyleLink = document.querySelector(
-    'link[data-twikoo-style="true"]'
-  );
-  if (existingStyleLink) {
-    return Promise.resolve();
-  }
-
-  const matchedLink = document.querySelector(
-    `link[rel="stylesheet"][href="${twikooCssUrl}"]`
-  );
-  if (matchedLink instanceof HTMLLinkElement) {
-    matchedLink.dataset.twikooStyle = "true";
-    return Promise.resolve();
-  }
-
-  return new Promise(resolve => {
-    const styleLink = document.createElement("link");
-    styleLink.rel = "stylesheet";
-    styleLink.href = twikooCssUrl;
-    styleLink.crossOrigin = "anonymous";
-    styleLink.dataset.twikooStyle = "true";
-
-    const cleanup = () => {
-      styleLink.removeEventListener("load", handleLoad);
-      styleLink.removeEventListener("error", handleError);
-    };
-
-    const handleLoad = () => {
-      cleanup();
-      resolve();
-    };
-
-    const handleError = () => {
-      cleanup();
-      resolve();
-    };
-
-    styleLink.addEventListener("load", handleLoad, { once: true });
-    styleLink.addEventListener("error", handleError, { once: true });
-
-    const styleMountTarget = document.body || document.documentElement;
-    styleMountTarget.appendChild(styleLink);
-  });
-};
-
 const setupCommentLoader = (commentsContainer: Element) => {
   if (!(commentsContainer instanceof HTMLElement)) {
     return;
@@ -171,7 +119,6 @@ const setupCommentLoader = (commentsContainer: Element) => {
   const commentId = commentsContainer.dataset.commentId;
   const commentPath = commentsContainer.dataset.commentPath;
   const twikooCdnUrl = commentsContainer.dataset.twikooCdn;
-  const twikooCssUrl = commentsContainer.dataset.twikooCss;
   const twikooSri = commentsContainer.dataset.twikooSri;
   const loadingMessage =
     commentsContainer.dataset.commentLoading || "Loading comments...";
@@ -240,10 +187,7 @@ const setupCommentLoader = (commentsContainer: Element) => {
 
     showLoadingState();
 
-    Promise.all([
-      ensureTwikooStyles(twikooCssUrl),
-      ensureTwikooScript(twikooCdnUrl, twikooSri),
-    ])
+    ensureTwikooScript(twikooCdnUrl, twikooSri)
       .then(() => {
         if (isDisposed || !commentsContainer.isConnected) {
           return;
