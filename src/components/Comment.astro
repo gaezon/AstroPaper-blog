@@ -1,6 +1,6 @@
 ---
 import { getLangTag } from "@/i18n/utils";
-import { TWIKOO_CDN_URL, TWIKOO_CSS_URL } from "@/config/twikoo";
+import { TWIKOO_CDN_URL } from "@/config/twikoo";
 import { TWIKOO_SRI } from "@/utils/generated/twikooSRI";
 import type { CollectionEntry } from "astro:content";
 
@@ -113,7 +113,6 @@ of the page, and browsers drop unused preconnect sockets after ~10s. -->
   id="tcomment"
   data-comment-root="true"
   data-twikoo-cdn={TWIKOO_CDN_URL}
-  data-twikoo-css={TWIKOO_CSS_URL}
   data-twikoo-sri={TWIKOO_SRI}
   data-lang-tag={langTag}
   data-comment-id={commentId ?? ""}
