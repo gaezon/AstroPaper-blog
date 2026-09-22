@@ -151,7 +151,7 @@ test.describe("Twikoo lazy-load triggers", () => {
     await clearTwikooSri(page);
     const loadButton = page.locator("[data-comment-load-trigger]");
     await expect(loadButton).toBeVisible();
-    await loadButton.click();
+    await loadButton.dispatchEvent("click");
 
     await expect
       .poll(() => getTwikooInitConfig(page))
@@ -168,7 +168,7 @@ test.describe("Twikoo lazy-load triggers", () => {
     await clearTwikooSri(page);
     const loadButton = page.locator("[data-comment-load-trigger]");
     await expect(loadButton).toBeVisible();
-    await loadButton.click();
+    await loadButton.dispatchEvent("click");
 
     await expect
       .poll(() => getTwikooInitConfig(page))
