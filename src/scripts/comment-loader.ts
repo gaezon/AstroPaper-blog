@@ -12,7 +12,7 @@
  */
 
 type TwikooGlobal = {
-  init: (config: Record<string, unknown>) => void;
+  init: (config: Record<string, unknown>) => void | Promise<unknown>;
 };
 
 declare global {
@@ -194,10 +194,6 @@ const setupCommentLoader = (commentsContainer: Element) => {
           return;
         }
 
-        if (triggerUi) {
-          triggerUi.remove();
-        }
-
         const twikooConfig: Record<string, unknown> = {
           envId: "https://comment.gaazeon.com/",
           el: twikooElementSelector,
@@ -210,10 +206,29 @@ const setupCommentLoader = (commentsContainer: Element) => {
           twikooConfig.path = commentPath;
         }
 
-        if (window.twikoo && typeof window.twikoo.init === "function") {
-          commentsContainer.removeAttribute("role");
-          commentsContainer.removeAttribute("aria-busy");
-          window.twikoo.init(twikooConfig);
+        const twikoo = window.twikoo;
+        if (twikoo && typeof twikoo.init === "function") {
+          Promise.resolve()
+            .then(() => twikoo.init(twikooConfig))
+            .then(() => {
+              if (isDisposed || !commentsContainer.isConnected) {
+                return;
+              }
+
+              if (triggerUi) {
+                triggerUi.remove();
+              }
+
+              commentsContainer.removeAttribute("role");
+              commentsContainer.removeAttribute("aria-busy");
+            })
+            .catch(() => {
+              if (isDisposed || !commentsContainer.isConnected) {
+                return;
+              }
+
+              showCommentLoadError();
+            });
         } else {
           showCommentLoadError();
         }
