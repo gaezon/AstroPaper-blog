@@ -16,31 +16,29 @@ const prevUrl = page.url.prev;
 const nextUrl = page.url.next;
 ---
 
-{
-  page.lastPage > 1 && (
-    <nav class="mt-auto mb-8 flex justify-center" aria-label="Pagination">
-      <LinkButton
-        disabled={!prevUrl}
-        href={prevUrl}
-        class:list={["me-4 select-none", { "opacity-50": !prevUrl }]}
-        aria-label={tr("pagination.previous")}
-      >
-        <IconArrowLeft class="inline-block rtl:rotate-180" />
-        {tr("pagination.prev")}
-      </LinkButton>
-      {tr("pagination.page", {
-        current: page.currentPage,
-        total: page.lastPage,
-      })}
-      <LinkButton
-        disabled={!nextUrl}
-        href={nextUrl}
-        class:list={["ms-4 select-none", { "opacity-50": !nextUrl }]}
-        aria-label={tr("pagination.next")}
-      >
-        {tr("pagination.next")}
-        <IconArrowRight class="inline-block rtl:rotate-180" />
-      </LinkButton>
-    </nav>
-  )
-}
+{page.lastPage > 1 && (
+  <nav class="mt-auto mb-8 flex justify-center" aria-label="Pagination">
+    <LinkButton
+      disabled={!prevUrl}
+      href={prevUrl}
+      class:list={["me-4 select-none", { "opacity-50": !prevUrl }]}
+      aria-label={tr("pagination.previous")}
+    >
+      <IconArrowLeft class="inline-block rtl:rotate-180" />
+      {tr("pagination.prev")}
+    </LinkButton>
+    {tr("pagination.page", {
+      current: page.currentPage,
+      total: page.lastPage,
+    })}
+    <LinkButton
+      disabled={!nextUrl}
+      href={nextUrl}
+      class:list={["ms-4 select-none", { "opacity-50": !nextUrl }]}
+      aria-label={tr("pagination.next")}
+    >
+      {tr("pagination.next")}
+      <IconArrowRight class="inline-block rtl:rotate-180" />
+    </LinkButton>
+  </nav>
+)}
