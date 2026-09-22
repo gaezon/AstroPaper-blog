@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 const TEST_POST_PATH = "/posts/hoarder-app-replace-cubox/";
 const ENGLISH_TEST_POST_PATH = "/en/posts/self-host-hoarder-replace-cubox/";
 const SECOND_POST_PATH = "/posts/OBS-safe-broadcast-pitfalls/";
+type TwikooInitBehavior = "void" | "resolve" | "reject";
 
 const getTwikooInitConfig = (page: Page) =>
   page.evaluate(() => {
@@ -125,11 +126,14 @@ async function mockTwikooScript(page: Page, delayMs = 0) {
   };
 }
 
-async function mockTwikooGlobal(page: Page) {
-  await page.addInitScript(() => {
+async function mockTwikooGlobal(
+  page: Page,
+  initBehavior: TwikooInitBehavior = "void"
+) {
+  await page.addInitScript(behavior => {
     const testWindow = window as unknown as {
       twikoo?: {
-        init: (config: Record<string, unknown>) => void;
+        init: (config: Record<string, unknown>) => void | Promise<unknown>;
       };
       __twikooInitCalls?: Array<Record<string, unknown>>;
     };
@@ -138,10 +142,52 @@ async function mockTwikooGlobal(page: Page) {
       init: config => {
         testWindow.__twikooInitCalls = testWindow.__twikooInitCalls || [];
         testWindow.__twikooInitCalls.push(config);
+
+        if (behavior === "resolve") {
+          return new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        if (behavior === "reject") {
+          return Promise.reject(new Error("Twikoo init failed"));
+        }
       },
     };
-  });
+  }, initBehavior);
 }
+
+test.describe("Twikoo initialization", () => {
+  test("keeps the loading state until async init resolves", async ({
+    page,
+  }) => {
+    await mockTwikooGlobal(page, "resolve");
+
+    await page.goto(TEST_POST_PATH);
+    await clearTwikooSri(page);
+
+    const commentsContainer = page.locator("#tcomment");
+    await page.locator("[data-comment-load-trigger]").dispatchEvent("click");
+
+    await expect.poll(() => getTwikooInitConfig(page)).not.toBeNull();
+    await expect(commentsContainer).toHaveAttribute("aria-busy", "true");
+    await expect(commentsContainer).not.toHaveAttribute("aria-busy", "true");
+  });
+
+  test("shows an error when async init rejects", async ({ page }) => {
+    await mockTwikooGlobal(page, "reject");
+
+    await page.goto(TEST_POST_PATH);
+    await clearTwikooSri(page);
+
+    const commentsContainer = page.locator("#tcomment");
+    await page.locator("[data-comment-load-trigger]").dispatchEvent("click");
+
+    await expect(commentsContainer).toHaveText(
+      "评论系统加载失败，请稍后重试。"
+    );
+    await expect(commentsContainer).not.toHaveAttribute("aria-busy", "true");
+    await expect(commentsContainer).toHaveAttribute("role", "status");
+  });
+});
 
 test.describe("Twikoo lazy-load triggers", () => {
   test("passes the Chinese placeholder to Twikoo", async ({ page }) => {
