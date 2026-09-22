@@ -30,6 +30,10 @@ interface Props {
 
 const { post } = Astro.props;
 const langTag = getLangTag(Astro);
+const twikooPlaceholder =
+  langTag === "zh-CN"
+    ? "可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。"
+    : "Enter a QQ email to show a QQ avatar, or comment anonymously.";
 
 // Generate a unified comment ID with fallback hierarchy
 const getCommentId = () => {
@@ -115,6 +119,7 @@ of the page, and browsers drop unused preconnect sockets after ~10s. -->
   data-twikoo-cdn={TWIKOO_CDN_URL}
   data-twikoo-sri={TWIKOO_SRI}
   data-lang-tag={langTag}
+  data-twikoo-placeholder={twikooPlaceholder}
   data-comment-id={commentId ?? ""}
   data-comment-path={commentPath ?? ""}
   data-comment-loading={commentLoadingMessage}

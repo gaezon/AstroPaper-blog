@@ -116,6 +116,7 @@ const setupCommentLoader = (commentsContainer: Element) => {
   const twikooElementSelector = `#${commentsContainer.id}`;
 
   const langTag = commentsContainer.dataset.langTag || "zh-CN";
+  const twikooPlaceholder = commentsContainer.dataset.twikooPlaceholder;
   const commentId = commentsContainer.dataset.commentId;
   const commentPath = commentsContainer.dataset.commentPath;
   const twikooCdnUrl = commentsContainer.dataset.twikooCdn;
@@ -201,6 +202,7 @@ const setupCommentLoader = (commentsContainer: Element) => {
           envId: "https://comment.gaazeon.com/",
           el: twikooElementSelector,
           lang: langTag,
+          placeholder: twikooPlaceholder,
         };
 
         if (commentId && commentPath) {
