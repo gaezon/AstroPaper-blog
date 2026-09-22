@@ -156,8 +156,7 @@ test.describe("Twikoo lazy-load triggers", () => {
     await expect
       .poll(() => getTwikooInitConfig(page))
       .toMatchObject({
-        placeholder:
-          "使用 cn.gravatar.com 作为头像源，可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。",
+        placeholder: "可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。",
       });
   });
 
@@ -174,7 +173,7 @@ test.describe("Twikoo lazy-load triggers", () => {
       .poll(() => getTwikooInitConfig(page))
       .toMatchObject({
         placeholder:
-          "Avatars use cn.gravatar.com. Enter a QQ email to show a QQ avatar, or comment anonymously.",
+          "Enter a QQ email to show a QQ avatar, or comment anonymously.",
       });
   });
 
