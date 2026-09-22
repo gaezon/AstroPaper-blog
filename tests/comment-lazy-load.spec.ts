@@ -113,6 +113,49 @@ async function mockTwikooScript(page: Page, delayMs = 0) {
   };
 }
 
+test.describe("Twikoo locale configuration", () => {
+  const localeCases = [
+    {
+      path: "/en/posts/ibkr-drip/",
+      placeholder:
+        "Avatars use cn.gravatar.com. Enter a QQ email to show a QQ avatar, or comment anonymously.",
+    },
+    {
+      path: "/posts/is-ibkr-drip-really-commission-free/",
+      placeholder:
+        "使用 cn.gravatar.com 作为头像源，可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。",
+    },
+  ];
+
+  for (const localeCase of localeCases) {
+    test(`passes an ${localeCase.path.startsWith("/en/") ? "English" : "Chinese"} placeholder to Twikoo`, async ({
+      page,
+    }) => {
+      const twikooMock = await mockTwikooScript(page);
+
+      await page.goto(localeCase.path);
+      await clearTwikooSri(page);
+      const loadButton = page.locator("[data-comment-load-trigger]");
+      await expect(loadButton).toBeVisible();
+      await loadButton.dispatchEvent("click");
+
+      await expect
+        .poll(async () =>
+          page.evaluate(() => {
+            const calls = (
+              window as typeof window & {
+                __twikooInitCalls?: Array<{ placeholder?: string }>;
+              }
+            ).__twikooInitCalls;
+            return calls?.at(-1)?.placeholder;
+          })
+        )
+        .toBe(localeCase.placeholder);
+      expect(twikooMock.getRequestCount()).toBe(1);
+    });
+  }
+});
+
 test.describe("Twikoo lazy-load triggers", () => {
   test("loads only after click interaction", async ({ page }) => {
     const twikooMock = await mockTwikooScript(page, 150);
