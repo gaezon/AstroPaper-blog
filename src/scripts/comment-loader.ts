@@ -7,8 +7,8 @@
  * loader registry, script promise) is module-scoped — the module instance
  * persists across ClientRouter navigations.
  *
- * Config (URLs, SRI, labels) is read from data attributes on the comment root
- * (see Comment.astro).
+ * Config (URLs, SRI, labels, and the locale-specific placeholder) is read from
+ * data attributes on the comment root (see Comment.astro).
  */
 
 type TwikooGlobal = {
@@ -118,8 +118,6 @@ const setupCommentLoader = (commentsContainer: Element) => {
   const langTag = commentsContainer.dataset.langTag || "zh-CN";
   const commentId = commentsContainer.dataset.commentId;
   const commentPath = commentsContainer.dataset.commentPath;
-  const twikooCdnUrl = commentsContainer.dataset.twikooCdn;
-  const twikooSri = commentsContainer.dataset.twikooSri;
   const loadingMessage =
     commentsContainer.dataset.commentLoading || "Loading comments...";
   const observerOffset = Number(
@@ -187,6 +185,12 @@ const setupCommentLoader = (commentsContainer: Element) => {
 
     showLoadingState();
 
+    // Read load-time attributes after the trigger fires. This keeps SRI and
+    // locale-specific options in sync if the page updates them before loading.
+    const twikooCdnUrl = commentsContainer.dataset.twikooCdn;
+    const twikooSri = commentsContainer.dataset.twikooSri;
+    const twikooPlaceholder = commentsContainer.dataset.twikooPlaceholder;
+
     ensureTwikooScript(twikooCdnUrl, twikooSri)
       .then(() => {
         if (isDisposed || !commentsContainer.isConnected) {
@@ -201,6 +205,7 @@ const setupCommentLoader = (commentsContainer: Element) => {
           envId: "https://comment.gaazeon.com/",
           el: twikooElementSelector,
           lang: langTag,
+          placeholder: twikooPlaceholder,
         };
 
         if (commentId && commentPath) {
