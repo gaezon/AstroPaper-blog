@@ -15,18 +15,16 @@ const linkClass = `block rounded-md border-l-2 border-transparent px-3 py-2 text
 ---
 
 <ul class={listClass} role="list">
-  {
-    items.map(item => (
-      <li>
-        <a href={`#${item.id}`} class={linkClass}>
-          {item.title}
-        </a>
-        {item.children?.length ? (
-          <div class="mt-2">
-            <Astro.self items={item.children} level={level + 1} />
-          </div>
-        ) : null}
-      </li>
-    ))
-  }
+  {items.map(item => (
+    <li>
+      <a href={`#${item.id}`} class={linkClass}>
+        {item.title}
+      </a>
+      {item.children?.length ? (
+        <div class="mt-2">
+          <Astro.self items={item.children} level={level + 1} />
+        </div>
+      ) : null}
+    </li>
+  ))}
 </ul>

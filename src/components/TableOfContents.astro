@@ -34,154 +34,152 @@ const tocItems =
 const hasHeadings = tocItems.length > 0;
 ---
 
-{
-  hasHeadings ? (
-    <Fragment>
-      {/* TOC navigation container (sticky sidebar on desktop) */}
-      <nav
-        id="toc-sidebar"
-        class:list={[
-          "fixed top-1/2 z-40 hidden -translate-y-1/2",
-          // Remove xl:block; control visibility via JavaScript
-          // "xl:block",
-          // Place near the left edge: 1rem margin from xl; keep near on ultra-wide
-          "xl:left-2 2xl:left-4",
-          "max-h-[calc(100vh-8rem)] w-60 overflow-y-auto transition-all duration-200",
-          "rounded-xl border border-border/60 bg-background/80 p-5 shadow-xl shadow-foreground/10 backdrop-blur-lg",
-          "hover:bg-background/85 hover:shadow-2xl hover:shadow-foreground/15",
-          className,
-        ]}
-        aria-label={tr("ui.tableOfContents")}
-        role="navigation"
-        style="display: none;"
+{hasHeadings ? (
+  <Fragment>
+    {/* TOC navigation container (sticky sidebar on desktop) */}
+    <nav
+      id="toc-sidebar"
+      class:list={[
+        "fixed top-1/2 z-40 hidden -translate-y-1/2",
+        // Remove xl:block; control visibility via JavaScript
+        // "xl:block",
+        // Place near the left edge: 1rem margin from xl; keep near on ultra-wide
+        "xl:left-2 2xl:left-4",
+        "max-h-[calc(100vh-8rem)] w-60 overflow-y-auto transition-all duration-200",
+        "rounded-xl border border-border/60 bg-background/80 p-5 shadow-xl shadow-foreground/10 backdrop-blur-lg",
+        "hover:bg-background/85 hover:shadow-2xl hover:shadow-foreground/15",
+        className,
+      ]}
+      aria-label={tr("ui.tableOfContents")}
+      role="navigation"
+      style="display: none;"
+    >
+      <div class="mb-4 flex items-center justify-between border-b border-border/70 pb-3">
+        <h3 class="text-base font-semibold tracking-wide text-foreground">
+          {tr("ui.tableOfContents")}
+        </h3>
+        {/* Desktop collapse button (shown only on >=xl) */}
+        <button
+          id="toc-collapse"
+          class="hidden items-center gap-1.5 rounded-md border border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-all duration-200 hover:border-border hover:bg-muted/60 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent xl:inline-flex"
+          aria-label={tr("ui.collapseToc")}
+          aria-expanded="true"
+          type="button"
+        >
+          <svg
+            class="h-3 w-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+          {tr("ui.collapse")}
+        </button>
+      </div>
+
+      <div id="toc-nav">
+        <TocList items={tocItems} />
+      </div>
+    </nav>
+
+    {/* Mobile toggle button (separate from desktop container) */}
+    <button
+      id="toc-toggle"
+      class="fixed right-5 bottom-24 z-50 rounded-full bg-accent/90 p-3.5 text-background shadow-lg transition-all duration-200 hover:scale-105 hover:bg-accent hover:shadow-xl active:scale-95 sm:bottom-8 xl:hidden"
+      style="display: none;"
+      aria-label={tr("ui.openToc")}
+      aria-expanded="false"
+      type="button"
+    >
+      <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+
+    {/* Desktop expand button: shown when TOC is collapsed (>=xl only) */}
+    <button
+      id="toc-open-desktop"
+      class:list={[
+        "fixed top-1/2 z-40 hidden h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full xl:flex",
+        "border border-accent/40 bg-gradient-to-br from-accent/90 to-accent/70 backdrop-blur-lg",
+        "shadow-lg shadow-accent/25 hover:scale-105 hover:shadow-xl hover:shadow-accent/35",
+        "group transition-all duration-300",
+        "xl:left-4 2xl:left-6",
+      ]}
+      aria-label={tr("ui.expandToc")}
+      aria-expanded="false"
+      type="button"
+    >
+      {/* Abstract expand icon: three animated lines */}
+      <div class="relative flex h-6 w-6 flex-col items-center justify-center gap-1">
+        {/* Line 1: short */}
+        <div class="h-0.5 w-3 rounded-full bg-background transition-all duration-300 group-hover:w-4 group-hover:translate-x-0.5" />
+        {/* Line 2: medium */}
+        <div class="h-0.5 w-4 rounded-full bg-background transition-all duration-300 group-hover:w-5" />
+        {/* Line 3: long */}
+        <div class="h-0.5 w-5 rounded-full bg-background transition-all duration-300 group-hover:w-6 group-hover:-translate-x-0.5" />
+
+        {/* Subtle glow effect */}
+        <div class="absolute inset-0 rounded-full bg-background/20 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
+      </div>
+    </button>
+
+    {/* Mobile overlay */}
+    <div
+      id="toc-overlay"
+      class="pointer-events-none fixed inset-0 z-30 bg-background/85 opacity-0 backdrop-blur-md transition-opacity duration-200 xl:hidden"
+      role="dialog"
+      aria-labelledby="toc-title"
+      aria-modal="true"
+      aria-hidden="true"
+      inert
+    >
+      <div
+        class="fixed top-0 right-0 h-full w-80 max-w-[90vw] translate-x-full transform border-l border-border/70 bg-background shadow-2xl transition-transform duration-250"
+        aria-hidden="true"
       >
-        <div class="mb-4 flex items-center justify-between border-b border-border/70 pb-3">
-          <h3 class="text-base font-semibold tracking-wide text-foreground">
+        <div class="flex items-center justify-between border-b border-border/70 p-5">
+          <h3
+            id="toc-title"
+            class="text-lg font-semibold tracking-wide text-foreground"
+          >
             {tr("ui.tableOfContents")}
           </h3>
-          {/* Desktop collapse button (shown only on >=xl) */}
           <button
-            id="toc-collapse"
-            class="hidden items-center gap-1.5 rounded-md border border-border/70 bg-muted/40 px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-all duration-200 hover:border-border hover:bg-muted/60 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent xl:inline-flex"
-            aria-label={tr("ui.collapseToc")}
-            aria-expanded="true"
+            id="toc-close"
+            class="rounded-md p-2 text-muted transition-all duration-200 hover:bg-muted/30 hover:text-foreground"
+            aria-label={tr("ui.closeToc")}
             type="button"
           >
-            <svg
-              class="h-3 w-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
               />
             </svg>
-            {tr("ui.collapse")}
           </button>
         </div>
-
-        <div id="toc-nav">
-          <TocList items={tocItems} />
-        </div>
-      </nav>
-
-      {/* Mobile toggle button (separate from desktop container) */}
-      <button
-        id="toc-toggle"
-        class="fixed right-5 bottom-24 z-50 rounded-full bg-accent/90 p-3.5 text-background shadow-lg transition-all duration-200 hover:scale-105 hover:bg-accent hover:shadow-xl active:scale-95 sm:bottom-8 xl:hidden"
-        style="display: none;"
-        aria-label={tr("ui.openToc")}
-        aria-expanded="false"
-        type="button"
-      >
-        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fill-rule="evenodd"
-            d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </button>
-
-      {/* Desktop expand button: shown when TOC is collapsed (>=xl only) */}
-      <button
-        id="toc-open-desktop"
-        class:list={[
-          "fixed top-1/2 z-40 hidden h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full xl:flex",
-          "border border-accent/40 bg-gradient-to-br from-accent/90 to-accent/70 backdrop-blur-lg",
-          "shadow-lg shadow-accent/25 hover:scale-105 hover:shadow-xl hover:shadow-accent/35",
-          "group transition-all duration-300",
-          "xl:left-4 2xl:left-6",
-        ]}
-        aria-label={tr("ui.expandToc")}
-        aria-expanded="false"
-        type="button"
-      >
-        {/* Abstract expand icon: three animated lines */}
-        <div class="relative flex h-6 w-6 flex-col items-center justify-center gap-1">
-          {/* Line 1: short */}
-          <div class="h-0.5 w-3 rounded-full bg-background transition-all duration-300 group-hover:w-4 group-hover:translate-x-0.5" />
-          {/* Line 2: medium */}
-          <div class="h-0.5 w-4 rounded-full bg-background transition-all duration-300 group-hover:w-5" />
-          {/* Line 3: long */}
-          <div class="h-0.5 w-5 rounded-full bg-background transition-all duration-300 group-hover:w-6 group-hover:-translate-x-0.5" />
-
-          {/* Subtle glow effect */}
-          <div class="absolute inset-0 rounded-full bg-background/20 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
-        </div>
-      </button>
-
-      {/* Mobile overlay */}
-      <div
-        id="toc-overlay"
-        class="pointer-events-none fixed inset-0 z-30 bg-background/85 opacity-0 backdrop-blur-md transition-opacity duration-200 xl:hidden"
-        role="dialog"
-        aria-labelledby="toc-title"
-        aria-modal="true"
-        aria-hidden="true"
-        inert
-      >
-        <div
-          class="fixed top-0 right-0 h-full w-80 max-w-[90vw] translate-x-full transform border-l border-border/70 bg-background shadow-2xl transition-transform duration-250"
-          aria-hidden="true"
+        <nav
+          id="toc-nav-mobile"
+          class="h-[calc(100%-5rem)] overflow-y-auto p-5"
+          role="navigation"
+          aria-label={tr("ui.tableOfContents")}
         >
-          <div class="flex items-center justify-between border-b border-border/70 p-5">
-            <h3
-              id="toc-title"
-              class="text-lg font-semibold tracking-wide text-foreground"
-            >
-              {tr("ui.tableOfContents")}
-            </h3>
-            <button
-              id="toc-close"
-              class="rounded-md p-2 text-muted transition-all duration-200 hover:bg-muted/30 hover:text-foreground"
-              aria-label={tr("ui.closeToc")}
-              type="button"
-            >
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-          <nav
-            id="toc-nav-mobile"
-            class="h-[calc(100%-5rem)] overflow-y-auto p-5"
-            role="navigation"
-            aria-label={tr("ui.tableOfContents")}
-          >
-            <TocList items={tocItems} />
-          </nav>
-        </div>
+          <TocList items={tocItems} />
+        </nav>
       </div>
-      <TocClient />
-    </Fragment>
-  ) : null
-}
+    </div>
+    <TocClient />
+  </Fragment>
+) : null}

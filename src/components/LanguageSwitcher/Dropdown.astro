@@ -68,58 +68,55 @@ function withCurrentSearch(href: string) {
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-width="2"
-        d="M19 9l-7 7-7-7"></path>
+        d="M19 9l-7 7-7-7"
+      ></path>
     </svg>
   </button>
 
   {/* Language switcher dropdown menu */}
   <div class="lang-dropdown-menu" role="menu">
-    {
-      /*
+    {/*
       Note: data-astro-reload is intentionally used to force full page reload.
       This ensures proper event binding on mobile devices and prevents issues
       with View Transitions not reinitializing JavaScript handlers after language switch.
       See README in src/components/LanguageSwitcher/ for rationale on data-astro-reload usage.
-    */
-    }
-    {
-      availableLocales.map(locale => {
-        const baseHref =
-          override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
-        const targetHref = withCurrentSearch(baseHref);
-        return (
-          <a
-            href={targetHref}
-            data-base-href={targetHref}
-            data-locale={locale.code}
-            class={`lang-dropdown-item ${locale.code === currentLocale ? "active" : ""}`}
-            lang={locale.profile.langTag}
-            hreflang={locale.code}
-            data-astro-reload
-            aria-current={locale.code === currentLocale ? "page" : undefined}
-            role="menuitem"
-          >
-            <span class="lang-name" title={locale.name}>
-              {locale.name}
-            </span>
-            {locale.code === currentLocale && (
-              <svg
-                class="check-icon"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            )}
-          </a>
-        );
-      })
-    }
+    */}
+    {availableLocales.map(locale => {
+      const baseHref =
+        override?.[locale.code] ?? getLocaleSwitchUrl(Astro, locale.code);
+      const targetHref = withCurrentSearch(baseHref);
+      return (
+        <a
+          href={targetHref}
+          data-base-href={targetHref}
+          data-locale={locale.code}
+          class={`lang-dropdown-item ${locale.code === currentLocale ? "active" : ""}`}
+          lang={locale.profile.langTag}
+          hreflang={locale.code}
+          data-astro-reload
+          aria-current={locale.code === currentLocale ? "page" : undefined}
+          role="menuitem"
+        >
+          <span class="lang-name" title={locale.name}>
+            {locale.name}
+          </span>
+          {locale.code === currentLocale && (
+            <svg
+              class="check-icon"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          )}
+        </a>
+      );
+    })}
   </div>
 </div>
 

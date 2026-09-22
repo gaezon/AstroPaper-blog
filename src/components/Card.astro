@@ -32,13 +32,11 @@ const headerProps = {
     class="inline-block text-lg font-medium text-accent decoration-dashed underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
     aria-label={t(Astro, "ui.readArticle", { title })}
   >
-    {
-      variant === "h2" ? (
-        <h2 {...headerProps}>{title}</h2>
-      ) : (
-        <h3 {...headerProps}>{title}</h3>
-      )
-    }
+    {variant === "h2" ? (
+      <h2 {...headerProps}>{title}</h2>
+    ) : (
+      <h3 {...headerProps}>{title}</h3>
+    )}
   </a>
   <div class="flex items-center gap-2">
     <Datetime {pubDatetime} {modDatetime} {timezone} />

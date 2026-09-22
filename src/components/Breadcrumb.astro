@@ -80,30 +80,30 @@ visibleSegments.forEach((segment, index) => {
 ---
 
 <nav class="mx-auto mt-8 mb-1 w-full max-w-app px-4" aria-label="breadcrumb">
-  <ul
-    class="font-light [&>li]:inline [&>li:not(:last-child)>a]:hover:opacity-100"
-  >
+  <ul class="font-light [&>li]:inline [&>li:not(:last-child)>a]:hover:opacity-100">
     <li>
-      <a href={buildHref([])} class="opacity-80">{tr("nav.home")}</a>
-      <span aria-hidden="true" class="opacity-80">&raquo;</span>
+      <a href={buildHref([])} class="opacity-80">
+        {tr("nav.home")}
+      </a>
+      <span aria-hidden="true" class="opacity-80">
+        &raquo;
+      </span>
     </li>
-    {
-      breadcrumbItems.map(item =>
-        item.isCurrent ? (
-          <li>
-            <span class="capitalize opacity-75" aria-current="page">
-              {item.label}
-            </span>
-          </li>
-        ) : (
-          <li>
-            <a href={item.href} class="capitalize opacity-70">
-              {item.label}
-            </a>
-            <span aria-hidden="true">&raquo;</span>
-          </li>
-        )
+    {breadcrumbItems.map(item =>
+      item.isCurrent ? (
+        <li>
+          <span class="capitalize opacity-75" aria-current="page">
+            {item.label}
+          </span>
+        </li>
+      ) : (
+        <li>
+          <a href={item.href} class="capitalize opacity-70">
+            {item.label}
+          </a>
+          <span aria-hidden="true">&raquo;</span>
+        </li>
       )
-    }
+    )}
   </ul>
 </nav>
