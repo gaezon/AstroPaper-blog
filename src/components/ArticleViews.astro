@@ -36,6 +36,7 @@ const iconClass = size === "lg" ? "size-5 sm:size-[1.375rem]" : "size-5";
       aria-hidden="true"
       class:list={["inline-block shrink-0", iconClass]}
     />
+    <!-- prettier-ignore -->
     <span
       class:list={[
         "inline-flex items-baseline gap-x-0",
@@ -53,8 +54,7 @@ const iconClass = size === "lg" ? "size-5 sm:size-[1.375rem]" : "size-5";
           aria-hidden="true"
           class="inline-block h-2.5 w-6 rounded-full bg-current opacity-20 motion-safe:animate-pulse"
         ></span>
-      </span>
-      <span>{viewsLabel}</span>
+      </span><span>{viewsLabel}</span>
     </span>
   </span>
 </span>
