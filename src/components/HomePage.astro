@@ -68,65 +68,61 @@ const pageDescription = t(Astro, "site.description");
       </div>
 
       <p class="mt-4">{pageDescription}</p>
-      {
-        SOCIALS.length > 0 && (
-          <div class="mt-4 flex flex-col sm:flex-row sm:items-center">
-            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
-              {t(Astro, "ui.socialLinks")}
-            </div>
-            <Socials />
+      {SOCIALS.length > 0 && (
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-center">
+          <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
+            {t(Astro, "ui.socialLinks")}
           </div>
-        )
-      }
+          <Socials />
+        </div>
+      )}
     </section>
 
-    <div class="mx-auto max-w-app border-t border-border" aria-hidden="true">
-    </div>
+    <div
+      class="mx-auto max-w-app border-t border-border"
+      aria-hidden="true"
+    ></div>
 
-    {
-      featuredPosts.length > 0 && (
-        <>
-          <section id="featured" class="pt-6 pb-4">
-            <h2
-              id="featured-heading"
-              class="text-2xl font-semibold tracking-wide"
-            >
-              {t(Astro, "index.featuredPosts")}
-            </h2>
-            <ul>
-              {featuredPosts.map(data => (
-                <Card variant="h3" {...data} />
-              ))}
-            </ul>
-          </section>
-          {recentPosts.length > 0 && (
-            <div
-              class="mx-auto max-w-app border-t border-border"
-              aria-hidden="true"
-            />
-          )}
-        </>
-      )
-    }
-
-    {
-      recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-6 pb-4">
+    {featuredPosts.length > 0 && (
+      <>
+        <section id="featured" class="pt-6 pb-4">
           <h2
-            id="recent-posts-heading"
+            id="featured-heading"
             class="text-2xl font-semibold tracking-wide"
           >
-            {t(Astro, "index.recentPosts")}
+            {t(Astro, "index.featuredPosts")}
           </h2>
           <ul>
-            {recentPosts.map(
-              (data, index) =>
-                index < SITE.postPerIndex && <Card variant="h3" {...data} />
-            )}
+            {featuredPosts.map(data => (
+              <Card variant="h3" {...data} />
+            ))}
           </ul>
         </section>
-      )
-    }
+        {recentPosts.length > 0 && (
+          <div
+            class="mx-auto max-w-app border-t border-border"
+            aria-hidden="true"
+          />
+        )}
+      </>
+    )}
+
+    {recentPosts.length > 0 && (
+      <section id="recent-posts" class="pt-6 pb-4">
+        <h2
+          id="recent-posts-heading"
+          class="text-2xl font-semibold tracking-wide"
+        >
+          {t(Astro, "index.recentPosts")}
+        </h2>
+        <ul>
+          {recentPosts.map(
+            (data, index) =>
+              index < SITE.postPerIndex && <Card variant="h3" {...data} />
+          )}
+        </ul>
+      </section>
+    )}
 
     <div class="my-8 text-center">
       <LinkButton

@@ -23,9 +23,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 
 <footer class:list={["w-full", { "mt-auto": !noMarginTop }]}>
   <div class="mx-auto max-w-app border-t border-border"></div>
-  <div
-    class="flex flex-col items-center gap-5 py-8 text-center text-sm text-foreground/75 sm:py-6"
-  >
+  <div class="flex flex-col items-center gap-5 py-8 text-center text-sm text-foreground/75 sm:py-6">
     <div class="flex flex-col items-center gap-4">
       <p class="max-w-2xl leading-relaxed">
         <span>
@@ -34,22 +32,30 @@ const tr = (key: string, params?: Record<string, string | number>) =>
             class="hover:text-skin-accent font-medium text-foreground underline decoration-dashed underline-offset-4"
             href="https://astro.build/"
             target="_blank"
-            rel="noopener noreferrer">Astro</a
+            rel="noopener noreferrer"
           >
+            Astro
+          </a>
           {tr("footer.builtWithSuffix")}
         </span>
-        <span class="mx-2 text-foreground/40" aria-hidden="true">|</span>
+        <span class="mx-2 text-foreground/40" aria-hidden="true">
+          |
+        </span>
         <span>
           {tr("footer.themeCreditPrefix")}
           <a
             class="hover:text-skin-accent font-medium text-foreground underline decoration-dashed underline-offset-4"
             href="https://github.com/satnaing/astro-paper"
             target="_blank"
-            rel="noopener noreferrer">AstroPaper</a
+            rel="noopener noreferrer"
           >
+            AstroPaper
+          </a>
           {tr("footer.themeCreditSuffix")}
         </span>
-        <span class="mx-2 text-foreground/40" aria-hidden="true">|</span>
+        <span class="mx-2 text-foreground/40" aria-hidden="true">
+          |
+        </span>
         <span>{tr("footer.openSourceThanks")}</span>
       </p>
       <Socials centered />
@@ -67,7 +73,9 @@ const tr = (key: string, params?: Record<string, string | number>) =>
         >
           CC BY-NC-SA 4.0
         </a>
-        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <span class="text-foreground/35" aria-hidden="true">
+          |
+        </span>
         <a
           class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
           href={UMAMI.repositoryUrl}
@@ -76,21 +84,27 @@ const tr = (key: string, params?: Record<string, string | number>) =>
         >
           {tr("ui.analyticsSource")}
         </a>
-        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <span class="text-foreground/35" aria-hidden="true">
+          |
+        </span>
         <a
           class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
           href={localeUrl("/contact")}
         >
           {tr("ui.contact")}
         </a>
-        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <span class="text-foreground/35" aria-hidden="true">
+          |
+        </span>
         <a
           class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
           href={localeUrl("/privacy")}
         >
           {tr("ui.privacyPolicy")}
         </a>
-        <span class="text-foreground/35" aria-hidden="true">|</span>
+        <span class="text-foreground/35" aria-hidden="true">
+          |
+        </span>
         <a
           class="hover:text-skin-accent underline decoration-dashed underline-offset-4"
           href={GITHUB_REPOSITORY_URL}
