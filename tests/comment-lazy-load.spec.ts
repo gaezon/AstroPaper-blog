@@ -1,7 +1,19 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const TEST_POST_PATH = "/posts/hoarder-app-replace-cubox/";
+const ENGLISH_TEST_POST_PATH = "/en/posts/self-host-hoarder-replace-cubox/";
 const SECOND_POST_PATH = "/posts/OBS-safe-broadcast-pitfalls/";
+
+const getTwikooInitConfig = (page: Page) =>
+  page.evaluate(() => {
+    const calls = (
+      window as unknown as {
+        __twikooInitCalls?: Array<Record<string, unknown>>;
+      }
+    ).__twikooInitCalls;
+
+    return calls?.at(-1) ?? null;
+  });
 
 async function clickAndWaitPath(
   page: Page,
@@ -113,7 +125,59 @@ async function mockTwikooScript(page: Page, delayMs = 0) {
   };
 }
 
+async function mockTwikooGlobal(page: Page) {
+  await page.addInitScript(() => {
+    const testWindow = window as unknown as {
+      twikoo?: {
+        init: (config: Record<string, unknown>) => void;
+      };
+      __twikooInitCalls?: Array<Record<string, unknown>>;
+    };
+
+    testWindow.twikoo = {
+      init: config => {
+        testWindow.__twikooInitCalls = testWindow.__twikooInitCalls || [];
+        testWindow.__twikooInitCalls.push(config);
+      },
+    };
+  });
+}
+
 test.describe("Twikoo lazy-load triggers", () => {
+  test("passes the Chinese placeholder to Twikoo", async ({ page }) => {
+    await mockTwikooGlobal(page);
+
+    await page.goto(TEST_POST_PATH);
+    await clearTwikooSri(page);
+    const loadButton = page.locator("[data-comment-load-trigger]");
+    await expect(loadButton).toBeVisible();
+    await loadButton.click();
+
+    await expect
+      .poll(() => getTwikooInitConfig(page))
+      .toMatchObject({
+        placeholder:
+          "使用 cn.gravatar.com 作为头像源，可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。",
+      });
+  });
+
+  test("passes the English placeholder to Twikoo", async ({ page }) => {
+    await mockTwikooGlobal(page);
+
+    await page.goto(ENGLISH_TEST_POST_PATH);
+    await clearTwikooSri(page);
+    const loadButton = page.locator("[data-comment-load-trigger]");
+    await expect(loadButton).toBeVisible();
+    await loadButton.click();
+
+    await expect
+      .poll(() => getTwikooInitConfig(page))
+      .toMatchObject({
+        placeholder:
+          "Avatars use cn.gravatar.com. Enter a QQ email to show a QQ avatar, or comment anonymously.",
+      });
+  });
+
   test("loads only after click interaction", async ({ page }) => {
     const twikooMock = await mockTwikooScript(page, 150);
 
