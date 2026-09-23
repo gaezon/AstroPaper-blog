@@ -54,16 +54,16 @@ const iconClass = size === "lg" ? "size-5 sm:size-[1.375rem]" : "size-5";
     ]}
     data-datetime-text
   >
-    {
-      isModified && (
-        <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>
-          {t(Astro, "ui.updated")}
-        </span>
-      )
-    }
+    {isModified && (
+      <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>
+        {t(Astro, "ui.updated")}
+      </span>
+    )}
     <time
       class:list={["text-sm", { "sm:text-base": size === "lg" }]}
-      datetime={activeDate.toISOString()}>{formattedDate}</time
+      datetime={activeDate.toISOString()}
     >
+      {formattedDate}
+    </time>
   </span>
 </div>
