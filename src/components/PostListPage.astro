@@ -25,7 +25,9 @@ const pageEntries = page.data;
   <Header />
   <Main pageTitle={pageTitle} pageDesc={pageDescription}>
     <ul>
-      {pageEntries.map(data => <Card {...data} />)}
+      {pageEntries.map(data => (
+        <Card {...data} />
+      ))}
     </ul>
   </Main>
 

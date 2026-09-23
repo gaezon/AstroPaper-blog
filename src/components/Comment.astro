@@ -30,6 +30,10 @@ interface Props {
 
 const { post } = Astro.props;
 const langTag = getLangTag(Astro);
+const twikooPlaceholder =
+  langTag === "zh-CN"
+    ? "可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。"
+    : "Enter a QQ email to show a QQ avatar, or comment anonymously.";
 
 // Generate a unified comment ID with fallback hierarchy
 const getCommentId = () => {
@@ -100,12 +104,6 @@ const commentAutoLoadHint =
     : "Or scroll near this section to load automatically";
 const commentLoadingMessage =
   langTag === "zh-CN" ? "正在加载评论..." : "Loading comments...";
-// Twikoo's COMMENT_PLACEHOLDER is a global backend setting. Override it per
-// page so a bilingual site does not render both languages in one placeholder.
-const twikooPlaceholder =
-  langTag === "zh-CN"
-    ? "使用 cn.gravatar.com 作为头像源，可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。"
-    : "Avatars use cn.gravatar.com. Enter a QQ email to show a QQ avatar, or comment anonymously.";
 const twikooObserverOffset = 400;
 ---
 

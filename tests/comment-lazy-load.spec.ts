@@ -1,7 +1,20 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const TEST_POST_PATH = "/posts/hoarder-app-replace-cubox/";
+const ENGLISH_TEST_POST_PATH = "/en/posts/self-host-hoarder-replace-cubox/";
 const SECOND_POST_PATH = "/posts/OBS-safe-broadcast-pitfalls/";
+type TwikooInitBehavior = "void" | "resolve" | "reject";
+
+const getTwikooInitConfig = (page: Page) =>
+  page.evaluate(() => {
+    const calls = (
+      window as unknown as {
+        __twikooInitCalls?: Array<Record<string, unknown>>;
+      }
+    ).__twikooInitCalls;
+
+    return calls?.at(-1) ?? null;
+  });
 
 async function clickAndWaitPath(
   page: Page,
@@ -113,50 +126,103 @@ async function mockTwikooScript(page: Page, delayMs = 0) {
   };
 }
 
-test.describe("Twikoo locale configuration", () => {
-  const localeCases = [
-    {
-      path: "/en/posts/ibkr-drip/",
-      placeholder:
-        "Avatars use cn.gravatar.com. Enter a QQ email to show a QQ avatar, or comment anonymously.",
-    },
-    {
-      path: "/posts/is-ibkr-drip-really-commission-free/",
-      placeholder:
-        "使用 cn.gravatar.com 作为头像源，可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。",
-    },
-  ];
+async function mockTwikooGlobal(
+  page: Page,
+  initBehavior: TwikooInitBehavior = "void"
+) {
+  await page.addInitScript(behavior => {
+    const testWindow = window as unknown as {
+      twikoo?: {
+        init: (config: Record<string, unknown>) => void | Promise<unknown>;
+      };
+      __twikooInitCalls?: Array<Record<string, unknown>>;
+    };
 
-  for (const localeCase of localeCases) {
-    test(`passes an ${localeCase.path.startsWith("/en/") ? "English" : "Chinese"} placeholder to Twikoo`, async ({
-      page,
-    }) => {
-      const twikooMock = await mockTwikooScript(page);
+    testWindow.twikoo = {
+      init: config => {
+        testWindow.__twikooInitCalls = testWindow.__twikooInitCalls || [];
+        testWindow.__twikooInitCalls.push(config);
 
-      await page.goto(localeCase.path);
-      await clearTwikooSri(page);
-      const loadButton = page.locator("[data-comment-load-trigger]");
-      await expect(loadButton).toBeVisible();
-      await loadButton.dispatchEvent("click");
+        if (behavior === "resolve") {
+          return new Promise(resolve => setTimeout(resolve, 100));
+        }
 
-      await expect
-        .poll(async () =>
-          page.evaluate(() => {
-            const calls = (
-              window as typeof window & {
-                __twikooInitCalls?: Array<{ placeholder?: string }>;
-              }
-            ).__twikooInitCalls;
-            return calls?.at(-1)?.placeholder;
-          })
-        )
-        .toBe(localeCase.placeholder);
-      expect(twikooMock.getRequestCount()).toBe(1);
-    });
-  }
+        if (behavior === "reject") {
+          return Promise.reject(new Error("Twikoo init failed"));
+        }
+      },
+    };
+  }, initBehavior);
+}
+
+test.describe("Twikoo initialization", () => {
+  test("keeps the loading state until async init resolves", async ({
+    page,
+  }) => {
+    await mockTwikooGlobal(page, "resolve");
+
+    await page.goto(TEST_POST_PATH);
+    await clearTwikooSri(page);
+
+    const commentsContainer = page.locator("#tcomment");
+    await page.locator("[data-comment-load-trigger]").dispatchEvent("click");
+
+    await expect.poll(() => getTwikooInitConfig(page)).not.toBeNull();
+    await expect(commentsContainer).toHaveAttribute("aria-busy", "true");
+    await expect(commentsContainer).not.toHaveAttribute("aria-busy", "true");
+  });
+
+  test("shows an error when async init rejects", async ({ page }) => {
+    await mockTwikooGlobal(page, "reject");
+
+    await page.goto(TEST_POST_PATH);
+    await clearTwikooSri(page);
+
+    const commentsContainer = page.locator("#tcomment");
+    await page.locator("[data-comment-load-trigger]").dispatchEvent("click");
+
+    await expect(commentsContainer).toHaveText(
+      "评论系统加载失败，请稍后重试。"
+    );
+    await expect(commentsContainer).not.toHaveAttribute("aria-busy", "true");
+    await expect(commentsContainer).toHaveAttribute("role", "status");
+  });
 });
 
 test.describe("Twikoo lazy-load triggers", () => {
+  test("passes the Chinese placeholder to Twikoo", async ({ page }) => {
+    await mockTwikooGlobal(page);
+
+    await page.goto(TEST_POST_PATH);
+    await clearTwikooSri(page);
+    const loadButton = page.locator("[data-comment-load-trigger]");
+    await expect(loadButton).toBeVisible();
+    await loadButton.dispatchEvent("click");
+
+    await expect
+      .poll(() => getTwikooInitConfig(page))
+      .toMatchObject({
+        placeholder: "可输入 QQ 邮箱显示 QQ 头像，也可匿名评论。",
+      });
+  });
+
+  test("passes the English placeholder to Twikoo", async ({ page }) => {
+    await mockTwikooGlobal(page);
+
+    await page.goto(ENGLISH_TEST_POST_PATH);
+    await clearTwikooSri(page);
+    const loadButton = page.locator("[data-comment-load-trigger]");
+    await expect(loadButton).toBeVisible();
+    await loadButton.dispatchEvent("click");
+
+    await expect
+      .poll(() => getTwikooInitConfig(page))
+      .toMatchObject({
+        placeholder:
+          "Enter a QQ email to show a QQ avatar, or comment anonymously.",
+      });
+  });
+
   test("loads only after click interaction", async ({ page }) => {
     const twikooMock = await mockTwikooScript(page, 150);
 

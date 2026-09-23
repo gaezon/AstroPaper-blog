@@ -49,7 +49,9 @@ const crumbs = buildBreadcrumbs({
     pageDesc={pageDescription}
   >
     <ul>
-      {pageEntries.map(entry => <Card {...entry} />)}
+      {pageEntries.map(entry => (
+        <Card {...entry} />
+      ))}
     </ul>
   </Main>
 
