@@ -5,6 +5,13 @@
 - `README.md` is the primary entry for setup and command usage
 - This file focuses on repository conventions, architecture boundaries, testing expectations, and change hygiene
 
+## Agent Workflow
+
+- Treat these instructions as durable repository context, not a checklist. Read project docs and inspect code/tests when relevant to the task rather than loading the full repository for every change.
+- Infer routine implementation choices from nearby code and carry requested work through appropriate verification. Ask a focused question only when ambiguity could materially change the result or an impactful operation is not clearly authorized.
+- Run the smallest meaningful local check for the changed behavior. Expand verification when risk, failures, or cross-page behavior warrants it; inspect a command first if it may access production services, modify content, or perform deployment/remote operations.
+- Keep these instructions focused on repository-specific facts and boundaries. Report changed files, checks run, and any remaining unverified scope clearly.
+
 ## Project Structure & Module Organization
 
 - `src/pages/` hosts route-level Astro files; co-locate page-specific assets under matching directories
