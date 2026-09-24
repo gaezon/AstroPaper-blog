@@ -1,102 +1,53 @@
-# Repository Guidelines
+# Repository Agent Guidance
 
-## Purpose
-
-- `README.md` is the primary entry for setup and command usage
-- This file focuses on repository conventions, architecture boundaries, testing expectations, and change hygiene
+These repository-level defaults apply to coding agents. Keep instructions concise and specific to this project; consult only the files needed for the task instead of reading every guide before each change. For reversible repository changes, carry the requested work through using reasonable assumptions; ask only when missing information could change the outcome or an irreversible or external action lacks user authorization. Explicit user instructions take precedence over these defaults.
 
 ## Agent Workflow
 
-- Treat these instructions as durable repository context, not a checklist. Read project docs and inspect code/tests when relevant to the task rather than loading the full repository for every change.
-- Infer routine implementation choices from nearby code and carry requested work through appropriate verification. Ask a focused question only when ambiguity could materially change the result or an impactful operation is not clearly authorized.
-- Run the smallest meaningful local check for the changed behavior. Expand verification when risk, failures, or cross-page behavior warrants it; inspect a command first if it may access production services, modify content, or perform deployment/remote operations.
-- Keep these instructions focused on repository-specific facts and boundaries. Report changed files, checks run, and any remaining unverified scope clearly.
+- Treat these instructions as durable repository context, not a checklist. Read project docs and inspect code/tests when relevant rather than loading the full repository for every change.
+- Use reasonable assumptions for routine choices and carry requested work through appropriate verification. Ask only when ambiguity could materially change the result or an impactful operation lacks authorization.
+- Run the smallest meaningful local check for changed behavior. Expand verification when risk or failures warrant it; inspect commands first if they may access production services, modify content, or perform deployment or remote operations.
+- Report changed files, checks run, and any remaining unverified scope clearly.
 
-## Project Structure & Module Organization
+## Documentation and Sources of Truth
 
-- `src/pages/` hosts route-level Astro files; co-locate page-specific assets under matching directories
-- `src/components/` and `src/layouts/` hold reusable UI fragments; `src/styles/` centralizes global styles and Tailwind utilities
-- `src/scripts/` holds Astro-processed browser runtime modules that should be bundled from `src/` instead of copied from `public/`
-- Content, metadata, and bilingual mapping live under `src/content.config.ts`, `src/data/`, and `public/`; use `scripts/` helpers for i18n scaffolding and OpenGraph assets
-- Automated Playwright specs live in `tests/`; artifacts land in `test-results/`
+- Use [README.md](README.md) for setup, commands, and deployment; use [WRITING.md](WRITING.md) for article authoring and frontmatter; consult the relevant file under `docs/` for feature details.
+- Treat `package.json`, the source code, and workflow files as the current source of truth. Update the relevant guide when a documented workflow or behavior changes.
+- Preserve unrelated working-tree changes and review `git status` before editing.
 
-## Key Shared Modules
+## Runtime and Commands
 
-- `src/components/LanguageSwitcher/` - language switcher sub-components
-- `src/components/HomePage.astro` - shared localized home page renderer
-- `src/components/PostListPage.astro` - shared localized posts pagination renderer
-- `src/components/ArchivesPage.astro` - shared localized archives renderer
-- `src/components/TagsPage.astro` - shared localized tags index renderer
-- `src/components/TagPostsPage.astro` - shared localized tag posts renderer
-- `src/types/pagination.ts` - shared pagination contracts
-- `src/utils/blog-locale.ts` - strict locale helpers and normalization guard
-- `src/utils/i18n-pages.ts` - locale-aware page and pagination helpers
-- `src/utils/i18n-api.ts` - locale-aware RSS and OG endpoint helpers
-- `src/utils/i18n-seo.ts` - locale-aware SEO metadata, hreflang, and BlogPosting structured data helpers
-- `src/utils/generated/` - auto-generated bilingual mapping files
-- `src/utils/http-headers.ts` - single source of truth for security and discovery HTTP headers (CSP, Link, Referrer-Policy, Permissions-Policy); imported by the dev middleware and the Vercel post-build script
-- `scripts/apply-vercel-routes.ts` - post-build script to patch Vercel prebuilt routes and headers
+- Use pnpm only. The supported toolchain is Node.js `24.x` and pnpm `>=11 <12`, as declared in `package.json` and `.node-version`.
+- If Node.js is not `24.x`, use `fnm use` in the repository. For non-interactive commands, use `fnm exec --using 24 pnpm <command>`.
+- `scripts/check-toolchain.mjs` guards the common project entry points. Keep it aligned with `package.json` and the setup instructions in `README.md`.
+- For exact script names and behavior, check `package.json` and `README.md`.
 
-## Runtime & Tooling Constraints
+## Architecture and Behavior
 
-- Use pnpm only; do not use npm, yarn, or bun
-- Use Node.js `24.x` and pnpm `>=11 <12` (recommended to install and manage via Homebrew)
-- `.node-version` is committed with `24`; if the shell resolves another version, run `fnm use`
-- `scripts/check-toolchain.mjs` is the shared fast-fail guard for common pnpm entry points; keep it aligned with `package.json` engines and README setup notes
-- For exact commands, prefer `README.md`
+- Blog content lives in `src/data/blog/`; English content lives in `src/data/blog/en/`. Chinese routes have no locale prefix; English routes use `/en/`.
+- Keep mirrored locale routes thin and put shared rendering or locale behavior in `src/components/`, `src/layouts/`, or `src/utils/` as appropriate.
+- English article pairing uses `originalTitle`. After changing paired content or pairing logic, regenerate the mapping with `pnpm generate:bilingual-mapping` and check the affected localized navigation.
+- Files under `src/utils/generated/` are generated. Change their source or generator, then regenerate; do not edit generated mappings by hand.
+- Browser code that needs bundling belongs in `src/scripts/`. Keep only essential first-paint behavior inline.
+- `src/utils/http-headers.ts` is the source of truth for security and discovery headers used by development middleware and the Vercel post-build step. Update that module when changing those values.
+- `scripts/apply-vercel-routes.ts` patches the prebuilt Vercel output. Review its effects when changing localized 404 handling or response headers.
 
-## Coding Style & Naming
+## Implementation and Accessibility
 
-- Favor TypeScript across new modules; keep strict typings in shared utils and shared type modules
-- Use PascalCase for components/layouts, camelCase for helpers, and kebab-case for slugs and filenames
-- Tailwind classes should roughly group by layout -> spacing -> color
-- Keep zh/en route wrappers thin; push shared behavior into locale-aware components or helpers
+- Prefer TypeScript for new shared code. Use PascalCase for components, camelCase for helpers, and kebab-case for slugs and filenames.
+- Keep Tailwind classes grouped by layout, spacing, then color.
+- Locale-aware features should preserve support for `zh-CN` and `en`.
+- Interactive controls need accessible names, state, and keyboard behavior. Diagrams should expose a meaningful accessible label.
+- Keep browser runtime small when build-time output can provide the same behavior.
 
-## Internationalization Conventions
+## Verification and Delivery
 
-- English routes use `/en/`; Chinese routes use no locale prefix
-- Use `originalTitle` to link bilingual posts
-- Locale-aware features should support both `zh-CN` and `en`
-- After changing bilingual content or pairing logic, regenerate mappings and verify localized navigation
+- Match verification to the change. Use focused Vitest checks for isolated utilities, Playwright for affected user flows, and `pnpm build:strict` for content, build, or deployment-configuration changes.
+- Documentation-only changes do not need application tests; inspect changed links and paths and review `git diff --check`.
+- Add or update browser coverage when a code change alters navigation, language switching, TOC, Mermaid, OpenGraph output, pagination, or another cross-page behavior. Broaden verification only when a failure or unresolved risk justifies it.
+- Distinguish local checks from CI, device, and production evidence. A local build does not prove deployed behavior.
+- Branch protection requires the GitHub Actions check named `build` (the job id in `.github/workflows/ci.yml`). Do not set a custom `jobs.build.name`, which changes the required check name.
 
-## Testing Expectations
+## Maintaining These Instructions
 
-- Run the smallest relevant verification for the change, then expand to broader checks when risk is higher
-- Update or add Playwright coverage when changing navigation, language switching, TOC, Mermaid, OG generation, pagination, or other cross-page behavior
-- Include accessibility and i18n assertions when altering interactive or localized UI
-- Prefer targeted Vitest runs for isolated utility changes; use Playwright for end-to-end user flows
-
-## Key Test Areas
-
-- `tests/mermaid-rendering.spec.ts` - Mermaid `<picture>` output (CI) and client-side fallback rendering (non-CI), including theme behavior
-- `tests/language-switcher.spec.ts` - switcher interaction and listener cleanup
-- `tests/post-navigation.spec.ts` - article navigation boundaries
-- `tests/comment-lazy-load.spec.ts` - comment loading behavior
-- `tests/og-text-normalization.spec.ts` - OG image generation
-- `tests/toc-animation-optimization.spec.ts` - TOC behavior and animation
-- `tests/i18n.spec.ts` - localized routing and locale behavior
-- `tests/pagination-locale.spec.ts` - locale prefixes and pagination boundaries
-- `tests/unit/vercel-localized-404-routes.spec.ts` - validation of prebuilt Vercel config post-processing
-- `tests/middleware-dev-parity.spec.ts` - validation of dev security headers matching production
-
-## Accessibility & Performance
-
-- All interactive elements must have appropriate ARIA labels
-- Mermaid diagrams should expose `role="img"` and descriptive labels
-- Theme and language controls should expose current state and intent
-- Keep fonts lean, images optimized, and client-side runtime minimal where build-time output is viable
-
-## Deployment Notes
-
-- Build output is produced via Astro static build and Vercel prebuilt artifacts under `.vercel/output/`
-- `scripts/apply-vercel-routes.ts` patches `.vercel/output/config.json` after build so Vercel `--prebuilt` serves localized zh/en 404 pages and security response headers correctly
-- All HTTP security/discovery header values are declared once in `src/utils/http-headers.ts` and shared between the dev middleware (`src/middleware.ts`) and the Vercel post-build script; when updating CSP or Link header entries, edit only this file
-- Pagefind index generation targets `.vercel/output/static`
-- Branch protection on `main` requires the GitHub Actions check named `build` (the CI job id). Do not set a custom `jobs.build.name`; GitHub matches the job display name, and a mismatch leaves the required check unreported
-
-## Documentation Maintenance
-
-- Update `README.md` when setup or commands change
-- Update `WRITING.md` when author workflow or frontmatter conventions change
-- Update this file when repository conventions, testing expectations, or architecture boundaries change
-- Keep tool-specific instruction files concise and aligned with these shared facts
+Keep this file focused on repository-specific facts and decisions. Prefer linking to a detailed guide over copying it here, and remove instructions when the underlying workflow or code no longer supports them.

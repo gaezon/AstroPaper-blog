@@ -1,6 +1,6 @@
 # 写作指南（AstroPaper-blog）
 
-这是一份面向日常写作的通俗指南，帮你用“中文为主、英文为辅（SEO）”的方式，高效发布与维护博文。
+这是一份面向日常写作的通俗指南，帮你用「中文为主、英文为辅（SEO）」的方式，高效发布与维护博文。
 
 ---
 
@@ -33,23 +33,23 @@ tags:
   - 博文
   - 工具
   - 思考
-ogImage: 
-  # 可选，远程或本地；为空时会走动态 OG（/posts/<slug>/index.png）
-description: "简要描述 150–160 字内，便于 SEO 摘要。"
-canonicalURL: # 可选
-hideEditPost: false # 可选
+description: "简要描述控制在 150–160 个字符内，便于 SEO 摘要。"
+# 以下字段按需填写；不要保留没有值的 YAML 字段
+# ogImage: /assets/<slug>/cover.png # 可选；未填写时使用动态 OG 图片
+# canonicalURL: https://example.com/posts/<slug>/ # 可选
+# hideEditPost: true # 可选
 timezone: Asia/Shanghai # 可选
-locale: "zh-CN" # 默认
+# locale: zh-CN # 默认值
 ---
 ```
 
 字段说明（常用）：
 - `title`：标题；
-- `description`：页面描述（150–160 字内）；
+- `description`：页面描述，建议保持 150–160 个字符；可用 `pnpm validate:meta` 检查；
 - `pubDatetime`/`modDatetime`：发布时间/最近修改时间；
 - `tags`：按当前文章语言填写标签（中文文章用中文标签，英文文章用英文标签）；
 - `draft`：草稿不发布；
-- `featured`：是否在首页“精选”展示；
+- `featured`：是否在首页「精选」展示；
 - `timezone`：影响页面显示的本地化日期。
 
 ---
@@ -93,11 +93,10 @@ locale: "zh-CN" # 默认
 - 保存后英文页将出现在 `/en/posts/.../` 并在中文→英文切换时自动对上对应译文。
 
 3) 文章详情的语言切换
-- 站点已在文章页头接入“互链覆盖”逻辑：
-  - 中文 → 英文：若找到 `originalTitle` 匹配的英文文章，即直达对应 `/en/posts/.../`；否则回落 `/en/posts/` 列表。
-  - 英文 → 中文：反查中文 `title`，能匹配则直达 `/posts/.../`；否则回落 `/posts/` 列表。
-
-> 可选增强：未来可引入 `translationKey`（稳定键）避免标题变更导致配对失败。当前方案 `originalTitle` 已能满足日常需求。
+- 站点已在文章页头接入「互链覆盖」逻辑：
+  - 中文 → 英文：若存在已发布且 `originalTitle` 与中文文章标题相同的译文，即直达 `/en/posts/.../`；否则打开英文「暂无译文」提示页。
+  - 英文 → 中文：根据英文文章的 `originalTitle` 查找中文原文；若原文不存在，则打开中文「暂无译文」提示页。
+- 中英文文章的评论映射也使用 `originalTitle`，构建时会生成映射文件；不要手动编辑生成结果。
 
 ---
 
@@ -115,10 +114,10 @@ locale: "zh-CN" # 默认
 
 ## 常见问题（FAQ）
 
-- 英文页面 404？
-  - 确认英文草稿是否已去掉 `draft: true`；构建后再访问。
-- 文章切换语言跳到列表页？
-  - 通常是英文文章缺失或 `originalTitle` 未与中文标题匹配；检查英文 frontmatter。
+- 英文页面没有发布？
+  - 确认英文草稿已移除 `draft: true` 或设为 `draft: false`，再运行构建。
+- 文章切换语言显示「暂无译文」？
+  - 确认英文文章已发布，且英文 frontmatter 的 `originalTitle` 与中文文章的 `title` 完全一致。
 - 新标签在英文站点不规范或不出现？
   - 英文文章需单独维护英文标签，标签 slug 会通过 `slugifyStr()` 自动生成。
 - 日期显示不符合预期？
@@ -130,7 +129,7 @@ locale: "zh-CN" # 默认
 
 ## 术语与用词
 
-- 导航中的“博文”指文章列表（已替代“博客”以避免歧义）。
+- 导航中的「博文」指文章列表（已替代「博客」以避免歧义）。
 - 标签尽量简洁、可检索；英文 slug 更应短小清晰。
 
 ---
@@ -162,4 +161,4 @@ originalTitle: "为什么我开始写博客"
 
 ---
 
-如需我把现有中文标签批量生成映射草案，或为文章增加 `translationKey` 稳定键，请告诉我，我可以一次性安排。祝写作顺利！
+祝写作顺利！

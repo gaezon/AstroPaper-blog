@@ -79,7 +79,7 @@ function withCurrentSearch(href: string) {
       Note: data-astro-reload is intentionally used to force full page reload.
       This ensures proper event binding on mobile devices and prevents issues
       with View Transitions not reinitializing JavaScript handlers after language switch.
-      See README in src/components/LanguageSwitcher/ for rationale on data-astro-reload usage.
+      See docs/i18n-language-switcher.md for the language-switching behavior.
     */}
     {availableLocales.map(locale => {
       const baseHref =
