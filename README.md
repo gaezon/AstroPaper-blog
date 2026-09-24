@@ -20,18 +20,14 @@ Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing
 ## Requirements
 
 - Node.js `24.x`
-- pnpm `>=11 <12` (recommended to install via Homebrew and run through this repo's toolchain guard)
+- pnpm `>=11 <12` ([installation guide](https://pnpm.io/installation))
 - pnpm-only workflow (no npm/yarn/bun)
 
-## Local Node Setup (Optional)
+## Toolchain Setup
 
-- This repo includes `.node-version` with `24` so `fnm`, `nvm`, and compatible tools can auto-select the supported runtime.
-- Recommended for personal use: manage project Node with `fnm` and use Node `24.x` in this repo.
-- Keep a system Node installation for external tools that invoke `node`/`npx` globally (for example, MCP helpers).
-- Before running project commands, verify `node -v` is `24.x` in this repository.
-- If your shell still resolves to another global Node version, run `fnm use` before `pnpm` commands.
-- For one-off non-interactive commands, run `fnm exec --using 24 pnpm <command>`.
-- Common project entry points run `scripts/check-toolchain.mjs` first and fail fast unless Node.js `24.x` and pnpm `>=11 <12` are active.
+- Node.js `24.x` and pnpm `>=11 <12` are required by `package.json` and checked by `scripts/check-toolchain.mjs` on common project entry points.
+- `.node-version` records the required Node major version. With fnm, run `fnm use` from the repository.
+- For a one-off non-interactive command, run `fnm exec --using 24 pnpm <command>`.
 
 ## Quick start
 
@@ -44,26 +40,27 @@ Open `http://localhost:4321`.
 
 ## Common commands
 
-| Command                           | Purpose                                                   |
-| --------------------------------- | --------------------------------------------------------- |
-| `pnpm dev`                        | Start local dev server                                    |
-| `pnpm build`                      | Fast local build + Vercel output patch (no `astro check`) |
-| `pnpm build:strict`               | CI-equivalent build + Vercel output patch                 |
-| `pnpm preview`                    | Preview production build                                  |
-| `pnpm lint`                       | Run ESLint                                                |
-| `pnpm format`                     | Format files with Prettier                                |
-| `pnpm format:check`               | Check formatting                                          |
-| `pnpm validate:meta`              | Validate post meta descriptions                           |
-| `pnpm i18n:scaffold-en`           | Generate English draft posts                              |
-| `pnpm generate:bilingual-mapping` | Regenerate bilingual mapping                              |
-| `pnpm og:preview`                 | Preview OG images locally                                 |
-| `pnpm twikoo:sri:check`           | Verify Twikoo SRI hash                                    |
-| `pnpm twikoo:sri:update`          | Update Twikoo SRI hash                                    |
-| `pnpm test:unit`                  | Run the repository's Vitest suite                         |
-| `pnpm test:sitemap`               | Build + sitemap Playwright checks                         |
-| `pnpm exec playwright test`       | Run E2E tests                                             |
+| Command                           | Purpose                                             |
+| --------------------------------- | --------------------------------------------------- |
+| `pnpm dev`                        | Start local dev server                              |
+| `pnpm build`                      | Build and patch Vercel output (no `astro check`)    |
+| `pnpm build:strict`               | Same pipeline plus `astro check`; used by CI/deploy |
+| `pnpm preview`                    | Preview production build                            |
+| `pnpm lint`                       | Run ESLint                                          |
+| `pnpm format`                     | Format files with Prettier                          |
+| `pnpm format:check`               | Check formatting                                    |
+| `pnpm validate:meta`              | Validate post meta descriptions                     |
+| `pnpm i18n:scaffold-en`           | Generate English draft posts                        |
+| `pnpm generate:bilingual-mapping` | Regenerate bilingual mapping                        |
+| `pnpm og:preview`                 | Preview OG images locally                           |
+| `pnpm twikoo:sri:check`           | Verify Twikoo SRI hash                              |
+| `pnpm twikoo:sri:update`          | Update Twikoo SRI hash                              |
+| `pnpm test:unit`                  | Run the repository's Vitest suite                   |
+| `pnpm test:sitemap`               | Build + sitemap Playwright checks                   |
+| `pnpm exec playwright test`       | Run E2E tests                                       |
 
 - For a targeted Vitest run, use `pnpm exec vitest run tests/unit/<file>.spec.ts`.
+- Both build commands refresh image sizes and bilingual mappings, then create the Pagefind index.
 
 ## Project structure
 

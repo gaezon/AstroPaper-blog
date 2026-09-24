@@ -43,11 +43,13 @@ originalTitle: "中文文章标题"
 ---
 ```
 
-### 2) 生成映射
+### 2) 生成或检查映射
 
 ```bash
 pnpm generate:bilingual-mapping
 ```
+
+日常构建命令 `pnpm build` 和 `pnpm build:strict` 会自动生成映射。单独运行上面的命令适合在不构建站点时检查或刷新映射。
 
 ### 3) 发布前检查
 
@@ -69,6 +71,5 @@ pnpm generate:bilingual-mapping
 
 ## 维护建议
 
-- 以 `originalTitle` 作为唯一人工维护入口，不手写映射文件
-- 不要手动编辑 `src/utils/generated/bilingualMapping.ts`
-- 新增双语文章后，养成执行 `pnpm generate:bilingual-mapping` 的习惯
+- 在文章 frontmatter 中维护 `originalTitle`；相似度匹配只作为兜底。
+- 不要手动编辑生成映射。构建会自动更新；单独检查或刷新时运行 `pnpm generate:bilingual-mapping`。
