@@ -1,10 +1,20 @@
----
+# OG 磁盘缓存清理：历史问题草稿
+
+本文件从 `.github/issues/issue-og-cache-cleanup.md` 归档，保留原问题描述供追溯，不代表当前仍有此缺陷。
+
+当前 [`generateOgImages.ts`](../../src/utils/generateOgImages.ts) 已实现 `.fingerprint` 校验和模板变化时的缓存清理，相关回归覆盖位于 [`og-disk-cache.spec.ts`](../../tests/unit/og-disk-cache.spec.ts)。另有 `pnpm clean:og` 用于手动清理，详见 [开发指南](../development.md#构建与缓存)。
+
+原文以 `og:preview` 作为复现入口也已不适用：该工具直接渲染模板，不经过 OG 磁盘缓存。以下内容仅保留原始提案，不作为执行步骤。
+
+## 原始草稿
+
+```yaml
 name: "🐞 Bug report"
 about: Report a bug or unexpected behavior in AstroPaper
 title: "[BUG]: OG 图像本地硬盘缓存缺乏自动清理/失效机制（Disk Cache Bloat）"
 labels: bug
 assignees: ""
----
+```
 
 ### **Describe the bug**
 
