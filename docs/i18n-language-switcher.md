@@ -1,68 +1,52 @@
-# i18n 语言切换器与移动端指引
+# 语言切换器与本地化导航
 
-## 概览
+修改语言链接、下拉交互或移动导航时阅读本文。文章翻译字段与评论映射见[双语文章映射](bilingual-comment-system.md)。
 
-- 当前语言切换器由以下文件组成：
-  - `src/components/LanguageSwitcher.astro` - 主入口组件
-  - `src/components/LanguageSwitcher/Dropdown.astro` - 下拉菜单 UI
-  - `src/components/LanguageSwitcher/client.ts` - 客户端交互与事件清理
-- 语言数据与 URL 生成逻辑位于 `src/i18n/utils.ts`，所有链接最终回落到真实的静态页面，确保 SEO 友好。
-- 语言链接带有 `data-astro-reload`，切换语言时使用完整页面导航；客户端代码仍会在站内视图切换后重新绑定事件。
-- 文章页会用 `originalTitle` 查找已发布的对应译文。找不到时显示本地化的「暂无译文」页面。
+## 实现入口
 
-## 快速使用
+| 文件                                                                                                                                    | 职责                                                 |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| [i18n/config.ts](../src/i18n/config.ts)、[i18n/locales/](../src/i18n/locales/)                                                          | `zh-CN` / `en` 配置、展示标签和翻译文案              |
+| [i18n/utils.ts](../src/i18n/utils.ts)                                                                                                   | 当前语言、翻译读取、默认语言切换 URL                 |
+| [LanguageSwitcher.astro](../src/components/LanguageSwitcher.astro)、[Dropdown.astro](../src/components/LanguageSwitcher/Dropdown.astro) | 单一下拉变体及语言链接的服务端输出                   |
+| [LanguageSwitcher/client.ts](../src/components/LanguageSwitcher/client.ts)                                                              | 开关状态、焦点处理、URL 参数补全、语言偏好和事件清理 |
+| [Header.astro](../src/components/Header.astro)                                                                                          | 桌面与移动端容器，向切换器传递页面覆盖路径           |
 
-当前实现为单一 Dropdown 变体，调用方式如下：
+中文页面无语言前缀，英文页面使用 `/en/`。语言链接带 `data-astro-reload`，执行完整页面导航；站内其他视图切换后，组件通过 `astro:after-swap` 重新绑定事件，并在 `astro:before-swap` 清理旧监听。
 
-常用参数：
+## 目标路径的选择
+
+常规页面使用默认 URL 规则，需要特殊目标时传入 `override`；页面通常通过 Header 的 `switchOverride` 传递：
 
 ```astro
-<LanguageSwitcher
-  class="mobile-dropdown"
-  override={{ en: "/en/about/", "zh-CN": "/about/" }}
-/>
+<LanguageSwitcher override={{ en: "/en/about/", "zh-CN": "/about/" }} />
 ```
 
-- `override` 仅在需要自定义目标路径时提供；常规页面无需传入。
-- 组件会设置 `hreflang`、`lang`、`aria-current` 和按钮展开状态。
+- 文章页：[PostDetails.astro](../src/layouts/PostDetails.astro) 按 `originalTitle` 查找非草稿译文并覆盖目标；未命中时，默认逻辑指向目标语言的「暂无译文」页面。该查找不单独检查发布时间，仍需确认目标页面实际可用。
+- 标签详情页：[getTagSwitchOverride.ts](../src/utils/getTagSwitchOverride.ts) 处理已翻译 / 共享标签；不存在对应标签时回退到目标语言标签索引。
+- 默认 URL 逻辑不检查目标页面是否存在。新增页面、列表分页或路径规则时，应确认对应静态路由及需要的 `switchOverride`，不能只替换语言前缀。
+- 当前查询参数与 hash 会在目标 URL 未自带相应部分时补全；「暂无译文」页的目标参数应保持其自身语义。
 
-## 扩展语言或新增页面
+点击语言链接会保存 `preferred-locale`。首页语言跳转由 [LocaleRedirect.astro](../src/components/LocaleRedirect.astro) 实现，由 [HomePage.astro](../src/components/HomePage.astro) 经 Layout 仅在中文首页启用；修改时同时检查首次打开 `/` 与站内返回首页的行为。
 
-1. 在 `src/i18n/config.ts` 和 `src/i18n/utils.ts` 中登记新语言的 `code`、`label`、`profile`。
-2. 为新语言添加 UI 文案：`src/i18n/locales/<locale>.ts`。
-3. 创建对应的内容集合或页面（如 `src/data/blog/<locale>/`）。
-4. 按需在 `src/i18n/config.ts` 的 locale `profile.label` 中补充语言简写展示。
+## 交互约束
 
-## 移动端与可访问性要点
+保留按钮的可访问名称、`aria-expanded`、链接的 `lang` / `hreflang` / `aria-current` 与焦点样式。Escape 应关闭菜单并把焦点还给按钮；移出焦点或点击外部应关闭菜单。
 
-- 桌面端容器：`.lang-switcher-container` 使用 Flex 排版，保持导航对齐。
-- 移动端容器：`.lang-switcher-mobile` 在汉堡菜单展开时显示，按钮宽度占满，触摸面积 ≥ 44px。
-- `focus-outline`、ARIA 属性、`data-astro-reload` 已内建，更新样式时不要移除。
-- 若自定义样式，确保 `/src/components/Header.astro` 内的媒体查询与布局同步调整。
+移动端必须让链接点击完成导航后再处理失焦关闭。当前客户端通过 pointer 状态和微任务协调这一顺序；修改 `focusout`、pointer 事件或隐藏菜单的时机时，检查实际触摸导航。布局入口位于 [Header.astro](../src/components/Header.astro)，与桌面下拉共用组件。
 
-## 自动化与手动测试
+新增语言会影响 Astro 路由、内容集合、locale 类型、SEO、映射及本地化文案，不能仅在下拉菜单中添加选项。当前项目支持范围为 `zh-CN` 与 `en`。
 
-### Playwright 覆盖
+## 检查范围
 
-- `tests/i18n.spec.ts`：回归语言切换、英文导航、URL 保持查询参数等核心流程。
-- `tests/language-switcher.spec.ts`：验证视图切换后的下拉可用性与事件监听清理。
-
-按需运行相关用例：
+使用项目工具链，按改动运行相关检查：
 
 ```bash
-pnpm exec playwright test tests/i18n.spec.ts
-pnpm exec playwright test tests/language-switcher.spec.ts
+pnpm exec playwright test tests/i18n.spec.ts tests/language-switcher.spec.ts
 ```
 
-### 手动冒烟
+- [i18n.spec.ts](../tests/i18n.spec.ts)：英文导航、查询参数、标签目标和首页语言偏好。
+- [language-switcher.spec.ts](../tests/language-switcher.spec.ts)：站内视图切换后的可用性、监听清理、可访问名称、缺失译文文案及移动点击。
+- 翻译字典 / SEO 变更：补充运行 [i18n-key-parity.spec.ts](../tests/unit/i18n-key-parity.spec.ts) 与 [i18n-seo.spec.ts](../tests/unit/i18n-seo.spec.ts) 对应单元测试。
 
-1. 打开 `/` 与 `/en/`，确认导航语言与内容匹配。
-2. 桌面端展开语言下拉，检查当前语言勾选与 `hreflang`。
-3. 移动端打开汉堡菜单，验证下拉菜单和语言链接可用。
-4. 搜索页 `/en/search/?q=astro` 切换语言，查询参数应保留。
-
-## 维护清单
-
-- 调整导航结构时同步检查 `switchOverride` 传入路径。
-- 更新语言标签展示或样式时，同时在深色/浅色主题下验证可读性。
-- 需要临时关闭语言切换器时，可在 Header 中隐藏容器，保留组件以减少回归成本。
+涉及实际文章配对时，再检查该对中英文页面相互切换，以及无译文文章的回退页；涉及样式时，在桌面 / 移动端和亮 / 暗主题下检查焦点、展开状态与可读性。仅文档修改无需启动应用测试。

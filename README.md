@@ -6,108 +6,59 @@
 [![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
 
-Personal bilingual blog built on AstroPaper, focused on Chinese-first publishing with English companion content for SEO.
+Personal bilingual blog built on AstroPaper with Astro, TypeScript, and Tailwind CSS. Chinese pages use the root routes; English companion pages use `/en/`.
 
-## What this repo includes
-
-- Astro 7 + TypeScript + Tailwind CSS blog site
-- Chinese (`zh-CN`) and English (`en`) routes
-- Build-time bilingual post mapping for unified comments
-- Build-time Mermaid rendering in GitHub Actions, with a client-side fallback renderer outside CI for WYSIWYG local preview
-- Static search with Pagefind
-- Dynamic OpenGraph image generation
-
-## Requirements
-
-- Node.js `24.x`
-- pnpm `>=11 <12` ([installation guide](https://pnpm.io/installation))
-- pnpm-only workflow (no npm/yarn/bun)
-
-## Toolchain Setup
-
-- Node.js `24.x` and pnpm `>=11 <12` are required by `package.json` and checked by `scripts/check-toolchain.mjs` on common project entry points.
-- `.node-version` records the required Node major version. With fnm, run `fnm use` from the repository.
-- For a one-off non-interactive command, run `fnm exec --using 24 pnpm <command>`.
+The site includes paired articles and shared comments, Pagefind search, generated OpenGraph images, and Mermaid diagrams rendered at build time in GitHub Actions with a browser fallback elsewhere.
 
 ## Quick start
 
+Use Node.js `24.x` and pnpm `>=11 <12`; the exact pnpm version is recorded in [package.json](package.json). Common entry points check the toolchain with [check-toolchain.mjs](scripts/check-toolchain.mjs).
+
+With fnm, run `fnm use` in this repository to select the version in [.node-version](.node-version). For non-interactive commands, use `fnm exec --using 24 pnpm <command>`.
+
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open `http://localhost:4321`.
+Open `http://localhost:4321`. Use pnpm for all project commands.
 
-## Common commands
+## Everyday commands
 
-| Command                           | Purpose                                             |
-| --------------------------------- | --------------------------------------------------- |
-| `pnpm dev`                        | Start local dev server                              |
-| `pnpm build`                      | Build and patch Vercel output (no `astro check`)    |
-| `pnpm build:strict`               | Same pipeline plus `astro check`; used by CI/deploy |
-| `pnpm preview`                    | Preview production build                            |
-| `pnpm lint`                       | Run ESLint                                          |
-| `pnpm format`                     | Format files with Prettier                          |
-| `pnpm format:check`               | Check formatting                                    |
-| `pnpm validate:meta`              | Validate post meta descriptions                     |
-| `pnpm i18n:scaffold-en`           | Generate English draft posts                        |
-| `pnpm generate:bilingual-mapping` | Regenerate bilingual mapping                        |
-| `pnpm og:preview`                 | Preview OG images locally                           |
-| `pnpm twikoo:sri:check`           | Verify Twikoo SRI hash                              |
-| `pnpm twikoo:sri:update`          | Update Twikoo SRI hash                              |
-| `pnpm test:unit`                  | Run the repository's Vitest suite                   |
-| `pnpm test:sitemap`               | Build + sitemap Playwright checks                   |
-| `pnpm exec playwright test`       | Run E2E tests                                       |
+| Command             | Purpose                                                  |
+| ------------------- | -------------------------------------------------------- |
+| `pnpm dev`          | Start the development server                             |
+| `pnpm build:strict` | Validate types and build Vercel output plus search index |
+| `pnpm build`        | Run the same build pipeline without `astro check`        |
+| `pnpm preview`      | Preview the Astro build locally                          |
+| `pnpm lint`         | Run ESLint                                               |
+| `pnpm format:check` | Check files covered by the Prettier configuration        |
 
-- For a targeted Vitest run, use `pnpm exec vitest run tests/unit/<file>.spec.ts`.
-- Both build commands refresh image sizes and bilingual mappings, then create the Pagefind index.
+Builds regenerate tracked image-size and bilingual mapping files and may access remote images or missing fonts. Choose focused checks, generators, and maintenance commands from [development guidance](docs/development.md); article tasks start with [WRITING.md](WRITING.md).
 
-## Project structure
+## Find the right guide
 
-```text
-src/
-  components/         UI components
-  data/blog/          Chinese posts
-  data/blog/en/       English posts
-  i18n/               Locale config and dictionaries
-  pages/              Astro routes
-  scripts/            Bundled browser runtime modules
-  styles/             Global and component styles
-  utils/              Shared helpers and generated mapping
-scripts/              Build and content automation scripts
-tests/                Playwright E2E tests
-docs/                 Feature and maintenance docs
-```
+| Goal                                                       | Start here                                          |
+| ---------------------------------------------------------- | --------------------------------------------------- |
+| Write or translate an article                              | [Writing guide](WRITING.md)                         |
+| Understand module boundaries and directories               | [Architecture](docs/architecture.md)                |
+| Choose checks or run a maintenance tool                    | [Development and verification](docs/development.md) |
+| Change CI, response headers, routing, or deployment        | [Deployment](docs/deployment.md)                    |
+| Work on language switching, comments, Markdown, or Mermaid | [Documentation index](docs/README.md)               |
+| Report a vulnerability                                     | [Security policy](SECURITY.md)                      |
 
-- Mirrored zh/en routes are kept as thin wrappers where possible and delegate shared rendering/data logic to locale-aware components and helpers under `src/components/` and `src/utils/`.
-- Client runtime code that needs TypeScript or bundling should live under `src/scripts/`; the theme runtime keeps a minimal inline first-paint boot in `src/layouts/Layout.astro` and a deferred module in `src/scripts/toggle-theme.ts`.
+Content lives in `src/data/blog/` and `src/data/blog/en/`. Thin routes in `src/pages/` share components, layouts, and utilities; bundled browser modules live in `src/scripts/`. The [architecture guide](docs/architecture.md) maps source ownership, generated files, and external services.
 
-## Documentation
+## Deployment
 
-- Writing guide: `WRITING.md`
-- Contributing guide: `CONTRIBUTING.md`
-- Security policy: `SECURITY.md`
-- i18n language switcher: `docs/i18n-language-switcher.md`
-- Bilingual comment mapping: `docs/bilingual-comment-system.md`
-- Mermaid rendering: `docs/mermaid-rendering.md`
-- Remark/Rehype plugins (TOC + collapse + callouts): `docs/remark-plugins.md`
+GitHub Actions builds and uploads prebuilt Vercel output for trusted PR previews and `main` production releases. CI and Preview run independently; the production workflow assumes protected `main` has passed the required `build` check. Fork PRs remain CI-only. See [deployment guidance](docs/deployment.md) for workflow triggers, configuration, and what requires verification on a deployment.
 
 ## License
 
 This repository uses separate license notices for source code and published content:
 
-- Unless otherwise noted, the source code in this repository is licensed under the MIT License. The original AstroPaper copyright and license notice are preserved in [`LICENSE`](./LICENSE).
+- Unless otherwise noted, source code is licensed under the MIT License. The original AstroPaper copyright and license notice are preserved in [LICENSE](LICENSE).
 - Blog posts, translations, and other original site content are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), unless a post or asset states otherwise.
 - Third-party code, fonts, images, and other assets remain under their respective licenses.
 
 The root MIT license applies to the software and does not supersede these content-specific notices.
-
-## Deployment
-
-- GitHub Actions owns Preview and Production Deployments through the Vercel CLI because this project is intentionally disconnected from Vercel Git Integration.
-- Pull request CI owns linting, formatting, type-checking, and browser tests.
-- `.github/workflows/deploy-preview.yml` runs for trusted same-repository pull requests; fork pull requests remain CI-only because GitHub does not expose Vercel secrets to them.
-- `.github/workflows/deploy-production.yml` runs for pushes to protected `main`; both workflows also retain `workflow_dispatch` for manual recovery.
-- The deployment workflows run the repository's `pnpm build:strict` → `vercel deploy --prebuilt` flow, so the project-scoped Vercel token only uploads the generated `.vercel/output/` artifacts.
-- Keep `main` protected by the required PR CI check named `build` (the CI job id in `.github/workflows/ci.yml`) before relying on the lean production build.
-- `pnpm build` and `pnpm build:strict` also patch `.vercel/output/config.json` so Vercel prebuilt deployments serve localized zh/en 404 pages and security response headers.
