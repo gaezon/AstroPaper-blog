@@ -113,6 +113,8 @@ export function createOgFrame(children) {
           type: "div",
           props: {
             style: {
+              position: "relative",
+              zIndex: 1,
               border: "4px solid #000",
               background: "#fefbfb",
               borderRadius: "4px",
