@@ -1,32 +1,15 @@
-## Description
+## Change
 
-<!-- A clear and concise description of what the pull request does. Include any relevant motivation and background. -->
+<!-- Describe the problem and resulting behavior. Link a related issue if useful. -->
 
-## Types of changes
+## Verification
 
-<!-- What types of changes does your code introduce to AstroPaper Blog? Put an `x` in the boxes that apply -->
+<!-- List relevant checks and results. Note any behavior that still needs validation.
+For documentation-only changes, link/path checks and formatting are sufficient.
+Use docs/development.md to choose checks; distinguish local, CI, and deployment evidence. -->
 
-- [ ] Bug Fix (non-breaking change which fixes an issue)
-- [ ] New Feature (non-breaking change which adds functionality)
-- [ ] Documentation Update (if none of the other choices apply)
-- [ ] Others (any other types not listed above)
+## Review notes
 
-## Checklist
-
-<!-- Please check the items that apply. -->
-
-- [ ] The change is focused and its purpose is explained
-- [ ] I have not committed secrets, generated output, or test artifacts
-- [ ] I have added or updated tests where relevant
-- [ ] I have updated documentation where relevant
-- [ ] This change introduces a breaking change
-
-## Further comments
-
-<!-- If this is a relatively large or complex change, kick off the discussion by explaining why you chose the solution you did and what alternatives you considered, etc... -->
-
-## Related Issue
-
-<!-- If this PR is related to an existing issue, link to it here. -->
-
-Closes: #<!-- Issue number, if applicable -->
+<!-- Optional: compatibility changes, tradeoffs, screenshots, or follow-up work.
+Regenerate affected tracked files in src/utils/generated/; exclude build output,
+test artifacts, local environment files, and secrets. Remove this section if unused. -->
