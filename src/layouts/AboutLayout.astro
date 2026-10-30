@@ -22,7 +22,7 @@ const { frontmatter } = Astro.props;
 >
   <Header />
   <Breadcrumb />
-  <main id="main-content">
+  <main id="main-content" tabindex="-1">
     <section id="about" class="app-prose prose-img:border-0 mb-28 max-w-app">
       <h1 class="text-2xl sm:text-3xl">{frontmatter.title}</h1>
       <slot />

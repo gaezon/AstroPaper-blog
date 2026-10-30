@@ -37,4 +37,10 @@ describe("toTransitionName", () => {
     expect(toTransitionName("default")).toBe("post-default");
     expect(toTransitionName("root")).toBe("post-root");
   });
+
+  it("namespaces tag transitions separately from posts", () => {
+    expect(toTransitionName("Hello World", "tag")).toBe("tag-hello-world");
+    expect(toTransitionName("none", "tag")).toBe("tag-none");
+    expect(toTransitionName("...", "tag")).toBe("tag");
+  });
 });

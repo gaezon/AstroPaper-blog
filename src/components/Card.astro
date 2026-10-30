@@ -21,7 +21,7 @@ const postPath = getPath(id, filePath, true, data.slug);
 const articleViewPaths = getArticleViewPaths(postPath);
 
 const headerProps = {
-  style: { viewTransitionName: toTransitionName(title) },
+  style: { viewTransitionName: toTransitionName(id) },
   class: "text-lg font-medium decoration-dashed hover:underline",
 };
 ---
