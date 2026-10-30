@@ -41,7 +41,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "7.3.3",
+    "@astrojs/markdown-remark": "7.3.5",
     "@astrojs/mdx": "^8.1.0",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
@@ -49,7 +49,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.3",
     "@vercel/speed-insights": "^2.0.0",
-    "astro": "^7.4.0",
+    "astro": "^7.4.4",
     "lodash.kebabcase": "^4.1.1",
     "probe-image-size": "^7.4.0",
     "rehype-callouts": "^2.2.0",
