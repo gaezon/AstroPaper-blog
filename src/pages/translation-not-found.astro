@@ -27,7 +27,7 @@ const tr = (key: string, params?: Record<string, string | number>) =>
 
 <Layout title={tr("language.translationNotFound")}>
   <Header activeNav="posts" />
-  <main class="min-h-screen pt-16">
+  <main id="main-content" tabindex="-1" class="min-h-screen pt-16">
     <TranslationNotFoundComponent
       targetLocale="en"
       currentPostTitle=""

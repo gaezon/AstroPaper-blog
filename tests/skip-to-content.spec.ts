@@ -1,23 +1,34 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+const pages = [
+  { path: "/", label: "home" },
+  { path: "/translation-not-found/", label: "translation-not-found (zh-CN)" },
+  { path: "/en/translation-not-found/", label: "translation-not-found (en)" },
+];
+
+const checkSkipLink = async (page: Page, path: string) => {
+  await page.goto(path);
+
+  await page.keyboard.press("Tab");
+
+  const skipLink = page.locator("#skip-to-content");
+  await expect(skipLink).toBeFocused();
+  await expect
+    .poll(async () => (await skipLink.boundingBox())?.y ?? -1)
+    .toBeGreaterThanOrEqual(0);
+
+  await page.keyboard.press("Enter");
+
+  await expect(page.locator("#main-content")).toBeFocused();
+  await expect(page).toHaveURL(/#main-content$/);
+};
 
 test.describe("Skip to content", () => {
-  test("moves focus to the main landmark", async ({ page }) => {
-    await page.goto("/");
-
-    await page.keyboard.press("Tab");
-
-    const skipLink = page.locator("#skip-to-content");
-    await expect(skipLink).toBeFocused();
-    await expect
-      .poll(async () => (await skipLink.boundingBox())?.y ?? -1)
-      .toBeGreaterThanOrEqual(0);
-
-    await page.keyboard.press("Enter");
-
-    const mainContent = page.locator("#main-content");
-    await expect(mainContent).toBeFocused();
-    await expect(page).toHaveURL(/#main-content$/);
-  });
+  for (const { path, label } of pages) {
+    test(`moves focus to the main landmark on ${label}`, async ({ page }) => {
+      await checkSkipLink(page, path);
+    });
+  }
 
   test("still moves focus after a client-side navigation", async ({ page }) => {
     await page.goto("/posts/");
