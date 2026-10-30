@@ -85,6 +85,23 @@
         @apply py-1.5;
       }
 
+      /* GFM emits the legacy `align` attribute, which Tailwind Typography's
+         `text-align: start` overrides. Restore the column alignment. */
+      th[align="center"],
+      td[align="center"] {
+        text-align: center;
+      }
+
+      th[align="right"],
+      td[align="right"] {
+        text-align: right;
+      }
+
+      th[align="left"],
+      td[align="left"] {
+        text-align: left;
+      }
+
       code {
         @apply break-all sm:break-normal;
       }
