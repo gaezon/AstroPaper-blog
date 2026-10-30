@@ -27,6 +27,12 @@
 3. 中文 URL 无语言前缀，英文 URL 以 `/en/` 开头，页面 URL 保持尾部 `/`。文章路径通过 `src/utils/getPath.ts` 生成，避免手工拼接。
 4. 英文 `originalTitle` 与中文标题关联译文。构建映射服务于评论、SEO 等；文章切换直接查找非草稿译文，未独立检查发布时间。修改配对时同时关注 [语言切换](i18n-language-switcher.md) 与 [双语评论](bilingual-comment-system.md)。
 
+## 页面导航与可访问性
+
+文章列表与文章页的「上一篇 / 下一篇」共用 `getSortedPosts` 的倒序结果：上一篇指向更早的文章，下一篇指向更新的文章。`modDatetime` 参与排序，因此修改它也会改变这两个链接。
+
+所有页面外壳的 `<main>` 必须带 `id="main-content" tabindex="-1"`，Header 的「跳至正文」才能把焦点移入正文；新增页面或布局时沿用该结构。文章与标签的 `view-transition-name` 由 [`toTransitionName`](../src/utils/toTransitionName.ts) 生成，分别使用内容 id 和 `tag-` 前缀；同一页面出现重复名称会让浏览器静默放弃整页转场。
+
 ## 构建与浏览器
 
 [`astro.config.ts`](../astro.config.ts) 使用静态输出和 Vercel adapter。文章与站点 OG 路由在构建阶段生成图片，Pagefind 索引在 Astro 构建后写入 `.vercel/output/static/`。
