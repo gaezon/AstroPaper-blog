@@ -42,10 +42,10 @@
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.5",
-    "@astrojs/mdx": "^8.1.1",
+    "@astrojs/mdx": "^8.1.2",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/vercel": "^11.0.16",
+    "@astrojs/vercel": "^11.0.17",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.3",
     "@vercel/speed-insights": "^2.0.0",
