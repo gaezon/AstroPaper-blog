@@ -9,6 +9,24 @@ const waitForToc = async (page: Page) => {
   await page.locator("[data-toc-nav] a").first().waitFor({ state: "attached" });
 };
 
+/** Scrolls to the comments, retrying while lazy content changes page height. */
+const scrollPastArticle = async (page: Page) => {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: "instant",
+          });
+          const article = document.getElementById("article");
+          return (article?.getBoundingClientRect().bottom ?? 0) <= 0;
+        }),
+      { timeout: 15000 }
+    )
+    .toBe(true);
+};
+
 const openPopover = async (page: Page) => {
   const fab = page.locator("#post-fab button");
   await expect(fab).toBeVisible();
@@ -162,6 +180,57 @@ test.describe("post table of contents", () => {
       .toBeGreaterThan(0);
 
     await page.locator(".toc-side [data-back-to-top]").click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
+  test("brings back a floating action after the side TOC scrolls away", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(POST_PATH);
+    await waitForToc(page);
+    await expect(page.locator("#post-fab")).toBeHidden();
+
+    await scrollPastArticle(page);
+    await expect(page.locator("#post-fab")).toBeVisible();
+    await expect(page.locator("#post-fab button")).toHaveAttribute(
+      "data-has-toc",
+      ""
+    );
+
+    await openPopover(page);
+    await page.locator("#toc-popover [data-back-to-top]").click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
+  test("keeps a back-to-top fallback where the Popover API is unavailable", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      delete (HTMLElement.prototype as unknown as { showPopover?: () => void })
+        .showPopover;
+    });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(POST_PATH);
+    await waitForToc(page);
+    await expect(page.locator("#post-fab")).toBeHidden();
+
+    // Past the 30% back-to-top threshold, but still inside the article.
+    await page.evaluate(() =>
+      window.scrollTo({
+        top: Math.round(document.documentElement.scrollHeight * 0.4),
+        behavior: "instant",
+      })
+    );
+    await expect(page.locator(".toc-side")).toBeVisible();
+    await expect(page.locator("#post-fab")).toBeHidden();
+
+    await scrollPastArticle(page);
+    const fab = page.locator("#post-fab button");
+    await expect(page.locator("#post-fab")).toBeVisible();
+    await expect(fab).toHaveAttribute("data-no-popover", "");
+    await expect(fab).toHaveAttribute("aria-label", "返回顶部");
+    await fab.click();
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 

@@ -20,6 +20,9 @@ function initToc() {
 
   const root = document.documentElement;
   const supportsPopover = "showPopover" in HTMLElement.prototype;
+  const sideTocStickyTop = sideNav
+    ? Number.parseFloat(getComputedStyle(sideNav).top) || 0
+    : 0;
   const hasTocButton = button.hasAttribute("data-has-toc");
   const opensToc = hasTocButton && supportsPopover;
   const openLabel =
@@ -30,7 +33,8 @@ function initToc() {
   // Without popover support, keep a useful button on small screens instead of
   // leaving a dead TOC control (the side TOC still works at >= 80rem).
   if (hasTocButton && !supportsPopover) {
-    button.removeAttribute("data-has-toc");
+    button.setAttribute("data-no-popover", "");
+    button.removeAttribute("popovertarget");
     button.removeAttribute("aria-controls");
     button.removeAttribute("aria-expanded");
     button.setAttribute("aria-label", backLabel);
@@ -100,7 +104,15 @@ function initToc() {
   let lastVisible: boolean | null = null;
 
   const update = () => {
-    fab.toggleAttribute("data-side-toc-hidden", sideNav?.offsetWidth === 0);
+    // Hide the FAB while the side TOC is both present and in view. Once the
+    // article (and its sticky TOC) scrolls away, show it again so wide screens
+    // keep a back-to-top / TOC entry near the comments. A nav left as a sliver
+    // above the sticky line no longer counts as usable.
+    const sideTocOutOfView = sideNav
+      ? sideNav.offsetWidth === 0 ||
+        sideNav.getBoundingClientRect().bottom <= sideTocStickyTop
+      : true;
+    fab.toggleAttribute("data-side-toc-hidden", sideTocOutOfView);
     // A popover left open would outlive the button that closes it.
     if (fab.offsetWidth === 0) closePopover();
 

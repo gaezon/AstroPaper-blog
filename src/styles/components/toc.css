@@ -212,6 +212,15 @@
 [data-has-toc] .post-fab-icon-toc {
   display: block;
 }
+/* Fallback when the Popover API is missing: the button becomes back-to-top.
+   `data-has-toc` stays so the wide-screen hide rule still works. */
+.post-fab-btn[data-no-popover] .post-fab-icon-toc,
+.post-fab-btn[data-no-popover] .post-fab-icon-close {
+  display: none;
+}
+.post-fab-btn[data-no-popover] .post-fab-icon-top {
+  display: block;
+}
 /* Apart from the rules above: a browser without :popover-open drops the rule. */
 .post-fab:has(+ .toc-popover:popover-open) .post-fab-icon-toc {
   display: none;
