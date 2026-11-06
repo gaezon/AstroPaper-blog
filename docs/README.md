@@ -19,7 +19,7 @@
 | 语言按钮、文章配对、缺失译文回退 | [语言切换](i18n-language-switcher.md)   |
 | 双语映射、共享评论路径、Twikoo   | [双语评论](bilingual-comment-system.md) |
 | 图表构建、浏览器回退、主题       | [Mermaid 渲染](mermaid-rendering.md)    |
-| Markdown 目录、折叠和提示块      | [Remark / Rehype](remark-plugins.md)    |
+| Markdown 插件、文章目录和提示块  | [Remark / Rehype](remark-plugins.md)    |
 
 ## 文档维护约定
 

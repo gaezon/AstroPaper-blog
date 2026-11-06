@@ -9,8 +9,8 @@ import Datetime from "@/components/Datetime.astro";
 import EditPost from "@/components/EditPost.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import BackButton from "@/components/BackButton.astro";
-import BackToTopButton from "@/components/BackToTopButton.astro";
-import TableOfContents from "@/components/TableOfContents.astro";
+import PostToc from "@/components/PostToc.astro";
+import PostFab from "@/components/PostFab.astro";
 import Comment from "@/components/Comment.astro";
 import ArticleViews from "@/components/ArticleViews.astro";
 import { slugifyStr } from "@/utils/slugify";
@@ -46,9 +46,11 @@ const {
   timezone,
   tags,
   hideEditPost,
+  hideToc,
 } = post.data;
 
 const { Content, headings } = await render(post);
+const tocHeadings = SITE.showToc && !hideToc ? headings : [];
 
 let ogImageUrl: string | undefined;
 
@@ -150,8 +152,6 @@ const layoutProps = {
 <Layout {...layoutProps}>
   <Header switchOverride={switchOverride} />
   <BackButton />
-  <!-- TOC component outside <main>, as a standalone navigation aid -->
-  <TableOfContents headings={headings} />
 
   <main
     id="main-content"
@@ -162,7 +162,7 @@ const layoutProps = {
     ]}
     data-pagefind-body
   >
-    <!-- Article content container: reserve space for left TOC on desktop; align with Go back (px-2) -->
+    <!-- Article content container: align the post column with the TOC aside -->
     <div class="flex w-full justify-center">
       <div class="mx-auto w-full max-w-app px-2">
         <!-- Article title area: add top margin to avoid overlapping the Go back button -->
@@ -189,22 +189,33 @@ const layoutProps = {
           </span>
           <EditPost {hideEditPost} {post} class="max-sm:hidden" />
         </div>
-        <article
-          id="article"
+        <div
           class:list={[
-            "app-prose prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg) mx-auto mt-8",
+            "post-body relative mx-auto mt-8 w-full",
             articleMeasureClass,
           ]}
-          role="main"
-          aria-labelledby="article-title"
-          data-copy-code-label={tr("ui.copyCode")}
-          data-copied-code-label={tr("ui.copiedCode")}
-          data-zoom-image-label={tr("ui.zoomImage")}
-          data-image-preview-label={tr("ui.imagePreview")}
-          data-close-image-preview-label={tr("ui.closeImagePreview")}
         >
-          <Content />
-        </article>
+          <PostToc headings={tocHeadings} />
+          <article
+            id="article"
+            class:list={[
+              "app-prose prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
+              articleMeasureClass,
+            ]}
+            role="main"
+            aria-labelledby="article-title"
+            tabindex="-1"
+            data-copy-code-label={tr("ui.copyCode")}
+            data-copied-code-label={tr("ui.copiedCode")}
+            data-zoom-image-label={tr("ui.zoomImage")}
+            data-image-preview-label={tr("ui.imagePreview")}
+            data-close-image-preview-label={tr("ui.closeImagePreview")}
+          >
+            <Content />
+          </article>
+        </div>
+
+        <PostFab headings={tocHeadings} />
 
         <hr class="my-8 border-dashed" />
 
@@ -217,7 +228,6 @@ const layoutProps = {
         </ul>
 
         <Comment post={post} />
-        <BackToTopButton />
 
         <ShareLinks />
 
@@ -258,77 +268,5 @@ const layoutProps = {
   <Footer />
 </Layout>
 
-<script>
-  import {
-    subscribeToPageScroll,
-    calculateScrollPercent,
-  } from "@/utils/scroll";
-
-  let scrollProgressCleanup: (() => void) | null = null;
-  const progressContainerSelector = ".progress-container";
-
-  function removeProgressBar() {
-    const existing = document.querySelector(progressContainerSelector);
-    if (existing) {
-      existing.remove();
-    }
-  }
-
-  /** Create a progress indicator
-   *  at the top */
-  function createProgressBar() {
-    if (document.querySelector(progressContainerSelector)) return;
-
-    // Create the main container div
-    const progressContainer = document.createElement("div");
-    progressContainer.className =
-      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
-
-    // Create the progress bar div
-    const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar h-1 w-0 bg-accent";
-    progressBar.id = "myBar";
-
-    // Append the progress bar to the progress container
-    progressContainer.appendChild(progressBar);
-
-    // Append the progress container to the document body or any other desired parent element
-    document.body.appendChild(progressContainer);
-  }
-
-  /** Update the progress bar
-   *  when user scrolls */
-  function updateScrollProgress() {
-    if (scrollProgressCleanup) {
-      scrollProgressCleanup();
-      scrollProgressCleanup = null;
-    }
-
-    const updateProgress = () => {
-      const scrollPercent = calculateScrollPercent();
-      const myBar = document.getElementById("myBar");
-      if (myBar) {
-        myBar.style.width = `${scrollPercent}%`;
-      }
-    };
-
-    updateProgress();
-    scrollProgressCleanup = subscribeToPageScroll(updateProgress);
-  }
-
-  function initProgressBar() {
-    removeProgressBar();
-    createProgressBar();
-    updateScrollProgress();
-  }
-
-  initProgressBar();
-
-  /* Go to page start after page swap */
-  document.addEventListener("astro:after-swap", () => {
-    initProgressBar();
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" });
-  });
-</script>
-
 <script src="@/scripts/post-details.ts"></script>
+<script src="@/scripts/toc.ts"></script>

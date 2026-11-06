@@ -1,0 +1,61 @@
+---
+import type { MarkdownHeading } from "astro";
+import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
+import IconListTree from "@/assets/icons/IconListTree.svg";
+import IconX from "@/assets/icons/IconX.svg";
+import { t } from "@/i18n/utils";
+import { buildTocTree, hasToc } from "@/utils/toc/buildTocTree";
+import TocList from "./TocList.astro";
+import "@/styles/components/toc.css";
+
+export interface Props {
+  headings?: MarkdownHeading[];
+}
+
+const { headings = [] } = Astro.props as Props;
+const withToc = hasToc(headings);
+const items = withToc ? buildTocTree(headings) : [];
+const tocLabel = t(Astro, "post.tableOfContents");
+const openTocLabel = t(Astro, "ui.openToc");
+const closeTocLabel = t(Astro, "ui.closeToc");
+const backToTopLabel = t(Astro, "post.backToTop");
+---
+
+<div id="post-fab" class="post-fab" data-pagefind-ignore>
+  <button
+    type="button"
+    class="post-fab-btn"
+    aria-label={withToc ? openTocLabel : backToTopLabel}
+    aria-controls={withToc ? "toc-popover" : undefined}
+    aria-expanded={withToc ? "false" : undefined}
+    popovertarget={withToc ? "toc-popover" : undefined}
+    data-has-toc={withToc ? "" : undefined}
+    data-open-label={openTocLabel}
+    data-close-label={closeTocLabel}
+    data-back-label={backToTopLabel}
+  >
+    <span class="post-fab-progress" aria-hidden="true"></span>
+    {withToc && (
+      <>
+        <IconListTree class="post-fab-icon-toc size-6" aria-hidden="true" />
+        <IconX class="post-fab-icon-close size-6" aria-hidden="true" />
+      </>
+    )}
+    <IconArrowNarrowUp class="post-fab-icon-top size-6" aria-hidden="true" />
+  </button>
+</div>
+
+{withToc && (
+  <div id="toc-popover" class="toc-popover" popover data-pagefind-ignore>
+    <nav aria-labelledby="toc-popover-label" data-toc-nav>
+      <h2 id="toc-popover-label" class="toc-label">
+        {tocLabel}
+      </h2>
+      <TocList {items} />
+      <button type="button" class="toc-back-to-top" data-back-to-top>
+        <IconArrowNarrowUp class="size-4" aria-hidden="true" />
+        {backToTopLabel}
+      </button>
+    </nav>
+  </div>
+)}

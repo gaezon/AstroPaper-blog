@@ -33,6 +33,8 @@
 
 所有页面外壳的 `<main>` 必须带 `id="main-content" tabindex="-1"`，Header 的「跳至正文」才能把焦点移入正文；新增页面或布局时沿用该结构。文章与标签的 `view-transition-name` 由 [`toTransitionName`](../src/utils/toTransitionName.ts) 生成，分别使用内容 id 和 `tag-` 前缀；同一页面出现重复名称会让浏览器静默放弃整页转场。
 
+文章目录由 [`PostToc`](../src/components/PostToc.astro)（宽屏侧栏）和 [`PostFab`](../src/components/PostFab.astro)（移动端 popover / 回顶 / 进度环）渲染，高亮与交互在 [`toc.ts`](../src/scripts/toc.ts)，建树与过滤在 [`buildTocTree.ts`](../src/utils/toc/buildTocTree.ts)。目录由 Astro 的 `headings` 驱动，作者不需要手写目录标题。
+
 ## 构建与浏览器
 
 [`astro.config.ts`](../astro.config.ts) 使用静态输出和 Vercel adapter。文章与站点 OG 路由在构建阶段生成图片，Pagefind 索引在 Astro 构建后写入 `.vercel/output/static/`。

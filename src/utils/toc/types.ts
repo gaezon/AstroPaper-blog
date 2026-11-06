@@ -1,16 +1,9 @@
-import type { TocItem } from "@/utils/extractToc";
+export type TocHeading = {
+  depth: number;
+  slug: string;
+  text: string;
+};
 
-export type { TocItem };
-
-export interface TocLinkPair {
-  desktop?: HTMLAnchorElement;
-  mobile?: HTMLAnchorElement;
-}
-
-export interface MutableFlag {
-  value: boolean;
-}
-
-export interface MutableTimeout {
-  value: number | null;
-}
+export type TocItem = TocHeading & {
+  children: TocItem[];
+};

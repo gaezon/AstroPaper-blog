@@ -4,31 +4,6 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-:root,
-html[data-theme="light"] {
-  /* Theme variables for the collapse component */
-  --theme-bg: #ffffff;
-  --theme-bg-secondary: #f8f9fa;
-  --theme-bg-hover: #f1f3f4;
-  --theme-text: #282728;
-  --theme-border: #e1e5e9;
-  --theme-accent-blue: #006cac;
-  --theme-accent-green: #28a745;
-  --theme-accent: #006cac;
-}
-
-html[data-theme="dark"] {
-  /* Theme variables for the collapse component */
-  --theme-bg: #1a1f2e;
-  --theme-bg-secondary: #212737;
-  --theme-bg-hover: #2d3748;
-  --theme-text: #eaedf3;
-  --theme-border: #4a5568;
-  --theme-accent-blue: #4299e1;
-  --theme-accent-green: #48bb78;
-  --theme-accent: #ff6b01;
-}
-
 @layer base {
   * {
     @apply border-border outline-accent/75;

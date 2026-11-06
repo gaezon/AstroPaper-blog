@@ -19,9 +19,10 @@ test.describe("i18n regressions", () => {
     );
     const firstPostLink = page.locator("main ul li a").first();
     await firstPostLink.click();
-    await page.waitForSelector("#back-button");
-    const href = await page.getAttribute("#back-button", "href");
-    expect(href && href.startsWith("/en/")).toBeTruthy();
+    await expect(page.locator("#back-button")).toHaveAttribute(
+      "href",
+      /^\/en\//
+    );
   });
 
   test("language switcher should preserve search query when switching locales", async ({

@@ -1,0 +1,37 @@
+---
+import type { MarkdownHeading } from "astro";
+import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
+import { t } from "@/i18n/utils";
+import { buildTocTree, hasToc } from "@/utils/toc/buildTocTree";
+import TocList from "./TocList.astro";
+import "@/styles/components/toc.css";
+
+export interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props as Props;
+const withToc = hasToc(headings);
+const items = withToc ? buildTocTree(headings) : [];
+const label = t(Astro, "post.tableOfContents");
+const skipLabel = t(Astro, "ui.skipTableOfContents");
+const backToTopLabel = t(Astro, "post.backToTop");
+---
+
+{withToc && (
+  <aside class="toc-side" data-pagefind-ignore>
+    <a href="#article" class="toc-skip">
+      {skipLabel}
+    </a>
+    <nav aria-labelledby="toc-side-label" data-toc-nav>
+      <h2 id="toc-side-label" class="toc-label">
+        {label}
+      </h2>
+      <TocList items={items} />
+      <button type="button" class="toc-back-to-top" data-back-to-top>
+        <IconArrowNarrowUp class="size-4" aria-hidden="true" />
+        {backToTopLabel}
+      </button>
+    </nav>
+  </aside>
+)}
