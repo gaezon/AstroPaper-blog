@@ -4,8 +4,6 @@ import { unified, type RehypePlugins } from "@astrojs/markdown-remark";
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import remarkToc from "remark-toc";
-import remarkCollapse from "remark-collapse";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -13,7 +11,6 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
-import { getI18nCollapseConfig, tocConfig } from "./src/config/remark";
 import vercel from "@astrojs/vercel";
 import rehypeMermaid from "rehype-mermaid";
 import rehypeCallouts from "rehype-callouts";
@@ -185,10 +182,6 @@ export default defineConfig({
   },
   markdown: {
     processor: unified({
-      remarkPlugins: [
-        [remarkToc, tocConfig],
-        [remarkCollapse, getI18nCollapseConfig()],
-      ],
       rehypePlugins: [
         // Build-time Mermaid rendering in GitHub Actions only; otherwise this plugin is skipped.
         ...mermaidConfig,

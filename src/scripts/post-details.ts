@@ -18,8 +18,8 @@ const prefersReducedMotion = () =>
 
 /** Attaches links to headings in the document,
  *  allowing sharing of sections easily */
-function addHeadingLinks() {
-  const headings = Array.from(document.querySelectorAll("h2, h3, h4, h5, h6"));
+function addHeadingLinks(article: HTMLElement) {
+  const headings = Array.from(article.querySelectorAll("h2, h3, h4, h5, h6"));
   for (const heading of headings) {
     if (heading.querySelector(".heading-link")) continue;
     heading.classList.add("group");
@@ -362,7 +362,7 @@ function initPostDetails() {
     closeImagePreviewLabel = "Close image preview",
   } = article.dataset;
 
-  addHeadingLinks();
+  addHeadingLinks(article);
   attachCopyButtons(copyCodeLabel, copiedCodeLabel);
   initLightbox(article, {
     zoomImage: zoomImageLabel,
@@ -375,4 +375,7 @@ initPostDetails();
 document.addEventListener("astro:page-load", initPostDetails);
 document.addEventListener("astro:before-swap", () => {
   closeActiveLightbox?.();
+});
+document.addEventListener("astro:after-swap", () => {
+  window.scrollTo({ left: 0, top: 0, behavior: "instant" });
 });

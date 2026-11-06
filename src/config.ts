@@ -20,6 +20,7 @@ export const SITE: Site = {
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
   showArchives: true,
   showBackButton: true, // show back button in post detail
+  showToc: true, // show table of contents on posts with 2+ h2/h3 headings
   editPost: {
     enabled: true,
     text: "Suggest Changes",

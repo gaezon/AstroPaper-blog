@@ -20,6 +20,7 @@ function createBlogSchema(localeDefault: string) {
       description: z.string(),
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),
+      hideToc: z.boolean().optional(),
       timezone: z.string().optional(),
       locale: z.string().default(localeDefault),
       originalTitle: z.string().optional(),

@@ -13,6 +13,8 @@ export interface Site {
   scheduledPostMargin: number;
   showArchives: boolean;
   showBackButton: boolean;
+  /** Show the post table of contents (side list / floating popover). */
+  showToc: boolean;
   editPost: {
     enabled: boolean;
     text: string;

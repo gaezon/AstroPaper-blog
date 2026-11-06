@@ -89,14 +89,17 @@ test.describe("Mobile navigation layout", () => {
     });
     await page.goto("/posts/OBS-safe-broadcast-pitfalls/");
 
-    const tocToggle = page.locator("#toc-toggle");
-    await expect(tocToggle).toBeVisible();
+    const fab = page.locator("#post-fab button");
+    await expect(fab).toBeVisible();
+    const fabBox = await fab.boundingBox();
+    expect(fabBox).not.toBeNull();
 
-    const tocBox = await tocToggle.boundingBox();
-    expect(tocBox).not.toBeNull();
+    await fab.click();
+    await expect(page.locator("#toc-popover")).toBeVisible();
 
     await page.getByRole("button", { name: "菜单" }).click();
     await expect(page.locator("#nav-menu")).toBeVisible();
+    await expect(page.locator("#toc-popover")).toBeHidden();
 
     const backdropFilters = await page.evaluate(() => {
       const readBackdropFilter = (selector: string) => {
@@ -112,28 +115,24 @@ test.describe("Mobile navigation layout", () => {
       return {
         nav: readBackdropFilter("#nav-menu").trim().toLowerCase(),
         panel: readBackdropFilter("#menu-panel").trim().toLowerCase(),
-        toc: readBackdropFilter("#toc-overlay").trim().toLowerCase(),
       };
     });
 
     expect(backdropFilters.nav).not.toBe("");
-    expect(backdropFilters.toc).not.toBe("");
     expect(backdropFilters.nav).toContain("blur(8px)");
     expect(backdropFilters.nav).toContain("saturate(1.06)");
-    expect(backdropFilters.toc).toContain("blur(8px)");
-    expect(backdropFilters.toc).toContain("saturate(1.06)");
     expect(backdropFilters.panel).toBe("none");
 
     const topLayerOwner = await page.evaluate(
       ({ x, y }) => {
         const element = document.elementFromPoint(x, y);
         if (element?.closest("#nav-menu")) return "nav-menu";
-        if (element?.closest("#toc-toggle")) return "toc-toggle";
+        if (element?.closest("#post-fab")) return "post-fab";
         return element?.id ?? "";
       },
       {
-        x: tocBox!.x + tocBox!.width / 2,
-        y: tocBox!.y + tocBox!.height / 2,
+        x: fabBox!.x + fabBox!.width / 2,
+        y: fabBox!.y + fabBox!.height / 2,
       }
     );
 
