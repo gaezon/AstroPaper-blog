@@ -9,6 +9,7 @@
 | [`src/pages/`](../src/pages/)                                | Astro 路由及静态端点；英文镜像位于 `en/`                                                         |
 | [`src/components/`](../src/components/)                      | 共享页面、交互组件；列表页和语言路由复用此处实现                                                 |
 | [`src/layouts/`](../src/layouts/)                            | 页面外壳、文章布局、SEO 元数据与运行时入口                                                       |
+| [`src/custom/`](../src/custom/)                              | 站点自己的插槽。上游只负责渲染，不在后续版本里改这三个文件                                       |
 | [`src/scripts/`](../src/scripts/)                            | 需要打包的浏览器模块，例如主题、导航、评论懒加载                                                 |
 | [`src/utils/`](../src/utils/)                                | 路径、语言、SEO、TOC、图片和构建辅助逻辑                                                         |
 | [`src/i18n/`](../src/i18n/)、[`src/config/`](../src/config/) | 语言字典及功能配置；站点元数据在 [`src/config.ts`](../src/config.ts)                             |
@@ -57,7 +58,7 @@ Mermaid 在 GitHub Actions 中构建为 SVG 图片；其他环境使用浏览器
 
 ## 外部服务与响应边界
 
-- 评论：[`Comment.astro`](../src/components/Comment.astro)、`src/scripts/comment-loader.ts` 与 `src/config/twikoo.ts` 管理客户端接入；服务端配置另有部署归属，见 [双语评论](bilingual-comment-system.md)。
-- 统计：[`src/config/umami.ts`](../src/config/umami.ts) 定义追踪和阅读量端点；`ArticleViews.astro` 请求同源 `/api/article-views/`，由 Vercel 转发到外部 Umami 服务。
+- 评论：[`PostEnd.astro`](../src/custom/PostEnd.astro) 在文章页、分享链接之前挂载 [`Comment.astro`](../src/components/Comment.astro)。加载逻辑在 `src/scripts/comment-loader.ts` 与 `src/config/twikoo.ts`；服务端配置另有部署归属，见 [双语评论](bilingual-comment-system.md)。
+- 统计：[`Head.astro`](../src/custom/Head.astro) 放 Umami 预连接、站点验证和正式环境追踪脚本；[`BodyEnd.astro`](../src/custom/BodyEnd.astro) 放正式环境的 Vercel Speed Insights。[`src/config/umami.ts`](../src/config/umami.ts) 定义追踪和阅读量端点；`ArticleViews.astro` 请求同源 `/api/article-views/`，由 Vercel 转发到外部 Umami 服务。
 - 响应头：[`src/utils/http-headers.ts`](../src/utils/http-headers.ts) 是安全与发现头的共同来源，开发期由 [`src/middleware.ts`](../src/middleware.ts) 应用，部署产物由 [`scripts/apply-vercel-routes.ts`](../scripts/apply-vercel-routes.ts) 补齐。
 - 路由与缓存：后处理还处理本地化 404、HTML/静态资源缓存及阅读量转发。修改这些行为应检查构建产物和 [部署验证边界](deployment.md#部署验证边界)，不能只依赖开发服务器。

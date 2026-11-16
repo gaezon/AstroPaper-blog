@@ -1,0 +1,7 @@
+---
+// Rendered immediately before </body> on every page.
+// This file belongs to the site. Upstream AstroPaper does not change it.
+import SpeedInsights from "@vercel/speed-insights/astro";
+---
+
+{import.meta.env.PROD && <SpeedInsights />}

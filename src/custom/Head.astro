@@ -1,0 +1,43 @@
+---
+// Rendered at the end of <head> on every page, after the theme's own tags.
+// This file belongs to the site. Upstream AstroPaper does not change it.
+import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
+import { SITE } from "@/config";
+import { UMAMI } from "@/config/umami";
+
+type Props = {
+  title: string;
+  description: string;
+};
+
+// Page title and description are part of the slot contract. Current tags
+// do not print them.
+const pageMeta: Props = Astro.props;
+void pageMeta;
+
+const siteHostname = new URL(SITE.website).hostname;
+---
+
+<link rel="dns-prefetch" href={UMAMI.origin} />
+<link rel="preconnect" href={UMAMI.origin} crossorigin="anonymous" />
+{PUBLIC_GOOGLE_SITE_VERIFICATION && (
+  <meta
+    name="google-site-verification"
+    content={PUBLIC_GOOGLE_SITE_VERIFICATION}
+  />
+)}
+{
+  // Production only. The tracker is domain-restricted.
+  import.meta.env.PROD && (
+    <script
+      is:inline
+      defer
+      src={`${UMAMI.origin}${UMAMI.trackerPath}`}
+      crossorigin="anonymous"
+      data-website-id={UMAMI.websiteId}
+      data-domains={siteHostname}
+      data-exclude-hash="true"
+      data-exclude-search="true"
+    />
+  )
+}

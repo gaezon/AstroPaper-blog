@@ -11,8 +11,8 @@ import ShareLinks from "@/components/ShareLinks.astro";
 import BackButton from "@/components/BackButton.astro";
 import PostToc from "@/components/PostToc.astro";
 import PostFab from "@/components/PostFab.astro";
-import Comment from "@/components/Comment.astro";
 import ArticleViews from "@/components/ArticleViews.astro";
+import PostEnd from "@/custom/PostEnd.astro";
 import { slugifyStr } from "@/utils/slugify";
 import { toTransitionName } from "@/utils/toTransitionName";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
@@ -227,7 +227,7 @@ const layoutProps = {
           ))}
         </ul>
 
-        <Comment post={post} />
+        <PostEnd {post} />
 
         <ShareLinks />
 

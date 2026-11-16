@@ -1,10 +1,9 @@
 ---
 import { ClientRouter } from "astro:transitions";
-import SpeedInsights from "@vercel/speed-insights/astro";
-import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { GITHUB_PROFILE_URL, SITE } from "@/config";
-import { UMAMI } from "@/config/umami";
 import { SOCIALS } from "@/constants";
+import CustomHead from "@/custom/Head.astro";
+import CustomBodyEnd from "@/custom/BodyEnd.astro";
 import "@/styles/global.css";
 import {
   getCurrentLocale,
@@ -216,9 +215,6 @@ const structuredData = {
     ...breadcrumbStructuredData,
   ],
 };
-// Restrict Umami tracking to specific domains (avoid local/preview)
-const siteHostname = new URL(SITE.website).hostname;
-
 // Client-side Mermaid fallback: only outside GitHub Actions, where
 // rehype-mermaid is skipped and raw mermaid code blocks remain (see astro.config.ts).
 const enableMermaidClientFallback = !process.env.GITHUB_ACTIONS;
@@ -278,8 +274,6 @@ const enableMermaidClientFallback = !process.env.GITHUB_ACTIONS;
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="dns-prefetch" href={UMAMI.origin} />
-    <link rel="preconnect" href={UMAMI.origin} crossorigin="anonymous" />
     {!disablePageUrlMeta && <link rel="canonical" href={canonicalURL} />}
     <meta name="generator" content={Astro.generator} />
     {robots && <meta name="robots" content={robots} />}
@@ -359,18 +353,6 @@ const enableMermaidClientFallback = !process.env.GITHUB_ACTIONS;
       }
     />
 
-    {
-      // If PUBLIC_GOOGLE_SITE_VERIFICATION is set in the environment variable,
-      // include google-site-verification tag in the heading
-      // Learn more: https://support.google.com/webmasters/answer/9008080#meta_tag_verification&zippy=%2Chtml-tag
-      PUBLIC_GOOGLE_SITE_VERIFICATION && (
-        <meta
-          name="google-site-verification"
-          content={PUBLIC_GOOGLE_SITE_VERIFICATION}
-        />
-      )
-    }
-
     <ClientRouter />
 
     <script src="../scripts/toggle-theme.ts"></script>
@@ -378,22 +360,11 @@ const enableMermaidClientFallback = !process.env.GITHUB_ACTIONS;
       <script src="../scripts/mermaid-dev-preview.ts"></script>
     )}
 
-    {import.meta.env.PROD && ( // Umami Analytics (production only & domain-restricted)
-      <script
-        is:inline
-        defer
-        src={`${UMAMI.origin}${UMAMI.trackerPath}`}
-        crossorigin="anonymous"
-        data-website-id={UMAMI.websiteId}
-        data-domains={siteHostname}
-        data-exclude-hash="true"
-        data-exclude-search="true"
-      ></script>
-    )}
+    <CustomHead title={title} description={finalDescription} />
   </head>
   <body>
     <slot />
 
-    {import.meta.env.PROD && <SpeedInsights />}
+    <CustomBodyEnd />
   </body>
 </html>
