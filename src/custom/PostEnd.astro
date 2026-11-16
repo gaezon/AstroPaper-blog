@@ -1,0 +1,15 @@
+---
+// Rendered on each post page, after the tags and before the share links.
+// Pass `post` through so a later change can skip comments on some posts.
+// This file belongs to the site. Upstream AstroPaper does not change it.
+import type { CollectionEntry } from "astro:content";
+import Comment from "@/components/Comment.astro";
+
+type Props = {
+  post: CollectionEntry<"blog" | "blog-en">;
+};
+
+const { post } = Astro.props;
+---
+
+<Comment {post} />

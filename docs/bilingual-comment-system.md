@@ -50,7 +50,7 @@ pnpm generate:bilingual-mapping
 
 ## 评论加载与验证
 
-[Comment.astro](../src/components/Comment.astro) 输出评论路径与本地化文案；[comment-loader.ts](../src/scripts/comment-loader.ts) 在点击或滚动接近评论区时加载 Twikoo，并处理页面切换后的初始化与清理。前端资源版本位于 [twikoo.ts](../src/config/twikoo.ts)，SRI 由 [manage-twikoo-sri.ts](../scripts/manage-twikoo-sri.ts) 维护。后端服务地址由加载器指定，其部署和管理配置不由本仓库的前端构建维护。
+[PostEnd.astro](../src/custom/PostEnd.astro) 在中英文文章页、分享链接之前挂载 [Comment.astro](../src/components/Comment.astro)。评论组件输出评论路径与本地化文案；[comment-loader.ts](../src/scripts/comment-loader.ts) 在点击或滚动接近评论区时加载 Twikoo，并处理页面切换后的初始化与清理。前端资源版本位于 [twikoo.ts](../src/config/twikoo.ts)，SRI 由 [manage-twikoo-sri.ts](../scripts/manage-twikoo-sri.ts) 维护。后端服务地址由加载器指定，其部署和管理配置不由本仓库的前端构建维护。
 
 按改动选择检查：
 
